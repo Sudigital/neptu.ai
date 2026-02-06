@@ -1,0 +1,57 @@
+{
+  "name": "neptu",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Your Balinese Soul, On-Chain",
+  "scripts": {
+    "dev": "turbo dev --filter=!@neptu/mobile",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "lint:fix": "turbo lint:fix",
+    "lint:build": "turbo lint:build",
+    "test": "turbo test",
+    "typecheck": "turbo typecheck",
+    "format:check": "prettier --check .",
+    "format": "prettier --write .",
+    "api": "bun run --filter=@neptu/api dev",
+    "cli": "bun run --filter=@neptu/cli dev",
+    "web": "bun run --filter=@neptu/web dev",
+    "worker": "bun run --filter=@neptu/worker dev",
+    "docs": "bun run --filter=@neptu/docs dev",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@neptu/eslint-config": "workspace:*",
+    "@neptu/typescript-config": "workspace:*",
+    "@types/bun": "^1.3.8",
+    "husky": "^9.1.7",
+    "prettier": "^3.6.2",
+    "turbo": "^2.8.3",
+    "typescript": "^5.9.3",
+    "vitepress": "^1.6.4",
+    "vue": "^3.5.27"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "bun@1.2.23",
+  "workspaces": [
+    "apps/*",
+    "docs",
+    "packages/*"
+  ],
+  "peerDependencyRules": {
+    "ignoreMissing": [
+      "react",
+      "react-dom"
+    ],
+    "allowedVersions": {
+      "react": ">=19.0.0"
+    }
+  },
+  "dependencies": {
+    "@privy-io/react-auth": "^3.13.1",
+    "wrangler": "^4.63.0"
+  }
+}

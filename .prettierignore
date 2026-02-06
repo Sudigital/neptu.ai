@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+.turbo/
+
+# Build outputs
+dist/
+.next/
+out/
+
+# Auto-generated files
+**/routeTree.gen.ts
+
+# Lock files
+bun.lock
+pnpm-lock.yaml
+package-lock.json
+
+# Docs build
+docs/.vitepress/cache/
+docs/.vitepress/dist/

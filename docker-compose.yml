@@ -1,0 +1,24 @@
+version: "3"
+
+networks:
+  default:
+    name: local_default
+
+volumes:
+  libsql_data:
+    name: local_libsql_data
+    driver: local
+
+services:
+  libsql:
+    image: ghcr.io/tursodatabase/libsql-server:latest
+    container_name: local_libsql
+    restart: always
+    ports:
+      - 8080:8080
+    volumes:
+      - libsql_data:/var/lib/sqld
+    environment:
+      - SQLD_NODE=primary
+    networks:
+      - default

@@ -1,0 +1,3 @@
+{
+  "extends": "@neptu/typescript-config/base.json"
+}

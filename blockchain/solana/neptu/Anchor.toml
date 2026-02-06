@@ -1,0 +1,32 @@
+[toolchain]
+anchor_version = "0.32.1"
+package_manager = "npm"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.localnet]
+neptu_economy = "6Zxc4uCXKqWS6spnW7u9wA81PChgws6wbGAKJyi8PnvT"
+neptu_token = "7JDw4pncZg6g7ezhQSNxKhj3ptT62okgttDjLL4TwqHW"
+
+[programs.devnet]
+neptu_economy = "6Zxc4uCXKqWS6spnW7u9wA81PChgws6wbGAKJyi8PnvT"
+neptu_token = "7JDw4pncZg6g7ezhQSNxKhj3ptT62okgttDjLL4TwqHW"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "devnet"
+wallet = "~/.config/solana/sudigital-dev.json"
+
+[test]
+startup_wait = 5000
+
+[[test.genesis]]
+address = "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+program = ".anchor/metaplex_token_metadata.so"
+
+[scripts]
+test = "NODE_OPTIONS='--no-warnings' npx ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"

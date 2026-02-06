@@ -1,0 +1,87 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+.turbo/
+
+# Environment
+.env
+.env.production
+.env.local
+.env.*.local
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Bun
+bun.lockb
+bun.lock
+
+# ===========================================
+# PRIVATE IP - DO NOT COMMIT TO PUBLIC REPO
+# ===========================================
+# Core algorithm (separate private repo)
+packages/wariga/
+
+# Database ORM (schemas, services)
+packages/drizzle-orm/
+
+# API server (uses wariga, deploy separately)  
+apps/api/
+
+# CLI dev tool
+apps/cli/
+
+# Web app (frontend)
+apps/web/.tanstack/
+
+# Original Python prototype (IP reference)
+brainstorming/neptu/database.json
+brainstorming/neptu/main.py
+
+# ===========================================
+# BLOCKCHAIN - SENSITIVE FILES
+# ===========================================
+# Solana keypairs and wallets
+*.json
+!package.json
+!tsconfig*.json
+!turbo.json
+!bunfig.toml
+!app.json
+!components.json
+!drizzle.config.ts
+**/*-keypair.json
+**/id.json
+**/wallet.json
+.anchor/
+blockchain/solana/neptu/target/
+blockchain/solana/neptu/node_modules/
+blockchain/solana/neptu/.anchor/
+
+# Anchor build artifacts
+target/deploy/*.so
+target/idl/
+target/types/
+
+# ===========================================
+# VITEPRESS
+# ===========================================
+docs/.vitepress/dist/
+docs/.vitepress/cache/
+
+# Cloudflare Worker secrets
+.dev.vars
+local.db
+.wrangler/
+
+scripts/

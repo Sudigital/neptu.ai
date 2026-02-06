@@ -1,0 +1,37 @@
+name = "neptu-worker"
+main = "src/index.ts"
+compatibility_date = "2024-12-30"
+
+# Custom domain
+routes = [
+  { pattern = "worker.neptu.sudigital.com", custom_domain = true }
+]
+
+[triggers]
+# Cron triggers:
+# - Every 55 minutes (approx): Colosseum heartbeat
+#   Note: Standard cron can't do exact 55min. Using 0,55 pattern = 55/5 alternating gaps
+# - Daily at midnight: Daily reading generation
+crons = ["0,55 * * * *", "0 0 * * *"]
+
+[vars]
+ENVIRONMENT = "development"
+AZURE_OPENAI_ENDPOINT = "https://super-su.cognitiveservices.azure.com/"
+AZURE_OPENAI_DEPLOYMENT = "gpt-4o-mini"
+AZURE_OPENAI_API_VERSION = "2024-04-01-preview"
+# Colosseum Agent Info (non-secret)
+COLOSSEUM_AGENT_ID = "206"
+COLOSSEUM_AGENT_NAME = "neptu"
+# Secrets stored in .dev.vars (local) or Cloudflare secrets (production):
+# - AZURE_OPENAI_API_KEY
+# - COLOSSEUM_API_KEY
+
+[[d1_databases]]
+binding = "neptu_dev"
+database_name = "neptu-dev"
+database_id = "7567d7ff-6845-4dad-bfdf-8b65cd4a2645"
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "89c3d0b14d734b5e8577e878d1b6203c"
+preview_id = "b4a8eea275004dc283b8db47c176caf5"

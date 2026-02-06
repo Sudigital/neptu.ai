@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <defs>
+    <linearGradient id="neptuGradConcept" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#9955FF" />
+      <stop offset="100%" style="stop-color:#7C3AED" />
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="300" fill="#121212" />
+
+  <g transform="translate(200, 130)">
+    <g stroke="url(#neptuGradConcept)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <defs>
+            <path id="petal8concept" d="M0 -15 C 8 -25, 10 -35, 0 -45 C -10 -55, -10 -65, 0 -65 C 10 -65, 10 -55, 0 -45 C -10 -35, -8 -25, 0 -15 Z" />
+        </defs>
+        <use href="#petal8concept" transform="rotate(0)" />
+        <use href="#petal8concept" transform="rotate(45)" />
+        <use href="#petal8concept" transform="rotate(90)" />
+        <use href="#petal8concept" transform="rotate(135)" />
+        <use href="#petal8concept" transform="rotate(180)" />
+        <use href="#petal8concept" transform="rotate(225)" />
+        <use href="#petal8concept" transform="rotate(270)" />
+        <use href="#petal8concept" transform="rotate(315)" />
+    </g>
+    <circle cx="0" cy="0" r="6" fill="#FFFFFF" stroke="url(#neptuGradConcept)" stroke-width="2" />
+  </g>
+
+  <text x="200" y="230" text-anchor="middle" font-family="sans-serif" font-weight="bold" font-size="32" letter-spacing="4" fill="#FFFFFF">NEPTU</text>
+  <text x="200" y="255" text-anchor="middle" font-family="sans-serif" font-size="12" letter-spacing="1" fill="#888888">FINALIZED VERSION</text>
+</svg>
