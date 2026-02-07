@@ -410,9 +410,12 @@ function FeatureCard({
       className="group relative overflow-hidden rounded-lg sm:rounded-2xl border bg-card p-4 sm:p-6 md:p-8 transition-shadow hover:shadow-lg"
     >
       <div className="mb-2.5 sm:mb-4 inline-flex rounded-md sm:rounded-xl bg-muted p-2 sm:p-3 group-hover:bg-primary/10 transition-colors">
-        {React.cloneElement(icon as React.ReactElement, {
-          className: "h-6 w-6 sm:h-8 sm:w-8",
-        })}
+        {React.cloneElement(
+          icon as React.ReactElement<{ className?: string }>,
+          {
+            className: "h-6 w-6 sm:h-8 sm:w-8",
+          },
+        )}
       </div>
       <div className="mb-1 sm:mb-2 text-[10px] sm:text-sm font-medium text-muted-foreground uppercase tracking-wider">
         {subtitle}
@@ -454,9 +457,12 @@ function StepCard({
 
       {/* Icon */}
       <div className="mb-2 sm:mb-4 inline-flex rounded-md sm:rounded-xl bg-[#7C3AED]/10 p-2 sm:p-3 text-[#7C3AED] w-fit">
-        {React.cloneElement(icon as React.ReactElement, {
-          className: "h-5 w-5 sm:h-6 sm:w-6",
-        })}
+        {React.cloneElement(
+          icon as React.ReactElement<{ className?: string }>,
+          {
+            className: "h-5 w-5 sm:h-6 sm:w-6",
+          },
+        )}
       </div>
 
       {/* Content */}

@@ -1,28 +1,33 @@
-import { usePrivy, useWallets } from "@privy-io/react-auth";
+import {
+  usePrivy,
+  useWallets,
+  type LinkedAccountWithMetadata,
+  type WalletWithMetadata,
+} from "@privy-io/react-auth";
 
-/**
- * Custom hook to get the user's Solana wallet address.
- * This handles both:
- * 1. External wallets connected via useWallets (for transactions)
- * 2. Wallets linked to the Privy user account (for identification)
- */
+function isWalletAccount(
+  account: LinkedAccountWithMetadata,
+): account is WalletWithMetadata {
+  return account.type === "wallet";
+}
+
+function isSolanaWallet(account: WalletWithMetadata): boolean {
+  return account.chainType === "solana";
+}
+
 export function useWallet() {
   const { user, ready: privyReady } = usePrivy();
   const { wallets, ready: walletsReady } = useWallets();
 
-  // Get SOLANA wallet from useWallets (filter by chainType)
-  const connectedWallet = wallets.find((w) => w.chainType === "solana");
+  // Get SOLANA wallet from useWallets (connected wallets have chainType)
+  const connectedWallet = wallets.find(
+    (w) => "chainType" in w && w.chainType === "solana",
+  );
 
   // Get SOLANA wallet from user's linked accounts
   const linkedWallet = user?.linkedAccounts?.find(
-    (
-      account,
-    ): account is {
-      type: "wallet";
-      address: string;
-      chainType?: string;
-      verifiedAt?: Date;
-    } => account.type === "wallet" && account.chainType === "solana",
+    (account): account is WalletWithMetadata =>
+      isWalletAccount(account) && isSolanaWallet(account),
   );
 
   // Also check user.wallet (Privy's embedded wallet - should be Solana if configured)
@@ -54,7 +59,7 @@ export function useWallet() {
       allWallets: wallets.map((w) => ({
         address: w.address,
         type: w.walletClientType,
-        chain: w.chainType,
+        chain: "chainType" in w ? w.chainType : undefined,
       })),
     },
   };

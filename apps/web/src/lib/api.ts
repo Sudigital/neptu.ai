@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { RewardType } from "@neptu/shared";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 const WORKER_URL = import.meta.env.VITE_WORKER_URL || "http://localhost:8787";
@@ -287,7 +288,7 @@ export const neptuApi = {
       success: boolean;
       rewards: Array<{
         id: string;
-        rewardType: string;
+        rewardType: RewardType;
         neptuAmount: number;
         description: string;
         status: string;

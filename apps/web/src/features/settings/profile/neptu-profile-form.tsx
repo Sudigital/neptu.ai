@@ -38,7 +38,7 @@ export function NeptuProfileForm() {
   }
 
   // Use key to reset form state when user data changes
-  const formKey = `${user?.id}-${user?.updatedAt}`;
+  const formKey = `${user?.id}-${user?.displayName}-${user?.interests?.join(",")}`;
 
   return (
     <ProfileFormInner
