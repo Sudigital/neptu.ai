@@ -9,10 +9,10 @@ routes = [
 
 [triggers]
 # Cron triggers:
-# - Every 55 minutes (approx): Colosseum heartbeat
-#   Note: Standard cron can't do exact 55min. Using 0,55 pattern = 55/5 alternating gaps
+# - Every 33 minutes (approx): Colosseum heartbeat
+#   Note: Standard cron can't do exact 33min. Using 0,33 pattern = 33/5 alternating gaps
 # - Daily at midnight: Daily reading generation
-crons = ["0,55 * * * *", "0 0 * * *"]
+crons = ["0,33 * * * *", "0 0 * * *"]
 
 [vars]
 ENVIRONMENT = "development"

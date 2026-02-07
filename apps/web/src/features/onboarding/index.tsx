@@ -81,8 +81,13 @@ export function Onboarding() {
       displayName?: string;
       interests?: string[];
     }) => neptuApi.onboardUser(walletAddress, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user", walletAddress] });
+    onSuccess: async (response) => {
+      // Update the cache with the new user data immediately
+      queryClient.setQueryData(["user", walletAddress], response);
+      // Also invalidate to ensure fresh data on next fetch
+      await queryClient.invalidateQueries({
+        queryKey: ["user", walletAddress],
+      });
       toast.success(t("toast.onboardSuccess"));
       navigate({ to: "/dashboard" });
     },
@@ -141,6 +146,12 @@ export function Onboarding() {
 
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 pt-6">
+        <div className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+            <span className="text-sm font-bold">N</span>
+          </div>
+          <span className="font-semibold">Neptu</span>
+        </div>
         <Badge variant="outline" className="text-xs">
           {step} of {TOTAL_STEPS}
         </Badge>

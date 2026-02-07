@@ -37,7 +37,8 @@ export function AppearanceForm() {
   };
 
   const form = useForm<AppearanceFormValues>({
-    resolver: zodResolver(appearanceFormSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(appearanceFormSchema as any),
     defaultValues,
   });
 

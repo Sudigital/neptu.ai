@@ -43,6 +43,7 @@ apps/cli/
 
 # Web app (frontend)
 apps/web/.tanstack/
+apps/web/src/routeTree.gen.ts
 
 # Original Python prototype (IP reference)
 brainstorming/neptu/database.json

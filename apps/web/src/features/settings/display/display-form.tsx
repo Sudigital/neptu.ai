@@ -56,7 +56,8 @@ const defaultValues: Partial<DisplayFormValues> = {
 
 export function DisplayForm() {
   const form = useForm<DisplayFormValues>({
-    resolver: zodResolver(displayFormSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(displayFormSchema as any),
     defaultValues,
   });
 

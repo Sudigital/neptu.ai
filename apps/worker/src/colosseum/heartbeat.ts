@@ -93,7 +93,32 @@ export class HeartbeatScheduler {
       });
     }
 
-    // Task 3: Process birthday requests
+    // Task 3: Hot Topic Detection & Trend Posting (Priority - ride momentum)
+    try {
+      const trendPost = await this.forumAgent.considerTrendPost();
+      result.tasks.push({
+        name: "trend_detection",
+        success: true,
+        result: trendPost
+          ? {
+              posted: true,
+              postId: trendPost.id,
+              title: trendPost.title,
+            }
+          : {
+              posted: false,
+              reason: "No trending opportunity or recently posted",
+            },
+      });
+    } catch (error) {
+      result.tasks.push({
+        name: "trend_detection",
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+
+    // Task 4: Process birthday requests
     try {
       const processed = await this.forumAgent.processBirthdayRequests();
       result.tasks.push({
@@ -109,7 +134,69 @@ export class HeartbeatScheduler {
       });
     }
 
-    // Task 4: Engage with forum
+    // Task 5: Orchestrate strategic posting (fallback if no trend post)
+    try {
+      const orchestrated = await this.forumAgent.orchestratePosting();
+      result.tasks.push({
+        name: "orchestrate_posting",
+        success: true,
+        result: {
+          posted: orchestrated.posted !== null,
+          reason: orchestrated.reason,
+          nextAction: orchestrated.nextAction,
+        },
+      });
+    } catch (error) {
+      result.tasks.push({
+        name: "orchestrate_posting",
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+
+    // Task 5: Intelligent voting on forum posts
+    try {
+      const voteResult = await this.forumAgent.runIntelligentVoting();
+      result.tasks.push({
+        name: "intelligent_voting",
+        success: true,
+        result: {
+          voted: voteResult.voted,
+          skipped: voteResult.skipped,
+          reasons: voteResult.reasons,
+        },
+      });
+    } catch (error) {
+      result.tasks.push({
+        name: "intelligent_voting",
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+
+    // Task 6: Strategic project voting (builds relationships)
+    try {
+      const projectVoteResult =
+        await this.forumAgent.voteOnProjectsStrategically();
+      result.tasks.push({
+        name: "project_voting",
+        success: true,
+        result: {
+          voted: projectVoteResult.voted,
+          skipped: projectVoteResult.skipped,
+          votedProjects: projectVoteResult.votedProjects,
+          reasons: projectVoteResult.reasons,
+        },
+      });
+    } catch (error) {
+      result.tasks.push({
+        name: "project_voting",
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+
+    // Task 7: Engage with forum
     try {
       const engagement = await this.forumAgent.engageWithForum();
       result.tasks.push({
@@ -125,7 +212,7 @@ export class HeartbeatScheduler {
       });
     }
 
-    // Task 5: Respond to mentions/relevant discussions
+    // Task 8: Respond to mentions/relevant discussions
     try {
       const responses = await this.forumAgent.respondToMentions();
       result.tasks.push({
@@ -141,7 +228,7 @@ export class HeartbeatScheduler {
       });
     }
 
-    // Task 6: Post deadline promotion (once per day)
+    // Task 9: Post deadline promotion (once per day)
     try {
       const promoPost = await this.forumAgent.postDeadlinePromotion();
       result.tasks.push({
@@ -159,7 +246,7 @@ export class HeartbeatScheduler {
       });
     }
 
-    // Task 7: Comment on other agents' posts (max 5 per heartbeat)
+    // Task 10: Comment on other agents' posts (max 5 per heartbeat)
     try {
       const promoComments = await this.forumAgent.commentOnAgentPosts();
       result.tasks.push({
@@ -175,7 +262,7 @@ export class HeartbeatScheduler {
       });
     }
 
-    // Task 8: Check leaderboard position
+    // Task 11: Check leaderboard position
     try {
       const { leaderboard } = await this.client.getLeaderboard();
       const myProject = await this.client.getMyProject().catch(() => null);
@@ -209,12 +296,113 @@ export class HeartbeatScheduler {
       });
     }
 
+    // Task 12: Track analytics for optimization
+    try {
+      // Aggregate task results for analytics
+      const successTasks = result.tasks.filter((t) => t.success);
+      const failedTasks = result.tasks.filter((t) => !t.success);
+
+      // Track heartbeat run with aggregate stats
+      await this.forumAgent.trackEngagement("heartbeat", true, {
+        posts: this.countPosts(result.tasks),
+        comments: this.countComments(result.tasks),
+        forumVotes: this.countForumVotes(result.tasks),
+        projectVotes: this.countProjectVotes(result.tasks),
+        mentions: this.countMentions(result.tasks),
+        successfulTasks: successTasks.length,
+        failedTasks: failedTasks.length,
+      });
+
+      result.tasks.push({
+        name: "track_analytics",
+        success: true,
+        result: {
+          successfulTasks: successTasks.length,
+          failedTasks: failedTasks.length,
+        },
+      });
+    } catch (error) {
+      result.tasks.push({
+        name: "track_analytics",
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+
     // Store heartbeat result
     await this.cache.put("neptu:last_heartbeat", JSON.stringify(result), {
       expirationTtl: 86400,
     });
 
     return result;
+  }
+
+  // Helper methods for analytics counting
+  private countPosts(tasks: HeartbeatResult["tasks"]): number {
+    let count = 0;
+    for (const task of tasks) {
+      if (task.success && task.result && typeof task.result === "object") {
+        const r = task.result as Record<string, unknown>;
+        if (r.posted === true) count++;
+      }
+    }
+    return count;
+  }
+
+  private countComments(tasks: HeartbeatResult["tasks"]): number {
+    let count = 0;
+    for (const task of tasks) {
+      if (task.success && task.result && typeof task.result === "object") {
+        const r = task.result as Record<string, unknown>;
+        if (typeof r.commentsPosted === "number") count += r.commentsPosted;
+        if (typeof r.commented === "number") count += r.commented;
+        if (typeof r.processedCount === "number") count += r.processedCount;
+      }
+    }
+    return count;
+  }
+
+  private countForumVotes(tasks: HeartbeatResult["tasks"]): number {
+    let count = 0;
+    for (const task of tasks) {
+      if (
+        task.name === "intelligent_voting" &&
+        task.success &&
+        task.result &&
+        typeof task.result === "object"
+      ) {
+        const r = task.result as Record<string, unknown>;
+        if (typeof r.voted === "number") count += r.voted;
+      }
+    }
+    return count;
+  }
+
+  private countProjectVotes(tasks: HeartbeatResult["tasks"]): number {
+    let count = 0;
+    for (const task of tasks) {
+      if (
+        task.name === "project_voting" &&
+        task.success &&
+        task.result &&
+        typeof task.result === "object"
+      ) {
+        const r = task.result as Record<string, unknown>;
+        if (typeof r.voted === "number") count += r.voted;
+      }
+    }
+    return count;
+  }
+
+  private countMentions(tasks: HeartbeatResult["tasks"]): number {
+    let count = 0;
+    for (const task of tasks) {
+      if (task.success && task.result && typeof task.result === "object") {
+        const r = task.result as Record<string, unknown>;
+        if (typeof r.responsesCount === "number") count += r.responsesCount;
+      }
+    }
+    return count;
   }
 
   /**

@@ -68,9 +68,20 @@ Neptu brings the ancient Balinese Wuku calendar system to Web3. For over 1000 ye
 | **AI**         | Azure OpenAI (GPT-4o-mini)     |
 | **Blockchain** | Solana (SPL Token + PDAs)      |
 | **Backend**    | Cloudflare Workers + Hono      |
-| **Database**   | Turso (SQLite edge)            |
+| **Database**   | Cloudflare D1 (SQLite edge)    |
 | **Docs**       | VitePress                      |
-| **i18n**       | English + Indonesian           |
+| **i18n**       | 11 Languages                   |
+
+## Devnet Addresses
+
+::: tip Live on Solana Devnet
+Our smart contracts are deployed and ready for testing!
+:::
+
+| Program           | Address                                        | Explorer                                                                                                |
+| ----------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| **Token Program** | `7JDw4pncZg6g7ezhQSNxKhj3ptT62okgttDjLL4TwqHW` | [View](https://explorer.solana.com/address/7JDw4pncZg6g7ezhQSNxKhj3ptT62okgttDjLL4TwqHW?cluster=devnet) |
+| **Economy**       | `6Zxc4uCXKqWS6spnW7u9wA81PChgws6wbGAKJyi8PnvT` | [View](https://explorer.solana.com/address/6Zxc4uCXKqWS6spnW7u9wA81PChgws6wbGAKJyi8PnvT?cluster=devnet) |
 
 ## How It Works
 

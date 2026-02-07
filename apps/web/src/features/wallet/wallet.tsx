@@ -38,7 +38,7 @@ export function Wallet() {
   ];
 
   // Get user data - needed for Oracle sheet context
-  const { isLoading: userLoading } = useQuery({
+  useQuery({
     queryKey: ["user", walletAddress],
     queryFn: () => neptuApi.getOrCreateUser(walletAddress),
     enabled: !!walletAddress,
@@ -130,9 +130,6 @@ export function Wallet() {
     refetchRewards();
     refetchStreak();
   };
-
-  // Combined loading state for potential future use
-  const _isLoading = userLoading || balanceLoading;
 
   return (
     <>

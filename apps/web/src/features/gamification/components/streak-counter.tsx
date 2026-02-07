@@ -28,7 +28,7 @@ interface StreakCounterProps {
   className?: string;
 }
 
-const MILESTONE_VALUES = [
+const MILESTONE_VALUES: number[] = [
   STREAK_MILESTONES.WEEK,
   STREAK_MILESTONES.MONTH,
   STREAK_MILESTONES.CENTURY,

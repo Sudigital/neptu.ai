@@ -248,6 +248,13 @@ export function Dashboard() {
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
             {t("dashboard.title")}
           </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {isToday(selectedDate)
+              ? t("dashboard.subtitle.today")
+              : isPast(selectedDate)
+                ? t("dashboard.subtitle.past")
+                : t("dashboard.subtitle.future")}
+          </p>
         </div>
 
         {readingLoading ? (
@@ -399,9 +406,14 @@ export function Dashboard() {
                       <div className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-md sm:rounded-lg bg-sky-500/20">
                         <Moon className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-sky-600 dark:text-sky-400" />
                       </div>
-                      <span className="text-xs sm:text-sm font-semibold text-sky-700 dark:text-sky-300">
-                        {t("dashboard.peluang")}
-                      </span>
+                      <div className="flex flex-col">
+                        <span className="text-xs sm:text-sm font-semibold text-sky-700 dark:text-sky-300">
+                          {t("dashboard.peluang")}
+                        </span>
+                        <span className="text-[10px] sm:text-[11px] text-sky-600/70 dark:text-sky-400/70">
+                          {t("dashboard.peluang.subtitle")}
+                        </span>
+                      </div>
                     </div>
                     <span className="text-base sm:text-lg font-bold text-sky-600 dark:text-sky-400">
                       {reading.peluang?.total_urip || 0}
@@ -512,9 +524,14 @@ export function Dashboard() {
                       <div className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-md sm:rounded-lg bg-amber-500/20">
                         <Sun className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-amber-600 dark:text-amber-400" />
                       </div>
-                      <span className="text-xs sm:text-sm font-semibold text-amber-700 dark:text-amber-300">
-                        {t("dashboard.potensi")}
-                      </span>
+                      <div className="flex flex-col">
+                        <span className="text-xs sm:text-sm font-semibold text-amber-700 dark:text-amber-300">
+                          {t("dashboard.potensi")}
+                        </span>
+                        <span className="text-[10px] sm:text-[11px] text-amber-600/70 dark:text-amber-400/70">
+                          {t("dashboard.potensi.subtitle")}
+                        </span>
+                      </div>
                     </div>
                     <span className="text-base sm:text-lg font-bold text-amber-600 dark:text-amber-400">
                       {reading.potensi?.total_urip || 0}
