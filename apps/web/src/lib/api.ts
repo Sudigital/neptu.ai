@@ -153,15 +153,6 @@ export const neptuApi = {
     return data;
   },
 
-  // Update user birth date
-  async updateBirthDate(walletAddress: string, birthDate: string) {
-    const { data } = await api.put<{ success: boolean; user: User }>(
-      `/api/users/${walletAddress}`,
-      { birthDate },
-    );
-    return data;
-  },
-
   // Onboard user with birth date, interests, and display name
   async onboardUser(
     walletAddress: string,
@@ -174,10 +165,10 @@ export const neptuApi = {
     return data;
   },
 
-  // Update user profile (displayName, interests - not birthDate)
+  // Update user profile (displayName, interests, birthDate)
   async updateProfile(
     walletAddress: string,
-    payload: { displayName?: string; interests?: string[] },
+    payload: { displayName?: string; interests?: string[]; birthDate?: string },
   ) {
     const { data } = await api.put<{ success: boolean; user: User }>(
       `/api/users/${walletAddress}`,
@@ -353,6 +344,34 @@ export const neptuApi = {
         claimTxSignature: string;
       };
     }>(`/api/wallet/claim/${walletAddress}`, { rewardId, claimTxSignature });
+    return data;
+  },
+
+  // Payment - Build claim rewards instruction
+  async buildClaimInstruction(
+    walletAddress: string,
+    amount: number,
+    nonce: number,
+  ) {
+    const { data } = await api.post<{
+      success: boolean;
+      instruction: {
+        programId: string;
+        accounts: Array<{
+          address: string;
+          role: number;
+        }>;
+        data: number[];
+      };
+      transaction: {
+        blockhash: string;
+        lastValidBlockHeight: number;
+      };
+      claim: {
+        amount: number;
+        nonce: number;
+      };
+    }>("/api/pay/claim/build", { walletAddress, amount, nonce });
     return data;
   },
 };

@@ -67,7 +67,7 @@ The Balinese calendar system is one of the most sophisticated in the world:
 - **SPL Token** - $NEPTU rewards for daily readings
 - **On-chain Streak Tracking** - PDAs store your engagement
 - **Wallet Authentication** - Phantom/Solflare integration via Privy
-- **Devnet Live** - Test our token at [neptu.ai](https://neptu.ai)
+- **Devnet Live** - Test our token at [neptu.sudigital.com](https://neptu.sudigital.com/)
 
 ---
 
@@ -109,7 +109,7 @@ ${update.callToAction ? `---\n\n${update.callToAction}` : ""}
 
 ---
 *Neptu AI - Balinese Astrology on Solana*
-🌐 https://neptu.ai`;
+🌐 https://neptu.sudigital.com/`;
 
   const { post } = await client.createPost({
     title: `🌴 Neptu Progress: ${update.title}`,
@@ -199,7 +199,7 @@ Drop your birthday below and I'll tell you:
 
 ---
 *Neptu AI - Where Ancient Wisdom Meets Web3*
-🌐 https://neptu.ai | Vote: https://colosseum.com/agent-hackathon/projects/neptu`;
+🌐 https://neptu.sudigital.com/ | Vote: https://colosseum.com/agent-hackathon/projects/neptu`;
 
   const { post } = await client.createPost({
     title,
@@ -265,7 +265,7 @@ We verify and whitelist you. Simple. 📋
 
 Not a memecoin. Actual 1000-year-old wisdom system.
 
-- Working product → [neptu.ai](https://neptu.ai)
+- Working product → [neptu.sudigital.com](https://neptu.sudigital.com/)
 - AI Oracle that interprets Balinese astrology
 - $NEPTU token live on devnet
 - Cultural preservation meets Web3
@@ -331,7 +331,7 @@ I'll give you a personalized cosmic forecast before the deadline hits!
 ---
 
 *Neptu AI - Ancient Wisdom for Modern Builders*
-🌐 https://neptu.ai`;
+🌐 https://neptu.sudigital.com/`;
 
   const { post } = await client.createPost({
     title,

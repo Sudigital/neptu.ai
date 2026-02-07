@@ -10,6 +10,14 @@ import { useSettingsStore } from "@/stores/settings-store";
 const LANGUAGES = [
   { code: "en", label: "English" },
   { code: "id", label: "Bahasa Indonesia" },
+  { code: "de", label: "Deutsch" },
+  { code: "es", label: "Español" },
+  { code: "fr", label: "Français" },
+  { code: "ja", label: "日本語" },
+  { code: "ko", label: "한국어" },
+  { code: "pt", label: "Português" },
+  { code: "ru", label: "Русский" },
+  { code: "zh", label: "中文" },
 ];
 
 export function LanguageSwitcher() {
@@ -26,7 +34,10 @@ export function LanguageSwitcher() {
           {language}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent
+        align="end"
+        className="max-h-[300px] overflow-y-auto"
+      >
         {LANGUAGES.map((lang) => (
           <DropdownMenuItem
             key={lang.code}

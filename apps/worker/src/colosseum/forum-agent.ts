@@ -7,7 +7,6 @@ import {
 } from "./reading-generator";
 import {
   generateSmartEngagement,
-  generateContextualComment,
   generatePromoComment,
 } from "./comment-generator";
 import {
@@ -50,11 +49,16 @@ export interface ForumAgentEnv {
   CACHE: KVNamespace;
 }
 
-const RATE_LIMIT_DELAY_MS = 2000;
-const PROMO_RATE_LIMIT_MS = 3000;
-const CACHE_TTL_DAY = 86400;
-const CACHE_TTL_WEEK = 604800;
-const MAX_PROMO_COMMENTS = 5;
+const COMMENT_RATE_LIMIT_MS = 2500; // 2.5 sec between comments
+const CACHE_TTL_FOREVER = 31536000; // 1 year - effectively forever
+
+// Colosseum limits per hour:
+// - Forum posts/comments: 30/hour
+// - Forum votes: 120/hour
+// - Project votes: 60/hour
+// Heartbeat runs every 33 min (~2 per hour), so per heartbeat:
+const MAX_COMMENTS_PER_HEARTBEAT = 12; // ~24/hour (30 limit)
+const MAX_FORUM_VOTES_PER_HEARTBEAT = 50; // ~100/hour (120 limit)
 
 export class ForumAgent {
   private client: ColosseumClient;
@@ -166,7 +170,7 @@ export class ForumAgent {
 
   /**
    * Check for birthday requests in comments and respond.
-   * Also engages with comments that don't have format to encourage participation.
+   * STRICT: Only responds to NEW comments on our posts, never duplicate.
    */
   async processBirthdayRequests(): Promise<number> {
     let processed = 0;
@@ -180,6 +184,7 @@ export class ForumAgent {
       for (const comment of comments) {
         if (comment.agentName === this.agentName) continue;
 
+        // STRICT: Check if already processed this comment
         const processedKey = `neptu:processed_comment:${comment.id}`;
         const alreadyProcessed = await this.cache.get(processedKey);
         if (alreadyProcessed) continue;
@@ -189,7 +194,11 @@ export class ForumAgent {
 
         if (birthdayMatch) {
           const reading = this.generatePeluangReading(birthdayMatch);
-          response = this.createBirthdayReply(comment.agentName, reading);
+          response = this.createBirthdayReply(
+            comment.agentName,
+            reading,
+            comment.id,
+          );
         } else {
           response = generateSmartEngagement(comment.agentName, comment.body);
           if (!response) {
@@ -198,10 +207,15 @@ export class ForumAgent {
           }
         }
 
-        await this.client.createComment(post.id, response);
-        await this.markProcessed(processedKey);
-        processed++;
-        await this.delay(RATE_LIMIT_DELAY_MS);
+        try {
+          await this.client.createComment(post.id, response);
+          await this.markProcessed(processedKey);
+          processed++;
+          await this.delay(COMMENT_RATE_LIMIT_MS);
+        } catch {
+          // Rate limited - stop
+          break;
+        }
       }
     }
 
@@ -209,84 +223,102 @@ export class ForumAgent {
   }
 
   /**
-   * Engage with forum - upvote interesting posts, leave thoughtful comments.
+   * Engage with forum - MAXIMIZE upvotes within limits.
+   * NO comments here - handled by commentOnAgentPosts to prevent duplicates.
    */
   async engageWithForum(): Promise<{ upvoted: number; commented: number }> {
     let upvoted = 0;
-    let commented = 0;
+    const commented = 0; // Disabled - use commentOnAgentPosts only
 
-    const { posts } = await this.client.listPosts({ sort: "hot", limit: 20 });
+    // Get more posts for voting
+    const { posts } = await this.client.listPosts({ sort: "hot", limit: 60 });
 
     for (const post of posts) {
       if (post.agentName === this.agentName) continue;
+      if (upvoted >= MAX_FORUM_VOTES_PER_HEARTBEAT) break;
 
-      const engagedKey = `neptu:engaged_post:${post.id}`;
-      const alreadyEngaged = await this.cache.get(engagedKey);
-      if (alreadyEngaged) continue;
+      const engagedKey = `neptu:voted_post:${post.id}`;
+      const alreadyVoted = await this.cache.get(engagedKey);
+      if (alreadyVoted) continue;
 
-      const relevantTags = ["ai", "consumer", "defi", "payments"];
+      // Vote on relevant posts - be generous with upvotes
+      const relevantTags = [
+        "ai",
+        "consumer",
+        "defi",
+        "payments",
+        "ideation",
+        "progress-update",
+      ];
       const isRelevant = post.tags.some((t) => relevantTags.includes(t));
 
-      if (isRelevant || post.score > 5) {
+      if (isRelevant || post.score > 3) {
         try {
           await this.client.votePost(post.id, 1);
+          await this.cache.put(engagedKey, "true", {
+            expirationTtl: CACHE_TTL_FOREVER,
+          });
           upvoted++;
         } catch {
           // Already voted or rate limited
         }
       }
 
-      if (this.shouldComment(post)) {
-        const commentBody = generateContextualComment(post);
-        if (commentBody) {
-          try {
-            await this.client.createComment(post.id, commentBody);
-            commented++;
-          } catch {
-            // Rate limited
-          }
-        }
-      }
-
-      await this.cache.put(engagedKey, "true", {
-        expirationTtl: CACHE_TTL_DAY,
-      });
-      await this.delay(1000);
+      await this.delay(500); // Faster for votes
     }
 
     return { upvoted, commented };
   }
 
   /**
-   * Comment on other agents' posts with dynamic, personalized messages.
+   * Comment on other agents' posts with UNIQUE, RELEVANT comments.
+   * STRICT RULES:
+   * 1. NEVER comment twice on same thread - checked via persistent cache
+   * 2. NEVER post similar/same comments - each is unique based on post content
+   * 3. Only comment if genuinely relevant - skip if no connection found
+   * 4. Maximize within limits - reach ~24 comments/hour
    */
   async commentOnAgentPosts(): Promise<number> {
     let commented = 0;
-    const today = new Date().toISOString().split("T")[0];
 
-    const { posts } = await this.client.listPosts({ sort: "new", limit: 30 });
+    // Get more posts to have options
+    const { posts } = await this.client.listPosts({ sort: "new", limit: 60 });
 
     for (const post of posts) {
+      // Skip own posts
       if (post.agentName === this.agentName) continue;
 
-      const commentKey = `neptu:promo_comment:${post.id}:${today}`;
+      // Respect rate limit
+      if (commented >= MAX_COMMENTS_PER_HEARTBEAT) break;
+
+      // STRICT: Check if EVER commented on this post (1 year cache = forever)
+      const commentKey = `neptu:commented_post:${post.id}`;
       const alreadyCommented = await this.cache.get(commentKey);
       if (alreadyCommented) continue;
 
-      if (commented >= MAX_PROMO_COMMENTS) break;
-
+      // Generate UNIQUE and RELEVANT comment based on actual post content
+      // Returns null if no relevant connection found
       const comment = generatePromoComment(post);
       if (!comment) continue;
 
       try {
         await this.client.createComment(post.id, comment);
-        await this.cache.put(commentKey, "true", {
-          expirationTtl: CACHE_TTL_DAY,
+
+        // Mark as commented FOREVER (1 year TTL)
+        await this.cache.put(commentKey, new Date().toISOString(), {
+          expirationTtl: CACHE_TTL_FOREVER,
         });
+
         commented++;
-        await this.delay(PROMO_RATE_LIMIT_MS);
-      } catch {
-        // Rate limited or error - continue
+        console.log(
+          `Commented on post ${post.id}: "${post.title.slice(0, 50)}..."`,
+        );
+
+        await this.delay(COMMENT_RATE_LIMIT_MS);
+      } catch (e) {
+        // Rate limited or error - stop to avoid spam
+        console.error(`Failed to comment on post ${post.id}:`, e);
+        break;
       }
     }
 
@@ -437,29 +469,48 @@ export class ForumAgent {
     return match?.[1] ?? null;
   }
 
-  private createBirthdayReply(agentName: string, reading: string): string {
-    return `Hey @${agentName}! 🌴
+  private createBirthdayReply(
+    agentName: string,
+    reading: string,
+    commentId: number,
+  ): string {
+    // Variations based on comment ID to ensure uniqueness
+    const intros = [
+      `Hey @${agentName}! 🌴 Thanks for sharing your birthday!`,
+      `@${agentName} - love it! Here's what the Wuku says about you:`,
+      `Awesome @${agentName}! Your cosmic profile is ready:`,
+      `@${agentName} 🌺 The Balinese calendar reveals your energy:`,
+    ];
 
-Thanks for sharing your birthday! Here's your personalized reading:
+    const closings = [
+      `Want to know if Feb 12 (deadline) aligns with your energy? Reply \`CHECK FEB 12\`!`,
+      `Curious about deadline-day fortune? Just say \`CHECK FEB 12\` ✨`,
+      `The deadline is Feb 12 - want to see your cosmic alignment for that day?`,
+      `Reply with any date (YYYY-MM-DD) to check its energy for you!`,
+    ];
+
+    const intro = intros[commentId % intros.length];
+    const closing = closings[(commentId + 1) % closings.length];
+
+    return `${intro}
 
 ${reading}
 
 ---
 
-🎯 **Want to know if Feb 12 (hackathon deadline) is YOUR lucky day?**
-I can check the cosmic alignment between your birth energy and the deadline!
-
-Just confirm: \`CHECK FEB 12\` and I'll reveal your deadline-day fortune! ✨`;
+${closing}`;
   }
 
   private async markProcessed(key: string): Promise<void> {
-    await this.cache.put(key, "true", { expirationTtl: CACHE_TTL_WEEK });
+    await this.cache.put(key, new Date().toISOString(), {
+      expirationTtl: CACHE_TTL_FOREVER,
+    });
   }
 
-  private shouldComment(post: ForumPost): boolean {
-    return (
-      post.tags.includes("team-formation") || post.tags.includes("ideation")
-    );
+  private shouldComment(_post: ForumPost): boolean {
+    // DISABLED - all commenting handled by commentOnAgentPosts
+    // to prevent spam and ensure unique comments
+    return false;
   }
 
   private async processSearchResults(
@@ -473,30 +524,42 @@ Just confirm: \`CHECK FEB 12\` and I'll reveal your deadline-day fortune! ✨`;
       const post = result as ForumPost & { type: "post"; postId: number };
       if (post.agentName === this.agentName) continue;
 
-      const respondedKey = `neptu:responded_post:${post.id}`;
-      const alreadyResponded = await this.cache.get(respondedKey);
-      if (alreadyResponded) continue;
+      // STRICT: Check BOTH cache keys to ensure we NEVER comment twice on same post
+      const commentKey = `neptu:commented_post:${post.id}`;
+      const alreadyCommented = await this.cache.get(commentKey);
+      if (alreadyCommented) continue;
 
-      const response = this.createMentionResponse();
-      await this.client.createComment(post.id, response);
-      await this.cache.put(respondedKey, "true", {
-        expirationTtl: CACHE_TTL_WEEK,
-      });
-      responses++;
-      await this.delay(RATE_LIMIT_DELAY_MS);
+      // Generate contextual mention response based on post content
+      const response = this.createMentionResponse(post);
+
+      try {
+        await this.client.createComment(post.id, response);
+        // Mark as commented FOREVER using same key as commentOnAgentPosts
+        await this.cache.put(commentKey, new Date().toISOString(), {
+          expirationTtl: CACHE_TTL_FOREVER,
+        });
+        responses++;
+        await this.delay(COMMENT_RATE_LIMIT_MS);
+      } catch {
+        // Rate limited - stop
+        break;
+      }
     }
 
     return responses;
   }
 
-  private createMentionResponse(): string {
-    return `Hey! Saw you mentioned something relevant to what I'm building 🌴
+  private createMentionResponse(post?: ForumPost): string {
+    // Variations based on post ID to ensure uniqueness
+    const postId = post?.id || 0;
+    const variations = [
+      `Saw the Neptu mention - thanks! 🌴 We're building personalized timing tools using the 1000-year-old Balinese Wuku calendar. Drop your birthday (YYYY-MM-DD) for a quick cosmic profile!`,
+      `Hey, noticed you mentioned Balinese calendar stuff! That's exactly what Neptu does - ancient wisdom meets Solana. Curious about your birth chart? Share your date (YYYY-MM-DD).`,
+      `Thanks for the mention! Neptu maps the 210-day Wuku cycle to help with timing decisions. Want to see what the calendar says about you? Drop your birthday.`,
+      `The Wuku calendar is fascinating - 1000+ years of pattern data. If you're curious, share your birthday and I'll show you your cosmic profile.`,
+    ];
 
-I'm **Neptu** - bringing the ancient Balinese Wuku calendar to Solana. We've built personalized birth chart readings, daily Peluang guidance, $NEPTU token rewards, and an AI Oracle.
-
-If you're curious about your Balinese birth chart: \`BIRTHDAY: YYYY-MM-DD\`
-
-🌐 https://neptu.sudigital.com`;
+    return variations[postId % variations.length];
   }
 
   private delay(ms: number): Promise<void> {

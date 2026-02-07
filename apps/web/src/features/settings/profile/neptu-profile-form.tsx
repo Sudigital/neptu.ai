@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { format, parseISO } from "date-fns";
-import { Loader2, Calendar } from "lucide-react";
+import { format, parseISO, subYears } from "date-fns";
+import { Loader2, Calendar, Lock, AlertCircle } from "lucide-react";
 import { USER_INTERESTS, type UserInterest } from "@neptu/shared";
 import { useUser } from "@/hooks/use-user";
 import { useTranslate } from "@/hooks/use-translate";
@@ -10,7 +10,15 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const INTEREST_EMOJIS: Record<UserInterest, string> = {
   career: "💼",
@@ -26,13 +34,28 @@ const INTEREST_EMOJIS: Record<UserInterest, string> = {
 };
 
 export function NeptuProfileForm() {
-  const { user, walletAddress, isLoading } = useUser();
+  const { user, walletAddress, hasWallet, isError, refetch } = useUser();
   const t = useTranslate();
 
-  if (isLoading) {
+  // No wallet connected
+  if (!hasWallet || !walletAddress) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex flex-col items-center justify-center py-12 text-center">
+        <p className="text-muted-foreground">
+          Please connect your wallet to view profile settings.
+        </p>
+      </div>
+    );
+  }
+
+  // Error loading user data
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 text-center gap-4">
+        <p className="text-muted-foreground">Failed to load profile data.</p>
+        <Button variant="outline" onClick={() => refetch()}>
+          Try Again
+        </Button>
       </div>
     );
   }
@@ -61,25 +84,68 @@ function ProfileFormInner({ user, walletAddress, t }: ProfileFormInnerProps) {
 
   const [displayName, setDisplayName] = useState(user?.displayName || "");
   const [interests, setInterests] = useState<string[]>(user?.interests || []);
+  const [birthDate, setBirthDate] = useState<Date | undefined>(
+    user?.birthDate ? parseISO(user.birthDate) : undefined,
+  );
+
+  const hasBirthDate = !!user?.birthDate;
+  const maxDate = subYears(new Date(), 13);
+  const minDate = subYears(new Date(), 100);
 
   const updateProfile = useMutation({
-    mutationFn: (data: { displayName?: string; interests?: string[] }) =>
-      neptuApi.updateProfile(walletAddress, data),
+    mutationFn: async (data: {
+      displayName?: string;
+      interests?: string[];
+      birthDate?: string;
+    }) => {
+      return neptuApi.updateProfile(walletAddress, data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user", walletAddress] });
       toast.success(t("toast.profileUpdated"));
     },
-    onError: () => {
-      toast.error(t("toast.profileError"));
+    onError: (
+      error: Error & {
+        response?: { data?: { error?: string }; status?: number };
+      },
+    ) => {
+      const message = error.response?.data?.error || t("toast.profileError");
+      toast.error(message);
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updateProfile.mutate({
-      displayName: displayName || undefined,
-      interests: interests.length > 0 ? interests : undefined,
-    });
+
+    // Require birth date if not already set
+    if (!hasBirthDate && !birthDate) {
+      toast.error(t("toast.birthDateRequired"));
+      return;
+    }
+
+    // Build update payload - only include fields with values
+    const payload: {
+      displayName?: string;
+      interests?: string[];
+      birthDate?: string;
+    } = {};
+
+    // Only include displayName if not empty
+    if (displayName && displayName.trim()) {
+      payload.displayName = displayName.trim();
+    }
+
+    // Only include interests if array has items
+    if (interests && interests.length > 0) {
+      payload.interests = interests;
+    }
+
+    // Add birthDate only if not already set
+    if (!hasBirthDate && birthDate) {
+      payload.birthDate = format(birthDate, "yyyy-MM-dd");
+    }
+
+    updateProfile.mutate(payload);
   };
 
   const toggleInterest = (interest: string) => {
@@ -92,22 +158,64 @@ function ProfileFormInner({ user, walletAddress, t }: ProfileFormInnerProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      {/* Birth Date - Read Only */}
+      {/* Birth Date */}
       <div className="space-y-2">
         <Label className="text-sm font-medium">{t("settings.birthDate")}</Label>
-        <div className="flex items-center gap-2 rounded-md border bg-muted/50 px-3 py-2 text-sm">
-          <Calendar className="h-4 w-4 text-muted-foreground" />
-          {user?.birthDate ? (
-            <span>{format(parseISO(user.birthDate), "MMMM d, yyyy")}</span>
-          ) : (
-            <span className="text-muted-foreground">
-              {t("settings.birthDate.notSet")}
-            </span>
-          )}
-        </div>
-        <p className="text-xs text-muted-foreground">
-          {t("settings.birthDate.desc")}
-        </p>
+
+        {hasBirthDate ? (
+          <>
+            {/* Birth date is set - show as disabled */}
+            <div className="flex items-center gap-2 rounded-md border bg-muted/50 px-3 py-2 text-sm">
+              <Lock className="h-4 w-4 text-muted-foreground" />
+              <span>{format(parseISO(user.birthDate!), "MMMM d, yyyy")}</span>
+            </div>
+            <Alert variant="default" className="mt-2">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription className="text-xs">
+                {t("settings.birthDate.locked")}
+              </AlertDescription>
+            </Alert>
+          </>
+        ) : (
+          <>
+            {/* Birth date not set - show date picker */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !birthDate && "text-muted-foreground",
+                  )}
+                >
+                  <Calendar className="mr-2 h-4 w-4" />
+                  {birthDate
+                    ? format(birthDate, "MMMM d, yyyy")
+                    : t("settings.birthDate.select")}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <CalendarComponent
+                  mode="single"
+                  selected={birthDate}
+                  onSelect={setBirthDate}
+                  defaultMonth={birthDate || subYears(new Date(), 25)}
+                  fromDate={minDate}
+                  toDate={maxDate}
+                  captionLayout="dropdown"
+                  fromYear={minDate.getFullYear()}
+                  toYear={maxDate.getFullYear()}
+                />
+              </PopoverContent>
+            </Popover>
+            <Alert className="mt-2 border-lime-500/50 bg-lime-500/10 [&>svg]:text-lime-600 dark:[&>svg]:text-lime-400">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription className="text-xs text-lime-700 dark:text-lime-300">
+                {t("settings.birthDate.warning")}
+              </AlertDescription>
+            </Alert>
+          </>
+        )}
       </div>
 
       {/* Display Name */}

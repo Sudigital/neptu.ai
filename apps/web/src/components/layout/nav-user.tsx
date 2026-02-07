@@ -25,13 +25,13 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useWallet } from "@/hooks/use-wallet";
+import { useUser } from "@/hooks/use-user";
 import { useTranslate } from "@/hooks/use-translate";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
   const { user, logout } = usePrivy();
-  const { walletAddress, hasWallet } = useWallet();
+  const { walletAddress, hasWallet } = useUser();
   const t = useTranslate();
 
   const shortAddress = walletAddress

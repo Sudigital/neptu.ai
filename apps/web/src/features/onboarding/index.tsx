@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
@@ -33,8 +33,9 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { useWallet } from "@/hooks/use-wallet";
 import { useTranslate } from "@/hooks/use-translate";
+import { useUser } from "@/hooks/use-user";
+import { Logo } from "@/assets/logo";
 
 const INTEREST_CONFIG: Record<UserInterest, { label: string; emoji: string }> =
   {
@@ -61,11 +62,18 @@ type OnboardingFormValues = z.infer<typeof onboardingSchema>;
 const TOTAL_STEPS = 3;
 
 export function Onboarding() {
-  const { walletAddress, hasWallet } = useWallet();
+  const { walletAddress, hasWallet, isOnboarded, isLoading } = useUser();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const t = useTranslate();
   const [step, setStep] = useState(1);
+
+  // If already onboarded -> redirect to dashboard
+  useEffect(() => {
+    if (isOnboarded) {
+      navigate({ to: "/dashboard" });
+    }
+  }, [isOnboarded, navigate]);
 
   const form = useForm<OnboardingFormValues>({
     resolver: zodResolver(onboardingSchema),
@@ -124,15 +132,34 @@ export function Onboarding() {
   const selectedInterests = form.watch("interests") || [];
   const progress = (step / TOTAL_STEPS) * 100;
 
+  // No wallet - show loading
   if (!hasWallet) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
         <div className="text-center">
-          <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
+          <Logo className="mx-auto h-16 w-16 animate-spin text-primary" />
           <p className="mt-4 text-muted-foreground">
             {t("onboarding.connecting")}
           </p>
         </div>
+      </div>
+    );
+  }
+
+  // Loading user data
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <Logo className="mx-auto h-16 w-16 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // If already onboarded, show loading while redirecting
+  if (isOnboarded) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <Logo className="mx-auto h-16 w-16 animate-spin text-primary" />
       </div>
     );
   }
@@ -147,9 +174,7 @@ export function Onboarding() {
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 pt-6">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <span className="text-sm font-bold">N</span>
-          </div>
+          <Logo className="h-8 w-8" />
           <span className="font-semibold">Neptu</span>
         </div>
         <Badge variant="outline" className="text-xs">

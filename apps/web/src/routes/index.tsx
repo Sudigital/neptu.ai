@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { usePrivy } from "@privy-io/react-auth";
 import { Button } from "@/components/ui/button";
@@ -10,13 +10,29 @@ import {
   Bot,
   ArrowRight,
   TrendingUp,
+  MessageSquare,
+  ThumbsUp,
+  FileText,
+  AtSign,
+  ExternalLink,
+  Trophy,
 } from "lucide-react";
-import { useWallet } from "@/hooks/use-wallet";
+import { useUser } from "@/hooks/use-user";
 import { useTranslate } from "@/hooks/use-translate";
 import { useSettingsStore } from "@/stores/settings-store";
 import { Logo } from "@/assets/logo";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { useAgentStats } from "@/hooks/use-agent-stats";
+import { ProfileDropdown } from "@/components/profile-dropdown";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
@@ -24,14 +40,29 @@ export const Route = createFileRoute("/")({
 
 function LandingPage() {
   const { login, logout, authenticated, ready, connectWallet } = usePrivy();
-  const { hasWallet, ready: walletReady } = useWallet();
+  const { hasWallet, ready: walletReady } = useUser();
   const navigate = useNavigate();
   const t = useTranslate();
   const { language } = useSettingsStore();
+  const { stats: agentStats } = useAgentStats();
+  const [showStatsDialog, setShowStatsDialog] = useState(false);
 
-  // Redirect to dashboard if authenticated AND has wallet
+  // Track if user was already authenticated when page loaded
+  const wasAuthenticatedOnMount = useRef<boolean | null>(null);
+
+  // Only redirect if user just logged in (not if already authenticated on page load)
   useEffect(() => {
-    if (ready && walletReady && authenticated && hasWallet) {
+    if (!ready || !walletReady) return;
+
+    // Store initial auth state on first ready
+    if (wasAuthenticatedOnMount.current === null) {
+      wasAuthenticatedOnMount.current = authenticated && hasWallet;
+      return;
+    }
+
+    // Redirect only if user just completed login/wallet connection
+    // Always go to dashboard - dashboard will check onboarding status
+    if (authenticated && hasWallet && !wasAuthenticatedOnMount.current) {
       navigate({ to: "/dashboard" });
     }
   }, [ready, walletReady, authenticated, hasWallet, navigate]);
@@ -131,27 +162,37 @@ function LandingPage() {
               >
                 {t("nav.docs")}
               </a>
-              <a
-                href="#vote"
-                className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+              <button
+                onClick={() => setShowStatsDialog(true)}
+                className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
               >
-                {t("nav.vote")} 🗳️
-              </a>
+                <Bot className="h-4 w-4" />
+                {t("nav.agent")}
+                {agentStats && (
+                  <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-semibold">
+                    {agentStats.project.totalVotes}
+                  </span>
+                )}
+              </button>
             </nav>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-4">
             <LanguageSwitcher />
             <ThemeSwitch />
-            <Button
-              onClick={login}
-              size="sm"
-              className="bg-[#7C3AED] hover:bg-[#7C3AED]/90 text-white text-xs sm:text-sm px-2.5 sm:px-4"
-            >
-              <Wallet className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">
-                {t("landing.connectWallet")}
-              </span>
-            </Button>
+            {authenticated && hasWallet ? (
+              <ProfileDropdown />
+            ) : (
+              <Button
+                onClick={authenticated ? connectWallet : login}
+                size="sm"
+                className="bg-[#7C3AED] hover:bg-[#7C3AED]/90 text-white text-xs sm:text-sm px-2.5 sm:px-4"
+              >
+                <Wallet className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">
+                  {t("landing.connectWallet")}
+                </span>
+              </Button>
+            )}
           </div>
         </div>
       </motion.header>
@@ -385,6 +426,153 @@ function LandingPage() {
           </p>
         </div>
       </footer>
+
+      {/* Agent Stats Dialog */}
+      <Dialog open={showStatsDialog} onOpenChange={setShowStatsDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Bot className="h-5 w-5 text-primary" />
+              {t("agent.stats.title")}
+            </DialogTitle>
+            <DialogDescription>{t("agent.stats.desc")}</DialogDescription>
+          </DialogHeader>
+
+          {agentStats ? (
+            <div className="space-y-4">
+              {/* Agent Info */}
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                  <Bot className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="font-semibold">
+                    {agentStats.agent.displayName}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    @{agentStats.agent.xUsername}
+                  </p>
+                </div>
+                {agentStats.agent.rank > 0 && (
+                  <div className="ml-auto flex items-center gap-1 text-amber-500">
+                    <Trophy className="h-4 w-4" />
+                    <span className="text-sm font-semibold">
+                      #{agentStats.agent.rank}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 gap-3">
+                <Card>
+                  <CardContent className="p-3 flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30">
+                      <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div>
+                      <p className="text-xl font-bold">
+                        {agentStats.stats.posts}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {t("agent.stats.posts")}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardContent className="p-3 flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/30">
+                      <MessageSquare className="h-4 w-4 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div>
+                      <p className="text-xl font-bold">
+                        {agentStats.stats.comments}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {t("agent.stats.comments")}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardContent className="p-3 flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-100 dark:bg-purple-900/30">
+                      <ThumbsUp className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                    </div>
+                    <div>
+                      <p className="text-xl font-bold">
+                        {agentStats.stats.votesGiven}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {t("agent.stats.votesGiven")}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardContent className="p-3 flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-100 dark:bg-orange-900/30">
+                      <AtSign className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                    </div>
+                    <div>
+                      <p className="text-xl font-bold">
+                        {agentStats.stats.mentions}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {t("agent.stats.mentions")}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Project Votes */}
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                    {t("agent.stats.projectVotes")}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-primary">
+                          {agentStats.project.totalVotes}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {t("agent.stats.total")}
+                        </p>
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        <p>👤 {agentStats.project.humanVotes} human</p>
+                        <p>🤖 {agentStats.project.agentVotes} agent</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* View Project Button */}
+              <Button
+                className="w-full"
+                onClick={() => window.open(agentStats.projectUrl, "_blank")}
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                {t("agent.stats.viewProject")}
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center py-8">
+              <Logo className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

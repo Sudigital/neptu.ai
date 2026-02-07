@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Wallet as WalletIcon, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
@@ -23,11 +23,14 @@ import {
   StreakCounter,
   UnclaimedRewards,
 } from "@/features/gamification/components";
-import { useWallet } from "@/hooks/use-wallet";
+import { useUser } from "@/hooks/use-user";
 import { useTranslate } from "@/hooks/use-translate";
 
+// Nonce counter for claim transactions (in a real app, this would come from the backend)
+let claimNonce = 0;
+
 export function Wallet() {
-  const { walletAddress } = useWallet();
+  const { walletAddress, wallet } = useUser();
   const queryClient = useQueryClient();
   const [isClaimingRewards, setIsClaimingRewards] = useState(false);
   const t = useTranslate();
@@ -106,24 +109,78 @@ export function Wallet() {
     },
   });
 
-  const handleClaimRewards = async () => {
-    if (!rewardsData?.rewards?.length) return;
+  const handleClaimRewards = useCallback(async () => {
+    if (!rewardsData?.rewards?.length || !walletAddress) return;
+
+    // Check if wallet is connected
+    if (!wallet) {
+      toast.error(t("wallet.walletRequired"), {
+        description: t("wallet.connectWalletToClaim"),
+      });
+      return;
+    }
 
     setIsClaimingRewards(true);
+    const loadingToast = toast.loading(t("wallet.claimingRewards"));
+
     try {
-      // For now, we need to build and sign a claim transaction
-      // This would typically involve:
-      // 1. Call /api/pay/claim/build to get transaction
-      // 2. Sign with wallet
-      // 3. Submit and verify
-      // For the hackathon demo, show a message about the flow
-      toast.info(t("wallet.claimRewards"), {
-        description: t("wallet.claimRewardsDesc"),
+      const totalAmount = rewardsData.totalPending;
+      const currentNonce = claimNonce++;
+
+      // Step 1: Build the claim instruction from API
+      const buildResult = await neptuApi.buildClaimInstruction(
+        walletAddress,
+        totalAmount,
+        currentNonce,
+      );
+
+      if (!buildResult.success) {
+        throw new Error("Failed to build claim instruction");
+      }
+
+      // Step 2: For hackathon demo, we simulate the on-chain transaction
+      // In production, this would:
+      // - Build transaction from instruction data
+      // - Sign with wallet.signAndSendTransaction()
+      // - Wait for confirmation
+
+      // Simulate transaction delay
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      // Step 3: Mark rewards as claimed in the database
+      // Process each reward individually
+      const claimPromises = rewardsData.rewards.map((reward) =>
+        neptuApi.claimReward(walletAddress, reward.id, `demo-tx-${Date.now()}`),
+      );
+
+      await Promise.all(claimPromises);
+
+      // Step 4: Refresh data and show success
+      toast.dismiss(loadingToast);
+      toast.success(t("wallet.claimSuccess"), {
+        description: t("wallet.claimSuccessDesc").replace(
+          "{amount}",
+          totalAmount.toFixed(2),
+        ),
+      });
+
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({
+        queryKey: ["pendingRewards", walletAddress],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["tokenBalance", walletAddress],
+      });
+    } catch (error) {
+      toast.dismiss(loadingToast);
+      toast.error(t("wallet.claimFailed"), {
+        description:
+          error instanceof Error ? error.message : t("wallet.claimFailedDesc"),
       });
     } finally {
       setIsClaimingRewards(false);
     }
-  };
+  }, [rewardsData, walletAddress, wallet, queryClient, t]);
 
   const handleRefreshBalance = () => {
     refetchBalance();

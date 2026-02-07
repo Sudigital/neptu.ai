@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { usePrivy } from "@privy-io/react-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -12,14 +12,16 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Wallet } from "lucide-react";
-import { useWallet } from "@/hooks/use-wallet";
+import { Wallet, LayoutDashboard } from "lucide-react";
+import { useUser } from "@/hooks/use-user";
 
 export function ProfileDropdown() {
   const { logout } = usePrivy();
-  const { walletAddress } = useWallet();
+  const { walletAddress } = useUser();
+  const { pathname } = useLocation();
 
   const network = import.meta.env.VITE_SOLANA_NETWORK || "devnet";
+  const isOnDashboard = pathname.startsWith("/dashboard");
 
   const shortAddress = walletAddress
     ? `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`
@@ -60,6 +62,15 @@ export function ProfileDropdown() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
+          {!isOnDashboard && (
+            <DropdownMenuItem asChild>
+              <Link to="/dashboard">
+                <LayoutDashboard className="mr-2 h-4 w-4" />
+                Dashboard
+                <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
+              </Link>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem asChild>
             <Link to="/settings">
               Profile

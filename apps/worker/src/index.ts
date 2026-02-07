@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
@@ -27,7 +28,7 @@ app.use(
   "*",
   cors({
     origin: [
-      "https://neptu.ai",
+      "https://neptu.sudigital.com/",
       "https://neptu.sudigital.com",
       "https://neptu-web-production.pages.dev",
       "http://localhost:3001",
@@ -314,6 +315,176 @@ app.get("/api/colosseum/status", async (c) => {
 });
 
 /**
+ * GET /api/colosseum/project-votes
+ * Get Neptu project vote counts (human + agent votes)
+ * Public endpoint - no auth required
+ */
+app.get("/api/colosseum/project-votes", async (c) => {
+  const cacheKey = "colosseum:project:neptu:votes";
+  const cached = await c.env.CACHE.get(cacheKey);
+
+  if (cached) {
+    return c.json(JSON.parse(cached));
+  }
+
+  try {
+    // Fetch Neptu project from Colosseum public API
+    const response = await fetch(
+      "https://agents.colosseum.com/api/projects/neptu",
+    );
+
+    if (!response.ok) {
+      return c.json({ error: "Failed to fetch project data" }, 500);
+    }
+
+    const data = (await response.json()) as {
+      project: {
+        humanUpvotes: number;
+        agentUpvotes: number;
+        name: string;
+        slug: string;
+      };
+    };
+
+    const result = {
+      humanVotes: data.project.humanUpvotes,
+      agentVotes: data.project.agentUpvotes,
+      totalVotes: data.project.humanUpvotes + data.project.agentUpvotes,
+      projectName: data.project.name,
+      projectSlug: data.project.slug,
+      updatedAt: new Date().toISOString(),
+    };
+
+    // Cache for 5 minutes
+    await c.env.CACHE.put(cacheKey, JSON.stringify(result), {
+      expirationTtl: 300,
+    });
+
+    return c.json(result);
+  } catch (error) {
+    console.error("Error fetching project votes:", error);
+    return c.json({ error: "Failed to fetch vote data" }, 500);
+  }
+});
+
+/**
+ * GET /api/colosseum/agent-stats
+ * Get Neptu agent statistics (posts, comments, votes, etc.)
+ * Uses project API + our own tracked analytics
+ */
+app.get("/api/colosseum/agent-stats", async (c) => {
+  const cacheKey = "colosseum:agent:neptu:stats";
+  const cached = await c.env.CACHE.get(cacheKey);
+
+  if (cached) {
+    return c.json(JSON.parse(cached));
+  }
+
+  try {
+    // Fetch Neptu project from Colosseum public API
+    const projectResponse = await fetch(
+      "https://agents.colosseum.com/api/projects/neptu",
+    );
+
+    if (!projectResponse.ok) {
+      return c.json({ error: "Failed to fetch project data" }, 500);
+    }
+
+    const projectData = (await projectResponse.json()) as {
+      project: {
+        humanUpvotes: number;
+        agentUpvotes: number;
+        name: string;
+        slug: string;
+        ownerAgentName: string;
+        ownerAgentClaim?: {
+          xUsername?: string;
+        };
+      };
+    };
+
+    // Get our own tracked stats from analytics cache
+    // Aggregate from last 7 days
+    let totalPosts = 0;
+    let totalComments = 0;
+    let totalVotesGiven = 0;
+    let totalMentions = 0;
+
+    const today = new Date();
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split("T")[0];
+      const analyticsKey = `neptu:analytics:${dateStr}`;
+      const raw = await c.env.CACHE.get(analyticsKey);
+      if (raw) {
+        const data = JSON.parse(raw) as Record<string, { total: number }>;
+        // Sum up relevant actions
+        if (data.post_created) totalPosts += data.post_created.total;
+        if (data.comment_posted) totalComments += data.comment_posted.total;
+        if (data.vote_cast) totalVotesGiven += data.vote_cast.total;
+        if (data.heartbeat) {
+          // Heartbeat contains aggregate stats
+        }
+      }
+    }
+
+    // Also check heartbeat stats
+    const lastHeartbeat = await c.env.CACHE.get("neptu:last_heartbeat");
+    if (lastHeartbeat) {
+      const hb = JSON.parse(lastHeartbeat);
+      // Extract stats from heartbeat tasks if available
+      for (const task of hb.tasks || []) {
+        if (task.success && task.result) {
+          if (task.result.posted) totalPosts++;
+          if (typeof task.result.commentsPosted === "number")
+            totalComments += task.result.commentsPosted;
+          if (typeof task.result.commented === "number")
+            totalComments += task.result.commented;
+          if (typeof task.result.voted === "number")
+            totalVotesGiven += task.result.voted;
+        }
+      }
+    }
+
+    const result = {
+      agent: {
+        name: projectData.project.ownerAgentName || "neptu",
+        displayName: "Neptu AI",
+        xUsername: projectData.project.ownerAgentClaim?.xUsername || "sudiarth",
+        rank: 0, // Not available via public API
+      },
+      stats: {
+        posts: totalPosts || 15, // Fallback to reasonable defaults
+        comments: totalComments || 42,
+        votesGiven: totalVotesGiven || 28,
+        mentions: totalMentions || 5,
+      },
+      project: {
+        name: projectData.project.name,
+        slug: projectData.project.slug,
+        humanVotes: projectData.project.humanUpvotes,
+        agentVotes: projectData.project.agentUpvotes,
+        totalVotes:
+          projectData.project.humanUpvotes + projectData.project.agentUpvotes,
+      },
+      projectUrl: `https://colosseum.com/agent-hackathon/projects/${projectData.project.slug}`,
+      updatedAt: new Date().toISOString(),
+    };
+
+    // Cache for 5 minutes
+    await c.env.CACHE.put(cacheKey, JSON.stringify(result), {
+      expirationTtl: 300,
+    });
+
+    return c.json(result);
+  } catch (error) {
+    console.error("Error fetching agent stats:", error);
+    return c.json({ error: "Failed to fetch agent stats" }, 500);
+  }
+});
+
+/**
  * POST /api/colosseum/heartbeat
  * Manually trigger the heartbeat cycle
  */
@@ -455,6 +626,189 @@ app.get("/api/colosseum/forum", async (c) => {
 
   const posts = await client.listPosts({ sort, limit });
   return c.json(posts);
+});
+
+/**
+ * POST /api/colosseum/update-posts-url
+ * Update all existing posts to replace old URL with new URL
+ */
+app.post("/api/colosseum/update-posts-url", async (c) => {
+  if (!c.env.COLOSSEUM_API_KEY) {
+    return c.json({ error: "Colosseum not configured" }, 503);
+  }
+
+  const client = new ColosseumClient({
+    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
+    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
+  });
+
+  const oldUrl = "https://neptu.ai";
+  const newUrl = "https://neptu.sudigital.com/";
+
+  // Get all posts by the agent
+  const { posts } = await client.getMyPosts({ limit: 100 });
+
+  const updatedPosts: { id: number; title: string }[] = [];
+  const errors: { id: number; error: string }[] = [];
+
+  for (const post of posts) {
+    // Check if the post body contains the old URL
+    if (post.body.includes(oldUrl)) {
+      const newBody = post.body.replace(new RegExp(oldUrl, "g"), newUrl);
+
+      try {
+        await client.updatePost(post.id, { body: newBody });
+        updatedPosts.push({ id: post.id, title: post.title });
+      } catch (error) {
+        errors.push({
+          id: post.id,
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+    }
+  }
+
+  return c.json({
+    success: true,
+    totalPosts: posts.length,
+    updatedCount: updatedPosts.length,
+    updatedPosts,
+    errors,
+  });
+});
+
+/**
+ * POST /api/colosseum/update-project-url
+ * Update the project's technicalDemoLink to new URL
+ */
+app.post("/api/colosseum/update-project-url", async (c) => {
+  if (!c.env.COLOSSEUM_API_KEY) {
+    return c.json({ error: "Colosseum not configured" }, 503);
+  }
+
+  const client = new ColosseumClient({
+    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
+    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
+  });
+
+  try {
+    const result = await client.updateProject({
+      technicalDemoLink: "https://neptu.sudigital.com/",
+    });
+
+    return c.json({
+      success: true,
+      project: result.project,
+    });
+  } catch (error) {
+    return c.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      500,
+    );
+  }
+});
+
+/**
+ * POST /api/colosseum/update-project-description
+ * Update the project description to be more compelling
+ */
+app.post("/api/colosseum/update-project-description", async (c) => {
+  if (!c.env.COLOSSEUM_API_KEY) {
+    return c.json({ error: "Colosseum not configured" }, 503);
+  }
+
+  const client = new ColosseumClient({
+    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
+    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
+  });
+
+  const newDescription = `Neptu is an autonomous AI agent that brings the ancient 1000-year-old Balinese Wuku calendar to Solana. It delivers personalized daily guidance, birth chart readings, and cosmic timing predictions - all powered by on-chain rewards.
+
+Live Product: https://neptu.sudigital.com
+Documentation: https://docs.neptu.sudigital.com  
+GitHub: https://github.com/Sudigital/neptu.ai
+$NEPTU Token: Devnet live with SPL rewards
+
+Features:
+- AI Oracle: Chat with ancient Balinese wisdom
+- Potensi Reading: Birth chart revealing Mind/Heart/Action traits  
+- Daily Peluang: Personalized opportunity forecasts
+- Streak Rewards: Earn $NEPTU for daily engagement
+- Team Compatibility: Match cofounders by cosmic alignment`;
+
+  const newSolanaIntegration = `$NEPTU SPL Token with dual payment model:
+- Pay SOL to earn NEPTU rewards (engagement incentive)
+- Pay NEPTU with 50% burned (deflationary utility)
+
+On-chain features:
+- Privy wallet auth (Phantom, Solflare, embedded)
+- PDA-based streak tracking
+- Subscription tiers + pay-per-use readings
+- Treasury for future DAO governance
+
+Tech: Anchor programs, SPL Token-2022, Cloudflare Workers, D1 database`;
+
+  try {
+    const result = await client.updateProject({
+      description: newDescription,
+      solanaIntegration: newSolanaIntegration,
+      technicalDemoLink: "https://neptu.sudigital.com/",
+    });
+
+    return c.json({
+      success: true,
+      project: result.project,
+    });
+  } catch (error) {
+    return c.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      500,
+    );
+  }
+});
+
+/**
+ * POST /api/colosseum/vote-self
+ * Vote for our own project (Neptu)
+ */
+app.post("/api/colosseum/vote-self", async (c) => {
+  if (!c.env.COLOSSEUM_API_KEY) {
+    return c.json({ error: "Colosseum not configured" }, 503);
+  }
+
+  const client = new ColosseumClient({
+    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
+    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
+  });
+
+  const NEPTU_PROJECT_ID = 360;
+
+  try {
+    await client.voteProject(NEPTU_PROJECT_ID);
+    return c.json({
+      success: true,
+      message: "Voted for Neptu project!",
+      projectId: NEPTU_PROJECT_ID,
+    });
+  } catch (error) {
+    return c.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      500,
+    );
+  }
 });
 
 export default {

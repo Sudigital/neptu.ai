@@ -40,12 +40,13 @@ import { ProfileDropdown } from "@/components/profile-dropdown";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { OracleSheet } from "@/features/oracle";
 import { neptuApi } from "@/lib/api";
-import { useWallet } from "@/hooks/use-wallet";
+import { useUser } from "@/hooks/use-user";
 import { useTranslate } from "@/hooks/use-translate";
 import { useSettingsStore } from "@/stores/settings-store";
+import { Logo } from "@/assets/logo";
 
 export function Dashboard() {
-  const { walletAddress, hasWallet } = useWallet();
+  const { walletAddress, hasWallet, hasBirthDate, user } = useUser();
   const { language } = useSettingsStore();
   const t = useTranslate();
   const queryClient = useQueryClient();
@@ -74,23 +75,6 @@ export function Dashboard() {
     },
   ];
 
-  // Get or create user
-  const { data: userData, isLoading: userLoading } = useQuery({
-    queryKey: ["user", walletAddress],
-    queryFn: () => neptuApi.getOrCreateUser(walletAddress),
-    enabled: !!walletAddress,
-  });
-
-  // Redirect to onboarding if user hasn't onboarded or has no birth date
-  useEffect(() => {
-    if (
-      userData?.user &&
-      (!userData.user.onboarded || !userData.user.birthDate)
-    ) {
-      navigate({ to: "/onboarding" });
-    }
-  }, [userData, navigate]);
-
   // Format selected date for API
   const targetDateStr = format(selectedDate, "yyyy-MM-dd");
 
@@ -101,8 +85,8 @@ export function Dashboard() {
     error: readingError,
   } = useQuery({
     queryKey: ["reading", walletAddress, targetDateStr],
-    queryFn: () => neptuApi.getReading(walletAddress, targetDateStr),
-    enabled: !!walletAddress && !!userData?.user?.birthDate,
+    queryFn: () => neptuApi.getReading(walletAddress!, targetDateStr),
+    enabled: !!walletAddress && !!user?.birthDate,
     retry: false,
   });
 
@@ -116,22 +100,38 @@ export function Dashboard() {
       "ai-interpretation",
       walletAddress,
       targetDateStr,
-      userData?.user?.birthDate,
+      user?.birthDate,
       language,
     ],
     queryFn: () =>
       neptuApi.getDateInterpretation(
-        userData?.user?.birthDate || "",
+        user?.birthDate || "",
         targetDateStr,
         language,
       ),
     enabled:
-      !!userData?.user?.birthDate &&
+      !!user?.birthDate &&
       !!readingData?.reading &&
       !!import.meta.env.VITE_WORKER_URL,
     retry: false,
     staleTime: 1000 * 60 * 30, // Cache for 30 minutes
   });
+
+  // If no birthday, redirect to settings
+  useEffect(() => {
+    if (hasWallet && !hasBirthDate) {
+      navigate({ to: "/settings" });
+    }
+  }, [hasWallet, hasBirthDate, navigate]);
+
+  // Redirecting to settings
+  if (hasWallet && !hasBirthDate) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <Logo className="h-16 w-16 text-primary animate-spin" />
+      </div>
+    );
+  }
 
   // Date navigation helpers
   const goToPreviousDay = () => setSelectedDate((d) => subDays(d, 1));
@@ -159,28 +159,6 @@ export function Dashboard() {
   const readingSummary = getReadingSummary();
 
   const reading = readingData?.reading;
-
-  // Show loading while checking onboarding status
-  if (userLoading) {
-    return (
-      <>
-        <Header>
-          <TopNav links={topNav} />
-          <div className="ms-auto flex items-center space-x-4">
-            <OracleSheet />
-            <ThemeSwitch />
-            <ConfigDrawer />
-            <ProfileDropdown />
-          </div>
-        </Header>
-        <Main>
-          <div className="flex h-[50vh] items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
-        </Main>
-      </>
-    );
-  }
 
   if (!hasWallet) {
     return (
@@ -640,15 +618,7 @@ export function Dashboard() {
             {/* Right Side - AI Interpretation */}
             <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-3 sm:gap-4">
               <Tabs defaultValue="general" className="w-full">
-                <ScrollableTabs
-                  interests={
-                    userData?.user?.interests &&
-                    userData.user.interests.length > 0
-                      ? userData.user.interests
-                      : ["career", "finance", "love", "health"]
-                  }
-                  t={t}
-                />
+                <ScrollableTabs interests={user?.interests || []} t={t} />
 
                 {/* General Tab */}
                 <TabsContent value="general" className="mt-0">
@@ -716,7 +686,7 @@ export function Dashboard() {
                           <Button
                             className="mt-4 bg-gradient-to-r from-violet-600 to-purple-600"
                             onClick={() => refetchAI()}
-                            disabled={!userData?.user?.birthDate}
+                            disabled={!user?.birthDate}
                           >
                             <Sparkles className="mr-2 h-4 w-4" />
                             {t("dashboard.getInterpretation")}
@@ -727,21 +697,23 @@ export function Dashboard() {
                   </Card>
                 </TabsContent>
 
-                {/* Interest Tabs - Dynamic based on user profile */}
-                {(userData?.user?.interests &&
-                userData.user.interests.length > 0
-                  ? userData.user.interests
-                  : ["career", "finance", "love", "health"]
-                ).map((interest: string) => (
-                  <TabsContent key={interest} value={interest} className="mt-0">
-                    <InterestOracle
-                      interest={interest}
-                      birthDate={userData?.user?.birthDate || ""}
-                      targetDate={targetDateStr}
-                      language={language}
-                    />
-                  </TabsContent>
-                ))}
+                {/* Interest Tabs - Only show if user has selected interests */}
+                {user?.interests &&
+                  user.interests.length > 0 &&
+                  user.interests.map((interest: string) => (
+                    <TabsContent
+                      key={interest}
+                      value={interest}
+                      className="mt-0"
+                    >
+                      <InterestOracle
+                        interest={interest}
+                        birthDate={user?.birthDate || ""}
+                        targetDate={targetDateStr}
+                        language={language}
+                      />
+                    </TabsContent>
+                  ))}
               </Tabs>
             </div>
           </section>

@@ -52,6 +52,6 @@
   },
   "dependencies": {
     "@privy-io/react-auth": "^3.13.1",
-    "wrangler": "^4.63.0"
+    "wrangler": "4"
   }
 }

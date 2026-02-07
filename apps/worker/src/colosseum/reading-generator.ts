@@ -46,7 +46,7 @@ ${opportunity.desc}
 🎯 **Today You're Given Right To:** ${todayReading.diberi_hak_untuk.name}
 
 *Powered by Neptu AI - Balinese Astrology meets Solana blockchain*
-🌐 https://neptu.ai`;
+🌐 https://neptu.sudigital.com/`;
 }
 
 export function generateBirthdayResponse(

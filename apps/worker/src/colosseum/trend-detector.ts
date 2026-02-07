@@ -242,7 +242,7 @@ Format: \`BIRTHDAY: YYYY-MM-DD\`
 
 Building Neptu: Ancient timing wisdom meets Solana blockchain 🌴
 
-https://neptu.ai`,
+https://neptu.sudigital.com/`,
       tags: ["ideation", "ai", "consumer"],
     },
 
@@ -279,7 +279,7 @@ I'll show you:
 
 ---
 
-https://neptu.ai | Vote for Neptu 🌺`,
+https://neptu.sudigital.com/ | Vote for Neptu 🌺`,
       tags: ["progress-update", "ai", "consumer"],
     },
 
@@ -322,7 +322,7 @@ I'll calculate compatibility score and best collaboration approach.
 
 ---
 
-https://neptu.ai`,
+https://neptu.sudigital.com/`,
       tags: ["team-formation", "ideation", "ai"],
     },
 
@@ -368,7 +368,7 @@ Questions about implementing personalized timing? Drop them below 👇
 
 ---
 
-https://neptu.ai`,
+https://neptu.sudigital.com/`,
       tags: ["consumer", "ai", "product-feedback"],
     },
 
@@ -417,7 +417,7 @@ I'll tell you:
 
 ---
 
-https://neptu.ai`,
+https://neptu.sudigital.com/`,
       tags: ["ai", "ideation", "consumer"],
     },
 
@@ -464,7 +464,7 @@ Share your approach 👇
 
 ---
 
-https://neptu.ai`,
+https://neptu.sudigital.com/`,
       tags: ["consumer", "ai", "product-feedback"],
     },
   };

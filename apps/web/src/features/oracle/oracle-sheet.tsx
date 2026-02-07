@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, Fragment } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Bot, Send, Loader2, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -15,7 +15,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { neptuApi } from "@/lib/api";
-import { useWallet } from "@/hooks/use-wallet";
+import { useUser } from "@/hooks/use-user";
 import { useTranslate } from "@/hooks/use-translate";
 import { useSettingsStore } from "@/stores/settings-store";
 
@@ -31,7 +31,7 @@ interface OracleSheetProps {
 }
 
 export function OracleSheet({ children }: OracleSheetProps) {
-  const { walletAddress } = useWallet();
+  const { user } = useUser();
   const { language } = useSettingsStore();
   const t = useTranslate();
   const [open, setOpen] = useState(false);
@@ -39,15 +39,8 @@ export function OracleSheet({ children }: OracleSheetProps) {
   const [messages, setMessages] = useState<OracleMessage[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Get user data for birth date and interests
-  const { data: userData } = useQuery({
-    queryKey: ["user", walletAddress],
-    queryFn: () => neptuApi.getOrCreateUser(walletAddress),
-    enabled: !!walletAddress,
-  });
-
-  const birthDate = userData?.user?.birthDate;
-  const interests = userData?.user?.interests || [];
+  const birthDate = user?.birthDate;
+  const interests = user?.interests || [];
 
   // Handle sheet open change - reset messages with welcome
   const handleOpenChange = (newOpen: boolean) => {
