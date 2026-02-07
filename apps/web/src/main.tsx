@@ -105,6 +105,48 @@ const solanaConnectors = toSolanaWalletConnectors({
   shouldAutoConnect: true,
 });
 
+const privyConfig = {
+  appearance: {
+    theme: "dark" as const,
+    accentColor: "#22c55e",
+    logo: "/neptu-logo.svg",
+    landingHeader: "Connect to Neptu",
+    showWalletLoginFirst: true,
+    // Only show Solana wallets
+    walletChainType: "solana-only" as const,
+  },
+  // Allow email and wallet login
+  loginMethods: ["email", "wallet"] as const,
+  // Solana embedded wallet for users without wallets
+  embeddedWallets: {
+    solana: {
+      createOnLogin: "users-without-wallets" as const,
+    },
+    // Disable Ethereum embedded wallet
+    ethereum: {
+      createOnLogin: "off" as const,
+    },
+  },
+  externalWallets: {
+    solana: {
+      connectors: solanaConnectors,
+    },
+  },
+  // Disable WalletConnect (shows EVM wallets)
+  walletConnectCloudProjectId: undefined,
+  solanaClusters: [
+    {
+      name: "devnet",
+      rpcUrl:
+        import.meta.env.VITE_SOLANA_RPC_URL || "https://api.devnet.solana.com",
+    },
+  ],
+  // Keep session alive for 30 days
+  session: {
+    maxAge: 60 * 60 * 24 * 30, // 30 days in seconds
+  },
+};
+
 // Render the app
 const rootElement = document.getElementById("root")!;
 if (!rootElement.innerHTML) {
@@ -113,41 +155,8 @@ if (!rootElement.innerHTML) {
     <StrictMode>
       <PrivyProvider
         appId={import.meta.env.VITE_PRIVY_APP_ID || ""}
-        config={{
-          appearance: {
-            theme: "dark",
-            accentColor: "#22c55e",
-            logo: "/neptu-logo.svg",
-            landingHeader: "Connect to Neptu",
-            showWalletLoginFirst: true,
-          },
-          // Only allow wallet login for Solana
-          loginMethods: ["wallet"],
-          // Solana embedded wallet for users without wallets
-          embeddedWallets: {
-            solana: {
-              createOnLogin: "users-without-wallets",
-            },
-          },
-          externalWallets: {
-            solana: {
-              connectors: solanaConnectors,
-            },
-          },
-          // @ts-expect-error solanaClusters is supported but may not be in types
-          solanaClusters: [
-            {
-              name: "devnet",
-              rpcUrl:
-                import.meta.env.VITE_SOLANA_RPC_URL ||
-                "https://api.devnet.solana.com",
-            },
-          ],
-          // Keep session alive for 30 days
-          session: {
-            maxAge: 60 * 60 * 24 * 30, // 30 days in seconds
-          },
-        }}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        config={privyConfig as any}
       >
         <QueryClientProvider client={queryClient}>
           <ThemeProvider>

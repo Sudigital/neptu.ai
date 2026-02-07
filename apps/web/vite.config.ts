@@ -36,4 +36,19 @@ export default defineConfig({
   optimizeDeps: {
     include: ["@solana-program/memo", "@privy-io/react-auth"],
   },
+  build: {
+    chunkSizeWarningLimit: 2500, // Suppress warning for large chunks (Privy, Solana libs)
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // Suppress annotation warnings from Privy library
+        if (
+          warning.code === "INVALID_ANNOTATION" &&
+          warning.message.includes("@privy-io")
+        ) {
+          return;
+        }
+        warn(warning);
+      },
+    },
+  },
 });

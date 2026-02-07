@@ -35,3 +35,29 @@ database_id = "7567d7ff-6845-4dad-bfdf-8b65cd4a2645"
 binding = "CACHE"
 id = "89c3d0b14d734b5e8577e878d1b6203c"
 preview_id = "b4a8eea275004dc283b8db47c176caf5"
+
+# Production environment
+[env.production]
+routes = [
+  { pattern = "worker.neptu.sudigital.com", custom_domain = true }
+]
+
+[env.production.triggers]
+crons = ["0,33 * * * *", "0 0 * * *"]
+
+[env.production.vars]
+ENVIRONMENT = "production"
+AZURE_OPENAI_ENDPOINT = "https://super-su.cognitiveservices.azure.com/"
+AZURE_OPENAI_DEPLOYMENT = "gpt-4o-mini"
+AZURE_OPENAI_API_VERSION = "2024-04-01-preview"
+COLOSSEUM_AGENT_ID = "206"
+COLOSSEUM_AGENT_NAME = "neptu"
+
+[[env.production.d1_databases]]
+binding = "neptu_dev"
+database_name = "neptu-prod"
+database_id = "accef3f0-658b-4765-b623-5f1768dce42c"
+
+[[env.production.kv_namespaces]]
+binding = "CACHE"
+id = "89c3d0b14d734b5e8577e878d1b6203c"

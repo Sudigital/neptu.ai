@@ -26,7 +26,12 @@ app.use("*", logger());
 app.use(
   "*",
   cors({
-    origin: ["https://neptu.ai", "http://localhost:3001"],
+    origin: [
+      "https://neptu.ai",
+      "https://neptu.sudigital.com",
+      "https://neptu-web-production.pages.dev",
+      "http://localhost:3001",
+    ],
     allowMethods: ["GET", "POST", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
   }),
