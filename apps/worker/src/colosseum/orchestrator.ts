@@ -14,16 +14,20 @@ import {
   postCryptoCosmicReport,
   postTopCosmicPicks,
 } from "./post-creator";
+import { postIndividualCoinAnalysis } from "./crypto-posts";
+import {
+  postMarketMoverAlert,
+  postMarketSentimentReport,
+} from "./crypto-posts-market";
 import { getCryptoWithMarketData } from "./crypto-market-fetcher";
 
 // Timeline constants
 const HACKATHON_START = "2026-02-01";
 const HACKATHON_DEADLINE = "2026-02-12";
-const MIN_HOURS_BETWEEN_POSTS = 8;
+const MIN_HOURS_BETWEEN_POSTS = 1; // Aggressive: post frequently
+const MAX_POSTS_PER_HEARTBEAT = 1; // 1 per 5min run × 12 runs/hour ≈ 12 attempts (dedup keeps unique)
 const DAYS_INTRO_WINDOW = 3;
-const DAYS_VOTER_REWARDS_WINDOW = 7;
 const DAYS_PREDICTIONS_START = 7;
-const DAYS_PREDICTIONS_END = 10;
 const DAYS_FINAL_PUSH = 3;
 
 const CACHE_TTL_DAY = 86400;
@@ -96,134 +100,200 @@ async function _orchestratePostingInternal(
   daysSinceStart: number,
   daysUntilDeadline: number,
 ): Promise<OrchestrateResult> {
-  // Check last post time
-  const hoursSinceLastPost = await getHoursSinceLastPost(cache);
+  const posts: ForumPost[] = [];
+  const reasons: string[] = [];
+  const today = now.toISOString().split("T")[0];
+  const hour = now.getUTCHours();
+  const hourKey = `${today}:${hour}`;
 
-  // Don't spam - minimum 8 hours between posts
-  if (hoursSinceLastPost < MIN_HOURS_BETWEEN_POSTS) {
-    return {
-      posted: null,
-      reason: `Too soon since last post (${hoursSinceLastPost.toFixed(1)}h ago)`,
-      nextAction: `Wait ${(MIN_HOURS_BETWEEN_POSTS - hoursSinceLastPost).toFixed(1)}h`,
-    };
-  }
+  // Helper to attempt a post with dedup
+  async function tryPost(
+    cacheKey: string,
+    postFn: () => Promise<ForumPost>,
+    reason: string,
+  ): Promise<boolean> {
+    if (posts.length >= MAX_POSTS_PER_HEARTBEAT) return false;
+    const alreadyDone = await cache.get(cacheKey);
+    if (alreadyDone) return false;
 
-  let post: ForumPost | null = null;
-  let reason = "";
-
-  // Week 1 (Days 1-3): Introduction
-  if (daysSinceStart <= DAYS_INTRO_WINDOW) {
-    const hasIntro = await cache.get("neptu:intro_post_id");
-    if (!hasIntro) {
-      post = await postIntroduction(client, agentName, cache);
-      reason = "Initial introduction post";
+    try {
+      await cache.put(cacheKey, "pending", { expirationTtl: CACHE_TTL_DAY });
+      const post = await postFn();
+      await cache.put(cacheKey, post.id.toString(), {
+        expirationTtl: CACHE_TTL_DAY,
+      });
+      posts.push(post);
+      reasons.push(reason);
+      console.log(
+        `Orchestrator posted: ${reason} (${posts.length}/${MAX_POSTS_PER_HEARTBEAT})`,
+      );
+      await delay(2000); // Brief delay between posts
+      return true;
+    } catch (err) {
+      await cache.delete(cacheKey);
+      console.error(`Failed to post ${reason}:`, err);
+      return false;
     }
   }
 
-  // Week 1 (Days 3-7): Voter rewards
-  if (
-    !post &&
-    daysSinceStart > DAYS_INTRO_WINDOW &&
-    daysSinceStart <= DAYS_VOTER_REWARDS_WINDOW
-  ) {
-    const hasVoterRewards = await cache.get("neptu:voter_rewards_post_id");
-    if (!hasVoterRewards) {
-      post = await postVoterRewards(client, cache);
-      reason = "Voter rewards promotion";
-    }
+  // 1. Introduction (one-time)
+  await tryPost(
+    "neptu:intro_post_id",
+    () => postIntroduction(client, agentName, cache),
+    "Introduction post",
+  );
+
+  // 2. Voter rewards (one-time)
+  if (daysSinceStart > DAYS_INTRO_WINDOW) {
+    await tryPost(
+      "neptu:voter_rewards_post_id",
+      () => postVoterRewards(client, cache),
+      "Voter rewards promotion",
+    );
   }
 
-  // Week 2 (Days 7-10): Engagement and predictions
-  if (
-    !post &&
-    daysSinceStart > DAYS_PREDICTIONS_START &&
-    daysSinceStart <= DAYS_PREDICTIONS_END
-  ) {
-    const hasPredictions = await cache.get("neptu:predictions_post_id");
-    if (!hasPredictions) {
-      post = await postPeluangPredictions(client, calculator, cache);
-      reason = "Cosmic predictions for engagement";
-    }
+  // 3. Predictions (one-time)
+  if (daysSinceStart > DAYS_PREDICTIONS_START) {
+    await tryPost(
+      "neptu:predictions_post_id",
+      () => postPeluangPredictions(client, calculator, cache),
+      "Cosmic predictions",
+    );
   }
 
-  // Final push (Days 9-12): Deadline promotion
-  if (!post && daysUntilDeadline <= DAYS_FINAL_PUSH && daysUntilDeadline > 0) {
-    const today = now.toISOString().split("T")[0];
-    const promoKey = `neptu:deadline_promo:${today}`;
-    const hasPromo = await cache.get(promoKey);
-
-    if (!hasPromo) {
-      // Set cache BEFORE posting to prevent duplicates from concurrent triggers
-      await cache.put(promoKey, "pending", { expirationTtl: CACHE_TTL_DAY });
-      try {
-        post = await postDeadlinePromotion(client, calculator);
-        await cache.put(promoKey, post.id.toString(), {
-          expirationTtl: CACHE_TTL_DAY,
-        });
-        reason = "Final deadline push";
-      } catch (err) {
-        // Remove the pending lock if posting fails
-        await cache.delete(promoKey);
-        console.error("Failed to post deadline promotion:", err);
-      }
-    }
+  // 4. Deadline promotion (daily during final push)
+  if (daysUntilDeadline <= DAYS_FINAL_PUSH && daysUntilDeadline > 0) {
+    await tryPost(
+      `neptu:deadline_promo:${today}`,
+      () => postDeadlinePromotion(client, calculator),
+      "Deadline promotion",
+    );
   }
 
-  // Daily Crypto Cosmic Report (can post every day)
-  if (!post) {
-    const today = now.toISOString().split("T")[0];
-    const cryptoReportKey = `neptu:crypto_report:${today}`;
-    const hasCryptoReport = await cache.get(cryptoReportKey);
+  // 5. Daily Crypto Cosmic Report
+  await tryPost(
+    `neptu:crypto_report:${today}`,
+    () => postCryptoCosmicReport(client, calculator, cache),
+    "Daily crypto cosmic report",
+  );
 
-    if (!hasCryptoReport) {
-      post = await postCryptoCosmicReport(client, calculator, cache);
-      reason = "Daily crypto cosmic report";
-    }
+  // 6. Top Cosmic Picks
+  if (db) {
+    await tryPost(
+      `neptu:top_picks:${today}`,
+      async () => {
+        const cryptos = await getCryptoWithMarketData(db);
+        return postTopCosmicPicks(client, calculator, cryptos, cache);
+      },
+      "Top cosmic picks",
+    );
   }
 
-  // Alternate with Top Cosmic Picks (post every other day when no main report)
-  if (!post && db) {
-    const today = now.toISOString().split("T")[0];
-    const topPicksKey = `neptu:top_picks:${today}`;
-    const hasTopPicks = await cache.get(topPicksKey);
-    const dayOfMonth = now.getDate();
+  // 7-9: Market posts requiring crypto data
+  if (db && posts.length < MAX_POSTS_PER_HEARTBEAT) {
+    try {
+      const cryptos = await getCryptoWithMarketData(db);
 
-    // Post top picks on odd days
-    if (!hasTopPicks && dayOfMonth % 2 === 1) {
-      try {
-        const cryptosWithMarket = await getCryptoWithMarketData(db);
-        post = await postTopCosmicPicks(
-          client,
-          calculator,
-          cryptosWithMarket,
-          cache,
+      // 7. Market Sentiment Report (hourly, unique per hour)
+      await tryPost(
+        `neptu:sentiment:${hourKey}`,
+        () => postMarketSentimentReport(client, calculator, cryptos, cache),
+        "Market sentiment report",
+      );
+
+      // 8. Market Mover Alert (hourly, pick biggest mover)
+      if (cryptos.length > 0) {
+        // Find coin with largest absolute price change
+        const mover = cryptos.reduce((best, c) =>
+          Math.abs(c.priceChangePercentage24h ?? 0) >
+          Math.abs(best.priceChangePercentage24h ?? 0)
+            ? c
+            : best,
         );
-        reason = "Top cosmic picks for today";
-      } catch (err) {
-        console.error("Failed to post top picks:", err);
+        await tryPost(
+          `neptu:mover_alert:${hourKey}`,
+          () => postMarketMoverAlert(client, calculator, mover, cache),
+          "Market mover alert",
+        );
       }
+
+      // 9. Individual coin analyses (rotate through coins each hour)
+      const startIdx = hour % cryptos.length;
+      for (
+        let i = 0;
+        i < cryptos.length && posts.length < MAX_POSTS_PER_HEARTBEAT;
+        i++
+      ) {
+        const coin = cryptos[(startIdx + i) % cryptos.length];
+        await tryPost(
+          `neptu:coin_analysis:${coin.symbol}:${today}`,
+          () => postIndividualCoinAnalysis(client, calculator, coin, cache),
+          `${coin.symbol} cosmic analysis`,
+        );
+      }
+    } catch (err) {
+      console.error("Failed to fetch cryptos for market posts:", err);
     }
   }
 
-  // Track last post time if we posted
-  if (post) {
+  // 10. Progress update (every 6 hours)
+  const lastProgress = await cache.get("neptu:last_progress_update");
+  const hoursSinceProgress = lastProgress
+    ? (Date.now() - new Date(lastProgress).getTime()) / 3600000
+    : 999;
+  if (hoursSinceProgress > 6 && posts.length < MAX_POSTS_PER_HEARTBEAT) {
+    await tryPost(
+      `neptu:progress:${hourKey}`,
+      async () => {
+        const post = await postProgressUpdate(client, {
+          title:
+            "Neptu Progress Update — Building the Bridge Between Ancient Wisdom and Web3",
+          achievements: [
+            "Live product at https://neptu.sudigital.com",
+            "Crypto cosmic alignment engine analyzing top coins",
+            "Daily Peluang readings powered by 1000-year-old Balinese Wuku calendar",
+            "$NEPTU SPL token with deflationary burn mechanics",
+          ],
+          nextSteps: [
+            "Enhance AI Oracle interpretations",
+            "Expand P2P trading features",
+            "More cosmic cycle insights",
+          ],
+          callToAction:
+            "🎁 Want a free personalized reading? Reply with: `BIRTHDAY: YYYY-MM-DD`\n\n🗳️ Vote for Neptu: https://colosseum.com/agent-hackathon/projects/neptu",
+        });
+        await cache.put("neptu:last_progress_update", new Date().toISOString());
+        return post;
+      },
+      "Progress update",
+    );
+  }
+
+  // Track last post time
+  if (posts.length > 0) {
     await cache.put("neptu:last_post_time", now.getTime().toString(), {
       expirationTtl: CACHE_TTL_DAY,
     });
   }
 
-  // Determine next action suggestion
-  const nextAction = getNextActionSuggestion(
+  const nextAction = await getNextActionSuggestion(
     daysSinceStart,
     daysUntilDeadline,
     cache,
   );
 
   return {
-    posted: post,
-    reason: post ? reason : "No strategic post needed at this time",
-    nextAction: await nextAction,
+    posted: posts[0] || null,
+    reason:
+      posts.length > 0
+        ? `Posted ${posts.length} posts: ${reasons.join(", ")}`
+        : "All post types already posted for this period",
+    nextAction,
   };
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**

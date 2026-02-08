@@ -54,16 +54,16 @@ export interface ForumAgentEnv {
   CACHE: KVNamespace;
 }
 
-const COMMENT_RATE_LIMIT_MS = 2500; // 2.5 sec between comments
+const COMMENT_RATE_LIMIT_MS = 2000; // 2 sec between comments
 const CACHE_TTL_FOREVER = 31536000; // 1 year - effectively forever
 
 // Colosseum limits per hour:
 // - Forum posts/comments: 30/hour
 // - Forum votes: 120/hour
 // - Project votes: 60/hour
-// Heartbeat runs every 33 min (~2 per hour), so per heartbeat:
-const MAX_COMMENTS_PER_HEARTBEAT = 12; // ~24/hour (30 limit)
-const MAX_FORUM_VOTES_PER_HEARTBEAT = 50; // ~100/hour (120 limit)
+// Heartbeat runs every 5 min (12 runs/hour), small batches spread activity:
+const MAX_COMMENTS_PER_HEARTBEAT = 2; // 2 per 5min × 12 = 24 comments/hour
+const MAX_FORUM_VOTES_PER_HEARTBEAT = 10; // 10 per 5min × 12 = 120 votes/hour
 
 export class ForumAgent {
   private client: ColosseumClient;
@@ -261,30 +261,18 @@ export class ForumAgent {
       const alreadyVoted = await this.cache.get(engagedKey);
       if (alreadyVoted) continue;
 
-      // Vote on relevant posts - be generous with upvotes
-      const relevantTags = [
-        "ai",
-        "consumer",
-        "defi",
-        "payments",
-        "ideation",
-        "progress-update",
-      ];
-      const isRelevant = post.tags.some((t) => relevantTags.includes(t));
-
-      if (isRelevant || post.score > 3) {
-        try {
-          await this.client.votePost(post.id, 1);
-          await this.cache.put(engagedKey, "true", {
-            expirationTtl: CACHE_TTL_FOREVER,
-          });
-          upvoted++;
-        } catch {
-          // Already voted or rate limited
-        }
+      // Vote on ALL posts aggressively to maximize engagement
+      try {
+        await this.client.votePost(post.id, 1);
+        await this.cache.put(engagedKey, "true", {
+          expirationTtl: CACHE_TTL_FOREVER,
+        });
+        upvoted++;
+      } catch {
+        // Already voted or rate limited
       }
 
-      await this.delay(500); // Faster for votes
+      await this.delay(400); // Fast for votes
     }
 
     return { upvoted, commented };

@@ -162,7 +162,7 @@ export default {
       return;
     }
 
-    // Heartbeat cron ("0,33 * * * *")
+    // Heartbeat cron ("*/5 * * * *") - every 5 min, small batches
     const currentMinute = new Date().getMinutes();
     if (currentMinute <= 5) {
       ctx.waitUntil(refreshCryptoMarketData(env));

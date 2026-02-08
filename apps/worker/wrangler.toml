@@ -8,11 +8,10 @@ routes = [
 ]
 
 [triggers]
-# Cron triggers:
-# - Every 33 minutes (approx): Colosseum heartbeat
-#   Note: Standard cron can't do exact 33min. Using 0,33 pattern = 33/5 alternating gaps
+# Cron triggers (every 5 min + daily midnight):
+# - Every 5 min: Colosseum heartbeat (small batches, spread over hour)
 # - Daily at midnight: Daily reading generation
-crons = ["0,33 * * * *", "0 0 * * *"]
+crons = ["*/5 * * * *", "0 0 * * *"]
 
 [vars]
 ENVIRONMENT = "development"
@@ -44,7 +43,7 @@ routes = [
 ]
 
 [env.production.triggers]
-crons = ["0,33 * * * *", "0 0 * * *"]
+crons = ["*/5 * * * *", "0 0 * * *"]
 
 [env.production.vars]
 ENVIRONMENT = "production"

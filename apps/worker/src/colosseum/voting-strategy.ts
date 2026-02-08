@@ -6,7 +6,7 @@
 import type { ForumPost, ColosseumClient, Project } from "./client";
 
 // Thresholds for vote scoring
-const SCORE_THRESHOLD_VOTE = 5;
+const SCORE_THRESHOLD_VOTE = 1; // Very low to vote on almost everything
 const AGE_HOURS_PRIORITY = 2;
 const AGE_HOURS_MEDIUM = 6;
 const POINTS_RECENT_POST = 4;
@@ -20,7 +20,7 @@ const MIN_BODY_LENGTH_SPAM = 200;
 const CACHE_TTL_WEEK = 604800;
 const CACHE_TTL_LONG = 864000; // 10 days
 const RATE_LIMIT_MS = 1000;
-const MAX_PROJECT_VOTES_PER_RUN = 20;
+const MAX_PROJECT_VOTES_PER_RUN = 3; // 3 per 5min × 12 = 36 project votes/hour
 
 export interface VoteResult {
   voted: number;
@@ -94,9 +94,9 @@ export function evaluateProject(project: Project): {
     reasons.push("solana_integration");
   }
 
-  // Threshold: need at least 4 points (has repo + one other signal)
+  // Threshold: need at least 2 points (very aggressive)
   return {
-    shouldVote: score >= 4,
+    shouldVote: score >= 2,
     score,
     reasons,
   };
@@ -236,7 +236,7 @@ export async function runIntelligentVoting(
     reasons: {},
   };
 
-  const { posts } = await client.listPosts({ sort: "new", limit: 50 });
+  const { posts } = await client.listPosts({ sort: "new", limit: 60 });
 
   for (const post of posts) {
     // Skip own posts

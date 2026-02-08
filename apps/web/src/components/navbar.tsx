@@ -17,8 +17,10 @@ import {
   Menu,
   FileText,
   Home,
+  ArrowLeftRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Logo } from "@/assets/logo";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -278,6 +280,21 @@ export function Navbar() {
                   </Link>
                 </SheetClose>
                 <SheetClose asChild>
+                  <Link
+                    to="/p2p"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted transition-colors"
+                  >
+                    <ArrowLeftRight className="h-5 w-5 text-muted-foreground" />
+                    <span className="font-medium">P2P Trading</span>
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] border-amber-500 text-amber-500 ml-auto"
+                    >
+                      Soon
+                    </Badge>
+                  </Link>
+                </SheetClose>
+                <SheetClose asChild>
                   <a
                     href="https://docs.neptu.sudigital.com"
                     target="_blank"
@@ -365,6 +382,19 @@ export function Navbar() {
             >
               {t("nav.docs")}
             </a>
+            <Link
+              to="/p2p"
+              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
+            >
+              <ArrowLeftRight className="h-4 w-4" />
+              P2P
+              <Badge
+                variant="outline"
+                className="text-[9px] border-amber-500 text-amber-500 px-1 py-0"
+              >
+                Soon
+              </Badge>
+            </Link>
             {cryptos && cryptos.length > 0 ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
