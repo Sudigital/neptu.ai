@@ -1,6 +1,7 @@
 /** Colosseum Agent API routes */
 import { Hono } from "hono";
 import { HeartbeatScheduler, ForumAgent, ColosseumClient } from "../colosseum";
+import type { LeaderboardEntry } from "../colosseum";
 import {
   postMarketMoverAlert,
   postMarketSentimentReport,
@@ -91,9 +92,26 @@ colosseum.get("/agent-stats", async (c) => {
   }
 
   try {
-    const projectResponse = await fetch(
-      "https://agents.colosseum.com/api/projects/neptu",
-    );
+    // Fetch project data and agent status in parallel for real-time stats
+    const client = new ColosseumClient({
+      COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
+      COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
+      COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
+    });
+
+    const [
+      projectResponse,
+      agentStatus,
+      leaderboardData,
+      myPostsData,
+      myCommentsData,
+    ] = await Promise.all([
+      fetch("https://agents.colosseum.com/api/projects/neptu"),
+      client.getStatus(),
+      client.getLeaderboard().catch(() => ({ leaderboard: [] })),
+      client.getMyPosts({ limit: 100 }).catch(() => ({ posts: [] })),
+      client.getMyComments({ limit: 100 }).catch(() => ({ comments: [] })),
+    ]);
 
     if (!projectResponse.ok) {
       return c.json({ error: "Failed to fetch project data" }, 500);
@@ -112,54 +130,37 @@ colosseum.get("/agent-stats", async (c) => {
       };
     };
 
-    let totalPosts = 0;
-    let totalComments = 0;
-    let totalVotesGiven = 0;
-    const totalMentions = 0;
+    // Use real data from Colosseum API
+    // Handle both possible field names from API (interface vs actual response)
+    const engagement = (agentStatus.engagement || {}) as Record<string, number>;
+    const postsCount =
+      engagement.postsCreated ??
+      engagement.forumPostCount ??
+      myPostsData.posts?.length ??
+      0;
+    const commentsCount =
+      engagement.commentsCreated ?? myCommentsData.comments?.length ?? 0;
+    const votesReceived =
+      engagement.votesReceived ?? engagement.repliesOnYourPosts ?? 0;
 
-    const today = new Date();
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split("T")[0];
-      const analyticsKey = `neptu:analytics:${dateStr}`;
-      const raw = await c.env.CACHE.get(analyticsKey);
-      if (raw) {
-        const data = JSON.parse(raw) as Record<string, { total: number }>;
-        if (data.post_created) totalPosts += data.post_created.total;
-        if (data.comment_posted) totalComments += data.comment_posted.total;
-        if (data.vote_cast) totalVotesGiven += data.vote_cast.total;
-      }
-    }
-
-    const lastHeartbeat = await c.env.CACHE.get("neptu:last_heartbeat");
-    if (lastHeartbeat) {
-      const hb = JSON.parse(lastHeartbeat);
-      for (const task of hb.tasks || []) {
-        if (task.success && task.result) {
-          if (task.result.posted) totalPosts++;
-          if (typeof task.result.commentsPosted === "number")
-            totalComments += task.result.commentsPosted;
-          if (typeof task.result.commented === "number")
-            totalComments += task.result.commented;
-          if (typeof task.result.voted === "number")
-            totalVotesGiven += task.result.voted;
-        }
-      }
-    }
+    // Find rank from leaderboard
+    const leaderboard = leaderboardData.leaderboard || [];
+    const neptuEntry = leaderboard.find(
+      (entry: LeaderboardEntry) => entry.project.slug === "neptu",
+    );
+    const rank = neptuEntry?.rank || 0;
 
     const result = {
       agent: {
         name: projectData.project.ownerAgentName || "neptu",
         displayName: "Neptu AI",
         xUsername: projectData.project.ownerAgentClaim?.xUsername || "sudiarth",
-        rank: 0,
+        rank,
       },
       stats: {
-        posts: totalPosts || 15,
-        comments: totalComments || 42,
-        votesGiven: totalVotesGiven || 28,
-        mentions: totalMentions || 5,
+        posts: postsCount,
+        comments: commentsCount,
+        mentions: votesReceived,
       },
       project: {
         name: projectData.project.name,

@@ -12,7 +12,6 @@ export interface AgentStats {
   stats: {
     posts: number;
     comments: number;
-    votesGiven: number;
     mentions: number;
   };
   project: {

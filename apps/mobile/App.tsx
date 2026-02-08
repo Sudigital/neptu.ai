@@ -148,7 +148,7 @@ function AgentStatsCard({ stats }: { stats: AgentStats }) {
         <Text style={styles.agentIcon}>🤖</Text>
         <View style={styles.agentInfo}>
           <Text style={styles.agentName}>{stats.agent.displayName}</Text>
-          <Text style={styles.agentRank}>Arena Rank #{stats.agent.rank}</Text>
+          <Text style={styles.agentRank}>Agent Rank #{stats.agent.rank}</Text>
         </View>
         <View style={styles.agentVotes}>
           <Text style={styles.agentVotesNumber}>

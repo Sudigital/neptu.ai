@@ -5,19 +5,15 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
   Wallet,
-  Bot,
   ChevronDown,
   Coins,
   Sparkles,
   ExternalLink,
-  MessageSquare,
-  ThumbsUp,
-  AtSign,
-  Trophy,
   Menu,
   FileText,
   Home,
   ArrowLeftRight,
+  Tag,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,9 +21,9 @@ import { Logo } from "@/assets/logo";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { ProfileDropdown } from "@/components/profile-dropdown";
+import { AgentDialog } from "@/components/agent-dialog";
 import { useUser } from "@/hooks/use-user";
 import { useTranslate } from "@/hooks/use-translate";
-import { useAgentStats } from "@/hooks/use-agent-stats";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,14 +32,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import {
   Sheet,
   SheetContent,
@@ -65,8 +53,6 @@ export function Navbar() {
   const { login, authenticated } = usePrivy();
   const { hasWallet } = useUser();
   const t = useTranslate();
-  const { stats: agentStats, loading: agentLoading } = useAgentStats();
-  const [agentDialogOpen, setAgentDialogOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const { data: cryptos } = useQuery<CryptoItem[]>({
@@ -80,155 +66,6 @@ export function Navbar() {
     staleTime: 1000 * 60 * 5,
     refetchInterval: 1000 * 60 * 10,
   });
-
-  const voteCount = agentStats?.project.totalVotes ?? 0;
-  const voteText = voteCount === 1 ? "vote" : "votes";
-
-  const agentLink = (
-    <Dialog open={agentDialogOpen} onOpenChange={setAgentDialogOpen}>
-      <DialogTrigger asChild>
-        <button className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5">
-          <Bot className="h-4 w-4" />
-          <span className="hidden sm:inline">{t("nav.agent")}</span>
-          {agentStats && (
-            <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-semibold">
-              {voteCount} {voteText}
-            </span>
-          )}
-        </button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Bot className="h-5 w-5 text-primary" />
-            {agentStats?.agent.displayName || "Neptu Agent"}
-          </DialogTitle>
-          <DialogDescription>
-            AI agent participating in Colosseum Hackathon Arena
-          </DialogDescription>
-        </DialogHeader>
-
-        {agentLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full" />
-          </div>
-        ) : agentStats ? (
-          <div className="space-y-4">
-            {/* Agent Rank */}
-            <div className="flex items-center justify-between p-3 rounded-lg bg-primary/5 border border-primary/20">
-              <div className="flex items-center gap-2">
-                <Trophy className="h-5 w-5 text-yellow-500" />
-                <span className="font-medium">Arena Rank</span>
-              </div>
-              <span className="text-2xl font-bold text-primary">
-                #{agentStats.agent.rank}
-              </span>
-            </div>
-
-            {/* Project Votes */}
-            <div className="grid grid-cols-3 gap-3">
-              <div className="text-center p-3 rounded-lg bg-muted/50">
-                <p className="text-2xl font-bold text-primary">
-                  {agentStats.project.totalVotes}
-                </p>
-                <p className="text-xs text-muted-foreground">Total Votes</p>
-              </div>
-              <div className="text-center p-3 rounded-lg bg-muted/50">
-                <p className="text-2xl font-bold text-green-600">
-                  {agentStats.project.humanVotes}
-                </p>
-                <p className="text-xs text-muted-foreground">Human</p>
-              </div>
-              <div className="text-center p-3 rounded-lg bg-muted/50">
-                <p className="text-2xl font-bold text-blue-600">
-                  {agentStats.project.agentVotes}
-                </p>
-                <p className="text-xs text-muted-foreground">Agent</p>
-              </div>
-            </div>
-
-            {/* Agent Activity */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/30">
-                <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">
-                    {agentStats.stats.posts}
-                  </p>
-                  <p className="text-xs text-muted-foreground">Posts</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/30">
-                <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">
-                    {agentStats.stats.comments}
-                  </p>
-                  <p className="text-xs text-muted-foreground">Comments</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/30">
-                <ThumbsUp className="h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">
-                    {agentStats.stats.votesGiven}
-                  </p>
-                  <p className="text-xs text-muted-foreground">Votes Given</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/30">
-                <AtSign className="h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">
-                    {agentStats.stats.mentions}
-                  </p>
-                  <p className="text-xs text-muted-foreground">Mentions</p>
-                </div>
-              </div>
-            </div>
-
-            {/* X/Twitter Link */}
-            {agentStats.agent.xUsername && (
-              <a
-                href={`https://x.com/${agentStats.agent.xUsername}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 p-2 rounded-lg border hover:bg-muted/50 transition-colors text-sm"
-              >
-                <svg
-                  className="h-4 w-4"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                </svg>
-                @{agentStats.agent.xUsername}
-              </a>
-            )}
-
-            {/* View Project Button */}
-            <a
-              href={agentStats.projectUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full p-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-medium"
-            >
-              View Project on Colosseum
-              <ExternalLink className="h-4 w-4" />
-            </a>
-
-            <p className="text-xs text-center text-muted-foreground">
-              Last updated: {new Date(agentStats.updatedAt).toLocaleString()}
-            </p>
-          </div>
-        ) : (
-          <div className="text-center py-8 text-muted-foreground">
-            <p>Unable to load agent stats</p>
-          </div>
-        )}
-      </DialogContent>
-    </Dialog>
-  );
 
   return (
     <motion.header
@@ -276,7 +113,18 @@ export function Navbar() {
                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted transition-colors"
                   >
                     <Coins className="h-5 w-5 text-muted-foreground" />
-                    <span className="font-medium">Crypto Birthdays</span>
+                    <span className="font-medium">
+                      {t("nav.cryptoBirthdays")}
+                    </span>
+                  </Link>
+                </SheetClose>
+                <SheetClose asChild>
+                  <Link
+                    to="/pricing"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted transition-colors"
+                  >
+                    <Tag className="h-5 w-5 text-muted-foreground" />
+                    <span className="font-medium">{t("nav.pricing")}</span>
                   </Link>
                 </SheetClose>
                 <SheetClose asChild>
@@ -285,12 +133,12 @@ export function Navbar() {
                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted transition-colors"
                   >
                     <ArrowLeftRight className="h-5 w-5 text-muted-foreground" />
-                    <span className="font-medium">P2P Trading</span>
+                    <span className="font-medium">{t("nav.p2pTrading")}</span>
                     <Badge
                       variant="outline"
                       className="text-[10px] border-amber-500 text-amber-500 ml-auto"
                     >
-                      Soon
+                      {t("nav.soon")}
                     </Badge>
                   </Link>
                 </SheetClose>
@@ -311,7 +159,7 @@ export function Navbar() {
                 {cryptos && cryptos.length > 0 && (
                   <div className="mt-4 pt-4 border-t">
                     <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                      Top Cryptos
+                      {t("nav.topCryptos")}
                     </p>
                     {cryptos.slice(0, 8).map((crypto) => (
                       <SheetClose key={crypto.symbol} asChild>
@@ -343,7 +191,10 @@ export function Navbar() {
                         to="/cryptos"
                         className="flex items-center justify-center gap-2 px-3 py-2 mt-2 text-sm text-primary hover:underline"
                       >
-                        View all {cryptos.length} cryptos
+                        {t("nav.viewAllCryptos").replace(
+                          "{{count}}",
+                          String(cryptos.length),
+                        )}
                       </Link>
                     </SheetClose>
                   </div>
@@ -353,12 +204,14 @@ export function Navbar() {
               {/* Theme & Language in Sidebar Footer */}
               <div className="border-t p-4 mt-auto">
                 <div className="flex items-center justify-between py-2">
-                  <span className="text-sm text-muted-foreground">Theme</span>
+                  <span className="text-sm text-muted-foreground">
+                    {t("nav.theme")}
+                  </span>
                   <ThemeSwitch />
                 </div>
                 <div className="flex items-center justify-between py-2">
                   <span className="text-sm text-muted-foreground">
-                    Language
+                    {t("nav.language")}
                   </span>
                   <LanguageSwitcher />
                 </div>
@@ -374,25 +227,17 @@ export function Navbar() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-4">
-            <a
-              href="https://docs.neptu.sudigital.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-            >
-              {t("nav.docs")}
-            </a>
             <Link
               to="/p2p"
               className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
             >
               <ArrowLeftRight className="h-4 w-4" />
-              P2P
+              {t("nav.p2p")}
               <Badge
                 variant="outline"
                 className="text-[9px] border-amber-500 text-amber-500 px-1 py-0"
               >
-                Soon
+                {t("nav.soon")}
               </Badge>
             </Link>
             {cryptos && cryptos.length > 0 ? (
@@ -400,7 +245,7 @@ export function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <button className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5">
                     <Coins className="h-4 w-4" />
-                    Cryptos
+                    {t("nav.cryptos")}
                     <ChevronDown className="h-3 w-3" />
                   </button>
                 </DropdownMenuTrigger>
@@ -414,7 +259,7 @@ export function Navbar() {
                       className="flex items-center gap-2 w-full"
                     >
                       <Sparkles className="h-4 w-4" />
-                      All Crypto Birthdays
+                      {t("nav.allCryptoBirthdays")}
                     </Link>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
@@ -451,7 +296,10 @@ export function Navbar() {
                           to="/cryptos"
                           className="flex items-center justify-center gap-2 w-full text-primary"
                         >
-                          View all {cryptos.length} cryptos
+                          {t("nav.viewAllCryptos").replace(
+                            "{{count}}",
+                            String(cryptos.length),
+                          )}
                         </Link>
                       </DropdownMenuItem>
                     </>
@@ -464,13 +312,29 @@ export function Navbar() {
                 className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
               >
                 <Coins className="h-4 w-4" />
-                Cryptos
+                {t("nav.cryptos")}
               </Link>
             )}
           </nav>
         </div>
         <div className="flex items-center gap-1 sm:gap-3">
-          {agentLink}
+          <Link
+            to="/pricing"
+            className="hidden md:flex text-sm font-medium text-muted-foreground hover:text-primary transition-colors items-center gap-1.5"
+          >
+            <Tag className="h-4 w-4" />
+            {t("nav.pricing")}
+          </Link>
+          <a
+            href="https://docs.neptu.sudigital.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden md:flex text-sm font-medium text-muted-foreground hover:text-primary transition-colors items-center gap-1.5"
+          >
+            <FileText className="h-4 w-4" />
+            {t("nav.docs")}
+          </a>
+          <AgentDialog />
           <div className="hidden md:block">
             <LanguageSwitcher />
           </div>

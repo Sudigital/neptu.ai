@@ -261,6 +261,7 @@ export const NEPTU_TOKEN = {
 // Pricing Constants (in lamports for SOL, raw amount for NEPTU)
 // ============================================================================
 
+/** @deprecated Use SUBSCRIPTION_PLANS for new pricing model */
 export const PRICING = {
   POTENSI: {
     SOL: 0.01,
@@ -287,6 +288,56 @@ export const PRICING = {
 export type ReadingType = keyof typeof PRICING;
 export type PaymentType = "sol" | "neptu";
 export type PaymentStatus = "pending" | "confirmed" | "failed";
+
+// ============================================================================
+// Subscription Plans
+// ============================================================================
+
+export const SUBSCRIPTION_PLANS = {
+  FREE: {
+    key: "FREE" as const,
+    SOL: 0,
+    NEPTU: 0,
+    calendarDays: 0, // today only
+    aiFeedback: false,
+    interest: false,
+    aiChat: false,
+  },
+  WEEKLY: {
+    key: "WEEKLY" as const,
+    SOL: 0.005,
+    NEPTU: 5,
+    calendarDays: 7,
+    aiFeedback: true,
+    interest: true,
+    aiChat: false,
+  },
+  MONTHLY: {
+    key: "MONTHLY" as const,
+    SOL: 0.015,
+    NEPTU: 15,
+    calendarDays: 30,
+    aiFeedback: true,
+    interest: true,
+    aiChat: false,
+  },
+  YEARLY: {
+    key: "YEARLY" as const,
+    SOL: 0.1,
+    NEPTU: 100,
+    calendarDays: 365,
+    aiFeedback: true,
+    interest: true,
+    aiChat: false,
+  },
+} as const;
+
+export const AI_CHAT_ADDON = {
+  PER_MESSAGE: { SOL: 0.002, NEPTU: 2 },
+  PACK_10: { SOL: 0.01, NEPTU: 10 },
+} as const;
+
+export type SubscriptionPlan = keyof typeof SUBSCRIPTION_PLANS;
 
 // ============================================================================
 // API Constants
