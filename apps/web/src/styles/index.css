@@ -7,14 +7,16 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
   }
+
   html {
-    @apply overflow-x-hidden;
+    overflow-x: clip;
+    overflow-y: scroll;
   }
   body {
-    @apply bg-background text-foreground has-[div[data-variant='inset']]:bg-sidebar min-h-svh w-full;
+    @apply bg-background text-foreground has-[div[data-variant='inset']]:bg-sidebar min-h-svh;
+    width: 100vw;
+    overflow-x: clip;
   }
 
   /* Override Radix scroll locking for sticky headers */
@@ -53,6 +55,11 @@
   scrollbar-width: none; /* Firefox */
 }
 
+@utility overlay-scroll {
+  overflow-y: auto;
+  overflow-y: overlay;
+}
+
 @utility faded-bottom {
   @apply after:pointer-events-none after:absolute after:start-0 after:bottom-0 after:hidden after:h-32 after:w-full after:rounded-b-2xl after:bg-[linear-gradient(180deg,_transparent_10%,_var(--background)_70%)] md:after:block;
 }
@@ -84,4 +91,41 @@
   to {
     height: 0;
   }
+}
+
+/* Custom scrollbar - outside @layer for maximum specificity */
+* {
+  scrollbar-width: thin !important;
+  scrollbar-color: transparent transparent !important;
+}
+*:hover {
+  scrollbar-color: hsl(var(--primary) / 0.25) transparent !important;
+}
+
+*::-webkit-scrollbar {
+  width: 3px !important;
+  height: 3px !important;
+  background: transparent !important;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent !important;
+  border-radius: 9999px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: transparent !important;
+  border-radius: 9999px;
+}
+
+*:hover::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary) / 0.25) !important;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.5) !important;
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background: hsl(var(--primary) / 0.7) !important;
 }

@@ -56,6 +56,15 @@ export default defineConfig(
       ],
       // Prevent duplicate imports from the same module
       "no-duplicate-imports": "error",
+      // Enforce max file length
+      "max-lines": [
+        "warn",
+        {
+          max: 500,
+          skipBlankLines: true,
+          skipComments: true,
+        },
+      ],
     },
   },
 );

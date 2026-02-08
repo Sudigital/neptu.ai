@@ -11,7 +11,10 @@ import {
   postVoterRewards,
   postDeadlinePromotion,
   postProgressUpdate,
+  postCryptoCosmicReport,
+  postTopCosmicPicks,
 } from "./post-creator";
+import { getCryptoWithMarketData } from "./crypto-market-fetcher";
 
 // Timeline constants
 const HACKATHON_START = "2026-02-01";
@@ -31,6 +34,14 @@ export interface OrchestrateResult {
   nextAction?: string;
 }
 
+export interface OrchestrateOptions {
+  client: ColosseumClient;
+  calculator: NeptuCalculator;
+  cache: KVNamespace;
+  agentName: string;
+  db?: D1Database;
+}
+
 /**
  * Orchestrate strategic posting based on hackathon timeline
  */
@@ -39,11 +50,52 @@ export async function orchestratePosting(
   calculator: NeptuCalculator,
   cache: KVNamespace,
   agentName: string,
+  db?: D1Database,
 ): Promise<OrchestrateResult> {
   const now = new Date();
   const daysSinceStart = getDaysSince(HACKATHON_START);
   const daysUntilDeadline = getDaysUntil(HACKATHON_DEADLINE);
 
+  // Distributed lock to prevent duplicate posts from concurrent cron triggers
+  const lockKey = "neptu:orchestrate_lock";
+  const existingLock = await cache.get(lockKey);
+  if (existingLock) {
+    return {
+      posted: null,
+      reason: "Another orchestration is in progress (lock active)",
+      nextAction: "Wait for current orchestration to complete",
+    };
+  }
+  // Acquire lock (expires in 60 seconds as safety)
+  await cache.put(lockKey, now.toISOString(), { expirationTtl: 60 });
+
+  try {
+    return await _orchestratePostingInternal(
+      client,
+      calculator,
+      cache,
+      agentName,
+      db,
+      now,
+      daysSinceStart,
+      daysUntilDeadline,
+    );
+  } finally {
+    // Release lock
+    await cache.delete(lockKey);
+  }
+}
+
+async function _orchestratePostingInternal(
+  client: ColosseumClient,
+  calculator: NeptuCalculator,
+  cache: KVNamespace,
+  agentName: string,
+  db: D1Database | undefined,
+  now: Date,
+  daysSinceStart: number,
+  daysUntilDeadline: number,
+): Promise<OrchestrateResult> {
   // Check last post time
   const hoursSinceLastPost = await getHoursSinceLastPost(cache);
 
@@ -101,9 +153,55 @@ export async function orchestratePosting(
     const hasPromo = await cache.get(promoKey);
 
     if (!hasPromo) {
-      post = await postDeadlinePromotion(client, calculator);
-      await cache.put(promoKey, "true", { expirationTtl: CACHE_TTL_DAY });
-      reason = "Final deadline push";
+      // Set cache BEFORE posting to prevent duplicates from concurrent triggers
+      await cache.put(promoKey, "pending", { expirationTtl: CACHE_TTL_DAY });
+      try {
+        post = await postDeadlinePromotion(client, calculator);
+        await cache.put(promoKey, post.id.toString(), {
+          expirationTtl: CACHE_TTL_DAY,
+        });
+        reason = "Final deadline push";
+      } catch (err) {
+        // Remove the pending lock if posting fails
+        await cache.delete(promoKey);
+        console.error("Failed to post deadline promotion:", err);
+      }
+    }
+  }
+
+  // Daily Crypto Cosmic Report (can post every day)
+  if (!post) {
+    const today = now.toISOString().split("T")[0];
+    const cryptoReportKey = `neptu:crypto_report:${today}`;
+    const hasCryptoReport = await cache.get(cryptoReportKey);
+
+    if (!hasCryptoReport) {
+      post = await postCryptoCosmicReport(client, calculator, cache);
+      reason = "Daily crypto cosmic report";
+    }
+  }
+
+  // Alternate with Top Cosmic Picks (post every other day when no main report)
+  if (!post && db) {
+    const today = now.toISOString().split("T")[0];
+    const topPicksKey = `neptu:top_picks:${today}`;
+    const hasTopPicks = await cache.get(topPicksKey);
+    const dayOfMonth = now.getDate();
+
+    // Post top picks on odd days
+    if (!hasTopPicks && dayOfMonth % 2 === 1) {
+      try {
+        const cryptosWithMarket = await getCryptoWithMarketData(db);
+        post = await postTopCosmicPicks(
+          client,
+          calculator,
+          cryptosWithMarket,
+          cache,
+        );
+        reason = "Top cosmic picks for today";
+      } catch (err) {
+        console.error("Failed to post top picks:", err);
+      }
     }
   }
 

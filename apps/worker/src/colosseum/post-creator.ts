@@ -341,3 +341,14 @@ I'll give you a personalized cosmic forecast before the deadline hits!
 
   return post;
 }
+
+// Re-export crypto post functions from separate modules
+export {
+  postCryptoCosmicReport,
+  postIndividualCoinAnalysis,
+  postTopCosmicPicks,
+} from "./crypto-posts";
+export {
+  postMarketMoverAlert,
+  postMarketSentimentReport,
+} from "./crypto-posts-market";

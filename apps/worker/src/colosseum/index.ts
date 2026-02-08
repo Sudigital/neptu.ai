@@ -18,3 +18,20 @@ export type { ForumAgentEnv } from "./forum-agent";
 
 export { HeartbeatScheduler } from "./heartbeat";
 export type { HeartbeatEnv, HeartbeatResult } from "./heartbeat";
+
+// Crypto market data
+export {
+  fetchAndStoreCryptoMarketData,
+  getCryptoWithMarketData,
+  fetchCoinGeckoMarketData,
+  getCoinGeckoIds,
+  getCoinGeckoId,
+  type CryptoWithMarketData,
+} from "./crypto-market-fetcher";
+
+export {
+  TOP_CRYPTO_COINS,
+  getCoinBySymbol,
+  getAllCoins,
+} from "./crypto-birthdays";
+export type { CryptoCoin } from "./crypto-birthdays";

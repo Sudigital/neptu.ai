@@ -1,0 +1,203 @@
+import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { Loader2, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { neptuApi } from "@/lib/api";
+import { HighlightedText } from "./highlighted-text";
+
+const interestConfig: Record<
+  string,
+  { icon: string; bgColor: string; iconColor: string }
+> = {
+  career: {
+    icon: "💼",
+    bgColor: "bg-blue-100 dark:bg-blue-900/30",
+    iconColor: "text-blue-600 dark:text-blue-400",
+  },
+  finance: {
+    icon: "💰",
+    bgColor: "bg-emerald-100 dark:bg-emerald-900/30",
+    iconColor: "text-emerald-600 dark:text-emerald-400",
+  },
+  love: {
+    icon: "💕",
+    bgColor: "bg-rose-100 dark:bg-rose-900/30",
+    iconColor: "text-rose-600 dark:text-rose-400",
+  },
+  health: {
+    icon: "🏃",
+    bgColor: "bg-orange-100 dark:bg-orange-900/30",
+    iconColor: "text-orange-600 dark:text-orange-400",
+  },
+  spirituality: {
+    icon: "🙏",
+    bgColor: "bg-purple-100 dark:bg-purple-900/30",
+    iconColor: "text-purple-600 dark:text-purple-400",
+  },
+  family: {
+    icon: "👨‍👩‍👧‍👦",
+    bgColor: "bg-amber-100 dark:bg-amber-900/30",
+    iconColor: "text-amber-600 dark:text-amber-400",
+  },
+  travel: {
+    icon: "✈️",
+    bgColor: "bg-cyan-100 dark:bg-cyan-900/30",
+    iconColor: "text-cyan-600 dark:text-cyan-400",
+  },
+  creativity: {
+    icon: "🎨",
+    bgColor: "bg-pink-100 dark:bg-pink-900/30",
+    iconColor: "text-pink-600 dark:text-pink-400",
+  },
+  education: {
+    icon: "📚",
+    bgColor: "bg-indigo-100 dark:bg-indigo-900/30",
+    iconColor: "text-indigo-600 dark:text-indigo-400",
+  },
+  relationships: {
+    icon: "🤝",
+    bgColor: "bg-teal-100 dark:bg-teal-900/30",
+    iconColor: "text-teal-600 dark:text-teal-400",
+  },
+};
+
+function parseInsights(
+  message: string | undefined,
+  interest: string,
+): { affirmation: string; action: string; mainText: string } {
+  const defaults: Record<string, { affirmation: string; action: string }> = {
+    career: { affirmation: "I AM SUCCESSFUL", action: "Network" },
+    finance: { affirmation: "I AM ABUNDANT", action: "Invest wisely" },
+    love: { affirmation: "I AM LOVED", action: "Express gratitude" },
+    health: { affirmation: "I AM VITAL", action: "Move your body" },
+  };
+  const fallback = defaults[interest] || {
+    affirmation: "I AM FOCUSED",
+    action: "Take action",
+  };
+
+  if (!message) return { ...fallback, mainText: "" };
+
+  let affirmation = fallback.affirmation;
+  let action = fallback.action;
+  const contentLines: string[] = [];
+
+  for (const line of message.split("\n")) {
+    if (line.toUpperCase().includes("AFFIRMATION:")) {
+      affirmation = line.replace(/AFFIRMATION:/i, "").trim();
+    } else if (line.toUpperCase().includes("ACTION:")) {
+      action = line.replace(/ACTION:/i, "").trim();
+    } else {
+      contentLines.push(line);
+    }
+  }
+
+  return { affirmation, action, mainText: contentLines.join("\n").trim() };
+}
+
+export function InterestOracle({
+  interest,
+  birthDate,
+  targetDate,
+  language,
+}: {
+  interest: string;
+  birthDate: string;
+  targetDate: string;
+  language: string;
+}) {
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ["oracle-interest", interest, birthDate, targetDate, language],
+    queryFn: () =>
+      neptuApi.askOracle(
+        `What does my reading say about my ${interest} on ${targetDate}? Focus on practical advice.
+
+Important: When mentioning the affirmation or action word, always wrap them in double quotes like "WORD".
+
+At the end of your response, include these two lines:
+AFFIRMATION: [a short powerful affirmation for ${interest}, max 5 words]
+ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
+        birthDate,
+        targetDate,
+        language,
+      ),
+    enabled: !!birthDate,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 60, // 1 hour
+  });
+
+  const insights = parseInsights(data?.message, interest);
+
+  const config = interestConfig[interest] || {
+    icon: "✨",
+    bgColor: "bg-violet-100 dark:bg-violet-900/30",
+    iconColor: "text-violet-600 dark:text-violet-400",
+  };
+
+  return (
+    <Card>
+      <CardHeader className="px-3 sm:px-4 py-2 sm:py-3">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div
+              className={cn(
+                "flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full",
+                config.bgColor,
+              )}
+            >
+              <span className="text-base sm:text-xl">{config.icon}</span>
+            </div>
+            <div>
+              <CardTitle className="text-base sm:text-lg capitalize">
+                {interest} Insight
+              </CardTitle>
+              <CardDescription className="text-xs sm:text-sm">
+                Guidance for {format(new Date(targetDate), "MMM d, yyyy")}
+              </CardDescription>
+            </div>
+          </div>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-8 w-8 sm:h-9 sm:w-9"
+            onClick={() => refetch()}
+            disabled={isLoading}
+          >
+            <RefreshCw
+              className={cn(
+                "h-4 w-4 sm:h-5 sm:w-5",
+                isLoading && "animate-spin",
+              )}
+            />
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-4 pt-0 pb-3 sm:pb-4">
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-6 sm:py-8 text-center">
+            <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-muted-foreground" />
+            <p className="mt-2 text-xs sm:text-sm text-muted-foreground">
+              Analyzing {interest}...
+            </p>
+          </div>
+        ) : insights.mainText ? (
+          <HighlightedText text={insights.mainText} />
+        ) : (
+          <div className="text-center py-6 sm:py-8">
+            <p className="text-sm sm:text-base text-muted-foreground">
+              No specific insight available for {interest} at this time.
+            </p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}

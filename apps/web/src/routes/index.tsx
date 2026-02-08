@@ -1,38 +1,24 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { usePrivy } from "@privy-io/react-auth";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import {
-  Sparkles,
-  Calendar,
-  Wallet,
-  Bot,
-  ArrowRight,
-  TrendingUp,
-  MessageSquare,
-  ThumbsUp,
-  FileText,
-  AtSign,
-  ExternalLink,
-  Trophy,
-} from "lucide-react";
+import { Wallet, ArrowRight } from "lucide-react";
 import { useUser } from "@/hooks/use-user";
 import { useTranslate } from "@/hooks/use-translate";
 import { useSettingsStore } from "@/stores/settings-store";
 import { Logo } from "@/assets/logo";
-import { ThemeSwitch } from "@/components/theme-switch";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { useAgentStats } from "@/hooks/use-agent-stats";
-import { ProfileDropdown } from "@/components/profile-dropdown";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Navbar } from "@/components/navbar";
+
+const LandingSections = React.lazy(
+  () => import("@/features/landing/landing-sections"),
+);
+const LazyAgentStatsDialog = React.lazy(() =>
+  import("@/features/landing/landing-components").then((m) => ({
+    default: m.AgentStatsDialog,
+  })),
+);
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
@@ -123,79 +109,12 @@ function LandingPage() {
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
   };
 
-  const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  };
-
   return (
     <div
       key={language}
       className="flex min-h-screen flex-col bg-background selection:bg-primary/20"
     >
-      {/* Header */}
-      <motion.header
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ type: "spring", stiffness: 100, damping: 20 }}
-        className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md"
-      >
-        <div className="container mx-auto flex h-14 sm:h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-4 sm:gap-6">
-            <div className="flex items-center gap-2">
-              <Logo className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
-              <span className="text-lg sm:text-xl font-bold tracking-tight">
-                Neptu
-              </span>
-            </div>
-            <nav className="hidden md:flex items-center gap-4">
-              <a
-                href="https://docs.neptu.sudigital.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-              >
-                {t("nav.docs")}
-              </a>
-              <button
-                onClick={() => setShowStatsDialog(true)}
-                className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
-              >
-                <Bot className="h-4 w-4" />
-                {t("nav.agent")}
-                {agentStats && (
-                  <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-semibold">
-                    {agentStats.project.totalVotes}
-                  </span>
-                )}
-              </button>
-            </nav>
-          </div>
-          <div className="flex items-center gap-1.5 sm:gap-4">
-            <LanguageSwitcher />
-            <ThemeSwitch />
-            {authenticated && hasWallet ? (
-              <ProfileDropdown />
-            ) : (
-              <Button
-                onClick={authenticated ? connectWallet : login}
-                size="sm"
-                className="bg-[#7C3AED] hover:bg-[#7C3AED]/90 text-white text-xs sm:text-sm px-2.5 sm:px-4"
-              >
-                <Wallet className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">
-                  {t("landing.connectWallet")}
-                </span>
-              </Button>
-            )}
-          </div>
-        </div>
-      </motion.header>
+      <Navbar />
 
       <main className="flex-1">
         {/* Hero Section */}
@@ -275,141 +194,9 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* Feature Grid */}
-        <section
-          id="features"
-          className="container mx-auto px-4 py-10 sm:py-16 md:py-24"
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-8 sm:mb-16"
-          >
-            <h2 className="text-xl sm:text-3xl md:text-4xl font-bold tracking-tight">
-              {t("landing.featuresTitle")}
-            </h2>
-            <p className="mt-2 sm:mt-4 text-sm sm:text-lg text-muted-foreground">
-              {t("landing.featuresDesc")}
-            </p>
-          </motion.div>
-
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            className="grid gap-4 sm:gap-6 md:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
-          >
-            <FeatureCard
-              icon={<Sparkles className="h-8 w-8 text-[#9945FF]" />}
-              title={t("landing.feature1.title")}
-              subtitle={t("landing.feature1.subtitle")}
-              description={t("landing.feature1.desc")}
-            />
-            <FeatureCard
-              icon={<Calendar className="h-8 w-8 text-primary" />}
-              title={t("landing.feature2.title")}
-              subtitle={t("landing.feature2.subtitle")}
-              description={t("landing.feature2.desc")}
-            />
-            <FeatureCard
-              icon={<Bot className="h-8 w-8 text-blue-500" />}
-              title={t("landing.feature3.title")}
-              subtitle={t("landing.feature3.subtitle")}
-              description={t("landing.feature3.desc")}
-            />
-            <FeatureCard
-              icon={<TrendingUp className="h-8 w-8 text-amber-500" />}
-              title={t("landing.feature4.title")}
-              subtitle={t("landing.feature4.subtitle")}
-              description={t("landing.feature4.desc")}
-            />
-          </motion.div>
-        </section>
-
-        {/* Steps Section */}
-        <section className="border-t bg-muted/50 py-10 sm:py-16 md:py-24">
-          <div className="container mx-auto px-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="mx-auto max-w-3xl text-center mb-8 sm:mb-16"
-            >
-              <h2 className="text-xl sm:text-3xl font-bold tracking-tight">
-                {t("landing.stepsTitle")}
-              </h2>
-            </motion.div>
-
-            <motion.div
-              variants={staggerContainer}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className="flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-0"
-            >
-              <StepCard
-                number="01"
-                icon={<Wallet className="h-6 w-6" />}
-                title={t("landing.step1.title")}
-                desc={t("landing.step1.desc")}
-              />
-              <ArrowRight className="hidden lg:block h-8 w-8 text-muted-foreground/50 mx-4 flex-shrink-0" />
-              <StepCard
-                number="02"
-                icon={<Calendar className="h-6 w-6" />}
-                title={t("landing.step2.title")}
-                desc={t("landing.step2.desc")}
-              />
-              <ArrowRight className="hidden lg:block h-8 w-8 text-muted-foreground/50 mx-4 flex-shrink-0" />
-              <StepCard
-                number="03"
-                icon={<Sparkles className="h-6 w-6" />}
-                title={t("landing.step3.title")}
-                desc={t("landing.step3.desc")}
-              />
-            </motion.div>
-          </div>
-        </section>
-        {/* Vote CTA Section */}
-        <section
-          id="vote"
-          className="py-10 sm:py-16 bg-gradient-to-r from-[#9955FF]/10 to-[#7C3AED]/10"
-        >
-          <div className="container mx-auto px-4 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="mx-auto max-w-2xl space-y-3 sm:space-y-6"
-            >
-              <h2 className="text-xl sm:text-3xl font-bold tracking-tight">
-                {t("landing.voteTitle")}
-              </h2>
-              <p className="text-muted-foreground text-sm sm:text-lg">
-                {t("landing.voteDesc")}
-              </p>
-              <p className="text-xs sm:text-sm font-medium text-[#7C3AED]">
-                🎁 {t("landing.voteReward")}
-              </p>
-              <Button
-                size="lg"
-                className="h-11 sm:h-14 px-6 sm:px-8 text-sm sm:text-lg bg-[#7C3AED] hover:bg-[#7C3AED]/90 text-white w-full sm:w-auto"
-                asChild
-              >
-                <a
-                  href="https://colosseum.com/agent-hackathon/projects/neptu"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {t("landing.voteButton")} 🗳️
-                </a>
-              </Button>
-            </motion.div>
-          </div>
-        </section>
+        <Suspense fallback={null}>
+          <LandingSections t={t} />
+        </Suspense>
       </main>
 
       {/* Footer */}
@@ -428,236 +215,16 @@ function LandingPage() {
       </footer>
 
       {/* Agent Stats Dialog */}
-      <Dialog open={showStatsDialog} onOpenChange={setShowStatsDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Bot className="h-5 w-5 text-primary" />
-              {t("agent.stats.title")}
-            </DialogTitle>
-            <DialogDescription>{t("agent.stats.desc")}</DialogDescription>
-          </DialogHeader>
-
-          {agentStats ? (
-            <div className="space-y-4">
-              {/* Agent Info */}
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                  <Bot className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <p className="font-semibold">
-                    {agentStats.agent.displayName}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    @{agentStats.agent.xUsername}
-                  </p>
-                </div>
-                {agentStats.agent.rank > 0 && (
-                  <div className="ml-auto flex items-center gap-1 text-amber-500">
-                    <Trophy className="h-4 w-4" />
-                    <span className="text-sm font-semibold">
-                      #{agentStats.agent.rank}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Stats Grid */}
-              <div className="grid grid-cols-2 gap-3">
-                <Card>
-                  <CardContent className="p-3 flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30">
-                      <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <div>
-                      <p className="text-xl font-bold">
-                        {agentStats.stats.posts}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {t("agent.stats.posts")}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-3 flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/30">
-                      <MessageSquare className="h-4 w-4 text-green-600 dark:text-green-400" />
-                    </div>
-                    <div>
-                      <p className="text-xl font-bold">
-                        {agentStats.stats.comments}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {t("agent.stats.comments")}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-3 flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-100 dark:bg-purple-900/30">
-                      <ThumbsUp className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-                    </div>
-                    <div>
-                      <p className="text-xl font-bold">
-                        {agentStats.stats.votesGiven}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {t("agent.stats.votesGiven")}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-3 flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-100 dark:bg-orange-900/30">
-                      <AtSign className="h-4 w-4 text-orange-600 dark:text-orange-400" />
-                    </div>
-                    <div>
-                      <p className="text-xl font-bold">
-                        {agentStats.stats.mentions}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {t("agent.stats.mentions")}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Project Votes */}
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    {t("agent.stats.projectVotes")}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="text-center">
-                        <p className="text-2xl font-bold text-primary">
-                          {agentStats.project.totalVotes}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {t("agent.stats.total")}
-                        </p>
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        <p>👤 {agentStats.project.humanVotes} human</p>
-                        <p>🤖 {agentStats.project.agentVotes} agent</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* View Project Button */}
-              <Button
-                className="w-full"
-                onClick={() => window.open(agentStats.projectUrl, "_blank")}
-              >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                {t("agent.stats.viewProject")}
-              </Button>
-            </div>
-          ) : (
-            <div className="flex items-center justify-center py-8">
-              <Logo className="h-8 w-8 animate-spin text-primary" />
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {showStatsDialog && (
+        <Suspense fallback={null}>
+          <LazyAgentStatsDialog
+            open={showStatsDialog}
+            onOpenChange={setShowStatsDialog}
+            agentStats={agentStats}
+            t={t}
+          />
+        </Suspense>
+      )}
     </div>
-  );
-}
-
-function FeatureCard({
-  icon,
-  title,
-  subtitle,
-  description,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  subtitle: string;
-  description: string;
-}) {
-  return (
-    <motion.div
-      variants={{
-        hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0 },
-      }}
-      whileHover={{ y: -5 }}
-      className="group relative overflow-hidden rounded-lg sm:rounded-2xl border bg-card p-4 sm:p-6 md:p-8 transition-shadow hover:shadow-lg"
-    >
-      <div className="mb-2.5 sm:mb-4 inline-flex rounded-md sm:rounded-xl bg-muted p-2 sm:p-3 group-hover:bg-primary/10 transition-colors">
-        {React.cloneElement(
-          icon as React.ReactElement<{ className?: string }>,
-          {
-            className: "h-6 w-6 sm:h-8 sm:w-8",
-          },
-        )}
-      </div>
-      <div className="mb-1 sm:mb-2 text-[10px] sm:text-sm font-medium text-muted-foreground uppercase tracking-wider">
-        {subtitle}
-      </div>
-      <h3 className="mb-1.5 sm:mb-3 text-base sm:text-xl md:text-2xl font-bold">
-        {title}
-      </h3>
-      <p className="text-xs sm:text-base text-muted-foreground leading-relaxed">
-        {description}
-      </p>
-    </motion.div>
-  );
-}
-
-function StepCard({
-  number,
-  icon,
-  title,
-  desc,
-}: {
-  number: string;
-  icon: React.ReactNode;
-  title: string;
-  desc: string;
-}) {
-  return (
-    <motion.div
-      variants={{
-        hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0 },
-      }}
-      whileHover={{ y: -5 }}
-      className="relative overflow-hidden rounded-lg sm:rounded-2xl border bg-card p-3 sm:p-6 shadow-sm hover:shadow-lg transition-shadow w-full lg:w-64 lg:h-64 flex flex-col"
-    >
-      {/* Step number badge */}
-      <div className="absolute top-2 right-2 sm:top-3 sm:right-3 text-2xl sm:text-4xl font-black text-muted/10 select-none">
-        {number}
-      </div>
-
-      {/* Icon */}
-      <div className="mb-2 sm:mb-4 inline-flex rounded-md sm:rounded-xl bg-[#7C3AED]/10 p-2 sm:p-3 text-[#7C3AED] w-fit">
-        {React.cloneElement(
-          icon as React.ReactElement<{ className?: string }>,
-          {
-            className: "h-5 w-5 sm:h-6 sm:w-6",
-          },
-        )}
-      </div>
-
-      {/* Content */}
-      <h3 className="text-sm sm:text-lg font-bold mb-1 sm:mb-2">{title}</h3>
-      <p className="text-[11px] sm:text-sm text-muted-foreground leading-relaxed flex-1">
-        {desc}
-      </p>
-    </motion.div>
   );
 }

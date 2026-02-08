@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CryptosIndexRouteImport } from './routes/cryptos/index'
+import { Route as CryptosSymbolRouteImport } from './routes/cryptos/$symbol'
 import { Route as AuthenticatedWalletRouteImport } from './routes/_authenticated/wallet'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedComingSoonRouteImport } from './routes/_authenticated/coming-soon'
@@ -40,6 +42,16 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CryptosIndexRoute = CryptosIndexRouteImport.update({
+  id: '/cryptos/',
+  path: '/cryptos/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CryptosSymbolRoute = CryptosSymbolRouteImport.update({
+  id: '/cryptos/$symbol',
+  path: '/cryptos/$symbol',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedWalletRoute = AuthenticatedWalletRouteImport.update({
@@ -137,6 +149,8 @@ export interface FileRoutesByFullPath {
   '/coming-soon': typeof AuthenticatedComingSoonRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/wallet': typeof AuthenticatedWalletRoute
+  '/cryptos/$symbol': typeof CryptosSymbolRoute
+  '/cryptos/': typeof CryptosIndexRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
@@ -155,6 +169,8 @@ export interface FileRoutesByTo {
   '/coming-soon': typeof AuthenticatedComingSoonRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/wallet': typeof AuthenticatedWalletRoute
+  '/cryptos/$symbol': typeof CryptosSymbolRoute
+  '/cryptos': typeof CryptosIndexRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
@@ -176,6 +192,8 @@ export interface FileRoutesById {
   '/_authenticated/coming-soon': typeof AuthenticatedComingSoonRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/wallet': typeof AuthenticatedWalletRoute
+  '/cryptos/$symbol': typeof CryptosSymbolRoute
+  '/cryptos/': typeof CryptosIndexRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
@@ -197,6 +215,8 @@ export interface FileRouteTypes {
     | '/coming-soon'
     | '/dashboard'
     | '/wallet'
+    | '/cryptos/$symbol'
+    | '/cryptos/'
     | '/errors/$error'
     | '/settings/account'
     | '/settings/appearance'
@@ -215,6 +235,8 @@ export interface FileRouteTypes {
     | '/coming-soon'
     | '/dashboard'
     | '/wallet'
+    | '/cryptos/$symbol'
+    | '/cryptos'
     | '/errors/$error'
     | '/settings/account'
     | '/settings/appearance'
@@ -235,6 +257,8 @@ export interface FileRouteTypes {
     | '/_authenticated/coming-soon'
     | '/_authenticated/dashboard'
     | '/_authenticated/wallet'
+    | '/cryptos/$symbol'
+    | '/cryptos/'
     | '/_authenticated/errors/$error'
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/appearance'
@@ -252,6 +276,8 @@ export interface RootRouteChildren {
   errors404Route: typeof errors404Route
   errors500Route: typeof errors500Route
   errors503Route: typeof errors503Route
+  CryptosSymbolRoute: typeof CryptosSymbolRoute
+  CryptosIndexRoute: typeof CryptosIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -275,6 +301,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cryptos/': {
+      id: '/cryptos/'
+      path: '/cryptos'
+      fullPath: '/cryptos/'
+      preLoaderRoute: typeof CryptosIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cryptos/$symbol': {
+      id: '/cryptos/$symbol'
+      path: '/cryptos/$symbol'
+      fullPath: '/cryptos/$symbol'
+      preLoaderRoute: typeof CryptosSymbolRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/wallet': {
@@ -436,6 +476,8 @@ const rootRouteChildren: RootRouteChildren = {
   errors404Route: errors404Route,
   errors500Route: errors500Route,
   errors503Route: errors503Route,
+  CryptosSymbolRoute: CryptosSymbolRoute,
+  CryptosIndexRoute: CryptosIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -228,23 +228,9 @@ export class HeartbeatScheduler {
       });
     }
 
-    // Task 9: Post deadline promotion (once per day)
-    try {
-      const promoPost = await this.forumAgent.postDeadlinePromotion();
-      result.tasks.push({
-        name: "deadline_promotion",
-        success: true,
-        result: promoPost
-          ? { posted: true, postId: promoPost.id, title: promoPost.title }
-          : { posted: false, reason: "Already posted today" },
-      });
-    } catch (error) {
-      result.tasks.push({
-        name: "deadline_promotion",
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
-    }
+    // Task 9: Deadline promotion — handled by orchestrate_posting (Task 5)
+    // Removed to prevent duplicate posts. The orchestrator already includes
+    // deadline promotion logic with proper cache-based deduplication.
 
     // Task 10: Comment on other agents' posts (max 5 per heartbeat)
     try {

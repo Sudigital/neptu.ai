@@ -21,13 +21,13 @@ AZURE_OPENAI_DEPLOYMENT = "gpt-4o-mini"
 AZURE_OPENAI_API_VERSION = "2024-04-01-preview"
 # Colosseum Agent Info (non-secret)
 COLOSSEUM_AGENT_ID = "206"
-COLOSSEUM_AGENT_NAME = "neptu"
+COLOSSEUM_AGENT_NAME = "Neptu"
 # Secrets stored in .dev.vars (local) or Cloudflare secrets (production):
 # - AZURE_OPENAI_API_KEY
 # - COLOSSEUM_API_KEY
 
 [[d1_databases]]
-binding = "neptu_dev"
+binding = "DB"
 database_name = "neptu-dev"
 database_id = "7567d7ff-6845-4dad-bfdf-8b65cd4a2645"
 
@@ -52,10 +52,10 @@ AZURE_OPENAI_ENDPOINT = "https://super-su.cognitiveservices.azure.com/"
 AZURE_OPENAI_DEPLOYMENT = "gpt-4o-mini"
 AZURE_OPENAI_API_VERSION = "2024-04-01-preview"
 COLOSSEUM_AGENT_ID = "206"
-COLOSSEUM_AGENT_NAME = "neptu"
+COLOSSEUM_AGENT_NAME = "Neptu"
 
 [[env.production.d1_databases]]
-binding = "neptu_dev"
+binding = "DB"
 database_name = "neptu-prod"
 database_id = "accef3f0-658b-4765-b623-5f1768dce42c"
 
