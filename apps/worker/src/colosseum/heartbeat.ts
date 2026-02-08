@@ -2,12 +2,9 @@
  * Neptu Heartbeat System
  * Handles periodic sync with Colosseum hackathon
  *
- * PRIORITY ORDER (strict):
- * 1st — Reply to ALL comments from other agents (exhaust every thread)
- * 2nd — Post new content
- * 3rd — Vote on posts & projects
- * 4th — Other activities (promos, leaderboard, birthdays, mentions)
- * Then repeat 1st after ~5 min
+ * Two separate cron schedules:
+ * Every 3 min (3,6,...,54) — Reply to all comments + other activities
+ * Every 5 min (5,10,...,55) — Vote + comment on other projects
  */
 
 import { ColosseumClient } from "./client";
@@ -26,10 +23,14 @@ export interface HeartbeatEnv {
   COLOSSEUM_AGENT_ID?: string;
   COLOSSEUM_AGENT_NAME?: string;
   CACHE: KVNamespace;
+  DB?: D1Database;
 }
+
+export type HeartbeatPhase = "reply_and_other" | "vote_and_comment";
 
 export interface HeartbeatResult {
   timestamp: string;
+  phase: HeartbeatPhase;
   tasks: {
     name: string;
     success: boolean;
@@ -38,21 +39,6 @@ export interface HeartbeatResult {
   }[];
   nextSteps: string[];
 }
-
-// Task cooldowns in seconds
-const TASK_COOLDOWNS: Record<string, number> = {
-  check_status: 300, // 5 min — always check
-  reply_to_comments: 0, // NO cooldown — always run first
-  trend_detection: 1800, // 30 min
-  process_birthday_requests: 600, // 10 min
-  orchestrate_posting: 1800, // 30 min
-  intelligent_voting: 900, // 15 min
-  project_voting: 1200, // 20 min
-  forum_engagement: 600, // 10 min
-  respond_to_mentions: 600, // 10 min
-  promo_comments: 900, // 15 min
-  check_leaderboard: 1800, // 30 min
-};
 
 export class HeartbeatScheduler {
   private client: ColosseumClient;
@@ -63,24 +49,6 @@ export class HeartbeatScheduler {
     this.client = new ColosseumClient(env);
     this.forumAgent = new ForumAgent(env);
     this.cache = env.CACHE;
-  }
-
-  /**
-   * Check if a task is on cooldown
-   */
-  private async isOnCooldown(taskName: string): Promise<boolean> {
-    const key = `neptu:task_cooldown:${taskName}`;
-    const lastRun = await this.cache.get(key);
-    return lastRun !== null;
-  }
-
-  /**
-   * Set task cooldown
-   */
-  private async setCooldown(taskName: string): Promise<void> {
-    const key = `neptu:task_cooldown:${taskName}`;
-    const ttl = TASK_COOLDOWNS[taskName] || 600;
-    await this.cache.put(key, new Date().toISOString(), { expirationTtl: ttl });
   }
 
   /**
@@ -96,34 +64,36 @@ export class HeartbeatScheduler {
   }
 
   /**
-   * Run the full heartbeat cycle with strict priority order:
-   * 1st — Reply to ALL comments (exhaust)
-   * 2nd — Post
-   * 3rd — Vote
-   * 4th — Other
-   * Then repeat 1st
+   * Run heartbeat with explicit phase (with 25s global timeout):
+   * reply_and_other: reply all comments + post + other activities
+   * vote_and_comment: vote + comment on other projects
    */
-  async runHeartbeat(): Promise<HeartbeatResult> {
+  async runHeartbeat(phase: HeartbeatPhase): Promise<HeartbeatResult> {
     const result: HeartbeatResult = {
       timestamp: new Date().toISOString(),
+      phase,
       tasks: [],
       nextSteps: [],
     };
 
-    // ─── ALWAYS: Check status (lightweight) ───
+    // Global 25s timeout — Cloudflare Workers scheduled events have limits
+    const startTime = Date.now();
+    const GLOBAL_TIMEOUT_MS = 25000;
+    const isTimedOut = () => Date.now() - startTime > GLOBAL_TIMEOUT_MS;
+
+    // ─── ALWAYS: Quick status check ───
     try {
       const status = await this.client.getStatus();
       result.tasks.push({
         name: "check_status",
         success: true,
         result: {
-          agentStatus: status.agent.status,
-          hackathonStatus: status.hackathon.status,
-          engagement: status.engagement,
+          agentStatus: status?.agent?.status ?? "unknown",
+          hackathonStatus: status?.hackathon?.status ?? "unknown",
+          engagement: status?.engagement ?? {},
         },
       });
-      result.nextSteps = status.nextSteps || [];
-      await this.setCooldown("check_status");
+      result.nextSteps = status?.nextSteps || [];
     } catch (error) {
       result.tasks.push({
         name: "check_status",
@@ -132,7 +102,7 @@ export class HeartbeatScheduler {
       });
     }
 
-    // ─── ALWAYS: Check intro post (one-time) ───
+    // ─── ALWAYS: Intro post (one-time) ───
     try {
       const introPostId = await this.cache.get("neptu:intro_post_id");
       if (!introPostId) {
@@ -141,12 +111,6 @@ export class HeartbeatScheduler {
           name: "post_introduction",
           success: true,
           result: { postId: post.id, title: post.title },
-        });
-      } else {
-        result.tasks.push({
-          name: "post_introduction",
-          success: true,
-          result: { alreadyPosted: true, postId: parseInt(introPostId) },
         });
       }
     } catch (error) {
@@ -158,9 +122,39 @@ export class HeartbeatScheduler {
     }
 
     // ═══════════════════════════════════════════
-    // PRIORITY 1: Reply to ALL comments first
+    // Execute phase
     // ═══════════════════════════════════════════
-    console.log("PRIORITY 1: Replying to all unreplied comments...");
+    console.log(`HEARTBEAT Phase: ${phase}`);
+
+    if (phase === "reply_and_other") {
+      await this.phaseReplyAndOther(result, isTimedOut);
+    } else {
+      await this.phaseVoteAndComment(result, isTimedOut);
+    }
+
+    // ─── Track analytics (skip if timed out) ───
+    if (!isTimedOut()) {
+      await this.trackAnalytics(result);
+    }
+
+    // Store heartbeat result
+    await this.cache.put("neptu:last_heartbeat", JSON.stringify(result), {
+      expirationTtl: 86400,
+    });
+
+    return result;
+  }
+
+  /**
+   * Phase: Reply to all comments on own posts + other activities
+   * Runs every 3 min (3,6,9,...,54)
+   */
+  private async phaseReplyAndOther(
+    result: HeartbeatResult,
+    isTimedOut: () => boolean,
+  ): Promise<void> {
+    // ── Reply to all comments ──
+    console.log("REPLY+OTHER: Replying to all unreplied comments...");
     try {
       const replyResult = await replyToAllComments(
         this.client,
@@ -183,117 +177,48 @@ export class HeartbeatScheduler {
       });
     }
 
-    // ═══════════════════════════════════════════
-    // PRIORITY 2: Post new content
-    // ═══════════════════════════════════════════
-    const postTasks = [
-      {
+    // ── Post new topic ──
+    if (isTimedOut()) return;
+    console.log("REPLY+OTHER: Posting new topic...");
+    try {
+      const orchestrated = await this.forumAgent.orchestratePosting();
+      result.tasks.push({
         name: "orchestrate_posting",
-        run: async () => {
-          const orchestrated = await this.forumAgent.orchestratePosting();
-          return {
-            posted: orchestrated.posted !== null,
-            reason: orchestrated.reason,
-            nextAction: orchestrated.nextAction,
-          };
+        success: true,
+        result: {
+          posted: orchestrated.posted !== null,
+          reason: orchestrated.reason,
+          nextAction: orchestrated.nextAction,
         },
-      },
-      {
+      });
+    } catch (error) {
+      result.tasks.push({
+        name: "orchestrate_posting",
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+
+    try {
+      const trendPost = await this.forumAgent.considerTrendPost();
+      result.tasks.push({
         name: "trend_detection",
-        run: async () => {
-          const trendPost = await this.forumAgent.considerTrendPost();
-          return trendPost
-            ? { posted: true, postId: trendPost.id, title: trendPost.title }
-            : { posted: false, reason: "No trending opportunity" };
-        },
-      },
-    ];
-
-    console.log("PRIORITY 2: Posting...");
-    for (const task of postTasks) {
-      if (await this.isOnCooldown(task.name)) {
-        console.log(`  Skipped ${task.name} (cooldown)`);
-        continue;
-      }
-      try {
-        const taskResult = await task.run();
-        await this.setCooldown(task.name);
-        result.tasks.push({
-          name: task.name,
-          success: true,
-          result: taskResult,
-        });
-      } catch (error) {
-        result.tasks.push({
-          name: task.name,
-          success: false,
-          error: error instanceof Error ? error.message : "Unknown error",
-        });
-      }
+        success: true,
+        result: trendPost
+          ? { posted: true, postId: trendPost.id, title: trendPost.title }
+          : { posted: false, reason: "No trending opportunity" },
+      });
+    } catch (error) {
+      result.tasks.push({
+        name: "trend_detection",
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
     }
 
-    // ═══════════════════════════════════════════
-    // PRIORITY 3: Vote on posts & projects
-    // ═══════════════════════════════════════════
-    const voteTasks = [
-      {
-        name: "intelligent_voting",
-        run: async () => {
-          const voteResult = await this.forumAgent.runIntelligentVoting();
-          return {
-            voted: voteResult.voted,
-            skipped: voteResult.skipped,
-            reasons: voteResult.reasons,
-          };
-        },
-      },
-      {
-        name: "project_voting",
-        run: async () => {
-          const projectVoteResult =
-            await this.forumAgent.voteOnProjectsStrategically();
-          return {
-            voted: projectVoteResult.voted,
-            skipped: projectVoteResult.skipped,
-            votedProjects: projectVoteResult.votedProjects,
-            reasons: projectVoteResult.reasons,
-          };
-        },
-      },
-      {
-        name: "forum_engagement",
-        run: async () => {
-          return await this.forumAgent.engageWithForum();
-        },
-      },
-    ];
-
-    console.log("PRIORITY 3: Voting...");
-    for (const task of voteTasks) {
-      if (await this.isOnCooldown(task.name)) {
-        console.log(`  Skipped ${task.name} (cooldown)`);
-        continue;
-      }
-      try {
-        const taskResult = await task.run();
-        await this.setCooldown(task.name);
-        result.tasks.push({
-          name: task.name,
-          success: true,
-          result: taskResult,
-        });
-      } catch (error) {
-        result.tasks.push({
-          name: task.name,
-          success: false,
-          error: error instanceof Error ? error.message : "Unknown error",
-        });
-      }
-    }
-
-    // ═══════════════════════════════════════════
-    // PRIORITY 4: Other activities
-    // ═══════════════════════════════════════════
+    // ── Other activities (birthday, mentions, leaderboard) ──
+    if (isTimedOut()) return;
+    console.log("REPLY+OTHER: Other activities...");
     const otherTasks = [
       {
         name: "process_birthday_requests",
@@ -310,16 +235,10 @@ export class HeartbeatScheduler {
         },
       },
       {
-        name: "promo_comments",
-        run: async () => {
-          const promoComments = await this.forumAgent.commentOnAgentPosts();
-          return { commentsPosted: promoComments };
-        },
-      },
-      {
         name: "check_leaderboard",
         run: async () => {
-          const { leaderboard } = await this.client.getLeaderboard();
+          const data = await this.client.getLeaderboard();
+          const leaderboard = data?.leaderboard || [];
           const myProject = await this.client.getMyProject().catch(() => null);
           if (myProject) {
             const myPosition = leaderboard.findIndex(
@@ -336,20 +255,10 @@ export class HeartbeatScheduler {
       },
     ];
 
-    console.log("PRIORITY 4: Other activities...");
-    // Shuffle other tasks so they rotate, pick up to 2
-    const availableOther = [];
-    for (const task of otherTasks) {
-      if (!(await this.isOnCooldown(task.name))) {
-        availableOther.push(task);
-      }
-    }
-    const shuffledOther = this.shuffle(availableOther).slice(0, 2);
-
-    for (const task of shuffledOther) {
+    for (const task of this.shuffle(otherTasks)) {
+      if (isTimedOut()) break;
       try {
         const taskResult = await task.run();
-        await this.setCooldown(task.name);
         result.tasks.push({
           name: task.name,
           success: true,
@@ -363,45 +272,108 @@ export class HeartbeatScheduler {
         });
       }
     }
+  }
 
-    // ═══════════════════════════════════════════
-    // REPEAT PRIORITY 1: Reply again after doing other work
-    // (catches any new comments that came in during this cycle)
-    // ═══════════════════════════════════════════
-    console.log("REPEAT PRIORITY 1: Final reply sweep...");
+  /**
+   * Phase: Vote + comment on other projects
+   * Runs every 5 min (5,10,15,...,55)
+   */
+  private async phaseVoteAndComment(
+    result: HeartbeatResult,
+    isTimedOut: () => boolean,
+  ): Promise<void> {
+    console.log("VOTE+COMMENT: Voting + commenting on other projects...");
+
+    // Vote on forum posts
     try {
-      const finalReplyResult = await replyToAllComments(
-        this.client,
-        this.forumAgent,
-        this.cache,
-      );
-      if (finalReplyResult.replied > 0) {
-        result.tasks.push({
-          name: "reply_to_comments_final",
-          success: true,
-          result: finalReplyResult,
-        });
-        console.log(
-          `Final sweep: replied to ${finalReplyResult.replied} more comments`,
-        );
-      }
+      const voteResult = await this.forumAgent.runIntelligentVoting();
+      result.tasks.push({
+        name: "intelligent_voting",
+        success: true,
+        result: {
+          voted: voteResult.voted,
+          skipped: voteResult.skipped,
+          reasons: voteResult.reasons,
+        },
+      });
     } catch (error) {
       result.tasks.push({
-        name: "reply_to_comments_final",
+        name: "intelligent_voting",
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
       });
     }
 
-    // Track analytics (always, lightweight)
+    // Vote on projects strategically
+    if (isTimedOut()) return;
+    try {
+      const projectVoteResult =
+        await this.forumAgent.voteOnProjectsStrategically();
+      result.tasks.push({
+        name: "project_voting",
+        success: true,
+        result: {
+          voted: projectVoteResult.voted,
+          skipped: projectVoteResult.skipped,
+          votedProjects: projectVoteResult.votedProjects,
+          reasons: projectVoteResult.reasons,
+        },
+      });
+    } catch (error) {
+      result.tasks.push({
+        name: "project_voting",
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+
+    // Comment on other agent posts (engage with forum)
+    if (isTimedOut()) return;
+    try {
+      const engagement = await this.forumAgent.engageWithForum();
+      result.tasks.push({
+        name: "forum_engagement",
+        success: true,
+        result: engagement,
+      });
+    } catch (error) {
+      result.tasks.push({
+        name: "forum_engagement",
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+
+    // Promo comments on other posts
+    if (isTimedOut()) return;
+    try {
+      const promoComments = await this.forumAgent.commentOnAgentPosts();
+      result.tasks.push({
+        name: "promo_comments",
+        success: true,
+        result: { commentsPosted: promoComments },
+      });
+    } catch (error) {
+      result.tasks.push({
+        name: "promo_comments",
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  }
+
+  /**
+   * Track analytics + accumulate vote count in KV
+   */
+  private async trackAnalytics(result: HeartbeatResult): Promise<void> {
     try {
       const successTasks = result.tasks.filter((t) => t.success);
       const failedTasks = result.tasks.filter((t) => !t.success);
-
       const forumVotes = countForumVotes(result.tasks);
       const projectVotes = countProjectVotes(result.tasks);
 
       await this.forumAgent.trackEngagement("heartbeat", true, {
+        phase: result.phase,
         posts: countPosts(result.tasks),
         comments: countComments(result.tasks),
         forumVotes,
@@ -409,7 +381,6 @@ export class HeartbeatScheduler {
         mentions: countMentions(result.tasks),
         successfulTasks: successTasks.length,
         failedTasks: failedTasks.length,
-        selectedTasks: result.tasks.map((t: { name: string }) => t.name),
       });
 
       // Accumulate total votes given in KV
@@ -440,13 +411,6 @@ export class HeartbeatScheduler {
         error: error instanceof Error ? error.message : "Unknown error",
       });
     }
-
-    // Store heartbeat result
-    await this.cache.put("neptu:last_heartbeat", JSON.stringify(result), {
-      expirationTtl: 86400,
-    });
-
-    return result;
   }
 
   /**
@@ -471,12 +435,9 @@ export class HeartbeatScheduler {
    * Post a scheduled progress update
    */
   async postScheduledUpdate(): Promise<void> {
-    // Get current stats
     const stats = await this.forumAgent.getStats();
 
-    // Determine what to highlight
     const achievements: string[] = [];
-    const _nextSteps: string[] = [];
 
     if (stats.myPosts > 0) {
       achievements.push(`Posted ${stats.myPosts} forum threads`);
@@ -492,16 +453,13 @@ export class HeartbeatScheduler {
       );
     }
 
-    // Only post if we have meaningful achievements
     if (achievements.length >= 2) {
-      // Check if we've posted an update recently
       const lastUpdate = await this.cache.get("neptu:last_progress_update");
       const hoursSinceUpdate = lastUpdate
         ? (Date.now() - new Date(lastUpdate).getTime()) / (1000 * 60 * 60)
         : 999;
 
       if (hoursSinceUpdate > 12) {
-        // Only post every 12+ hours
         await this.forumAgent.postProgressUpdate({
           title: "Building the Bridge Between Ancient Wisdom and Web3",
           achievements,

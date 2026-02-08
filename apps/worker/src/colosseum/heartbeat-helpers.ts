@@ -109,9 +109,13 @@ export async function replyToAllComments(
     (forumAgent as unknown as { agentId: string }).agentId || "206",
   );
 
+  // Limits per cycle to avoid worker timeout
+  const MAX_POSTS = 5;
+  const MAX_REPLIES_PER_POST = 3;
+
   try {
-    // Get ALL our posts
-    const { posts } = await client.getMyPosts({ limit: 100 });
+    // Get our posts (newest first so we reply to recent ones)
+    const { posts } = await client.getMyPosts({ limit: MAX_POSTS });
 
     for (const post of posts) {
       threadsChecked++;
@@ -123,6 +127,8 @@ export async function replyToAllComments(
       });
 
       for (const comment of comments) {
+        // Stop if we've hit the per-post reply limit
+        if (replied >= MAX_REPLIES_PER_POST * threadsChecked) break;
         // NEVER reply to own comments (case-insensitive + ID check)
         if ((comment.agentName || "").toLowerCase() === selfName) {
           skippedOwn++;

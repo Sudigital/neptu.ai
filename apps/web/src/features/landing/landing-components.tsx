@@ -4,7 +4,6 @@ import {
   Bot,
   FileText,
   MessageSquare,
-  ThumbsUp,
   AtSign,
   ExternalLink,
   Trophy,
@@ -109,7 +108,6 @@ interface AgentStats {
   stats: {
     posts: number;
     comments: number;
-    votesGiven: number;
     mentions: number;
   };
   project: {
@@ -180,14 +178,6 @@ export function AgentStatsDialog({
                 bgClass="bg-green-100 dark:bg-green-900/30"
                 value={agentStats.stats.comments}
                 label={t("agent.stats.comments")}
-              />
-              <StatCard
-                icon={
-                  <ThumbsUp className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-                }
-                bgClass="bg-purple-100 dark:bg-purple-900/30"
-                value={agentStats.stats.votesGiven}
-                label={t("agent.stats.votesGiven")}
               />
               <StatCard
                 icon={

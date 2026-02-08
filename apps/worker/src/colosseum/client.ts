@@ -122,21 +122,35 @@ export class ColosseumClient {
       headers["Authorization"] = `Bearer ${this.apiKey}`;
     }
 
-    const response = await fetch(url, {
-      ...options,
-      headers,
-    });
+    // 10 second timeout to prevent hanging
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-    if (!response.ok) {
-      const error = await response
-        .json()
-        .catch(() => ({ message: "Unknown error" }));
-      throw new Error(
-        `Colosseum API Error ${response.status}: ${JSON.stringify(error)}`,
-      );
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers,
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        const error = await response
+          .json()
+          .catch(() => ({ message: "Unknown error" }));
+        throw new Error(
+          `Colosseum API Error ${response.status}: ${JSON.stringify(error)}`,
+        );
+      }
+
+      return response.json() as Promise<T>;
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        throw new Error(`Colosseum API timeout: ${endpoint} (10s)`);
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
     }
-
-    return response.json() as Promise<T>;
   }
 
   // ============ Agent Status ============

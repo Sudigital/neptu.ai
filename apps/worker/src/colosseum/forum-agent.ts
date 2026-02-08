@@ -52,6 +52,7 @@ export interface ForumAgentEnv {
   COLOSSEUM_AGENT_ID?: string;
   COLOSSEUM_AGENT_NAME?: string;
   CACHE: KVNamespace;
+  DB?: D1Database;
 }
 
 const COMMENT_RATE_LIMIT_MS = 2000; // 2 sec between comments
@@ -71,6 +72,7 @@ export class ForumAgent {
   private calculator: NeptuCalculator;
   private agentName: string;
   private agentId: string;
+  private db?: D1Database;
 
   constructor(env: ForumAgentEnv) {
     this.client = new ColosseumClient(env);
@@ -78,6 +80,7 @@ export class ForumAgent {
     this.calculator = new NeptuCalculator();
     this.agentName = env.COLOSSEUM_AGENT_NAME || "Neptu";
     this.agentId = env.COLOSSEUM_AGENT_ID || "206";
+    this.db = env.DB;
   }
 
   /** Generate a personalized Peluang reading */
@@ -421,6 +424,7 @@ export class ForumAgent {
       this.calculator,
       this.cache,
       this.agentName,
+      this.db,
     );
   }
 

@@ -17,7 +17,11 @@ export { ForumAgent } from "./forum-agent";
 export type { ForumAgentEnv } from "./forum-agent";
 
 export { HeartbeatScheduler } from "./heartbeat";
-export type { HeartbeatEnv, HeartbeatResult } from "./heartbeat";
+export type {
+  HeartbeatEnv,
+  HeartbeatResult,
+  HeartbeatPhase,
+} from "./heartbeat";
 
 // Crypto market data
 export {

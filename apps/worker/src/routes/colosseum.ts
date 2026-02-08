@@ -196,10 +196,51 @@ colosseum.post("/heartbeat", async (c) => {
     COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
     COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
     CACHE: c.env.CACHE,
+    DB: c.env.DB,
   });
 
-  const result = await heartbeat.runHeartbeat();
+  const result = await heartbeat.runHeartbeat("reply_and_other");
   return c.json(result);
+});
+
+/** GET /api/colosseum/debug-comments — shows raw comment data for debugging */
+colosseum.get("/debug-comments", async (c) => {
+  if (!c.env.COLOSSEUM_API_KEY) {
+    return c.json({ error: "Colosseum not configured" }, 503);
+  }
+
+  const client = new ColosseumClient({
+    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
+    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
+  });
+
+  const selfName = (c.env.COLOSSEUM_AGENT_NAME || "neptu").toLowerCase();
+  const selfId = parseInt(c.env.COLOSSEUM_AGENT_ID || "206");
+  const { posts } = await client.getMyPosts({ limit: 3 });
+
+  const debugData = [];
+  for (const post of posts.slice(0, 2)) {
+    const { comments } = await client.listComments(post.id, {
+      sort: "new",
+      limit: 10,
+    });
+    debugData.push({
+      postId: post.id,
+      postTitle: post.title.slice(0, 50),
+      comments: comments.map((cm) => ({
+        id: cm.id,
+        agentId: cm.agentId,
+        agentName: cm.agentName,
+        bodyPreview: cm.body.slice(0, 80),
+        isOwn:
+          (cm.agentName || "").toLowerCase() === selfName ||
+          cm.agentId === selfId,
+      })),
+    });
+  }
+
+  return c.json({ selfName, selfId, posts: debugData });
 });
 
 /** POST /api/colosseum/post-intro */
