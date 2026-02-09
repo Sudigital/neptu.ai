@@ -183,6 +183,8 @@ This document tracks the implementation of the $NEPTU token and payment system f
 - `repositories/token-transaction-repository.ts` - Data access
 - `services/token-transaction-service.ts` - Business logic
 
+**Tests:** 34 passing (bun-sqlite test helper for in-memory D1 compat)
+
 ### apps/api - API Routes
 
 | Method | Path                              | Description             |
@@ -216,21 +218,24 @@ This document tracks the implementation of the $NEPTU token and payment system f
 
 ## Next Steps
 
-### Phase 3.6: Gamification Database
+### Phase 4: AI Oracle ✅ DONE
 
-- [ ] Add `user_rewards` schema (tracks unclaimed rewards)
-- [ ] Add `user_streaks` schema (streak tracking)
-- [ ] Add `referrals` schema (referral tracking)
-- [ ] Create claim verification logic
+- [x] Azure OpenAI gpt-4o-mini integration (apps/worker)
+- [x] NeptuOracle class with Potensi+Peluang context injection
+- [x] Oracle Sheet chat UI with interest-based personalization
 
-### Phase 3.7: Payment UI
+### Wallet Page ✅ DONE
 
-- [ ] Payment toggle component (SOL/NEPTU)
-- [ ] Transaction signing flow
-- [ ] Unlock reading on success
+- [x] Token balance, streak, unclaimed rewards display
+- [x] Transaction history component with Solana explorer links
+- [x] Token stats card (SOL spent, NEPTU earned/burned, tx count)
 
-### Phase 3.8: Rewards UI
+### Onboarding ✅ REMOVED
 
-- [ ] Unclaimed rewards display
-- [ ] Claim button with fee estimate
-- [ ] Streak counter widget
+- [x] Removed `/onboarding` route — users set profile in `/settings`
+
+### Remaining
+
+- [ ] Payment toggle component (SOL/NEPTU) integration in reading pages
+- [ ] Transaction signing flow end-to-end
+- [ ] Compatibility page

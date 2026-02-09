@@ -374,4 +374,46 @@ export const neptuApi = {
     }>("/api/pay/claim/build", { walletAddress, amount, nonce });
     return data;
   },
+
+  // Token - Get transaction history
+  async getTransactions(
+    walletAddress: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+      transactionType?: string;
+    },
+  ) {
+    const { data } = await api.get<{
+      success: boolean;
+      transactions: Array<{
+        id: string;
+        txSignature: string;
+        transactionType: string;
+        readingType: string | null;
+        solAmount: number | null;
+        neptuAmount: number | null;
+        neptuRewarded: number | null;
+        neptuBurned: number | null;
+        status: string;
+        createdAt: string;
+        confirmedAt: string | null;
+      }>;
+    }>(`/api/token/transactions/${walletAddress}`, { params });
+    return data;
+  },
+
+  // Token - Get token stats
+  async getTokenStats(walletAddress: string) {
+    const { data } = await api.get<{
+      success: boolean;
+      stats: {
+        totalSolSpent: number;
+        totalNeptuEarned: number;
+        totalNeptuBurned: number;
+        totalTransactions: number;
+      };
+    }>(`/api/token/stats/${walletAddress}`);
+    return data;
+  },
 };

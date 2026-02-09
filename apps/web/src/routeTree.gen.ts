@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as P2pRouteImport } from './routes/p2p'
-import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CryptosIndexRouteImport } from './routes/cryptos/index'
@@ -40,11 +39,6 @@ const PricingRoute = PricingRouteImport.update({
 const P2pRoute = P2pRouteImport.update({
   id: '/p2p',
   path: '/p2p',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OnboardingRoute = OnboardingRouteImport.update({
-  id: '/onboarding',
-  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -151,7 +145,6 @@ const AuthenticatedErrorsErrorRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/onboarding': typeof OnboardingRoute
   '/p2p': typeof P2pRoute
   '/pricing': typeof PricingRoute
   '/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
@@ -174,7 +167,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/onboarding': typeof OnboardingRoute
   '/p2p': typeof P2pRoute
   '/pricing': typeof PricingRoute
   '/401': typeof errors401Route
@@ -198,7 +190,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/onboarding': typeof OnboardingRoute
   '/p2p': typeof P2pRoute
   '/pricing': typeof PricingRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
@@ -223,7 +214,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/onboarding'
     | '/p2p'
     | '/pricing'
     | '/settings'
@@ -246,7 +236,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/onboarding'
     | '/p2p'
     | '/pricing'
     | '/401'
@@ -269,7 +258,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
-    | '/onboarding'
     | '/p2p'
     | '/pricing'
     | '/_authenticated/settings'
@@ -294,7 +282,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  OnboardingRoute: typeof OnboardingRoute
   P2pRoute: typeof P2pRoute
   PricingRoute: typeof PricingRoute
   errors401Route: typeof errors401Route
@@ -320,13 +307,6 @@ declare module '@tanstack/react-router' {
       path: '/p2p'
       fullPath: '/p2p'
       preLoaderRoute: typeof P2pRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/onboarding': {
-      id: '/onboarding'
-      path: '/onboarding'
-      fullPath: '/onboarding'
-      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -510,7 +490,6 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  OnboardingRoute: OnboardingRoute,
   P2pRoute: P2pRoute,
   PricingRoute: PricingRoute,
   errors401Route: errors401Route,

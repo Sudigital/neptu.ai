@@ -47,7 +47,7 @@ function LandingPage() {
     }
 
     // Redirect only if user just completed login/wallet connection
-    // Always go to dashboard - dashboard will check onboarding status
+    // Always go to dashboard - dashboard will check if birthdate is set
     if (authenticated && hasWallet && !wasAuthenticatedOnMount.current) {
       navigate({ to: "/dashboard" });
     }

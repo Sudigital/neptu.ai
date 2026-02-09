@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/card";
 import { neptuApi } from "@/lib/api";
 import { TokenBalance } from "./components/token-balance";
+import { TransactionHistory } from "./components/transaction-history";
+import { TokenStatsCard } from "./components/token-stats";
 import {
   StreakCounter,
   UnclaimedRewards,
@@ -79,6 +81,20 @@ export function Wallet() {
   } = useQuery({
     queryKey: ["streak", walletAddress],
     queryFn: () => neptuApi.getStreakInfo(walletAddress),
+    enabled: !!walletAddress,
+  });
+
+  // Get transaction history
+  const { data: transactionsData, isLoading: transactionsLoading } = useQuery({
+    queryKey: ["transactions", walletAddress],
+    queryFn: () => neptuApi.getTransactions(walletAddress, { limit: 20 }),
+    enabled: !!walletAddress,
+  });
+
+  // Get token stats
+  const { data: statsData, isLoading: statsLoading } = useQuery({
+    queryKey: ["tokenStats", walletAddress],
+    queryFn: () => neptuApi.getTokenStats(walletAddress),
     enabled: !!walletAddress,
   });
 
@@ -237,6 +253,21 @@ export function Wallet() {
               onClaim={handleClaimRewards}
               isLoading={rewardsLoading}
               isClaiming={isClaimingRewards}
+            />
+          </div>
+
+          {/* Token Stats */}
+          <TokenStatsCard
+            stats={statsData?.stats ?? null}
+            isLoading={statsLoading}
+            className="md:col-span-2"
+          />
+
+          {/* Transaction History */}
+          <div className="md:col-span-2">
+            <TransactionHistory
+              transactions={transactionsData?.transactions ?? []}
+              isLoading={transactionsLoading}
             />
           </div>
 

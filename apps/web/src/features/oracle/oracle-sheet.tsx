@@ -67,7 +67,7 @@ export function OracleSheet({ children }: OracleSheetProps) {
     }
   }, [messages]);
 
-  // Ask Oracle mutation
+  // Ask Oracle mutation - always include today's date for Peluang context
   const askMutation = useMutation({
     mutationFn: async (question: string) => {
       if (!birthDate) {
@@ -78,12 +78,8 @@ export function OracleSheet({ children }: OracleSheetProps) {
         interests.length > 0
           ? `[User interests: ${interests.join(", ")}] ${question}`
           : question;
-      return neptuApi.askOracle(
-        contextualQuestion,
-        birthDate,
-        undefined,
-        language,
-      );
+      const today = new Date().toISOString().split("T")[0];
+      return neptuApi.askOracle(contextualQuestion, birthDate, today, language);
     },
     onSuccess: (data) => {
       const oracleResponse: OracleMessage = {

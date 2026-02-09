@@ -11,8 +11,8 @@
 | ----- | --------------- | -------------- | ---- |
 | 1     | Core Calculator | ✅ DONE        | -    |
 | 2     | Frontend UI     | 🔄 IN PROGRESS | 2-3  |
-| 3     | Token & Payment | 🔄 IN PROGRESS | 2    |
-| 4     | AI Agent        | ⏳ PENDING     | 2    |
+| 3     | Token & Payment | ✅ DONE        | 2    |
+| 4     | AI Agent        | ✅ DONE        | 2    |
 | 5     | Polish & Deploy | ⏳ PENDING     | 2    |
 
 ---
@@ -81,24 +81,13 @@ Balance: 2.23152216 SOL
 - [x] Update NavUser component with wallet info
 - [ ] Test wallet connection flow
 
-### 2.2 Onboarding Flow (NEW)
+### 2.2 Onboarding Flow ✅ REMOVED
 
-After wallet connect, guide user through onboarding:
+Onboarding was removed — users now set their profile (birthday, interests) directly in `/settings/profile` after wallet connect.
 
-- [ ] Detect first-time user (no profile in DB)
-- [ ] Redirect to `/onboarding` after connect
-- [ ] **Step 1: Birthday** (required, stored securely)
-  - Date picker with validation
-  - Explain: "Your birthday unlocks your Balinese soul reading"
-  - Store encrypted/hashed in DB (never exposed in API)
-- [ ] **Step 2: Interests** (optional, multi-select)
-  - Categories: Career, Love, Health, Spirituality, Finance, Family, Travel
-  - Store as array in user profile
-  - Used by AI for personalized insights
-- [ ] **Step 3: Display Name** (optional)
-  - For personalized greetings
-- [ ] Mark user as `onboarded: true` in DB
-- [ ] Redirect to `/dashboard` after completion
+- [x] Removed `/onboarding` route and feature directory
+- [x] Landing page redirects to `/settings` if birthDate not set
+- [x] Profile page handles birthday + interests setup
 
 ### 2.3 Profile Management
 
@@ -115,9 +104,8 @@ After wallet connect, guide user through onboarding:
 
 - [x] `/` - Public landing page
 - [x] `/dashboard` - Authenticated dashboard (Potensi + Peluang combined)
-- [x] `/onboarding` - First-time user setup (birthday, interests)
 - [ ] `/compatibility` - Two dates → Mitra Satru result
-- [ ] `/wallet` - NEPTU balance, transactions, claim rewards
+- [x] `/wallet` - NEPTU balance, transactions, token stats, claim rewards
 - [x] `/settings/profile` - Manage profile
 - [ ] `/readings` - History of saved readings (optional)
 
@@ -206,7 +194,7 @@ After wallet connect, guide user through onboarding:
   - UserStreakService: recordCheckIn, isStreakActive, getNextMilestone, getMilestoneReward
   - ReferralService: createReferral, processReferralRewards, getReferralStats, generateReferralCode
 - [x] Add GAMIFICATION_REWARDS and STREAK_MILESTONES constants to @neptu/shared
-- [x] Unit tests (28 new tests passing, 33 total)
+- [x] Unit tests (28 new tests passing, 34 total with bun-sqlite test helper)
 
 ### 3.7 Payment UI ✅ DONE
 
@@ -227,26 +215,28 @@ After wallet connect, guide user through onboarding:
 
 ---
 
-## Phase 4: AI Agent ⏳ PENDING
+## Phase 4: AI Agent ✅ DONE
 
-### 4.1 Oracle Chat
+### 4.1 Oracle Chat ✅ DONE
 
-- [ ] Azure OpenAI / Claude API integration
-- [ ] System prompt for Neptu oracle
-- [ ] Chat endpoint in apps/api
-- [ ] Chat UI component
+- [x] Azure OpenAI gpt-4o-mini integration (apps/worker)
+- [x] NeptuOracle class with system prompt for Balinese astrology
+- [x] Oracle API endpoints in apps/worker
+  - POST `/api/oracle` — Ask question with Potensi+Peluang context
+  - GET `/api/oracle/daily/:birthDate` — Daily interpretation
+  - POST `/api/oracle/interpret` — Interpret specific date
+- [x] Oracle Sheet UI (chat interface in apps/web)
 
-### 4.2 Context Injection
+### 4.2 Context Injection ✅ DONE
 
-- [ ] Pass user's Potensi to AI
-- [ ] Pass today's Peluang to AI
-- [ ] Personalized responses
+- [x] Worker calculates Potensi from birthDate using NeptuCalculator
+- [x] Worker calculates Peluang from targetDate using NeptuCalculator
+- [x] Both injected as system context for AI responses
+- [x] User's interests passed in question context for personalization
 
 ### 4.3 Agent Registration
 
-- [ ] Register on Colosseum
-- [ ] Create project
-- [ ] Post on forum
+- [x] Submitted to Colosseum
 
 ---
 
