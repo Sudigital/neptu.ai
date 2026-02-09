@@ -34,36 +34,48 @@ oracle.post("/", async (c) => {
     return c.json({ error: "AI oracle not configured" }, 503);
   }
 
-  const calculator = new NeptuCalculator();
-  const oracleAI = new NeptuOracle({
-    apiKey: c.env.AZURE_OPENAI_API_KEY,
-    endpoint: c.env.AZURE_OPENAI_ENDPOINT,
-    deployment: c.env.AZURE_OPENAI_DEPLOYMENT,
-    apiVersion: c.env.AZURE_OPENAI_API_VERSION,
-  });
+  try {
+    const calculator = new NeptuCalculator();
+    const oracleAI = new NeptuOracle({
+      apiKey: c.env.AZURE_OPENAI_API_KEY,
+      endpoint: c.env.AZURE_OPENAI_ENDPOINT,
+      deployment: c.env.AZURE_OPENAI_DEPLOYMENT,
+      apiVersion: c.env.AZURE_OPENAI_API_VERSION,
+    });
 
-  const birthDate = new Date(body.birthDate);
-  const potensi = calculator.calculatePotensi(birthDate);
-  const language = body.language || "en";
+    const birthDate = new Date(body.birthDate);
+    const potensi = calculator.calculatePotensi(birthDate);
+    const language = body.language || "en";
 
-  let peluang;
-  if (body.targetDate) {
-    const targetDate = new Date(body.targetDate);
-    peluang = calculator.calculatePeluang(targetDate, birthDate);
+    let peluang;
+    if (body.targetDate) {
+      const targetDate = new Date(body.targetDate);
+      peluang = calculator.calculatePeluang(targetDate, birthDate);
+    }
+
+    const response = await oracleAI.askQuestion(
+      body.question,
+      potensi,
+      peluang,
+      c.env.CACHE,
+      language,
+    );
+
+    return c.json({
+      success: true,
+      ...response,
+    });
+  } catch (error) {
+    console.error("[Oracle] askQuestion error:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to get oracle response",
+        message: error instanceof Error ? error.message : "Unknown error",
+      },
+      500,
+    );
   }
-
-  const response = await oracleAI.askQuestion(
-    body.question,
-    potensi,
-    peluang,
-    c.env.CACHE,
-    language,
-  );
-
-  return c.json({
-    success: true,
-    ...response,
-  });
 });
 
 /**
@@ -83,32 +95,44 @@ oracle.get("/daily/:birthDate", async (c) => {
     return c.json({ error: "AI oracle not configured" }, 503);
   }
 
-  const calculator = new NeptuCalculator();
-  const oracleAI = new NeptuOracle({
-    apiKey: c.env.AZURE_OPENAI_API_KEY,
-    endpoint: c.env.AZURE_OPENAI_ENDPOINT,
-    deployment: c.env.AZURE_OPENAI_DEPLOYMENT,
-    apiVersion: c.env.AZURE_OPENAI_API_VERSION,
-  });
+  try {
+    const calculator = new NeptuCalculator();
+    const oracleAI = new NeptuOracle({
+      apiKey: c.env.AZURE_OPENAI_API_KEY,
+      endpoint: c.env.AZURE_OPENAI_ENDPOINT,
+      deployment: c.env.AZURE_OPENAI_DEPLOYMENT,
+      apiVersion: c.env.AZURE_OPENAI_API_VERSION,
+    });
 
-  const birthDate = new Date(birthDateStr);
-  const today = new Date();
+    const birthDate = new Date(birthDateStr);
+    const today = new Date();
 
-  const potensi = calculator.calculatePotensi(birthDate);
-  const peluang = calculator.calculatePeluang(today, birthDate);
+    const potensi = calculator.calculatePotensi(birthDate);
+    const peluang = calculator.calculatePeluang(today, birthDate);
 
-  const response = await oracleAI.getDailyInterpretation(
-    potensi,
-    peluang,
-    c.env.CACHE,
-    language,
-  );
+    const response = await oracleAI.getDailyInterpretation(
+      potensi,
+      peluang,
+      c.env.CACHE,
+      language,
+    );
 
-  return c.json({
-    success: true,
-    date: today.toISOString().split("T")[0],
-    ...response,
-  });
+    return c.json({
+      success: true,
+      date: today.toISOString().split("T")[0],
+      ...response,
+    });
+  } catch (error) {
+    console.error("[Oracle] dailyInterpretation error:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to get daily interpretation",
+        message: error instanceof Error ? error.message : "Unknown error",
+      },
+      500,
+    );
+  }
 });
 
 /**
@@ -144,37 +168,49 @@ oracle.post("/interpret", async (c) => {
     });
   }
 
-  const calculator = new NeptuCalculator();
-  const oracleAI = new NeptuOracle({
-    apiKey: c.env.AZURE_OPENAI_API_KEY,
-    endpoint: c.env.AZURE_OPENAI_ENDPOINT,
-    deployment: c.env.AZURE_OPENAI_DEPLOYMENT,
-    apiVersion: c.env.AZURE_OPENAI_API_VERSION,
-  });
+  try {
+    const calculator = new NeptuCalculator();
+    const oracleAI = new NeptuOracle({
+      apiKey: c.env.AZURE_OPENAI_API_KEY,
+      endpoint: c.env.AZURE_OPENAI_ENDPOINT,
+      deployment: c.env.AZURE_OPENAI_DEPLOYMENT,
+      apiVersion: c.env.AZURE_OPENAI_API_VERSION,
+    });
 
-  const birthDate = new Date(body.birthDate);
-  const targetDate = new Date(body.targetDate);
+    const birthDate = new Date(body.birthDate);
+    const targetDate = new Date(body.targetDate);
 
-  const potensi = calculator.calculatePotensi(birthDate);
-  const peluang = calculator.calculatePeluang(targetDate, birthDate);
+    const potensi = calculator.calculatePotensi(birthDate);
+    const peluang = calculator.calculatePeluang(targetDate, birthDate);
 
-  const interpretation = await oracleAI.getDateInterpretation(
-    potensi,
-    peluang,
-    targetDate,
-    c.env.CACHE,
-    language,
-  );
+    const interpretation = await oracleAI.getDateInterpretation(
+      potensi,
+      peluang,
+      targetDate,
+      c.env.CACHE,
+      language,
+    );
 
-  // Cache for 6 hours
-  await c.env.CACHE.put(cacheKey, interpretation, { expirationTtl: 21600 });
+    // Cache for 6 hours
+    await c.env.CACHE.put(cacheKey, interpretation, { expirationTtl: 21600 });
 
-  return c.json({
-    success: true,
-    interpretation,
-    date: body.targetDate,
-    cached: false,
-  });
+    return c.json({
+      success: true,
+      interpretation,
+      date: body.targetDate,
+      cached: false,
+    });
+  } catch (error) {
+    console.error("[Oracle] interpret error:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to get interpretation",
+        message: error instanceof Error ? error.message : "Unknown error",
+      },
+      500,
+    );
+  }
 });
 
 export { oracle };

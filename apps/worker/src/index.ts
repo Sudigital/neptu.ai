@@ -4,6 +4,7 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { createDatabase, DailyReadingService } from "@neptu/drizzle-orm";
 import { NeptuCalculator } from "@neptu/wariga";
+import { CORS_ALLOWED_ORIGINS } from "@neptu/shared";
 import { HeartbeatScheduler, fetchAndStoreCryptoMarketData } from "./colosseum";
 import { oracle } from "./routes/oracle";
 import { colosseum } from "./routes/colosseum";
@@ -20,6 +21,7 @@ interface Env {
   COLOSSEUM_API_KEY: string;
   COLOSSEUM_AGENT_ID: string;
   COLOSSEUM_AGENT_NAME: string;
+  COINGECKO_API_KEY: string;
 }
 
 const app = new Hono<{ Bindings: Env }>();
@@ -28,12 +30,7 @@ app.use("*", logger());
 app.use(
   "*",
   cors({
-    origin: [
-      "https://neptu.sudigital.com/",
-      "https://neptu.sudigital.com",
-      "https://neptu-web-production.pages.dev",
-      "http://localhost:3001",
-    ],
+    origin: [...CORS_ALLOWED_ORIGINS],
     allowMethods: ["GET", "POST", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
   }),
@@ -88,6 +85,23 @@ app.get("/api/daily/:date", async (c) => {
 app.route("/api/oracle", oracle);
 app.route("/api/colosseum", colosseum);
 app.route("/api/crypto", crypto);
+
+// Global error handler
+app.onError((err, c) => {
+  console.error(
+    `[Worker Error] ${c.req.method} ${c.req.path}:`,
+    err.message,
+    err.stack,
+  );
+  return c.json(
+    {
+      success: false,
+      error: "Internal Server Error",
+      message: err.message,
+    },
+    500,
+  );
+});
 
 // --- Scheduled helpers ---
 

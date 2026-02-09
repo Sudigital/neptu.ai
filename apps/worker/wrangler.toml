@@ -1,6 +1,7 @@
 name = "neptu-worker-production"
 main = "src/index.ts"
 compatibility_date = "2024-12-30"
+compatibility_flags = ["nodejs_compat"]
 
 # Custom domain
 routes = [
@@ -26,6 +27,7 @@ COLOSSEUM_AGENT_NAME = "Neptu"
 # Secrets stored in .dev.vars (local) or Cloudflare secrets (production):
 # - AZURE_OPENAI_API_KEY
 # - COLOSSEUM_API_KEY
+# - COINGECKO_API_KEY
 
 [[d1_databases]]
 binding = "DB"
@@ -40,6 +42,7 @@ preview_id = "b4a8eea275004dc283b8db47c176caf5"
 # Production environment
 [env.production]
 name = "neptu-worker-production"
+compatibility_flags = ["nodejs_compat"]
 routes = [
   { pattern = "worker.neptu.sudigital.com", custom_domain = true }
 ]

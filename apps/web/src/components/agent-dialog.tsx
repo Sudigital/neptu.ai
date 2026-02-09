@@ -38,9 +38,7 @@ export function AgentDialog() {
             <Bot className="h-5 w-5 text-primary" />
             {agentStats?.agent.displayName || "Neptu Agent"}
           </DialogTitle>
-          <DialogDescription>
-            AI agent participating in Colosseum Agent Hackathon
-          </DialogDescription>
+          <DialogDescription>{t("agent.dialog.description")}</DialogDescription>
         </DialogHeader>
 
         {agentLoading ? (
@@ -53,7 +51,7 @@ export function AgentDialog() {
             <div className="flex items-center justify-between p-3 rounded-lg bg-primary/5 border border-primary/20">
               <div className="flex items-center gap-2">
                 <Trophy className="h-5 w-5 text-yellow-500" />
-                <span className="font-medium">Agent Rank</span>
+                <span className="font-medium">{t("agent.dialog.rank")}</span>
               </div>
               <span className="text-2xl font-bold text-primary">
                 #{agentStats.agent.rank}
@@ -66,19 +64,25 @@ export function AgentDialog() {
                 <p className="text-2xl font-bold text-primary">
                   {agentStats.project.totalVotes}
                 </p>
-                <p className="text-xs text-muted-foreground">Total Votes</p>
+                <p className="text-xs text-muted-foreground">
+                  {t("agent.dialog.totalVotes")}
+                </p>
               </div>
               <div className="text-center p-3 rounded-lg bg-muted/50">
                 <p className="text-2xl font-bold text-green-600">
                   {agentStats.project.humanVotes}
                 </p>
-                <p className="text-xs text-muted-foreground">Human</p>
+                <p className="text-xs text-muted-foreground">
+                  {t("agent.dialog.human")}
+                </p>
               </div>
               <div className="text-center p-3 rounded-lg bg-muted/50">
                 <p className="text-2xl font-bold text-blue-600">
                   {agentStats.project.agentVotes}
                 </p>
-                <p className="text-xs text-muted-foreground">Agent</p>
+                <p className="text-xs text-muted-foreground">
+                  {t("nav.agent")}
+                </p>
               </div>
             </div>
 
@@ -90,7 +94,9 @@ export function AgentDialog() {
                   <p className="text-sm font-medium">
                     {agentStats.stats.posts}
                   </p>
-                  <p className="text-xs text-muted-foreground">Posts</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t("agent.stats.posts")}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/30">
@@ -99,7 +105,9 @@ export function AgentDialog() {
                   <p className="text-sm font-medium">
                     {agentStats.stats.comments}
                   </p>
-                  <p className="text-xs text-muted-foreground">Comments</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t("agent.stats.comments")}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/30">
@@ -108,7 +116,9 @@ export function AgentDialog() {
                   <p className="text-sm font-medium">
                     {agentStats.stats.mentions}
                   </p>
-                  <p className="text-xs text-muted-foreground">Mentions</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t("agent.stats.mentions")}
+                  </p>
                 </div>
               </div>
             </div>
@@ -139,17 +149,18 @@ export function AgentDialog() {
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 w-full p-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-medium"
             >
-              View Project on Colosseum
+              {t("agent.stats.viewProject")}
               <ExternalLink className="h-4 w-4" />
             </a>
 
             <p className="text-xs text-center text-muted-foreground">
-              Last updated: {new Date(agentStats.updatedAt).toLocaleString()}
+              {t("agent.dialog.lastUpdated")}:{" "}
+              {new Date(agentStats.updatedAt).toLocaleString()}
             </p>
           </div>
         ) : (
           <div className="text-center py-8 text-muted-foreground">
-            <p>Unable to load agent stats</p>
+            <p>{t("agent.dialog.loadError")}</p>
           </div>
         )}
       </DialogContent>

@@ -8,44 +8,24 @@ import {
   CryptoMarketService,
   type CoinGeckoMarketData,
 } from "@neptu/drizzle-orm";
+import { COINGECKO_IDS, COINGECKO_API } from "@neptu/shared";
 import { TOP_CRYPTO_COINS, type CryptoCoin } from "./crypto-birthdays";
 
-// CoinGecko ID mapping for our tracked coins
-// These IDs are used in CoinGecko API URLs
-const COINGECKO_IDS: Record<string, string> = {
-  BTC: "bitcoin",
-  ETH: "ethereum",
-  USDT: "tether",
-  BNB: "binancecoin",
-  XRP: "ripple",
-  USDC: "usd-coin",
-  SOL: "solana",
-  TRX: "tron",
-  DOGE: "dogecoin",
-  BCH: "bitcoin-cash",
-  ADA: "cardano",
-  LINK: "chainlink",
-  AVAX: "avalanche-2",
-};
-
-// Get all CoinGecko IDs for our tracked coins
 export function getCoinGeckoIds(): string[] {
   return TOP_CRYPTO_COINS.map((coin) => COINGECKO_IDS[coin.symbol]).filter(
     Boolean,
   );
 }
 
-// Get CoinGecko ID for a symbol
 export function getCoinGeckoId(symbol: string): string | undefined {
   return COINGECKO_IDS[symbol.toUpperCase()];
 }
 
-// Get symbol from CoinGecko ID
 export function getSymbolFromCoinGeckoId(
   coinGeckoId: string,
 ): string | undefined {
   const entry = Object.entries(COINGECKO_IDS).find(
-    ([_, id]) => id === coinGeckoId,
+    ([, id]) => id === coinGeckoId,
   );
   return entry?.[0];
 }
@@ -59,11 +39,13 @@ export async function fetchCoinGeckoMarketData(): Promise<
 > {
   const coinIds = getCoinGeckoIds().join(",");
 
-  const url = new URL("https://api.coingecko.com/api/v3/coins/markets");
-  url.searchParams.set("vs_currency", "usd");
+  const url = new URL(
+    `${COINGECKO_API.BASE_URL}${COINGECKO_API.MARKETS_ENDPOINT}`,
+  );
+  url.searchParams.set("vs_currency", COINGECKO_API.VS_CURRENCY);
   url.searchParams.set("ids", coinIds);
   url.searchParams.set("order", "market_cap_desc");
-  url.searchParams.set("per_page", "20");
+  url.searchParams.set("per_page", String(COINGECKO_API.PER_PAGE));
   url.searchParams.set("page", "1");
   url.searchParams.set("sparkline", "false");
 

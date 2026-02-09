@@ -147,6 +147,8 @@ export function OracleSheet({ children }: OracleSheetProps) {
       <SheetContent
         side="right"
         className="flex flex-col w-full sm:max-w-md p-0"
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onInteractOutside={(e) => e.preventDefault()}
       >
         <SheetHeader className="border-b px-4 py-3">
           <div className="flex items-center gap-3">

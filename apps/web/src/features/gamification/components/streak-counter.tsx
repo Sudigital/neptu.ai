@@ -84,9 +84,27 @@ export function StreakCounter({
   const currentStreak = streak?.currentStreak ?? 0;
   const longestStreak = streak?.longestStreak ?? 0;
   const totalCheckIns = streak?.totalCheckIns ?? 0;
+  const lastCheckIn = streak?.lastCheckIn ?? null;
   const nextMilestone = getNextMilestone(currentStreak);
   const progress = getProgressToNextMilestone(currentStreak);
   const nextReward = nextMilestone ? MILESTONE_REWARDS[nextMilestone] : null;
+
+  const todayFormatted = new Date().toLocaleDateString(undefined, {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  const lastCheckInFormatted = lastCheckIn
+    ? new Date(lastCheckIn).toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : null;
 
   return (
     <Card className={cn("", className)}>
@@ -97,7 +115,7 @@ export function StreakCounter({
               <Flame className="h-5 w-5 text-orange-500" />
               Daily Streak
             </CardTitle>
-            <CardDescription>Check in daily to earn NEPTU</CardDescription>
+            <CardDescription>{todayFormatted}</CardDescription>
           </div>
           <div className="text-right">
             <p className="text-3xl font-bold text-orange-500">
@@ -148,6 +166,13 @@ export function StreakCounter({
             </div>
           </div>
         </div>
+
+        {/* Last check-in date */}
+        {lastCheckInFormatted && (
+          <p className="text-xs text-muted-foreground text-center">
+            Last check-in: {lastCheckInFormatted}
+          </p>
+        )}
 
         {/* Daily reward info */}
         <div className="flex items-center justify-between p-2 rounded-lg bg-green-500/10 border border-green-500/20">

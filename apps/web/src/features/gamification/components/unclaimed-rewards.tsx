@@ -116,11 +116,13 @@ export function UnclaimedRewards({
                   <p className="text-sm font-medium">
                     {REWARD_LABELS[reward.rewardType]}
                   </p>
-                  {reward.description && (
-                    <p className="text-xs text-muted-foreground">
-                      {reward.description}
-                    </p>
-                  )}
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(reward.createdAt).toLocaleDateString(undefined, {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </p>
                 </div>
               </div>
               <Badge variant="secondary">+{reward.neptuAmount} NEPTU</Badge>
