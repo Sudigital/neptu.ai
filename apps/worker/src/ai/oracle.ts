@@ -1,10 +1,11 @@
-import type { Potensi, Peluang } from "@neptu/shared";
+import type { Potensi, Peluang, CompatibilityResult } from "@neptu/shared";
 import { AzureOpenAI } from "openai";
 import {
   getSystemPrompt,
   generateUserPrompt,
   generateDailyPrompt,
   generateDateInterpretationPrompt,
+  generateCompatibilityPrompt,
 } from "./prompts";
 
 interface OracleConfig {
@@ -199,5 +200,40 @@ export class NeptuOracle {
     );
 
     return content;
+  }
+
+  /**
+   * Generate AI interpretation for a compatibility / Mitra Satru reading
+   */
+  async getCompatibilityInterpretation(
+    result: CompatibilityResult,
+    cache?: KVNamespace,
+    language: string = "en",
+  ): Promise<OracleResponse> {
+    const cacheKey = `compat:${result.person1.date}:${result.person2.date}:${language}`;
+
+    if (cache) {
+      const cached = await cache.get(cacheKey);
+      if (cached) {
+        return { message: cached, cached: true };
+      }
+    }
+
+    const userPrompt = generateCompatibilityPrompt(result, language);
+
+    const { content, tokensUsed } = await this.callAzureOpenAI(
+      getSystemPrompt(language),
+      userPrompt,
+    );
+
+    if (cache) {
+      await cache.put(cacheKey, content, { expirationTtl: 21600 });
+    }
+
+    return {
+      message: content,
+      cached: false,
+      tokensUsed,
+    };
   }
 }

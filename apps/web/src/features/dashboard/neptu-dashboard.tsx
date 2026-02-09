@@ -68,7 +68,7 @@ export function Dashboard() {
       title: t("nav.compatibility"),
       href: "/compatibility",
       isActive: false,
-      disabled: true,
+      disabled: false,
     },
     {
       title: t("nav.docs"),

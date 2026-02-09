@@ -104,7 +104,7 @@ Onboarding was removed — users now set their profile (birthday, interests) dir
 
 - [x] `/` - Public landing page
 - [x] `/dashboard` - Authenticated dashboard (Potensi + Peluang combined)
-- [ ] `/compatibility` - Two dates → Mitra Satru result
+- [x] `/compatibility` - Two dates → Mitra Satru result
 - [x] `/wallet` - NEPTU balance, transactions, token stats, claim rewards
 - [x] `/settings/profile` - Manage profile
 - [ ] `/readings` - History of saved readings (optional)
@@ -250,6 +250,30 @@ Onboarding was removed — users now set their profile (birthday, interests) dir
 - [x] Removed unused `@solana/spl-token` from `apps/web` (no source imports; `@neptu/solana` wraps `@solana/kit`)
 - [x] Updated `compatibility_date` to `2025-12-01` in both wrangler.toml configs
 - [x] Removed deprecated `version: "3"` from docker-compose.yml
+
+### 5.0.1 Feature: Compatibility / Mitra Satru (Feb 9)
+
+- [x] Added `CompatibilityResult`, `MitraSatruCategory`, `DimensionComparison` types to `@neptu/shared`
+- [x] Added `MITRA_SATRU_PAIRS`, `MITRA_SATRU_DESCRIPTIONS`, `COMPATIBILITY_SCORES` constants to `@neptu/shared`
+- [x] Implemented `calculateCompatibility(dateA, dateB)` in `packages/wariga` calculator
+  - Compares Potensi of both birth dates
+  - Cross-references Frekuensi (GURU/RATU/LARA/PATI) pairing via `MITRA_SATRU_PAIRS`
+  - Calculates combined Frekuensi from both c24_urip values
+  - Compares all 5 dimensions (Cipta, Rasa, Karsa, Tindakan, Siklus)
+  - Weighted scoring: Frekuensi 40%, Cycles 30%, Traits 30%
+- [x] Added `formatCompatibility()` to wariga formatter
+- [x] Replaced placeholder API endpoint `POST /api/reading/compatibility` with real Mitra Satru logic
+- [x] Added `getCompatibility()` method to web API client
+- [x] Created `features/compatibility/` module:
+  - `compatibility-page.tsx` — standalone page with two date pickers + results
+  - `components/compatibility-scores.tsx` — score bar visualization
+  - `components/dimension-comparison.tsx` — trait-by-trait comparison
+- [x] Added compatibility route at `/compatibility`
+- [x] Updated sidebar nav: Compatibility now points to `/compatibility` (was `/coming-soon`)
+- [x] Updated dashboard TopNav: enabled Compatibility link
+- [x] Added compatibility i18n keys to all 10 language files
+- [x] Added 7 new wariga calculator tests (19 total, all passing)
+- [x] All 70 tests pass (19 wariga + 34 drizzle-orm + 17 solana)
 
 ### 5.1 Deployment
 

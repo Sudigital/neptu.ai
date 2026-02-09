@@ -44,9 +44,8 @@ export function useSidebarData(): SidebarData {
             },
             {
               title: t("nav.compatibility"),
-              url: "/coming-soon",
+              url: "/compatibility",
               icon: Heart,
-              badge: "Soon",
             },
           ],
         },

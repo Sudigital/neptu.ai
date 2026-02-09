@@ -213,4 +213,71 @@ oracle.post("/interpret", async (c) => {
   }
 });
 
+/**
+ * POST /api/oracle/compatibility
+ * Get AI interpretation for a Mitra Satru compatibility result
+ */
+oracle.post("/compatibility", async (c) => {
+  const body = await c.req.json<{
+    birthDate1: string;
+    birthDate2: string;
+    language?: string;
+  }>();
+
+  if (!body.birthDate1 || !body.birthDate2) {
+    return c.json({ error: "birthDate1 and birthDate2 are required" }, 400);
+  }
+
+  if (!c.env.AZURE_OPENAI_API_KEY) {
+    return c.json({ error: "AI oracle not configured" }, 503);
+  }
+
+  const language = body.language || "en";
+
+  const cacheKey = `compat:${body.birthDate1}:${body.birthDate2}:${language}`;
+  const cached = await c.env.CACHE.get(cacheKey);
+  if (cached) {
+    return c.json({
+      success: true,
+      message: cached,
+      cached: true,
+    });
+  }
+
+  try {
+    const calculator = new NeptuCalculator();
+    const oracleAI = new NeptuOracle({
+      apiKey: c.env.AZURE_OPENAI_API_KEY,
+      endpoint: c.env.AZURE_OPENAI_ENDPOINT,
+      deployment: c.env.AZURE_OPENAI_DEPLOYMENT,
+      apiVersion: c.env.AZURE_OPENAI_API_VERSION,
+    });
+
+    const date1 = new Date(body.birthDate1);
+    const date2 = new Date(body.birthDate2);
+    const result = calculator.calculateCompatibility(date1, date2);
+
+    const response = await oracleAI.getCompatibilityInterpretation(
+      result,
+      c.env.CACHE,
+      language,
+    );
+
+    return c.json({
+      success: true,
+      ...response,
+    });
+  } catch (error) {
+    console.error("[Oracle] compatibility error:", error);
+    return c.json(
+      {
+        success: false,
+        error: "Failed to get compatibility interpretation",
+        message: error instanceof Error ? error.message : "Unknown error",
+      },
+      500,
+    );
+  }
+});
+
 export { oracle };

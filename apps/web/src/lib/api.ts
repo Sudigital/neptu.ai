@@ -1,5 +1,9 @@
 import axios from "axios";
-import type { RewardType } from "@neptu/shared";
+import type {
+  CompatibilityPair,
+  CompatibilityResult,
+  RewardType,
+} from "@neptu/shared";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 const WORKER_URL = import.meta.env.VITE_WORKER_URL || "http://localhost:8787";
@@ -264,6 +268,25 @@ export const neptuApi = {
     return data;
   },
 
+  // AI Oracle - Get compatibility interpretation
+  async getCompatibilityInterpretation(
+    birthDate1: string,
+    birthDate2: string,
+    language?: string,
+  ) {
+    const { data } = await workerApi.post<{
+      success: boolean;
+      message: string;
+      cached: boolean;
+      tokensUsed?: number;
+    }>("/api/oracle/compatibility", {
+      birthDate1,
+      birthDate2,
+      language: language || "en",
+    });
+    return data;
+  },
+
   // Wallet - Get token balance
   async getTokenBalance(walletAddress: string) {
     const { data } = await api.get<{
@@ -414,6 +437,29 @@ export const neptuApi = {
         totalTransactions: number;
       };
     }>(`/api/token/stats/${walletAddress}`);
+    return data;
+  },
+
+  // Compatibility - Calculate Mitra Satru between two birth dates
+  async getCompatibility(birthDate1: string, birthDate2: string) {
+    const { data } = await api.post<{
+      success: boolean;
+      type: "compatibility";
+      birthDate1: string;
+      birthDate2: string;
+      reading: CompatibilityResult;
+    }>("/api/reading/compatibility", { birthDate1, birthDate2 });
+    return data;
+  },
+
+  // Compatibility Batch - Calculate Mitra Satru for all pairwise combinations
+  async getCompatibilityBatch(birthDates: string[]) {
+    const { data } = await api.post<{
+      success: boolean;
+      type: "compatibility";
+      birthDates: string[];
+      pairs: CompatibilityPair[];
+    }>("/api/reading/compatibility/batch", { birthDates });
     return data;
   },
 };

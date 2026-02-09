@@ -1,4 +1,4 @@
-import type { Potensi, Peluang } from "@neptu/shared";
+import type { Potensi, Peluang, CompatibilityResult } from "@neptu/shared";
 
 /**
  * Language labels for AI response instructions
@@ -215,3 +215,62 @@ Be specific to the actual data values. Speak directly to them in second person.$
 
 // Keep backward compatibility
 export const formatReadingContext = formatReadingData;
+
+/**
+ * Generate prompt for compatibility / Mitra Satru interpretation
+ */
+export function generateCompatibilityPrompt(
+  result: CompatibilityResult,
+  language: string = "en",
+): string {
+  const langNote =
+    language !== "en"
+      ? `\n\nIMPORTANT: Write all content in ${LANGUAGE_LABELS[language] || "English"}.`
+      : "";
+
+  return `Here is a Mitra Satru compatibility reading between two people based on the Balinese Wuku calendar:
+
+PERSON 1 (born ${result.person1.date}):
+- Wuku: ${result.person1.wuku.name}
+- Sapta Wara: ${result.person1.sapta_wara.name} (urip: ${result.person1.sapta_wara.urip})
+- Panca Wara: ${result.person1.panca_wara.name} (urip: ${result.person1.panca_wara.urip})
+- Total Urip: ${result.person1.total_urip}
+- Frekuensi: ${result.mitraSatru.person1Frekuensi.name}
+- Life Purpose: ${result.person1.lahir_untuk?.name} - ${result.person1.lahir_untuk?.description}
+- Psychosocial: ${result.person1.cipta.name}
+- Emotional: ${result.person1.rasa.name}
+- Behavioral: ${result.person1.karsa.name}
+
+PERSON 2 (born ${result.person2.date}):
+- Wuku: ${result.person2.wuku.name}
+- Sapta Wara: ${result.person2.sapta_wara.name} (urip: ${result.person2.sapta_wara.urip})
+- Panca Wara: ${result.person2.panca_wara.name} (urip: ${result.person2.panca_wara.urip})
+- Total Urip: ${result.person2.total_urip}
+- Frekuensi: ${result.mitraSatru.person2Frekuensi.name}
+- Life Purpose: ${result.person2.lahir_untuk?.name} - ${result.person2.lahir_untuk?.description}
+- Psychosocial: ${result.person2.cipta.name}
+- Emotional: ${result.person2.rasa.name}
+- Behavioral: ${result.person2.karsa.name}
+
+MITRA SATRU PAIRING:
+- Person 1 Frekuensi: ${result.mitraSatru.person1Frekuensi.name}
+- Person 2 Frekuensi: ${result.mitraSatru.person2Frekuensi.name}
+- Combined Frekuensi: ${result.mitraSatru.combinedFrekuensi.name}
+- Category: ${result.mitraSatru.category} (${result.mitraSatru.description})
+- Overall Score: ${result.scores.overall}/100
+- Frekuensi Score: ${result.scores.frekuensi}/100
+- Cycles Score: ${result.scores.cycles}/100
+- Traits Score: ${result.scores.traits}/100
+
+DIMENSIONS:
+${result.dimensions.map((d) => `- ${d.dimension}: P1=${d.person1Value}, P2=${d.person2Value} (${d.isMatch ? "match" : "different"})`).join("\n")}
+
+Write a warm, insightful summary (2-3 paragraphs) of this compatibility reading:
+
+1. What the ${result.mitraSatru.category} relationship means for these two people — are they naturally aligned, balanced, or challenged?
+2. How their individual energies (urip ${result.person1.total_urip} and ${result.person2.total_urip}) interact, and what their matching/differing dimensions reveal
+3. Practical relationship advice based on their combined Frekuensi "${result.mitraSatru.combinedFrekuensi.name}" and their life purposes
+
+When mentioning key terms like Frekuensi names, life purposes, or dimensions, wrap them in double quotes like "TERM".
+Speak warmly and directly to both people.${langNote}`;
+}

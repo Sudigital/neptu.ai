@@ -17,6 +17,7 @@ import { Route as CryptosIndexRouteImport } from './routes/cryptos/index'
 import { Route as CryptosSymbolRouteImport } from './routes/cryptos/$symbol'
 import { Route as AuthenticatedWalletRouteImport } from './routes/_authenticated/wallet'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedCompatibilityRouteImport } from './routes/_authenticated/compatibility'
 import { Route as AuthenticatedComingSoonRouteImport } from './routes/_authenticated/coming-soon'
 import { Route as errors503RouteImport } from './routes/(errors)/503'
 import { Route as errors500RouteImport } from './routes/(errors)/500'
@@ -70,6 +71,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCompatibilityRoute =
+  AuthenticatedCompatibilityRouteImport.update({
+    id: '/compatibility',
+    path: '/compatibility',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedComingSoonRoute = AuthenticatedComingSoonRouteImport.update({
   id: '/coming-soon',
   path: '/coming-soon',
@@ -154,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/coming-soon': typeof AuthenticatedComingSoonRoute
+  '/compatibility': typeof AuthenticatedCompatibilityRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/wallet': typeof AuthenticatedWalletRoute
   '/cryptos/$symbol': typeof CryptosSymbolRoute
@@ -175,6 +183,7 @@ export interface FileRoutesByTo {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/coming-soon': typeof AuthenticatedComingSoonRoute
+  '/compatibility': typeof AuthenticatedCompatibilityRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/wallet': typeof AuthenticatedWalletRoute
   '/cryptos/$symbol': typeof CryptosSymbolRoute
@@ -199,6 +208,7 @@ export interface FileRoutesById {
   '/(errors)/500': typeof errors500Route
   '/(errors)/503': typeof errors503Route
   '/_authenticated/coming-soon': typeof AuthenticatedComingSoonRoute
+  '/_authenticated/compatibility': typeof AuthenticatedCompatibilityRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/wallet': typeof AuthenticatedWalletRoute
   '/cryptos/$symbol': typeof CryptosSymbolRoute
@@ -223,6 +233,7 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/coming-soon'
+    | '/compatibility'
     | '/dashboard'
     | '/wallet'
     | '/cryptos/$symbol'
@@ -244,6 +255,7 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/coming-soon'
+    | '/compatibility'
     | '/dashboard'
     | '/wallet'
     | '/cryptos/$symbol'
@@ -267,6 +279,7 @@ export interface FileRouteTypes {
     | '/(errors)/500'
     | '/(errors)/503'
     | '/_authenticated/coming-soon'
+    | '/_authenticated/compatibility'
     | '/_authenticated/dashboard'
     | '/_authenticated/wallet'
     | '/cryptos/$symbol'
@@ -349,6 +362,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/compatibility': {
+      id: '/_authenticated/compatibility'
+      path: '/compatibility'
+      fullPath: '/compatibility'
+      preLoaderRoute: typeof AuthenticatedCompatibilityRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/coming-soon': {
@@ -471,6 +491,7 @@ const AuthenticatedSettingsRouteRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
   AuthenticatedComingSoonRoute: typeof AuthenticatedComingSoonRoute
+  AuthenticatedCompatibilityRoute: typeof AuthenticatedCompatibilityRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedWalletRoute: typeof AuthenticatedWalletRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
@@ -479,6 +500,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
   AuthenticatedComingSoonRoute: AuthenticatedComingSoonRoute,
+  AuthenticatedCompatibilityRoute: AuthenticatedCompatibilityRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedWalletRoute: AuthenticatedWalletRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
