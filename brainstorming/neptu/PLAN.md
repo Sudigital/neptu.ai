@@ -13,7 +13,7 @@
 | 2     | Frontend UI     | 🔄 IN PROGRESS | 2-3  |
 | 3     | Token & Payment | ✅ DONE        | 2    |
 | 4     | AI Agent        | ✅ DONE        | 2    |
-| 5     | Polish & Deploy | ⏳ PENDING     | 2    |
+| 5     | Polish & Deploy | 🔄 IN PROGRESS | 2    |
 
 ---
 
@@ -240,7 +240,16 @@ Onboarding was removed — users now set their profile (birthday, interests) dir
 
 ---
 
-## Phase 5: Polish & Deploy ⏳ PENDING
+## Phase 5: Polish & Deploy 🔄 IN PROGRESS
+
+### 5.0 Codebase Compatibility (Feb 9)
+
+- [x] Upgraded Wrangler: removed worker's pinned `wrangler@^3.99.0` devDep, unified to root `wrangler@4`
+- [x] Aligned `@cloudflare/workers-types` to `^4.20250214.0` across API, worker, drizzle-orm
+- [x] Unified Zod version floor to `^3.25.56` in `apps/web`
+- [x] Removed unused `@solana/spl-token` from `apps/web` (no source imports; `@neptu/solana` wraps `@solana/kit`)
+- [x] Updated `compatibility_date` to `2025-12-01` in both wrangler.toml configs
+- [x] Removed deprecated `version: "3"` from docker-compose.yml
 
 ### 5.1 Deployment
 

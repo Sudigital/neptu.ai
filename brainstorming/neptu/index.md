@@ -239,3 +239,16 @@ This document tracks the implementation of the $NEPTU token and payment system f
 - [ ] Payment toggle component (SOL/NEPTU) integration in reading pages
 - [ ] Transaction signing flow end-to-end
 - [ ] Compatibility page
+
+---
+
+## Codebase Compatibility Fixes (Feb 9)
+
+| Priority | Issue                                           | Status                                                   |
+| -------- | ----------------------------------------------- | -------------------------------------------------------- |
+| High     | Wrangler 3 vs 4 mismatch (worker had `^3.99.0`) | ✅ Fixed — removed worker devDep, uses root `wrangler@4` |
+| High     | Unused `@solana/spl-token` in web               | ✅ Fixed — removed (no source imports)                   |
+| Medium   | `@cloudflare/workers-types` version drift       | ✅ Fixed — aligned to `^4.20250214.0`                    |
+| Medium   | Zod version floor divergence in web             | ✅ Fixed — unified to `^3.25.56`                         |
+| Low      | Stale `compatibility_date` in wrangler configs  | ✅ Fixed — updated to `2025-12-01`                       |
+| Low      | Docker Compose deprecated `version: "3"` key    | ✅ Fixed — removed                                       |
