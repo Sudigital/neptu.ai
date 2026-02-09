@@ -28,9 +28,6 @@ import {
 import { useUser } from "@/hooks/use-user";
 import { useTranslate } from "@/hooks/use-translate";
 
-// Nonce counter for claim transactions (in a real app, this would come from the backend)
-let claimNonce = 0;
-
 export function Wallet() {
   const { walletAddress, wallet } = useUser();
   const queryClient = useQueryClient();
@@ -141,30 +138,12 @@ export function Wallet() {
 
     try {
       const totalAmount = rewardsData.totalPending;
-      const currentNonce = claimNonce++;
 
-      // Step 1: Build the claim instruction from API
-      const buildResult = await neptuApi.buildClaimInstruction(
-        walletAddress,
-        totalAmount,
-        currentNonce,
-      );
-
-      if (!buildResult.success) {
-        throw new Error("Failed to build claim instruction");
-      }
-
-      // Step 2: For hackathon demo, we simulate the on-chain transaction
-      // In production, this would:
-      // - Build transaction from instruction data
-      // - Sign with wallet.signAndSendTransaction()
-      // - Wait for confirmation
-
-      // Simulate transaction delay
+      // Simulate on-chain transaction delay
+      // In production, this would build + sign + send a real Solana transaction
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      // Step 3: Mark rewards as claimed in the database
-      // Process each reward individually
+      // Mark rewards as claimed in the database
       const claimPromises = rewardsData.rewards.map((reward) =>
         neptuApi.claimReward(walletAddress, reward.id, `demo-tx-${Date.now()}`),
       );
