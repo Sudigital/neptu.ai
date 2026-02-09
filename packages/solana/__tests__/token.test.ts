@@ -12,7 +12,7 @@ import {
   calculateNeptuPaymentBurn,
   getReadingPrice,
 } from "../src/token/reward";
-import { PRICING, NEPTU_TOKEN } from "@neptu/shared";
+import { PRICING, NEPTU_TOKEN, SOL_TOKEN } from "@neptu/shared";
 
 describe("Constants", () => {
   test("LAMPORTS_PER_SOL is correct", () => {
@@ -21,6 +21,17 @@ describe("Constants", () => {
 
   test("TOKEN_DECIMALS_MULTIPLIER is correct", () => {
     expect(TOKEN_DECIMALS_MULTIPLIER).toBe(Math.pow(10, NEPTU_TOKEN.DECIMALS));
+  });
+
+  test("SOL_TOKEN has correct properties", () => {
+    expect(SOL_TOKEN.SYMBOL).toBe("SOL");
+    expect(SOL_TOKEN.NAME).toBe("Solana");
+    expect(SOL_TOKEN.DECIMALS).toBe(9);
+  });
+
+  test("NEPTU_TOKEN has correct properties", () => {
+    expect(NEPTU_TOKEN.SYMBOL).toBe("NEPTU");
+    expect(NEPTU_TOKEN.DECIMALS).toBe(6);
   });
 });
 

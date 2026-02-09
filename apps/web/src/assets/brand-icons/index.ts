@@ -1,5 +1,6 @@
 export { IconDiscord } from "./icon-discord";
 export { IconDocker } from "./icon-docker";
+export { IconSolana } from "./icon-solana";
 export { IconFacebook } from "./icon-facebook";
 export { IconFigma } from "./icon-figma";
 export { IconGithub } from "./icon-github";

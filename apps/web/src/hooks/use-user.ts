@@ -46,7 +46,7 @@ export function useUser() {
 
   const ready = privyReady && walletsReady;
   const hasWallet = !!walletAddress && !walletAddress.startsWith("0x");
-  const wallet = connectedWallet || null;
+  const wallet = connectedWallet || linkedWallet || null;
 
   // Fetch user from DB
   const {

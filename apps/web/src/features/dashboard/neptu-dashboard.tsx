@@ -13,8 +13,6 @@ import {
   ChevronLeft,
   ChevronRight,
   RefreshCw,
-  Vote,
-  ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -32,13 +30,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { ConfigDrawer } from "@/components/config-drawer";
-import { Header } from "@/components/layout/header";
 import { Main } from "@/components/layout/main";
-import { TopNav } from "@/components/layout/top-nav";
-import { ProfileDropdown } from "@/components/profile-dropdown";
-import { ThemeSwitch } from "@/components/theme-switch";
-import { OracleSheet } from "@/features/oracle";
 import { neptuApi } from "@/lib/api";
 import { useUser } from "@/hooks/use-user";
 import { useTranslate } from "@/hooks/use-translate";
@@ -47,10 +39,17 @@ import { Logo } from "@/assets/logo";
 import { InterestOracle } from "./interest-oracle";
 import { ScrollableTabs } from "./scrollable-tabs";
 import { HighlightedText } from "./highlighted-text";
+import { DashboardHeader } from "./dashboard-header";
 import { ReadingDetailCard } from "./reading-detail-card";
 
 export function Dashboard() {
-  const { walletAddress, hasWallet, hasBirthDate, user } = useUser();
+  const {
+    walletAddress,
+    hasWallet,
+    hasBirthDate,
+    user,
+    isLoading: userLoading,
+  } = useUser();
   const { language } = useSettingsStore();
   const t = useTranslate();
   const queryClient = useQueryClient();
@@ -119,17 +118,21 @@ export function Dashboard() {
   });
 
   useEffect(() => {
-    if (hasWallet && !hasBirthDate) {
+    if (hasWallet && !hasBirthDate && !userLoading) {
       navigate({ to: "/settings" });
     }
-  }, [hasWallet, hasBirthDate, navigate]);
+  }, [hasWallet, hasBirthDate, userLoading, navigate]);
 
-  if (hasWallet && !hasBirthDate) {
+  if (userLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
         <Logo className="h-16 w-16 text-primary animate-spin" />
       </div>
     );
+  }
+
+  if (hasWallet && !hasBirthDate) {
+    return null;
   }
 
   const goToPreviousDay = () => setSelectedDate((d) => subDays(d, 1));
@@ -157,15 +160,7 @@ export function Dashboard() {
   if (!hasWallet) {
     return (
       <>
-        <Header>
-          <TopNav links={topNav} />
-          <div className="ms-auto flex items-center space-x-4">
-            <OracleSheet />
-            <ThemeSwitch />
-            <ConfigDrawer />
-            <ProfileDropdown />
-          </div>
-        </Header>
+        <DashboardHeader topNav={topNav} t={t} />
         <Main>
           <div className="flex h-[50vh] items-center justify-center">
             <Card className="w-full max-w-md">
@@ -184,36 +179,7 @@ export function Dashboard() {
 
   return (
     <>
-      <Header>
-        <TopNav links={topNav} />
-        <div className="ms-auto flex items-center gap-2 sm:gap-4">
-          <Button
-            asChild
-            size="sm"
-            className="hidden sm:flex bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-lg animate-pulse hover:animate-none"
-          >
-            <a
-              href="https://colosseum.com/agent-hackathon/projects/neptu"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2"
-            >
-              <Vote className="h-4 w-4" />
-              <span className="hidden md:inline">
-                {t("common.voteForNeptu")}
-              </span>
-              <span className="md:hidden">Vote</span>
-              <ExternalLink className="h-3 w-3" />
-            </a>
-          </Button>
-          <OracleSheet />
-          <ThemeSwitch />
-          <div className="hidden sm:block">
-            <ConfigDrawer />
-          </div>
-          <ProfileDropdown />
-        </div>
-      </Header>
+      <DashboardHeader topNav={topNav} showVoteButton t={t} />
 
       <Main>
         <div className="mb-4 sm:mb-6">

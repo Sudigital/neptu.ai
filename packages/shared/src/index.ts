@@ -289,6 +289,12 @@ export function getNetworkConfig(
 // Token Constants
 // ============================================================================
 
+export const SOL_TOKEN = {
+  SYMBOL: "SOL",
+  NAME: "Solana",
+  DECIMALS: 9,
+} as const;
+
 export const NEPTU_TOKEN = {
   SYMBOL: "NEPTU",
   NAME: "Neptu Token",

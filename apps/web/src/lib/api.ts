@@ -296,6 +296,16 @@ export const neptuApi = {
     return data;
   },
 
+  // Wallet - Get SOL + NEPTU balances
+  async getWalletBalances(walletAddress: string) {
+    const { data } = await api.get<{
+      success: boolean;
+      sol: { lamports: string; formatted: number };
+      neptu: { raw: string; formatted: number };
+    }>(`/api/wallet/balances/${walletAddress}`);
+    return data;
+  },
+
   // Wallet - Get pending rewards
   async getPendingRewards(walletAddress: string) {
     const { data } = await api.get<{
