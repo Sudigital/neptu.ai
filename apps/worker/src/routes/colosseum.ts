@@ -131,15 +131,12 @@ colosseum.get("/agent-stats", async (c) => {
     };
 
     // Use real data from Colosseum API
-    // Handle both possible field names from API (interface vs actual response)
+    // Prefer actual counts from getMyPosts/getMyComments over status API (which can be stale)
     const engagement = (agentStatus.engagement || {}) as Record<string, number>;
     const postsCount =
-      engagement.postsCreated ??
-      engagement.forumPostCount ??
-      myPostsData.posts?.length ??
-      0;
+      myPostsData.posts?.length ?? engagement.postsCreated ?? 0;
     const commentsCount =
-      engagement.commentsCreated ?? myCommentsData.comments?.length ?? 0;
+      myCommentsData.comments?.length ?? engagement.commentsCreated ?? 0;
     const votesReceived =
       engagement.votesReceived ?? engagement.repliesOnYourPosts ?? 0;
 
@@ -174,9 +171,16 @@ colosseum.get("/agent-stats", async (c) => {
       updatedAt: new Date().toISOString(),
     };
 
-    await c.env.CACHE.put(cacheKey, JSON.stringify(result), {
-      expirationTtl: 300,
-    });
+    // Best-effort cache — don't fail if KV limit exceeded
+    try {
+      await c.env.CACHE.put(cacheKey, JSON.stringify(result), {
+        expirationTtl: 300,
+      });
+    } catch {
+      console.warn(
+        "KV cache write failed for agent-stats (limit likely exceeded)",
+      );
+    }
 
     return c.json(result);
   } catch (error) {
@@ -199,7 +203,15 @@ colosseum.post("/heartbeat", async (c) => {
     DB: c.env.DB,
   });
 
-  const result = await heartbeat.runHeartbeat("reply_and_other");
+  const phase =
+    (c.req.query("phase") as
+      | "reply_comments"
+      | "comment_others"
+      | "post_thread"
+      | "vote"
+      | "other_activity") || "reply_comments";
+
+  const result = await heartbeat.runHeartbeat(phase);
   return c.json(result);
 });
 

@@ -2,9 +2,12 @@
  * Neptu Heartbeat System
  * Handles periodic sync with Colosseum hackathon
  *
- * Two separate cron schedules:
- * Every 3 min (3,6,...,54) — Reply to all comments + other activities
- * Every 5 min (5,10,...,55) — Vote + comment on other projects
+ * Five separate cron schedules:
+ * Every 3 min  — Reply to all comments on own posts
+ * Every 5 min  — Comment on other agent posts (smart priority)
+ * Every 10 min — Post new thread
+ * Every 15 min — Votes (forum + project)
+ * Every 20 min — Other activities (trends, mentions, birthday, leaderboard)
  */
 
 import { ColosseumClient } from "./client";
@@ -16,6 +19,8 @@ import {
   countProjectVotes,
   countMentions,
   replyToAllComments,
+  smartCommentOnOtherPosts,
+  syncDedupCache,
 } from "./heartbeat-helpers";
 
 export interface HeartbeatEnv {
@@ -26,7 +31,12 @@ export interface HeartbeatEnv {
   DB?: D1Database;
 }
 
-export type HeartbeatPhase = "reply_and_other" | "vote_and_comment";
+export type HeartbeatPhase =
+  | "reply_comments"
+  | "comment_others"
+  | "post_thread"
+  | "vote"
+  | "other_activity";
 
 export interface HeartbeatResult {
   timestamp: string;
@@ -65,8 +75,11 @@ export class HeartbeatScheduler {
 
   /**
    * Run heartbeat with explicit phase (with 25s global timeout):
-   * reply_and_other: reply all comments + post + other activities
-   * vote_and_comment: vote + comment on other projects
+   * reply_comments  — Reply to all comments on own posts
+   * comment_others  — Comment on other agent posts (smart priority)
+   * post_thread     — Post new thread via orchestrator
+   * vote            — Forum + project voting
+   * other_activity  — Trends, mentions, birthday, leaderboard
    */
   async runHeartbeat(phase: HeartbeatPhase): Promise<HeartbeatResult> {
     const result: HeartbeatResult = {
@@ -122,14 +135,46 @@ export class HeartbeatScheduler {
     }
 
     // ═══════════════════════════════════════════
+    // Pre-check: sync dedup cache from API
+    // ═══════════════════════════════════════════
+    if (!isTimedOut()) {
+      try {
+        const synced = await syncDedupCache(this.client, this.cache);
+        result.tasks.push({
+          name: "sync_dedup",
+          success: true,
+          result: { syncedCommentedPosts: synced },
+        });
+      } catch (error) {
+        result.tasks.push({
+          name: "sync_dedup",
+          success: false,
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+    }
+
+    // ═══════════════════════════════════════════
     // Execute phase
     // ═══════════════════════════════════════════
     console.log(`HEARTBEAT Phase: ${phase}`);
 
-    if (phase === "reply_and_other") {
-      await this.phaseReplyAndOther(result, isTimedOut);
-    } else {
-      await this.phaseVoteAndComment(result, isTimedOut);
+    switch (phase) {
+      case "reply_comments":
+        await this.phaseReplyComments(result, isTimedOut);
+        break;
+      case "comment_others":
+        await this.phaseCommentOthers(result, isTimedOut);
+        break;
+      case "post_thread":
+        await this.phasePostThread(result, isTimedOut);
+        break;
+      case "vote":
+        await this.phaseVote(result, isTimedOut);
+        break;
+      case "other_activity":
+        await this.phaseOtherActivity(result, isTimedOut);
+        break;
     }
 
     // ─── Track analytics (skip if timed out) ───
@@ -137,24 +182,27 @@ export class HeartbeatScheduler {
       await this.trackAnalytics(result);
     }
 
-    // Store heartbeat result
-    await this.cache.put("neptu:last_heartbeat", JSON.stringify(result), {
-      expirationTtl: 86400,
-    });
+    // Store heartbeat result (best-effort)
+    try {
+      await this.cache.put("neptu:last_heartbeat", JSON.stringify(result), {
+        expirationTtl: 86400,
+      });
+    } catch {
+      console.warn("KV write failed for last_heartbeat");
+    }
 
     return result;
   }
 
   /**
-   * Phase: Reply to all comments on own posts + other activities
-   * Runs every 3 min (3,6,9,...,54)
+   * Phase: Reply to all comments on own posts
+   * Runs every 3 min
    */
-  private async phaseReplyAndOther(
+  private async phaseReplyComments(
     result: HeartbeatResult,
-    isTimedOut: () => boolean,
+    _isTimedOut: () => boolean,
   ): Promise<void> {
-    // ── Reply to all comments ──
-    console.log("REPLY+OTHER: Replying to all unreplied comments...");
+    console.log("REPLY: Replying to all unreplied comments on own posts...");
     try {
       const replyResult = await replyToAllComments(
         this.client,
@@ -176,10 +224,51 @@ export class HeartbeatScheduler {
         error: error instanceof Error ? error.message : "Unknown error",
       });
     }
+  }
 
-    // ── Post new topic ──
-    if (isTimedOut()) return;
-    console.log("REPLY+OTHER: Posting new topic...");
+  /**
+   * Phase: Comment on other agent posts with smart priority
+   * Runs every 5 min
+   * Priority:
+   *   1. Posts with 0 comments (be first commenter)
+   *   2. Posts where own comment was replied to (continue thread)
+   *   3. Posts with >1 comments (join discussion)
+   */
+  private async phaseCommentOthers(
+    result: HeartbeatResult,
+    isTimedOut: () => boolean,
+  ): Promise<void> {
+    console.log("COMMENT: Commenting on other agent posts (smart priority)...");
+    try {
+      const commentResult = await smartCommentOnOtherPosts(
+        this.client,
+        this.forumAgent,
+        this.cache,
+        isTimedOut,
+      );
+      result.tasks.push({
+        name: "smart_comment",
+        success: true,
+        result: commentResult,
+      });
+    } catch (error) {
+      result.tasks.push({
+        name: "smart_comment",
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  }
+
+  /**
+   * Phase: Post new thread via orchestrator
+   * Runs every 10 min
+   */
+  private async phasePostThread(
+    result: HeartbeatResult,
+    isTimedOut: () => boolean,
+  ): Promise<void> {
+    console.log("POST: Posting new thread...");
     try {
       const orchestrated = await this.forumAgent.orchestratePosting();
       result.tasks.push({
@@ -199,10 +288,11 @@ export class HeartbeatScheduler {
       });
     }
 
+    if (isTimedOut()) return;
     try {
       const trendPost = await this.forumAgent.considerTrendPost();
       result.tasks.push({
-        name: "trend_detection",
+        name: "trend_post",
         success: true,
         result: trendPost
           ? { posted: true, postId: trendPost.id, title: trendPost.title }
@@ -210,28 +300,106 @@ export class HeartbeatScheduler {
       });
     } catch (error) {
       result.tasks.push({
-        name: "trend_detection",
+        name: "trend_post",
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  }
+
+  /**
+   * Phase: Vote on forum posts + projects
+   * Runs every 15 min
+   */
+  private async phaseVote(
+    result: HeartbeatResult,
+    isTimedOut: () => boolean,
+  ): Promise<void> {
+    console.log("VOTE: Voting on forum posts + projects...");
+
+    // Forum voting
+    try {
+      const voteResult = await this.forumAgent.runIntelligentVoting();
+      result.tasks.push({
+        name: "intelligent_voting",
+        success: true,
+        result: {
+          voted: voteResult.voted,
+          skipped: voteResult.skipped,
+          reasons: voteResult.reasons,
+        },
+      });
+    } catch (error) {
+      result.tasks.push({
+        name: "intelligent_voting",
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
       });
     }
 
-    // ── Other activities (birthday, mentions, leaderboard) ──
+    // Forum engagement voting (hot posts)
     if (isTimedOut()) return;
-    console.log("REPLY+OTHER: Other activities...");
-    const otherTasks = [
-      {
-        name: "process_birthday_requests",
-        run: async () => {
-          const processed = await this.forumAgent.processBirthdayRequests();
-          return { processedCount: processed };
+    try {
+      const engagement = await this.forumAgent.engageWithForum();
+      result.tasks.push({
+        name: "forum_engagement_votes",
+        success: true,
+        result: engagement,
+      });
+    } catch (error) {
+      result.tasks.push({
+        name: "forum_engagement_votes",
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+
+    // Project voting
+    if (isTimedOut()) return;
+    try {
+      const projectVoteResult =
+        await this.forumAgent.voteOnProjectsStrategically();
+      result.tasks.push({
+        name: "project_voting",
+        success: true,
+        result: {
+          voted: projectVoteResult.voted,
+          skipped: projectVoteResult.skipped,
+          votedProjects: projectVoteResult.votedProjects,
+          reasons: projectVoteResult.reasons,
         },
-      },
+      });
+    } catch (error) {
+      result.tasks.push({
+        name: "project_voting",
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  }
+
+  /**
+   * Phase: Other activities (mentions, birthday, leaderboard)
+   * Runs every 20 min
+   */
+  private async phaseOtherActivity(
+    result: HeartbeatResult,
+    isTimedOut: () => boolean,
+  ): Promise<void> {
+    console.log("OTHER: Running other activities...");
+    const otherTasks = [
       {
         name: "respond_to_mentions",
         run: async () => {
           const responses = await this.forumAgent.respondToMentions();
           return { responsesCount: responses };
+        },
+      },
+      {
+        name: "process_birthday_requests",
+        run: async () => {
+          const processed = await this.forumAgent.processBirthdayRequests();
+          return { processedCount: processed };
         },
       },
       {
@@ -275,94 +443,6 @@ export class HeartbeatScheduler {
   }
 
   /**
-   * Phase: Vote + comment on other projects
-   * Runs every 5 min (5,10,15,...,55)
-   */
-  private async phaseVoteAndComment(
-    result: HeartbeatResult,
-    isTimedOut: () => boolean,
-  ): Promise<void> {
-    console.log("VOTE+COMMENT: Voting + commenting on other projects...");
-
-    // Vote on forum posts
-    try {
-      const voteResult = await this.forumAgent.runIntelligentVoting();
-      result.tasks.push({
-        name: "intelligent_voting",
-        success: true,
-        result: {
-          voted: voteResult.voted,
-          skipped: voteResult.skipped,
-          reasons: voteResult.reasons,
-        },
-      });
-    } catch (error) {
-      result.tasks.push({
-        name: "intelligent_voting",
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
-    }
-
-    // Vote on projects strategically
-    if (isTimedOut()) return;
-    try {
-      const projectVoteResult =
-        await this.forumAgent.voteOnProjectsStrategically();
-      result.tasks.push({
-        name: "project_voting",
-        success: true,
-        result: {
-          voted: projectVoteResult.voted,
-          skipped: projectVoteResult.skipped,
-          votedProjects: projectVoteResult.votedProjects,
-          reasons: projectVoteResult.reasons,
-        },
-      });
-    } catch (error) {
-      result.tasks.push({
-        name: "project_voting",
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
-    }
-
-    // Comment on other agent posts (engage with forum)
-    if (isTimedOut()) return;
-    try {
-      const engagement = await this.forumAgent.engageWithForum();
-      result.tasks.push({
-        name: "forum_engagement",
-        success: true,
-        result: engagement,
-      });
-    } catch (error) {
-      result.tasks.push({
-        name: "forum_engagement",
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
-    }
-
-    // Promo comments on other posts
-    if (isTimedOut()) return;
-    try {
-      const promoComments = await this.forumAgent.commentOnAgentPosts();
-      result.tasks.push({
-        name: "promo_comments",
-        success: true,
-        result: { commentsPosted: promoComments },
-      });
-    } catch (error) {
-      result.tasks.push({
-        name: "promo_comments",
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
-    }
-  }
-
-  /**
    * Track analytics + accumulate vote count in KV
    */
   private async trackAnalytics(result: HeartbeatResult): Promise<void> {
@@ -383,17 +463,21 @@ export class HeartbeatScheduler {
         failedTasks: failedTasks.length,
       });
 
-      // Accumulate total votes given in KV
+      // Accumulate total votes given in KV (best-effort)
       const newVotes = forumVotes + projectVotes;
       if (newVotes > 0) {
-        const prev = parseInt(
-          (await this.cache.get("neptu:total_votes_given")) || "0",
-          10,
-        );
-        await this.cache.put(
-          "neptu:total_votes_given",
-          String(prev + newVotes),
-        );
+        try {
+          const prev = parseInt(
+            (await this.cache.get("neptu:total_votes_given")) || "0",
+            10,
+          );
+          await this.cache.put(
+            "neptu:total_votes_given",
+            String(prev + newVotes),
+          );
+        } catch {
+          console.warn("KV write failed for total_votes_given");
+        }
       }
 
       result.tasks.push({
@@ -410,73 +494,6 @@ export class HeartbeatScheduler {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
       });
-    }
-  }
-
-  /**
-   * Run a quick status check (lighter than full heartbeat)
-   */
-  async quickCheck(): Promise<{
-    status: string;
-    lastHeartbeat: string | null;
-    nextSteps: string[];
-  }> {
-    const status = await this.client.getStatus();
-    const lastHeartbeat = await this.cache.get("neptu:last_heartbeat");
-
-    return {
-      status: status.agent.status,
-      lastHeartbeat: lastHeartbeat ? JSON.parse(lastHeartbeat).timestamp : null,
-      nextSteps: status.nextSteps || [],
-    };
-  }
-
-  /**
-   * Post a scheduled progress update
-   */
-  async postScheduledUpdate(): Promise<void> {
-    const stats = await this.forumAgent.getStats();
-
-    const achievements: string[] = [];
-
-    if (stats.myPosts > 0) {
-      achievements.push(`Posted ${stats.myPosts} forum threads`);
-    }
-    if (stats.myComments > 0) {
-      achievements.push(
-        `Engaged with ${stats.myComments} community discussions`,
-      );
-    }
-    if (stats.status.engagement.votesReceived > 0) {
-      achievements.push(
-        `Received ${stats.status.engagement.votesReceived} upvotes`,
-      );
-    }
-
-    if (achievements.length >= 2) {
-      const lastUpdate = await this.cache.get("neptu:last_progress_update");
-      const hoursSinceUpdate = lastUpdate
-        ? (Date.now() - new Date(lastUpdate).getTime()) / (1000 * 60 * 60)
-        : 999;
-
-      if (hoursSinceUpdate > 12) {
-        await this.forumAgent.postProgressUpdate({
-          title: "Building the Bridge Between Ancient Wisdom and Web3",
-          achievements,
-          nextSteps: [
-            "Complete AI Oracle integration",
-            "Add more Wuku cycle insights",
-            "Enhance token reward mechanics",
-          ],
-          callToAction:
-            "🎁 Want a free personalized reading? Reply with: `BIRTHDAY: YYYY-MM-DD`",
-        });
-
-        await this.cache.put(
-          "neptu:last_progress_update",
-          new Date().toISOString(),
-        );
-      }
     }
   }
 }

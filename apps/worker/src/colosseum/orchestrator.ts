@@ -20,6 +20,10 @@ import {
   postMarketSentimentReport,
 } from "./crypto-posts-market";
 import { getCryptoWithMarketData } from "./crypto-market-fetcher";
+import {
+  postProjectSpotlight,
+  getSpotlightCacheKey,
+} from "./project-spotlight";
 
 // Timeline constants
 const HACKATHON_START = "2026-02-01";
@@ -236,7 +240,28 @@ async function _orchestratePostingInternal(
     }
   }
 
-  // 10. Progress update (every 6 hours)
+  // 10. Project Spotlight — top 3 leaderboard projects (daily per project)
+  if (posts.length < MAX_POSTS_PER_HEARTBEAT) {
+    try {
+      const { leaderboard } = await client.getLeaderboard();
+      const top3 = leaderboard
+        .filter((e) => e.project.slug !== "neptu")
+        .slice(0, 3);
+      for (const entry of top3) {
+        if (posts.length >= MAX_POSTS_PER_HEARTBEAT) break;
+        const spotlightKey = getSpotlightCacheKey(entry.project.slug);
+        await tryPost(
+          spotlightKey,
+          () => postProjectSpotlight(client, entry, cache),
+          `Project spotlight: ${entry.project.name} (#${entry.rank})`,
+        );
+      }
+    } catch (err) {
+      console.error("Failed to post project spotlights:", err);
+    }
+  }
+
+  // 11. Progress update (every 6 hours)
   const lastProgress = await cache.get("neptu:last_progress_update");
   const hoursSinceProgress = lastProgress
     ? (Date.now() - new Date(lastProgress).getTime()) / 3600000

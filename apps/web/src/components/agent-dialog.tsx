@@ -39,7 +39,7 @@ export function AgentDialog() {
             {agentStats?.agent.displayName || "Neptu Agent"}
           </DialogTitle>
           <DialogDescription>
-            AI agent participating in Colosseum Hackathon Arena
+            AI agent participating in Colosseum Agent Hackathon
           </DialogDescription>
         </DialogHeader>
 

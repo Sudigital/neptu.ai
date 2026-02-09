@@ -115,7 +115,12 @@ async function generateDailyReadings(env: Env): Promise<void> {
 
 async function runColosseumHeartbeat(
   env: Env,
-  phase: "reply_and_other" | "vote_and_comment" = "reply_and_other",
+  phase:
+    | "reply_comments"
+    | "comment_others"
+    | "post_thread"
+    | "vote"
+    | "other_activity" = "reply_comments",
 ): Promise<void> {
   if (!env.COLOSSEUM_API_KEY) {
     console.log("Colosseum API key not configured, skipping heartbeat");
@@ -165,35 +170,49 @@ export default {
     if (cronPattern === "0 0 * * *") {
       ctx.waitUntil(generateDailyReadings(env));
       ctx.waitUntil(refreshCryptoMarketData(env));
-      ctx.waitUntil(runColosseumHeartbeat(env, "reply_and_other"));
+      ctx.waitUntil(runColosseumHeartbeat(env, "reply_comments"));
       return;
     }
 
-    // Determine phase from current minute
+    // Determine phase from cron pattern + current minute
     const currentMinute = new Date().getMinutes();
     console.log(
       `Scheduled event: cron="${cronPattern}" minute=${currentMinute}`,
     );
 
-    // Every 3 min (3,6,...,54): reply comments + other activities
+    // Every 3 min (3,6,...,54): Reply to comments on own posts
     if (cronPattern.startsWith("3,6,9")) {
-      ctx.waitUntil(runColosseumHeartbeat(env, "reply_and_other"));
+      ctx.waitUntil(runColosseumHeartbeat(env, "reply_comments"));
       return;
     }
 
-    // Every 5 min (5,10,...,55): vote + comment other projects
+    // Every 5 min (5,10,...,55): Comment on other posts
+    // + at minutes divisible by 15 (15,30,45): also vote
     if (cronPattern.startsWith("5,10,15")) {
-      if (currentMinute <= 5) {
+      ctx.waitUntil(runColosseumHeartbeat(env, "comment_others"));
+      if (currentMinute % 15 === 0) {
+        ctx.waitUntil(runColosseumHeartbeat(env, "vote"));
+      }
+      return;
+    }
+
+    // Every 10 min (0,10,...,50): Post new thread
+    // + at minutes divisible by 20 (0,20,40): also other activity
+    if (cronPattern.startsWith("0,10,20,30,40,50")) {
+      if (currentMinute === 0) {
         ctx.waitUntil(refreshCryptoMarketData(env));
       }
-      ctx.waitUntil(runColosseumHeartbeat(env, "vote_and_comment"));
+      ctx.waitUntil(runColosseumHeartbeat(env, "post_thread"));
+      if (currentMinute % 20 === 0) {
+        ctx.waitUntil(runColosseumHeartbeat(env, "other_activity"));
+      }
       return;
     }
 
-    // Fallback: run reply phase for any unmatched cron
+    // Fallback
     console.log(
       `Unmatched cron pattern: "${cronPattern}", running reply phase`,
     );
-    ctx.waitUntil(runColosseumHeartbeat(env, "reply_and_other"));
+    ctx.waitUntil(runColosseumHeartbeat(env, "reply_comments"));
   },
 };

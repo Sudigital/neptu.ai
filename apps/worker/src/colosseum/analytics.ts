@@ -29,7 +29,7 @@ export async function trackEngagement(
   cache: KVNamespace,
   action: string,
   success: boolean,
-  metadata?: Record<string, unknown>,
+  _metadata?: Record<string, unknown>,
 ): Promise<void> {
   const today = new Date().toISOString().split("T")[0];
   const key = `neptu:analytics:${today}`;
@@ -48,15 +48,14 @@ export async function trackEngagement(
   }
   data[action].total++;
 
-  // Store metadata if provided
-  if (metadata) {
-    const metaKey = `neptu:analytics_meta:${today}:${action}:${Date.now()}`;
-    await cache.put(metaKey, JSON.stringify(metadata), {
+  // Store daily summary only (skip per-call metadata to conserve KV writes)
+  try {
+    await cache.put(key, JSON.stringify(data), {
       expirationTtl: CACHE_TTL_WEEK,
     });
+  } catch {
+    console.warn(`KV write failed for analytics ${key}`);
   }
-
-  await cache.put(key, JSON.stringify(data), { expirationTtl: CACHE_TTL_WEEK });
 }
 
 /**

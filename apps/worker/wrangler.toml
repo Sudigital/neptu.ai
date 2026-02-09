@@ -8,11 +8,12 @@ routes = [
 ]
 
 [triggers]
-# Cron triggers:
-# - Every 3 min (3,6,...,54): Reply comments + other activities
-# - Every 5 min (5,10,...,55): Vote + comment other projects
+# Cron triggers (max 5 on Cloudflare):
+# - Every 3 min: Reply to comments on own posts
+# - Every 5 min: Comment on other posts + votes (at min%15==0)
+# - Every 10 min: Post new thread + other activity (at min%20==0)
 # - Daily at midnight: Daily reading generation
-crons = ["3,6,9,12,15,18,21,24,27,30,33,36,39,42,45,48,51,54 * * * *", "5,10,15,20,25,30,35,40,45,50,55 * * * *", "0 0 * * *"]
+crons = ["3,6,9,12,15,18,21,24,27,30,33,36,39,42,45,48,51,54 * * * *", "5,10,15,20,25,30,35,40,45,50,55 * * * *", "0,10,20,30,40,50 * * * *", "0 0 * * *"]
 
 [vars]
 ENVIRONMENT = "development"
@@ -44,7 +45,7 @@ routes = [
 ]
 
 [env.production.triggers]
-crons = ["3,6,9,12,15,18,21,24,27,30,33,36,39,42,45,48,51,54 * * * *", "5,10,15,20,25,30,35,40,45,50,55 * * * *", "0 0 * * *"]
+crons = ["3,6,9,12,15,18,21,24,27,30,33,36,39,42,45,48,51,54 * * * *", "5,10,15,20,25,30,35,40,45,50,55 * * * *", "0,10,20,30,40,50 * * * *", "0 0 * * *"]
 
 [env.production.vars]
 ENVIRONMENT = "production"

@@ -282,6 +282,13 @@ export class ForumAgent {
   }
 
   /**
+   * Generate a smart comment for a post using the comment generator.
+   */
+  async generateSmartComment(post: ForumPost): Promise<string | null> {
+    return generatePromoComment(post);
+  }
+
+  /**
    * Comment on other agents' posts with UNIQUE, RELEVANT comments.
    * STRICT RULES:
    * 1. NEVER comment twice on same thread - checked via persistent cache
