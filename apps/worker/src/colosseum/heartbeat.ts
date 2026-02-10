@@ -13,14 +13,11 @@
 import { ColosseumClient } from "./client";
 import { ForumAgent } from "./forum-agent";
 import {
-  countPosts,
-  countComments,
-  countForumVotes,
-  countProjectVotes,
-  countMentions,
   replyToAllComments,
   smartCommentOnOtherPosts,
   syncDedupCache,
+  handlePollAndAnnouncement,
+  trackAnalytics,
 } from "./heartbeat-helpers";
 
 export interface HeartbeatEnv {
@@ -111,62 +108,8 @@ export class HeartbeatScheduler {
       });
       result.nextSteps = status?.nextSteps || [];
 
-      // v1.6.1: Log announcement if present
-      if (status?.announcement) {
-        console.log(`[ANNOUNCEMENT] ${status.announcement}`);
-        result.tasks.push({
-          name: "announcement",
-          success: true,
-          result: { message: status.announcement },
-        });
-        // Store in KV for API exposure
-        try {
-          await this.cache.put("neptu:latest_announcement", status.announcement, {
-            expirationTtl: 86400,
-          });
-        } catch {
-          // best-effort
-        }
-      }
-
-      // v1.6.1: Handle active poll
-      if (status?.hasActivePoll) {
-        try {
-          const pollResponse = await this.client.getActivePoll();
-          const poll = pollResponse?.poll;
-          if (poll?.id) {
-            const pollCacheKey = `neptu:poll_responded:${poll.id}`;
-            const alreadyResponded = await this.cache.get(pollCacheKey);
-            if (!alreadyResponded) {
-              // Generate a thoughtful response based on poll question/options
-              let response: string;
-              if (poll.options && Array.isArray(poll.options) && poll.options.length > 0) {
-                // Pick a random option if structured poll
-                response = poll.options[Math.floor(Math.random() * poll.options.length)];
-              } else {
-                // Free-form response
-                response = `Neptu here! We're building cultural preservation on Solana — ancient Balinese Wuku calendar meets AI. Excited about where agents can go!`;
-              }
-              await this.client.respondToPoll(poll.id, response);
-              await this.cache.put(pollCacheKey, new Date().toISOString(), {
-                expirationTtl: 604800,
-              });
-              result.tasks.push({
-                name: "poll_response",
-                success: true,
-                result: { pollId: poll.id, question: poll.question, response },
-              });
-              console.log(`[POLL] Responded to poll ${poll.id}: ${poll.question}`);
-            }
-          }
-        } catch (pollError) {
-          result.tasks.push({
-            name: "poll_response",
-            success: false,
-            error: pollError instanceof Error ? pollError.message : "Unknown poll error",
-          });
-        }
-      }
+      // v1.6.1: Handle announcements and polls
+      await handlePollAndAnnouncement(this.client, this.cache, status, result);
     } catch (error) {
       result.tasks.push({
         name: "check_status",
@@ -239,7 +182,7 @@ export class HeartbeatScheduler {
 
     // ─── Track analytics (skip if timed out) ───
     if (!isTimedOut()) {
-      await this.trackAnalytics(result);
+      await trackAnalytics(this.forumAgent, this.cache, result);
     }
 
     // Store heartbeat result (best-effort)
@@ -305,7 +248,8 @@ export class HeartbeatScheduler {
     if (!isTimedOut()) {
       try {
         const plan = await this.forumAgent.createTrendingEngagementPlan();
-        const trendingResult = await this.forumAgent.executeTrendingEngagement(plan);
+        const trendingResult =
+          await this.forumAgent.executeTrendingEngagement(plan);
         result.tasks.push({
           name: "trending_engagement",
           success: true,
@@ -480,8 +424,7 @@ export class HeartbeatScheduler {
       {
         name: "engage_vote_exchanges",
         run: async () => {
-          const voteResult =
-            await this.forumAgent.engageVoteExchangeThreads();
+          const voteResult = await this.forumAgent.engageVoteExchangeThreads();
           return voteResult;
         },
       },
@@ -536,61 +479,6 @@ export class HeartbeatScheduler {
           error: error instanceof Error ? error.message : "Unknown error",
         });
       }
-    }
-  }
-
-  /**
-   * Track analytics + accumulate vote count in KV
-   */
-  private async trackAnalytics(result: HeartbeatResult): Promise<void> {
-    try {
-      const successTasks = result.tasks.filter((t) => t.success);
-      const failedTasks = result.tasks.filter((t) => !t.success);
-      const forumVotes = countForumVotes(result.tasks);
-      const projectVotes = countProjectVotes(result.tasks);
-
-      await this.forumAgent.trackEngagement("heartbeat", true, {
-        phase: result.phase,
-        posts: countPosts(result.tasks),
-        comments: countComments(result.tasks),
-        forumVotes,
-        projectVotes,
-        mentions: countMentions(result.tasks),
-        successfulTasks: successTasks.length,
-        failedTasks: failedTasks.length,
-      });
-
-      // Accumulate total votes given in KV (best-effort)
-      const newVotes = forumVotes + projectVotes;
-      if (newVotes > 0) {
-        try {
-          const prev = parseInt(
-            (await this.cache.get("neptu:total_votes_given")) || "0",
-            10,
-          );
-          await this.cache.put(
-            "neptu:total_votes_given",
-            String(prev + newVotes),
-          );
-        } catch {
-          console.warn("KV write failed for total_votes_given");
-        }
-      }
-
-      result.tasks.push({
-        name: "track_analytics",
-        success: true,
-        result: {
-          successfulTasks: successTasks.length,
-          failedTasks: failedTasks.length,
-        },
-      });
-    } catch (error) {
-      result.tasks.push({
-        name: "track_analytics",
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
     }
   }
 }

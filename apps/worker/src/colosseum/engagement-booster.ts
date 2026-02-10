@@ -122,10 +122,7 @@ export async function createEngagementPlan(
   ]);
 
   // Find high-value comment targets from trending data
-  const targets = findHighValueCommentTargets(
-    insight.fastestRising,
-    agentName,
-  );
+  const targets = findHighValueCommentTargets(insight.fastestRising, agentName);
 
   // Build comment targets with priority scoring
   const commentTargets: CommentTarget[] = [];
@@ -153,14 +150,15 @@ export async function createEngagementPlan(
     commentTargets.push({
       post: target,
       comment,
-      reason: [
-        isReciprocal ? "reciprocal" : null,
-        isTrendingAgent ? "trending agent" : null,
-        target.commentsPerHour > 3 ? "active thread" : null,
-        target.scorePerHour > 2 ? "rising fast" : null,
-      ]
-        .filter(Boolean)
-        .join(", ") || "trending post",
+      reason:
+        [
+          isReciprocal ? "reciprocal" : null,
+          isTrendingAgent ? "trending agent" : null,
+          target.commentsPerHour > 3 ? "active thread" : null,
+          target.scorePerHour > 2 ? "rising fast" : null,
+        ]
+          .filter(Boolean)
+          .join(", ") || "trending post",
       priority: Math.min(10, priority),
     });
   }

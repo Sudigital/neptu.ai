@@ -232,11 +232,7 @@ export class ForumAgent {
     votedProjects: number;
     threads: string[];
   }> {
-    return engageVoteExchangeThreads(
-      this.client,
-      this.cache,
-      this.agentName,
-    );
+    return engageVoteExchangeThreads(this.client, this.cache, this.agentName);
   }
 
   /**

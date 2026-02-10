@@ -216,7 +216,8 @@ export async function postVoterRewards(
   client: ColosseumClient,
   cache: KVNamespace,
 ): Promise<ForumPost> {
-  const title = "� Neptu — Ancient Balinese Wisdom Meets Solana (Live Demo Inside)";
+  const title =
+    "� Neptu — Ancient Balinese Wisdom Meets Solana (Live Demo Inside)";
 
   const body = `## What is Neptu?
 

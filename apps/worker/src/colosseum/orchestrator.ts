@@ -321,10 +321,7 @@ async function _orchestratePostingInternal(
             body: optimized.body,
             tags: optimized.tags,
           });
-          await cache.put(
-            "neptu:last_trending_post",
-            new Date().toISOString(),
-          );
+          await cache.put("neptu:last_trending_post", new Date().toISOString());
           await cache.put("neptu:last_trending_type", optimized.postType);
           return post;
         },
@@ -449,7 +446,8 @@ async function getNextActionSuggestion(
   const hasPredictions = await cache.get("neptu:predictions_post_id");
 
   if (!hasIntro) return "Post introduction ASAP";
-  if (!hasVoterRewards && daysSinceStart > 2) return "Post project showcase soon";
+  if (!hasVoterRewards && daysSinceStart > 2)
+    return "Post project showcase soon";
   if (!hasPredictions && daysSinceStart > 6) return "Post cosmic predictions";
   if (daysUntilDeadline <= 3) return "Focus on final deadline promotion";
 

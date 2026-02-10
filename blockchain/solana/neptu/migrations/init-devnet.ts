@@ -20,12 +20,7 @@ import * as anchor from "@coral-xyz/anchor";
 import { Program, AnchorProvider, Wallet } from "@coral-xyz/anchor";
 import { NeptuToken } from "../target/types/neptu_token";
 import { NeptuEconomy } from "../target/types/neptu_economy";
-import {
-  Keypair,
-  PublicKey,
-  Connection,
-  clusterApiUrl,
-} from "@solana/web3.js";
+import { Keypair, PublicKey, Connection, clusterApiUrl } from "@solana/web3.js";
 import { getAssociatedTokenAddress } from "@solana/spl-token";
 import * as fs from "fs";
 import * as path from "path";
@@ -223,19 +218,19 @@ async function main() {
     console.log("✓ Mint authority transferred:", tx);
   } catch (err: any) {
     // This might fail if authority was already transferred
-    const errStr = JSON.stringify(err.message || err) + JSON.stringify(err.logs || []);
+    const errStr =
+      JSON.stringify(err.message || err) + JSON.stringify(err.logs || []);
     if (
       errStr.includes("owner does not match") ||
       errStr.includes("mint authority") ||
       errStr.includes("Error processing Instruction") ||
       errStr.includes("custom program error")
     ) {
-      console.log("✓ Mint authority already transferred (or error expected), skipping");
-    } else {
-      console.error(
-        "✗ Failed to transfer mint authority:",
-        err.message || err,
+      console.log(
+        "✓ Mint authority already transferred (or error expected), skipping",
       );
+    } else {
+      console.error("✗ Failed to transfer mint authority:", err.message || err);
       if (err.logs) console.error("Logs:", err.logs.join("\n"));
       process.exit(1);
     }
@@ -256,10 +251,7 @@ async function main() {
         .rpc();
       console.log("✓ Pricing config initialized:", tx);
     } catch (err: any) {
-      console.error(
-        "✗ Failed to initialize pricing:",
-        err.message || err,
-      );
+      console.error("✗ Failed to initialize pricing:", err.message || err);
       if (err.logs) console.error("Logs:", err.logs.join("\n"));
       process.exit(1);
     }
@@ -284,10 +276,7 @@ async function main() {
         .rpc();
       console.log("✓ Economy state initialized:", tx);
     } catch (err: any) {
-      console.error(
-        "✗ Failed to initialize economy:",
-        err.message || err,
-      );
+      console.error("✗ Failed to initialize economy:", err.message || err);
       if (err.logs) console.error("Logs:", err.logs.join("\n"));
       process.exit(1);
     }

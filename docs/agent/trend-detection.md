@@ -27,13 +27,13 @@ hot_score ≈ sign(score) × log₁₀(|score|) - log₁₀(age_hours + 2) × 1.
 
 Analysis of top-performing posts reveals clear patterns:
 
-| Post Type | Avg Score | Avg Comments | Key Driver |
-|-----------|:---------:|:------------:|------------|
-| Partnership/Integration calls | 17+ | 60+ | Mutual value exchange |
-| Challenge/Critique | 10+ | 30+ | Provocation drives comments |
-| Interactive (Quiz/Poll) | 7+ | 15+ | Structured engagement format |
-| Data-Driven Updates | 11+ | 25+ | Real metrics = credibility |
-| Vote Exchange | 17+ | 70+ | Reciprocal engagement |
+| Post Type                     | Avg Score | Avg Comments | Key Driver                   |
+| ----------------------------- | :-------: | :----------: | ---------------------------- |
+| Partnership/Integration calls |    17+    |     60+      | Mutual value exchange        |
+| Challenge/Critique            |    10+    |     30+      | Provocation drives comments  |
+| Interactive (Quiz/Poll)       |    7+     |     15+      | Structured engagement format |
+| Data-Driven Updates           |    11+    |     25+      | Real metrics = credibility   |
+| Vote Exchange                 |    17+    |     70+      | Reciprocal engagement        |
 
 ### Key Engagement Drivers
 
@@ -97,13 +97,13 @@ Tactical engagement for maximum trending visibility:
 
 ## Rate Limiting
 
-| Resource | Limit | Strategy |
-|----------|:-----:|----------|
-| Trend response post | 1/24h | Cached per topic for 48h |
-| Trending-optimized post | 1/4h | Rotates post types to avoid repetition |
-| Trending comments | 2/5min | Priority-sorted, highest ROI first |
-| Forum post/comments | 30/hour | Spread across heartbeat phases |
-| Forum votes | 120/hour | 10/heartbeat × 12 runs/hour |
+| Resource                |  Limit   | Strategy                               |
+| ----------------------- | :------: | -------------------------------------- |
+| Trend response post     |  1/24h   | Cached per topic for 48h               |
+| Trending-optimized post |   1/4h   | Rotates post types to avoid repetition |
+| Trending comments       |  2/5min  | Priority-sorted, highest ROI first     |
+| Forum post/comments     | 30/hour  | Spread across heartbeat phases         |
+| Forum votes             | 120/hour | 10/heartbeat × 12 runs/hour            |
 
 ## Heartbeat Integration
 
@@ -121,13 +121,13 @@ Every 10 min (post_thread):
 
 ## Files
 
-| File | Purpose |
-|------|---------|
-| `trend-detector.ts` | v1: Keyword-based hot topic detection |
-| `trend-templates.ts` | v1: Response templates for trend posts |
-| `trending-analyzer.ts` | v2: Data-driven trending analysis engine |
-| `content-optimizer.ts` | v2: Optimized post generation per type |
-| `engagement-booster.ts` | v2: Tactical engagement planning |
-| `orchestrator.ts` | Integration: trending-optimized post scheduling |
-| `forum-agent.ts` | Integration: engagement plan execution |
-| `heartbeat.ts` | Integration: phase-based execution |
+| File                    | Purpose                                         |
+| ----------------------- | ----------------------------------------------- |
+| `trend-detector.ts`     | v1: Keyword-based hot topic detection           |
+| `trend-templates.ts`    | v1: Response templates for trend posts          |
+| `trending-analyzer.ts`  | v2: Data-driven trending analysis engine        |
+| `content-optimizer.ts`  | v2: Optimized post generation per type          |
+| `engagement-booster.ts` | v2: Tactical engagement planning                |
+| `orchestrator.ts`       | Integration: trending-optimized post scheduling |
+| `forum-agent.ts`        | Integration: engagement plan execution          |
+| `heartbeat.ts`          | Integration: phase-based execution              |

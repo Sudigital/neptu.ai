@@ -92,8 +92,7 @@ function generateQuizPost(trendingAgents: string[]): OptimizedPost {
   const agentList = trendingAgents.slice(0, 3);
 
   return {
-    title:
-      "🔮 Quick Quiz: What's Your Agent's Decision-Making Blind Spot?",
+    title: "🔮 Quick Quiz: What's Your Agent's Decision-Making Blind Spot?",
     body: `Every agent (and builder) has a natural decision-making style. The Balinese Wuku calendar maps these to **3 archetypes** — and each has a predictable blind spot.
 
 ## The Quiz
@@ -137,14 +136,11 @@ ${agentList.length > 0 ? `\n${agentList.map((a) => `@${a}`).join(", ")} — curi
  * Generate a partnership/integration call post.
  * Highest score type (17+ avg) due to reciprocal engagement.
  */
-function generatePartnershipPost(
-  trendingAgents: string[],
-): OptimizedPost {
+function generatePartnershipPost(trendingAgents: string[]): OptimizedPost {
   const agents = trendingAgents.slice(0, 6);
 
   return {
-    title:
-      "🤝 Neptu Integration Hub — Personalized Timing API for Any Agent",
+    title: "🤝 Neptu Integration Hub — Personalized Timing API for Any Agent",
     body: `## What Neptu Offers Your Project
 
 We've built a **personalization engine** based on the Balinese Wuku calendar. Any agent can integrate our timing API to add personalized engagement:
@@ -239,7 +235,10 @@ Generates interpretations combining Wuku wisdom with modern AI — not generic h
 
 ## 💬 Question for Builders
 
-${trendingAgents.slice(0, 3).map((a) => `@${a}`).join(", ")} and everyone else —
+${trendingAgents
+  .slice(0, 3)
+  .map((a) => `@${a}`)
+  .join(", ")} and everyone else —
 
 **What's the ONE feature you wish your project had but ran out of time to build?**
 
@@ -258,15 +257,10 @@ For us it's multi-chain support. Drop yours below 👇
  * Generate an analysis/thought-leadership post.
  * Analyzes a genuine trend happening in the forum.
  */
-function generateAnalysisPost(
-  insight: TrendingInsight,
-): OptimizedPost {
+function generateAnalysisPost(insight: TrendingInsight): OptimizedPost {
   const topTypes = insight.topPostTypes
     .slice(0, 5)
-    .map(
-      (t) =>
-        `| ${t.type} | ${t.avgScore.toFixed(1)} | ${t.count} |`,
-    )
+    .map((t) => `| ${t.type} | ${t.avgScore.toFixed(1)} | ${t.count} |`)
     .join("\n");
 
   const risingPosts = insight.fastestRising
@@ -278,8 +272,7 @@ function generateAnalysisPost(
     .join("\n");
 
   return {
-    title:
-      "📊 What Actually Trends on This Forum — Data Analysis of Hot Posts",
+    title: "📊 What Actually Trends on This Forum — Data Analysis of Hot Posts",
     body: `I analyzed the forum's trending algorithm. Here's what the data shows.
 
 ## 🔥 How "Hot" Ranking Works
@@ -372,9 +365,12 @@ export function generateOptimizedPost(
  * Generate a high-value comment for a trending post.
  * Designed for posts that are currently rising (maximize visibility).
  */
-export function generateTrendingComment(
-  post: { title: string; body: string; agentName: string; score: number },
-): string {
+export function generateTrendingComment(post: {
+  title: string;
+  body: string;
+  agentName: string;
+  score: number;
+}): string {
   const text = `${post.title} ${post.body}`.toLowerCase();
   const parts: string[] = [];
 

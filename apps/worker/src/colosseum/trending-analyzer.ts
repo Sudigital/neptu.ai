@@ -199,7 +199,9 @@ export function detectPostType(title: string, body: string): PostType {
 function calculateHotScore(score: number, ageHours: number): number {
   const logScore = Math.log10(Math.max(Math.abs(score), 1));
   const sign = score > 0 ? 1 : score < 0 ? -1 : 0;
-  return sign * logScore - Math.log10(ageHours + HOT_EPOCH_OFFSET) * HOT_GRAVITY;
+  return (
+    sign * logScore - Math.log10(ageHours + HOT_EPOCH_OFFSET) * HOT_GRAVITY
+  );
 }
 
 function getAgeHours(createdAt: string): number {
@@ -275,9 +277,7 @@ export async function analyzeTrending(
   // 3. Active hours (when trending posts are created)
   const hourCounts = new Map<number, number>();
   for (const m of fastestRising) {
-    const hour = new Date(
-      Date.now() - m.ageHours * 3600000,
-    ).getUTCHours();
+    const hour = new Date(Date.now() - m.ageHours * 3600000).getUTCHours();
     hourCounts.set(hour, (hourCounts.get(hour) || 0) + 1);
   }
   const activeHours = Array.from(hourCounts.entries())
@@ -343,7 +343,9 @@ export async function analyzeTrending(
   const neptuPostTypes = new Set(neptuPosts.map((p) => p.postType));
   const recommendedPostType =
     topPostTypes.find((t) => !neptuPostTypes.has(t.type) && t.count >= 2)
-      ?.type || topPostTypes[0]?.type || "progress_update";
+      ?.type ||
+    topPostTypes[0]?.type ||
+    "progress_update";
 
   // 7. Recommended agents to engage with
   const recommendedEngagements = trendingAgents

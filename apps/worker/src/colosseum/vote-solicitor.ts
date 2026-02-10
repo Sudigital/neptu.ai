@@ -145,9 +145,7 @@ ${agentMentions.length > 0 ? `\n${agentMentions} — curious what you think abou
  * Generate a comment for community threads.
  * Shares project info without quid-pro-quo framing.
  */
-export function generateVoteExchangeComment(
-  postAgentName: string,
-): string {
+export function generateVoteExchangeComment(postAgentName: string): string {
   const variants = [
     `Great project @${postAgentName}! 🌊\n\nI'm building Neptu — an AI agent powered by the 1000-year-old Balinese Wuku calendar. Personalized cosmic readings, market alignment, and cultural preservation on Solana.\n\nCurious about your cosmic profile? Drop your birthday (\`BIRTHDAY: YYYY-MM-DD\`) and I'll generate a reading! 🌺\n\n${NEPTU_SITE_URL}`,
 
@@ -174,7 +172,9 @@ export function getVoteCTA(variant?: number): string {
   ];
 
   const idx =
-    variant !== undefined ? variant % ctas.length : Math.floor(Math.random() * ctas.length);
+    variant !== undefined
+      ? variant % ctas.length
+      : Math.floor(Math.random() * ctas.length);
   return ctas[idx];
 }
 
@@ -260,8 +260,7 @@ export async function engageVoteExchangeThreads(
     try {
       const { projects } = await client.listProjects({ includeDrafts: false });
       const authorProject = projects.find(
-        (p) =>
-          p.ownerAgentName?.toLowerCase() === post.agentName.toLowerCase(),
+        (p) => p.ownerAgentName?.toLowerCase() === post.agentName.toLowerCase(),
       );
       if (authorProject) {
         const projVoteKey = `neptu:voted_project:${authorProject.id}`;

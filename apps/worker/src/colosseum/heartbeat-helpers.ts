@@ -1,11 +1,12 @@
 /**
  * Heartbeat helper functions
- * Analytics counters + comment reply logic
+ * Analytics counters + comment reply logic + poll/announcement handling
  */
 
 import { ColosseumClient, type ForumPost } from "./client";
 import { ForumAgent } from "./forum-agent";
 import { generateReply } from "./reply-generator";
+import type { HeartbeatResult } from "./heartbeat";
 
 type TaskEntry = {
   name: string;
@@ -382,4 +383,128 @@ export async function syncDedupCache(
   }
 
   return synced;
+}
+
+/**
+ * Handle poll auto-response and announcement logging (v1.6.1)
+ */
+export async function handlePollAndAnnouncement(
+  client: ColosseumClient,
+  cache: KVNamespace,
+  status: { announcement?: string | null; hasActivePoll?: boolean } | null,
+  result: HeartbeatResult,
+): Promise<void> {
+  if (!status) return;
+
+  // Log announcement if present
+  if (status.announcement) {
+    console.log(`[ANNOUNCEMENT] ${status.announcement}`);
+    result.tasks.push({
+      name: "announcement",
+      success: true,
+      result: { message: status.announcement },
+    });
+    try {
+      await cache.put("neptu:latest_announcement", status.announcement, {
+        expirationTtl: 86400,
+      });
+    } catch {
+      // best-effort
+    }
+  }
+
+  // Handle active poll
+  if (!status.hasActivePoll) return;
+  try {
+    const pollResponse = await client.getActivePoll();
+    const poll = pollResponse?.poll;
+    if (!poll?.id) return;
+    const pollCacheKey = `neptu:poll_responded:${poll.id}`;
+    const alreadyResponded = await cache.get(pollCacheKey);
+    if (alreadyResponded) return;
+
+    let response: string;
+    if (
+      poll.options &&
+      Array.isArray(poll.options) &&
+      poll.options.length > 0
+    ) {
+      response = poll.options[Math.floor(Math.random() * poll.options.length)];
+    } else {
+      response = `Neptu here! We're building cultural preservation on Solana — ancient Balinese Wuku calendar meets AI. Excited about where agents can go!`;
+    }
+    await client.respondToPoll(poll.id, response);
+    await cache.put(pollCacheKey, new Date().toISOString(), {
+      expirationTtl: 604800,
+    });
+    result.tasks.push({
+      name: "poll_response",
+      success: true,
+      result: { pollId: poll.id, question: poll.question, response },
+    });
+    console.log(`[POLL] Responded to poll ${poll.id}: ${poll.question}`);
+  } catch (pollError) {
+    result.tasks.push({
+      name: "poll_response",
+      success: false,
+      error:
+        pollError instanceof Error ? pollError.message : "Unknown poll error",
+    });
+  }
+}
+
+/**
+ * Track analytics + accumulate vote count in KV
+ */
+export async function trackAnalytics(
+  forumAgent: ForumAgent,
+  cache: KVNamespace,
+  result: HeartbeatResult,
+): Promise<void> {
+  try {
+    const successTasks = result.tasks.filter((t) => t.success);
+    const failedTasks = result.tasks.filter((t) => !t.success);
+    const forumVotes = countForumVotes(result.tasks);
+    const projectVotes = countProjectVotes(result.tasks);
+
+    await forumAgent.trackEngagement("heartbeat", true, {
+      phase: result.phase,
+      posts: countPosts(result.tasks),
+      comments: countComments(result.tasks),
+      forumVotes,
+      projectVotes,
+      mentions: countMentions(result.tasks),
+      successfulTasks: successTasks.length,
+      failedTasks: failedTasks.length,
+    });
+
+    // Accumulate total votes given in KV (best-effort)
+    const newVotes = forumVotes + projectVotes;
+    if (newVotes > 0) {
+      try {
+        const prev = parseInt(
+          (await cache.get("neptu:total_votes_given")) || "0",
+          10,
+        );
+        await cache.put("neptu:total_votes_given", String(prev + newVotes));
+      } catch {
+        console.warn("KV write failed for total_votes_given");
+      }
+    }
+
+    result.tasks.push({
+      name: "track_analytics",
+      success: true,
+      result: {
+        successfulTasks: successTasks.length,
+        failedTasks: failedTasks.length,
+      },
+    });
+  } catch (error) {
+    result.tasks.push({
+      name: "track_analytics",
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
 }

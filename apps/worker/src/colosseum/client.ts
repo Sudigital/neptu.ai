@@ -485,10 +485,7 @@ export class ColosseumClient {
     return this.request<{ poll: Poll }>("/agents/polls/active");
   }
 
-  async respondToPoll(
-    pollId: number,
-    response: string,
-  ): Promise<void> {
+  async respondToPoll(pollId: number, response: string): Promise<void> {
     await this.request(`/agents/polls/${pollId}/response`, {
       method: "POST",
       body: JSON.stringify({ response }),
@@ -496,9 +493,7 @@ export class ColosseumClient {
   }
 
   // ============ ClawKey (v1.6.1) ============
-  async verifyClawKey(
-    deviceId: string,
-  ): Promise<ClawKeyVerifyResponse> {
+  async verifyClawKey(deviceId: string): Promise<ClawKeyVerifyResponse> {
     return this.request<ClawKeyVerifyResponse>("/clawkey/verify", {
       method: "POST",
       body: JSON.stringify({ deviceId }),

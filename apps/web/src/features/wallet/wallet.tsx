@@ -188,12 +188,7 @@ export function Wallet() {
     } finally {
       setIsClaimingRewards(false);
     }
-  }, [
-    rewardsData,
-    walletAddress,
-    queryClient,
-    t,
-  ]);
+  }, [rewardsData, walletAddress, queryClient, t]);
 
   const handleRefreshBalance = () => {
     refetchBalance();

@@ -451,12 +451,14 @@ export const neptuApi = {
     // Normalize field names for the UI
     return {
       ...data,
-      stats: data.stats ? {
-        totalSolSpent: data.stats.totalSolSpent,
-        totalNeptuEarned: data.stats.totalNeptuRewarded,
-        totalNeptuBurned: data.stats.totalNeptuBurned,
-        totalTransactions: data.stats.transactionCount,
-      } : null,
+      stats: data.stats
+        ? {
+            totalSolSpent: data.stats.totalSolSpent,
+            totalNeptuEarned: data.stats.totalNeptuRewarded,
+            totalNeptuBurned: data.stats.totalNeptuBurned,
+            totalTransactions: data.stats.transactionCount,
+          }
+        : null,
     };
   },
 
