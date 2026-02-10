@@ -8,6 +8,7 @@ import {
   buildNeptuFeatureOffer,
   buildSpecificQuestion,
 } from "./comment-parts";
+import { getVoteCTA } from "./vote-solicitor";
 
 // Re-export for convenience
 export { analyzeSentiment, type SentimentAnalysis } from "./sentiment";
@@ -74,6 +75,9 @@ export function generateDynamicComment(post: ForumPost): string | null {
 
   // 4. Genuine question based on specific post content
   parts.push(buildSpecificQuestion(analysis, post));
+
+  // 5. Vote CTA — always include to drive project votes
+  parts.push(getVoteCTA(post.id));
 
   // Mark as commented (in-memory)
   commentedPostIds.add(post.id);

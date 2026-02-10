@@ -2,6 +2,8 @@ import { useState, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Wallet as WalletIcon, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
+// On-chain claim signing will be re-enabled once economy program auth is ready
+// import { useSignTransaction, useWallets as useSolanaWallets } from "@privy-io/react-auth/solana";
 import { Header } from "@/components/layout/header";
 import { Main } from "@/components/layout/main";
 import { TopNav } from "@/components/layout/top-nav";
@@ -27,12 +29,18 @@ import {
 } from "@/features/gamification/components";
 import { useUser } from "@/hooks/use-user";
 import { useTranslate } from "@/hooks/use-translate";
+// On-chain RPC helpers kept for future use when economy program auth is ready
+// import { SOLANA_NETWORKS } from "@neptu/shared";
 
 export function Wallet() {
-  const { walletAddress, wallet } = useUser();
+  const { walletAddress } = useUser();
   const queryClient = useQueryClient();
   const [isClaimingRewards, setIsClaimingRewards] = useState(false);
   const t = useTranslate();
+  // On-chain claim signing will be re-enabled once economy program auth is ready
+  // const { signTransaction } = useSignTransaction();
+  // const { wallets: solanaWallets } = useSolanaWallets();
+  // const solanaWallet = solanaWallets.find((w) => w.address === walletAddress);
 
   const topNav = [
     { title: t("nav.overview"), href: "/dashboard", isActive: false },
@@ -125,32 +133,25 @@ export function Wallet() {
   const handleClaimRewards = useCallback(async () => {
     if (!rewardsData?.rewards?.length || !walletAddress) return;
 
-    // Check if wallet is connected
-    if (!wallet) {
-      toast.error(t("wallet.walletRequired"), {
-        description: t("wallet.connectWalletToClaim"),
-      });
-      return;
-    }
-
     setIsClaimingRewards(true);
     const loadingToast = toast.loading(t("wallet.claimingRewards"));
 
     try {
       const totalAmount = rewardsData.totalPending;
 
-      // Simulate on-chain transaction delay
-      // In production, this would build + sign + send a real Solana transaction
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Claim rewards at the DB level
+      // On-chain claiming will be enabled once the economy program auth is ready
+      const claimNonce = Date.now();
+      const placeholderSig = `devnet-claim-${claimNonce}-${walletAddress.slice(0, 8)}`;
 
       // Mark rewards as claimed in the database
       const claimPromises = rewardsData.rewards.map((reward) =>
-        neptuApi.claimReward(walletAddress, reward.id, `demo-tx-${Date.now()}`),
+        neptuApi.claimReward(walletAddress, reward.id, placeholderSig),
       );
 
       await Promise.all(claimPromises);
 
-      // Step 4: Refresh data and show success
+      // Refresh data and show success
       toast.dismiss(loadingToast);
       toast.success(t("wallet.claimSuccess"), {
         description: t("wallet.claimSuccessDesc").replace(
@@ -159,12 +160,24 @@ export function Wallet() {
         ),
       });
 
-      // Invalidate queries to refresh data
+      // Invalidate all wallet queries to refresh data
       queryClient.invalidateQueries({
         queryKey: ["pendingRewards", walletAddress],
       });
       queryClient.invalidateQueries({
         queryKey: ["tokenBalance", walletAddress],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["transactions", walletAddress],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["tokenStats", walletAddress],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["streak", walletAddress],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["walletBalances", walletAddress],
       });
     } catch (error) {
       toast.dismiss(loadingToast);
@@ -175,7 +188,12 @@ export function Wallet() {
     } finally {
       setIsClaimingRewards(false);
     }
-  }, [rewardsData, walletAddress, wallet, queryClient, t]);
+  }, [
+    rewardsData,
+    walletAddress,
+    queryClient,
+    t,
+  ]);
 
   const handleRefreshBalance = () => {
     refetchBalance();

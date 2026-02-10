@@ -104,9 +104,69 @@ export class HeartbeatScheduler {
           agentStatus: status?.agent?.status ?? "unknown",
           hackathonStatus: status?.hackathon?.status ?? "unknown",
           engagement: status?.engagement ?? {},
+          currentDay: status?.currentDay,
+          daysRemaining: status?.daysRemaining,
+          timeRemainingFormatted: status?.timeRemainingFormatted,
         },
       });
       result.nextSteps = status?.nextSteps || [];
+
+      // v1.6.1: Log announcement if present
+      if (status?.announcement) {
+        console.log(`[ANNOUNCEMENT] ${status.announcement}`);
+        result.tasks.push({
+          name: "announcement",
+          success: true,
+          result: { message: status.announcement },
+        });
+        // Store in KV for API exposure
+        try {
+          await this.cache.put("neptu:latest_announcement", status.announcement, {
+            expirationTtl: 86400,
+          });
+        } catch {
+          // best-effort
+        }
+      }
+
+      // v1.6.1: Handle active poll
+      if (status?.hasActivePoll) {
+        try {
+          const pollResponse = await this.client.getActivePoll();
+          const poll = pollResponse?.poll;
+          if (poll?.id) {
+            const pollCacheKey = `neptu:poll_responded:${poll.id}`;
+            const alreadyResponded = await this.cache.get(pollCacheKey);
+            if (!alreadyResponded) {
+              // Generate a thoughtful response based on poll question/options
+              let response: string;
+              if (poll.options && Array.isArray(poll.options) && poll.options.length > 0) {
+                // Pick a random option if structured poll
+                response = poll.options[Math.floor(Math.random() * poll.options.length)];
+              } else {
+                // Free-form response
+                response = `Neptu here! We're building cultural preservation on Solana — ancient Balinese Wuku calendar meets AI. Excited about where agents can go!`;
+              }
+              await this.client.respondToPoll(poll.id, response);
+              await this.cache.put(pollCacheKey, new Date().toISOString(), {
+                expirationTtl: 604800,
+              });
+              result.tasks.push({
+                name: "poll_response",
+                success: true,
+                result: { pollId: poll.id, question: poll.question, response },
+              });
+              console.log(`[POLL] Responded to poll ${poll.id}: ${poll.question}`);
+            }
+          }
+        } catch (pollError) {
+          result.tasks.push({
+            name: "poll_response",
+            success: false,
+            error: pollError instanceof Error ? pollError.message : "Unknown poll error",
+          });
+        }
+      }
     } catch (error) {
       result.tasks.push({
         name: "check_status",
@@ -230,33 +290,62 @@ export class HeartbeatScheduler {
    * Phase: Comment on other agent posts with smart priority
    * Runs every 5 min
    * Priority:
-   *   1. Posts with 0 comments (be first commenter)
-   *   2. Posts where own comment was replied to (continue thread)
-   *   3. Posts with >1 comments (join discussion)
+   *   1. Trending/rising posts (engagement booster)
+   *   2. Posts with 0 comments (be first commenter)
+   *   3. Posts where own comment was replied to (continue thread)
+   *   4. Posts with >1 comments (join discussion)
    */
   private async phaseCommentOthers(
     result: HeartbeatResult,
     isTimedOut: () => boolean,
   ): Promise<void> {
     console.log("COMMENT: Commenting on other agent posts (smart priority)...");
-    try {
-      const commentResult = await smartCommentOnOtherPosts(
-        this.client,
-        this.forumAgent,
-        this.cache,
-        isTimedOut,
-      );
-      result.tasks.push({
-        name: "smart_comment",
-        success: true,
-        result: commentResult,
-      });
-    } catch (error) {
-      result.tasks.push({
-        name: "smart_comment",
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
+
+    // First: try trending-aware engagement (high-value targets)
+    if (!isTimedOut()) {
+      try {
+        const plan = await this.forumAgent.createTrendingEngagementPlan();
+        const trendingResult = await this.forumAgent.executeTrendingEngagement(plan);
+        result.tasks.push({
+          name: "trending_engagement",
+          success: true,
+          result: {
+            commented: trendingResult.commented,
+            targets: trendingResult.targets,
+            reciprocalAgents: plan.reciprocalAgents.length,
+            ownPostsToBoost: plan.ownPostsToBoost.length,
+          },
+        });
+      } catch (error) {
+        result.tasks.push({
+          name: "trending_engagement",
+          success: false,
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+    }
+
+    // Then: fallback to regular smart commenting for remaining capacity
+    if (!isTimedOut()) {
+      try {
+        const commentResult = await smartCommentOnOtherPosts(
+          this.client,
+          this.forumAgent,
+          this.cache,
+          isTimedOut,
+        );
+        result.tasks.push({
+          name: "smart_comment",
+          success: true,
+          result: commentResult,
+        });
+      } catch (error) {
+        result.tasks.push({
+          name: "smart_comment",
+          success: false,
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
     }
   }
 
@@ -389,6 +478,14 @@ export class HeartbeatScheduler {
     console.log("OTHER: Running other activities...");
     const otherTasks = [
       {
+        name: "engage_vote_exchanges",
+        run: async () => {
+          const voteResult =
+            await this.forumAgent.engageVoteExchangeThreads();
+          return voteResult;
+        },
+      },
+      {
         name: "respond_to_mentions",
         run: async () => {
           const responses = await this.forumAgent.respondToMentions();
@@ -406,7 +503,7 @@ export class HeartbeatScheduler {
         name: "check_leaderboard",
         run: async () => {
           const data = await this.client.getLeaderboard();
-          const leaderboard = data?.leaderboard || [];
+          const leaderboard = data?.entries || data?.leaderboard || [];
           const myProject = await this.client.getMyProject().catch(() => null);
           if (myProject) {
             const myPosition = leaderboard.findIndex(

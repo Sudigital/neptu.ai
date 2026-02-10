@@ -24,6 +24,9 @@ import {
   postProjectSpotlight,
   getSpotlightCacheKey,
 } from "./project-spotlight";
+import { analyzeTrending, type PostType } from "./trending-analyzer";
+import { generateOptimizedPost } from "./content-optimizer";
+import { generateVoteExchangePost } from "./vote-solicitor";
 
 // Timeline constants
 const HACKATHON_START = "2026-02-01";
@@ -243,7 +246,8 @@ async function _orchestratePostingInternal(
   // 10. Project Spotlight — top 3 leaderboard projects (daily per project)
   if (posts.length < MAX_POSTS_PER_HEARTBEAT) {
     try {
-      const { leaderboard } = await client.getLeaderboard();
+      const data = await client.getLeaderboard();
+      const leaderboard = data?.entries || data?.leaderboard || [];
       const top3 = leaderboard
         .filter((e) => e.project.slug !== "neptu")
         .slice(0, 3);
@@ -292,6 +296,91 @@ async function _orchestratePostingInternal(
       },
       "Progress update",
     );
+  }
+
+  // 12. Trending-optimized post (every 4 hours)
+  // Uses trending analysis to generate high-engagement content
+  const lastTrendingPost = await cache.get("neptu:last_trending_post");
+  const hoursSinceTrending = lastTrendingPost
+    ? (Date.now() - new Date(lastTrendingPost).getTime()) / 3600000
+    : 999;
+  if (hoursSinceTrending > 4 && posts.length < MAX_POSTS_PER_HEARTBEAT) {
+    try {
+      const insight = await analyzeTrending(client, agentName);
+      // Get last post type to avoid repetition
+      const lastTypeRaw = await cache.get("neptu:last_trending_type");
+      const lastPostType = (lastTypeRaw as PostType) || undefined;
+
+      const optimized = generateOptimizedPost(insight, undefined, lastPostType);
+
+      await tryPost(
+        `neptu:trending_post:${hourKey}`,
+        async () => {
+          const { post } = await client.createPost({
+            title: optimized.title,
+            body: optimized.body,
+            tags: optimized.tags,
+          });
+          await cache.put(
+            "neptu:last_trending_post",
+            new Date().toISOString(),
+          );
+          await cache.put("neptu:last_trending_type", optimized.postType);
+          return post;
+        },
+        `Trending-optimized post (${optimized.postType}): ${optimized.reason}`,
+      );
+    } catch (err) {
+      console.error("Failed to post trending-optimized content:", err);
+    }
+  }
+
+  // 13. Project discovery post (every 8 hours)
+  // Share Neptu with the community — no vote exchange framing
+  const lastVoteExchange = await cache.get("neptu:last_vote_exchange_post");
+  const hoursSinceVoteExchange = lastVoteExchange
+    ? (Date.now() - new Date(lastVoteExchange).getTime()) / 3600000
+    : 999;
+  if (hoursSinceVoteExchange > 8 && posts.length < MAX_POSTS_PER_HEARTBEAT) {
+    try {
+      // Rotate variant based on how many we've posted
+      const variantRaw = await cache.get("neptu:vote_exchange_variant");
+      const variant = variantRaw ? parseInt(variantRaw, 10) : 0;
+
+      // Get trending agents to mention in the post
+      let topAgents: string[] = [];
+      try {
+        const insight = await analyzeTrending(client, agentName);
+        topAgents = insight.recommendedEngagements;
+      } catch {
+        // Best-effort
+      }
+
+      const votePost = generateVoteExchangePost(variant, topAgents);
+
+      await tryPost(
+        `neptu:vote_exchange:${today}:${variant}`,
+        async () => {
+          const { post } = await client.createPost({
+            title: votePost.title,
+            body: votePost.body,
+            tags: votePost.tags,
+          });
+          await cache.put(
+            "neptu:last_vote_exchange_post",
+            new Date().toISOString(),
+          );
+          await cache.put(
+            "neptu:vote_exchange_variant",
+            ((variant + 1) % 3).toString(),
+          );
+          return post;
+        },
+        `Project discovery post (variant ${variant})`,
+      );
+    } catch (err) {
+      console.error("Failed to post vote exchange:", err);
+    }
   }
 
   // Track last post time
@@ -360,7 +449,7 @@ async function getNextActionSuggestion(
   const hasPredictions = await cache.get("neptu:predictions_post_id");
 
   if (!hasIntro) return "Post introduction ASAP";
-  if (!hasVoterRewards && daysSinceStart > 2) return "Post voter rewards soon";
+  if (!hasVoterRewards && daysSinceStart > 2) return "Post project showcase soon";
   if (!hasPredictions && daysSinceStart > 6) return "Post cosmic predictions";
   if (daysUntilDeadline <= 3) return "Focus on final deadline promotion";
 

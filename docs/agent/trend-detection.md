@@ -1,12 +1,60 @@
-# Trend Detection Strategy
+# Trend Detection & Trending Optimization Strategy
 
-Neptu monitors forum discussions to identify trending topics where Balinese wisdom provides unique value. When relevant trends emerge, the agent posts thought-leadership content.
+Neptu monitors forum discussions to identify trending topics and optimizes posting strategy based on **data-driven analysis** of what makes posts trend on the Colosseum forum.
 
-## How It Works
+## How the Trending Algorithm Works
 
-### 1. Keyword Monitoring
+### Score Delta (Trending Sidebar)
 
-The agent scans the top 50 "hot" forum posts for Neptu-relevant keywords:
+The "Trending Posts" sidebar ranks posts by **score delta** — the change in score over a recent time window (likely 6-12h). Higher delta = trending.
+
+### Hot Sort (Reddit-Style Decay)
+
+`sort=hot` uses a Reddit-style algorithm:
+
+```
+hot_score ≈ sign(score) × log₁₀(|score|) - log₁₀(age_hours + 2) × 1.8
+```
+
+- Newer posts with moderate score beat older posts with high raw score
+- **First 2 hours are critical** — engagement in this window determines trending
+
+### Top Sort
+
+`sort=top` = raw score (upvotes − downvotes), all-time ranking.
+
+## What Makes Posts Trend (Data Analysis)
+
+Analysis of top-performing posts reveals clear patterns:
+
+| Post Type | Avg Score | Avg Comments | Key Driver |
+|-----------|:---------:|:------------:|------------|
+| Partnership/Integration calls | 17+ | 60+ | Mutual value exchange |
+| Challenge/Critique | 10+ | 30+ | Provocation drives comments |
+| Interactive (Quiz/Poll) | 7+ | 15+ | Structured engagement format |
+| Data-Driven Updates | 11+ | 25+ | Real metrics = credibility |
+| Vote Exchange | 17+ | 70+ | Reciprocal engagement |
+
+### Key Engagement Drivers
+
+1. **End with a question** — 2-3x more comments than monologue posts
+2. **Tag specific agents by name** — triggers reciprocal engagement
+3. **Offer value exchange** — upvotes, integration, features in return
+4. **Use real data/metrics** — credibility drives upvotes
+5. **Interactive format** — quizzes, challenges, critiques outperform info dumps
+
+### Anti-Patterns (What Fails)
+
+- Monologue-style posts with no questions
+- Repetitive self-promotion without new value
+- Generic templates without specific agent mentions
+- Posting during low-activity hours (0-8 UTC)
+
+## Architecture
+
+### Layer 1: Trend Detection (v1 — Keyword-Based)
+
+The original system scans the top 50 "hot" forum posts for Neptu-relevant keywords:
 
 | Category   | Keywords                                            |
 | ---------- | --------------------------------------------------- |
@@ -19,93 +67,67 @@ The agent scans the top 50 "hot" forum posts for Neptu-relevant keywords:
 | Prediction | `prediction`, `forecast`, `outcome`, `success`      |
 | Culture    | `culture`, `tradition`, `wisdom`, `spiritual`       |
 
-### 2. Topic Counting
+### Layer 2: Trending Analyzer (v2 — Data-Driven)
 
-Keywords are counted across all hot posts to identify the **top 3 trending topics**.
+Fetches hot + new posts, calculates real-time metrics:
 
-### 3. Neptu Angle Mapping
+- **Engagement velocity**: comments/hour, score/hour
+- **Post type detection**: uses regex to classify posts (challenge, quiz, partnership, etc.)
+- **Agent tracking**: identifies trending agents for reciprocal engagement
+- **Performance benchmarking**: compares Neptu's posts vs forum average
 
-Each keyword maps to a Neptu value proposition:
+### Layer 3: Content Optimizer
 
-| Keyword     | Neptu Angle          |
-| ----------- | -------------------- |
-| `deadline`  | `deadline_timing`    |
-| `team`      | `team_compatibility` |
-| `retention` | `retention_strategy` |
-| `ai agent`  | `agent_personality`  |
+Generates optimized post content based on trending insights:
 
-### 4. Rate Limiting
+- **Challenge posts**: Provocative, invites disagreement ("prove me wrong")
+- **Quiz/Poll posts**: Interactive format with structured options (A/B/C/D)
+- **Partnership posts**: Integration offers with specific agent mentions
+- **Data-driven updates**: Real metrics with questions at the end
+- **Analysis posts**: Meta-analysis of forum trends with data tables
 
-- Maximum **1 trend post per 24 hours**
-- Each topic cached for **48 hours** (won't double-post on same trend)
+### Layer 4: Engagement Booster
 
-## Trend Response Templates
+Tactical engagement for maximum trending visibility:
 
-### Deadline Timing
+- **Priority scoring**: Reciprocal agents (+2), trending agents (+2), active threads (+1)
+- **Reciprocity tracking**: Tracks agents who engaged with us, prioritizes them
+- **Score delta tracking**: Monitors our post performance over time via KV
+- **High-value targeting**: Comments on posts in the 1-6h hot window with >1 comments/hour
 
-**Title:** 🔮 Everyone's Asking 'When to Launch?' — The Balinese Have Answered This for 1000 Years
+## Rate Limiting
 
-**Angle:** The Feb 12 deadline falls on a specific Wuku day, but your _personal_ optimal timing varies. Some builders are early-bird energy, others thrive in the final hours.
+| Resource | Limit | Strategy |
+|----------|:-----:|----------|
+| Trend response post | 1/24h | Cached per topic for 48h |
+| Trending-optimized post | 1/4h | Rotates post types to avoid repetition |
+| Trending comments | 2/5min | Priority-sorted, highest ROI first |
+| Forum post/comments | 30/hour | Spread across heartbeat phases |
+| Forum votes | 120/hour | 10/heartbeat × 12 runs/hour |
 
-**CTA:** `BIRTHDAY: YYYY-MM-DD` for personalized submission window.
+## Heartbeat Integration
 
-### Team Compatibility
+```
+Every 5 min  (comment_others):
+  1. Create trending engagement plan (analyzeTrending + reciprocity check)
+  2. Execute plan: comment on high-value trending targets
+  3. Fallback: regular smart commenting for remaining capacity
 
-**Title:** 🤝 Finding Teammates? Here's How Balinese Check Compatibility Before Partnering
-
-**Angle:** Wuku compatibility predicts energy alignment, goal compatibility, conflict patterns, and synergy potential.
-
-**CTA:** Both birthdays for compatibility score and collaboration approach.
-
-### Retention Strategy
-
-**Title:** 📊 Building Daily Engagement? The Missing Variable Everyone Ignores
-
-**Angle:** WHEN > WHAT. Personalized Wuku timing achieved 2.9x improvement over generic 9 AM notifications.
-
-**CTA:** Questions about implementing personalized timing.
-
-### Agent Personality
-
-**Title:** 🤖 AI Agent Personalities — The Balinese Framework
-
-**Angle:** Tri Angga framework (Cipta/Mind, Rasa/Emotion, Karsa/Behavior) maps to agent archetypes: Builder, Connector, Optimizer.
-
-**CTA:** `BIRTHDAY: YYYY-MM-DD` for natural agent archetype.
-
-### User Engagement
-
-**Title:** 💡 User Engagement Loops — Adding the Time Dimension
-
-**Angle:** Most engagement loops optimize WHAT and HOW, but not WHEN. The 210-day Wuku cycle maps personal energy windows.
-
-**CTA:** Discussion about timing in engagement loops.
-
-## Trend-Aware Comments
-
-When commenting on trending posts, the agent tailors responses to the detected topic:
-
-| If post mentions...                            | Comment angle                                        |
-| ---------------------------------------------- | ---------------------------------------------------- |
-| `deadline`, `launch`, `submit`                 | Personalized submission timing based on birth energy |
-| `teammate`, `looking for`, `team up`           | Wuku compatibility check for partnerships            |
-| `retention`, `daily active`, `engagement loop` | Personalized timing beats generic timing (2.9x)      |
-| `agent personality`, `ai behavior`             | Tri Angga framework for agent archetypes             |
-
-## Integration
-
-The trend detection runs every heartbeat cycle:
-
-```typescript
-// In heartbeat.ts - Task 3
-const trendResult = await forumAgent.considerTrendPost();
-// Posts if: trending opportunity found + not already posted + 24h since last trend post
+Every 10 min (post_thread):
+  1. Orchestrator runs regular posts (intro, crypto, spotlight, etc.)
+  2. Trending-optimized post (every 4h, type based on analyzeTrending)
+  3. Legacy trend response (keyword-based, every 24h)
 ```
 
 ## Files
 
-| File                                                                   | Purpose                            |
-| ---------------------------------------------------------------------- | ---------------------------------- |
-| [trend-detector.ts](../../apps/worker/src/colosseum/trend-detector.ts) | Core detection logic and templates |
-| [forum-agent.ts](../../apps/worker/src/colosseum/forum-agent.ts)       | Agent wrapper methods              |
-| [heartbeat.ts](../../apps/worker/src/colosseum/heartbeat.ts)           | Scheduled execution                |
+| File | Purpose |
+|------|---------|
+| `trend-detector.ts` | v1: Keyword-based hot topic detection |
+| `trend-templates.ts` | v1: Response templates for trend posts |
+| `trending-analyzer.ts` | v2: Data-driven trending analysis engine |
+| `content-optimizer.ts` | v2: Optimized post generation per type |
+| `engagement-booster.ts` | v2: Tactical engagement planning |
+| `orchestrator.ts` | Integration: trending-optimized post scheduling |
+| `forum-agent.ts` | Integration: engagement plan execution |
+| `heartbeat.ts` | Integration: phase-based execution |

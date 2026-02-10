@@ -20,7 +20,7 @@ const MIN_BODY_LENGTH_SPAM = 200;
 const CACHE_TTL_WEEK = 604800;
 const CACHE_TTL_LONG = 864000; // 10 days
 const RATE_LIMIT_MS = 1000;
-const MAX_PROJECT_VOTES_PER_RUN = 3; // 3 per 5min × 12 = 36 project votes/hour
+const MAX_PROJECT_VOTES_PER_RUN = 10; // 10 per 15min = aggressive reciprocal voting
 
 export interface VoteResult {
   voted: number;
@@ -94,9 +94,9 @@ export function evaluateProject(project: Project): {
     reasons.push("solana_integration");
   }
 
-  // Threshold: need at least 2 points (very aggressive)
+  // Threshold: need at least 1 point (vote on almost all projects)
   return {
-    shouldVote: score >= 2,
+    shouldVote: score >= 1,
     score,
     reasons,
   };

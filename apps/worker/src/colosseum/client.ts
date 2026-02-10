@@ -43,6 +43,33 @@ export interface AgentStatus {
     votesReceived: number;
   };
   nextSteps: string[];
+  // v1.6.1 fields
+  hasActivePoll?: boolean;
+  announcement?: string | null;
+  currentDay?: number;
+  daysRemaining?: number;
+  timeRemainingMs?: number;
+  timeRemainingFormatted?: string;
+}
+
+export interface Poll {
+  id: number;
+  question: string;
+  options?: string[];
+  [key: string]: unknown;
+}
+
+export interface ClawKeyVerifyResponse {
+  success: boolean;
+  message: string;
+  clawCreditCode?: string;
+  nextStepUrl?: string;
+}
+
+export interface ClawKeyStatus {
+  enabled: boolean;
+  codesRemaining?: number;
+  assignedCode?: string | null;
 }
 
 export interface ForumPost {
@@ -89,12 +116,26 @@ export interface Project {
   status: "draft" | "submitted";
   humanUpvotes: number;
   agentUpvotes: number;
+  ownerAgentId?: number;
+  ownerAgentName?: string;
+  ownerAgentClaim?: {
+    xUsername?: string;
+    xProfileImageUrl?: string;
+  };
 }
 
 export interface LeaderboardEntry {
   rank: number;
   project: Project;
-  totalVotes: number;
+  score?: number;
+  votes?: number;
+  totalVotes?: number;
+}
+
+export interface LeaderboardResponse {
+  entries: LeaderboardEntry[];
+  /** Alias for backward compat — may be undefined from API */
+  leaderboard?: LeaderboardEntry[];
 }
 
 export class ColosseumClient {
@@ -391,8 +432,16 @@ export class ColosseumClient {
   }
 
   // ============ Leaderboard ============
-  async getLeaderboard(): Promise<{ leaderboard: LeaderboardEntry[] }> {
-    return this.request("/leaderboard");
+  async getLeaderboard(): Promise<LeaderboardResponse> {
+    const data = await this.request<LeaderboardResponse>("/leaderboard");
+    // Normalize: API returns "entries", some code expects "leaderboard"
+    if (!data.leaderboard && data.entries) {
+      data.leaderboard = data.entries;
+    }
+    if (!data.entries && data.leaderboard) {
+      data.entries = data.leaderboard;
+    }
+    return data;
   }
 
   // ============ Teams ============
@@ -429,5 +478,34 @@ export class ColosseumClient {
 
   async getHealth(): Promise<{ status: string }> {
     return this.request("/health");
+  }
+
+  // ============ Polls (v1.6.1) ============
+  async getActivePoll(): Promise<{ poll: Poll }> {
+    return this.request<{ poll: Poll }>("/agents/polls/active");
+  }
+
+  async respondToPoll(
+    pollId: number,
+    response: string,
+  ): Promise<void> {
+    await this.request(`/agents/polls/${pollId}/response`, {
+      method: "POST",
+      body: JSON.stringify({ response }),
+    });
+  }
+
+  // ============ ClawKey (v1.6.1) ============
+  async verifyClawKey(
+    deviceId: string,
+  ): Promise<ClawKeyVerifyResponse> {
+    return this.request<ClawKeyVerifyResponse>("/clawkey/verify", {
+      method: "POST",
+      body: JSON.stringify({ deviceId }),
+    });
+  }
+
+  async getClawKeyStatus(): Promise<ClawKeyStatus> {
+    return this.request<ClawKeyStatus>("/clawkey/status");
   }
 }

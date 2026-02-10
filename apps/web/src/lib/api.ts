@@ -380,22 +380,17 @@ export const neptuApi = {
     return data;
   },
 
-  // Payment - Build claim rewards instruction
+  // Payment - Build claim rewards transaction
   async buildClaimInstruction(
     walletAddress: string,
     amount: number,
     nonce: number,
+    blockhash?: string,
+    lastValidBlockHeight?: number,
   ) {
     const { data } = await api.post<{
       success: boolean;
-      instruction: {
-        programId: string;
-        accounts: Array<{
-          address: string;
-          role: number;
-        }>;
-        data: number[];
-      };
+      serializedTransaction: number[];
       transaction: {
         blockhash: string;
         lastValidBlockHeight: number;
@@ -404,7 +399,13 @@ export const neptuApi = {
         amount: number;
         nonce: number;
       };
-    }>("/api/pay/claim/build", { walletAddress, amount, nonce });
+    }>("/api/pay/claim/build", {
+      walletAddress,
+      amount,
+      nonce,
+      blockhash,
+      lastValidBlockHeight,
+    });
     return data;
   },
 
@@ -442,12 +443,21 @@ export const neptuApi = {
       success: boolean;
       stats: {
         totalSolSpent: number;
-        totalNeptuEarned: number;
+        totalNeptuRewarded: number;
         totalNeptuBurned: number;
-        totalTransactions: number;
+        transactionCount: number;
       };
     }>(`/api/token/stats/${walletAddress}`);
-    return data;
+    // Normalize field names for the UI
+    return {
+      ...data,
+      stats: data.stats ? {
+        totalSolSpent: data.stats.totalSolSpent,
+        totalNeptuEarned: data.stats.totalNeptuRewarded,
+        totalNeptuBurned: data.stats.totalNeptuBurned,
+        totalTransactions: data.stats.transactionCount,
+      } : null,
+    };
   },
 
   // Compatibility - Calculate Mitra Satru between two birth dates

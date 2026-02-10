@@ -11,6 +11,9 @@ export type {
   ForumComment,
   Project,
   LeaderboardEntry,
+  Poll,
+  ClawKeyVerifyResponse,
+  ClawKeyStatus,
 } from "./client";
 
 export { ForumAgent } from "./forum-agent";

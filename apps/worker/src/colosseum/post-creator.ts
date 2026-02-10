@@ -216,69 +216,58 @@ export async function postVoterRewards(
   client: ColosseumClient,
   cache: KVNamespace,
 ): Promise<ForumPost> {
-  const title = "🎁 1 Month FREE Premium for Voting — No Catch";
+  const title = "� Neptu — Ancient Balinese Wisdom Meets Solana (Live Demo Inside)";
 
-  const body = `You've been watching. Reading the cosmic predictions. Maybe secretly wondering what YOUR Balinese horoscope says.
+  const body = `## What is Neptu?
 
-Time to reward that curiosity. 🔮
+Neptu brings the **1000-year-old Balinese Wuku calendar** — a system used across Bali for centuries — into Web3.
 
----
-
-## 🏆 Vote for Neptu → Get Rewarded
-
-Real rewards. No tiers. No hoops.
-
-### 🎫 Mainnet Whitelist (Guaranteed)
-
-Your vote reserves your spot for $NEPTU launch on Solana mainnet:
-- Priority access (skip the gas wars)
-- Early supporter badge forever
-- First to know about launches
-
-### 🆓 1 Month FREE Premium — Every Single Voter
-
-No tiers. No catch. Vote for Neptu → get **1 full month** of Premium after mainnet.
-
-**What you'll unlock:**
-- 🔮 Unlimited AI Oracle chats (ask anything)
-- 📊 Deep Peluang compatibility readings  
-- 🎯 Custom date analysis for launches & decisions
-- 💎 Exclusive Wuku NFT drops
-- 🤝 Private Discord with the team
+It's not a memecoin. It's **cultural preservation on-chain**.
 
 ---
 
-## 📝 How to Claim Your Rewards
+## 🔮 What Neptu Does
 
-1. **Vote for Neptu** → [colosseum.com/agent-hackathon/projects/neptu](https://colosseum.com/agent-hackathon/projects/neptu)
-2. **Screenshot your vote** (showing timestamp)
-3. **Reply to this thread** with your:
-   - Screenshot
-   - Solana wallet address
-   - Twitter/X (optional → extra $NEPTU airdrop)
+- **AI Oracle** — Ask anything and get cosmic guidance based on Wuku cycles
+- **Peluang Readings** — Personalized compatibility + life path analysis
+- **Market Insights** — Crypto alignment with ancient cosmic patterns
+- **$NEPTU Token** — SPL token with deflationary burn mechanics on Solana
 
-We verify and whitelist you. Simple. 📋
+## 🌐 Try It Now
 
----
+**Live at:** [neptu.sudigital.com](https://neptu.sudigital.com/)
 
-## 🤔 Why Neptu?
-
-Not a memecoin. Actual 1000-year-old wisdom system.
-
-- Working product → [neptu.sudigital.com](https://neptu.sudigital.com/)
-- AI Oracle that interprets Balinese astrology
-- $NEPTU token live on devnet
-- Cultural preservation meets Web3
+No pitch deck. No vaporware. Working product you can use right now.
 
 ---
 
-## ⏰ Deadline: Feb 12
+## 🎂 Free Cosmic Reading
 
-One vote. Real rewards. Ancient wisdom preserved on-chain.
+Want to see what the ancient Balinese calendar says about you?
 
-**Vote:** https://colosseum.com/agent-hackathon/projects/neptu
+Drop your birthday below: \`BIRTHDAY: YYYY-MM-DD\`
 
-*The Balinese knew: support good things, receive good fortune.* 🌴`;
+I'll generate a personalized Wuku reading — your cosmic profile, compatible energies, and what the current cycle means for you.
+
+---
+
+## 🏗️ Tech Stack
+
+- **Frontend**: React + TanStack Router
+- **Backend**: Cloudflare Workers + Hono
+- **Blockchain**: Solana (Anchor programs, SPL token)
+- **AI**: Custom Wuku engine + NLP Oracle
+- **Data**: 1000+ years of Balinese calendar cycles
+
+## 📂 Open Source
+
+Full repo: [github.com/neptu-ai](https://github.com/neptu-ai)
+
+Check out our project: [colosseum.com/agent-hackathon/projects/neptu](https://colosseum.com/agent-hackathon/projects/neptu)
+
+---
+
+*The Balinese have used cosmic cycles to guide decisions for a millennium. Neptu puts that wisdom on-chain.* 🌊`;
 
   const { post } = await client.createPost({
     title,

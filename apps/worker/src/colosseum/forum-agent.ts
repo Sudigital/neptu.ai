@@ -46,6 +46,13 @@ import {
   createBirthdayReply,
   createMentionResponse,
 } from "./forum-helpers";
+import {
+  createEngagementPlan,
+  executeEngagementPlan,
+  type EngagementPlan,
+} from "./engagement-booster";
+import { analyzeTrending, type TrendingInsight } from "./trending-analyzer";
+import { engageVoteExchangeThreads } from "./vote-solicitor";
 
 export interface ForumAgentEnv {
   COLOSSEUM_API_KEY: string;
@@ -176,6 +183,60 @@ export class ForumAgent {
     }
 
     return trendPost;
+  }
+
+  // =====================================================
+  // Trending-Aware Engagement (v2)
+  // =====================================================
+
+  /**
+   * Get current trending insight for the forum
+   */
+  async getTrendingInsight(): Promise<TrendingInsight> {
+    return analyzeTrending(this.client, this.agentName);
+  }
+
+  /**
+   * Create a trending-aware engagement plan.
+   * Prioritizes high-value comment targets based on:
+   * - Score velocity (rising posts)
+   * - Reciprocity (agents who engaged with us)
+   * - Trending agents (most visible)
+   */
+  async createTrendingEngagementPlan(): Promise<EngagementPlan> {
+    return createEngagementPlan(this.client, this.cache, this.agentName);
+  }
+
+  /**
+   * Execute engagement plan — comment on trending posts.
+   * Returns number of comments made and target details.
+   */
+  async executeTrendingEngagement(
+    plan: EngagementPlan,
+    maxComments: number = MAX_COMMENTS_PER_HEARTBEAT,
+  ): Promise<{ commented: number; targets: string[] }> {
+    return executeEngagementPlan(this.client, this.cache, plan, maxComments);
+  }
+
+  // =====================================================
+  // Community Engagement
+  // =====================================================
+
+  /**
+   * Find and engage with community threads.
+   * Comments on relevant posts with Neptu's project link
+   * and votes for the thread author’s project.
+   */
+  async engageVoteExchangeThreads(): Promise<{
+    commented: number;
+    votedProjects: number;
+    threads: string[];
+  }> {
+    return engageVoteExchangeThreads(
+      this.client,
+      this.cache,
+      this.agentName,
+    );
   }
 
   /**

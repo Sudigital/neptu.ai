@@ -10,6 +10,16 @@ export interface NeptuAddresses {
   rewardsPool: string;
 }
 
+// Token program ID (same across all networks)
+const _TOKEN_PROGRAM_ID = "7JDw4pncZg6g7ezhQSNxKhj3ptT62okgttDjLL4TwqHW";
+
+// Mint PDA derived from ["mint"] + token program ID
+// This is deterministic and the same across all networks
+const MINT_PDA = "J4rUwfHS74XKTcNAX5wh5vuwYH4Fv5MR4Pdo4Gt4dhrq";
+
+// Economy authority PDA derived from ["economy"] + economy program ID
+const ECONOMY_AUTHORITY_PDA = "BRW7fxvTcnnzi6dvgfiCoTnWJRFSMCirKAGRVn41Co4E";
+
 // Get env safely (works in both Node/Bun and Cloudflare Workers)
 const getEnv = (key: string): string => {
   if (typeof process !== "undefined" && process.env) {
@@ -19,15 +29,15 @@ const getEnv = (key: string): string => {
 };
 
 export const DEVNET_ADDRESSES: NeptuAddresses = {
-  tokenMint: getEnv("NEPTU_TOKEN_MINT"),
-  treasury: getEnv("NEPTU_TREASURY"),
-  rewardsPool: getEnv("NEPTU_REWARDS_POOL"),
+  tokenMint: getEnv("NEPTU_TOKEN_MINT") || MINT_PDA,
+  treasury: getEnv("NEPTU_TREASURY") || ECONOMY_AUTHORITY_PDA,
+  rewardsPool: getEnv("NEPTU_REWARDS_POOL") || ECONOMY_AUTHORITY_PDA,
 } as const;
 
 export const MAINNET_ADDRESSES: NeptuAddresses = {
-  tokenMint: "",
-  treasury: "",
-  rewardsPool: "",
+  tokenMint: MINT_PDA,
+  treasury: ECONOMY_AUTHORITY_PDA,
+  rewardsPool: ECONOMY_AUTHORITY_PDA,
 } as const;
 
 export function getAddresses(network: NetworkType): NeptuAddresses {
