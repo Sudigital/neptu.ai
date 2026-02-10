@@ -49,7 +49,7 @@ export function useSidebarData(): SidebarData {
               icon: Users,
             },
             {
-              title: t("nav.oracleInsight", "Oracle Insight"),
+              title: t("nav.oracleInsight"),
               url: "/oracle-insight",
               icon: Sparkles,
             },

@@ -19,6 +19,7 @@ import {
 } from "recharts";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
+import { useTranslate } from "@/hooks/use-translate";
 import {
   ChartContainer,
   ChartTooltip,
@@ -69,6 +70,7 @@ export function HourlyGrid({
   selectedDate: Date;
   peluang: { total_urip?: number; c24_urip?: number } | undefined;
 }) {
+  const t = useTranslate();
   const [now, setNow] = React.useState(() => new Date());
   React.useEffect(() => {
     if (!isToday(selectedDate)) return;
@@ -98,10 +100,10 @@ export function HourlyGrid({
     currentHour >= 0 ? getHourEnergy(currentHour, totalUrip) : null;
   const energyLabel =
     currentEnergy === "high"
-      ? "Good"
+      ? t("chart.good")
       : currentEnergy === "mid"
-        ? "Neutral"
-        : "Caution";
+        ? t("chart.neutral")
+        : t("chart.caution");
   const energyTextColor =
     currentEnergy === "high"
       ? "text-emerald-600 dark:text-emerald-400"
@@ -189,14 +191,14 @@ export function HourlyGrid({
                   const lvl = props.payload.level as string;
                   const label =
                     lvl === "high"
-                      ? "Good"
+                      ? t("chart.good")
                       : lvl === "mid"
-                        ? "Neutral"
-                        : "Caution";
+                        ? t("chart.neutral")
+                        : t("chart.caution");
                   return (
                     <div className="flex items-center gap-2">
                       <span className="font-medium">
-                        Hour {props.payload.hour}
+                        {t("chart.hour")} {props.payload.hour}
                       </span>
                       <span className="text-muted-foreground">{label}</span>
                       <span className="font-bold">{String(value)}%</span>
@@ -229,26 +231,26 @@ export function HourlyGrid({
         {currentHour >= 0 && (
           <div className="flex items-center gap-2 text-xs sm:text-sm">
             <span className="h-2 w-2 rounded-full bg-violet-500 animate-pulse" />
-            <span className="text-muted-foreground">Now:</span>
+            <span className="text-muted-foreground">{t("chart.now")}:</span>
             <span className="font-semibold tabular-nums">{nowLabel}</span>
             <span className="text-muted-foreground">—</span>
             <span className={cn("font-medium", energyTextColor)}>
-              {energyLabel} Energy
+              {energyLabel} {t("chart.energy")}
             </span>
           </div>
         )}
         <div className="flex items-center gap-3 text-[10px] text-muted-foreground sm:ml-auto">
           <span className="flex items-center gap-1">
             <span className="h-2 w-2 rounded-full bg-emerald-500" />
-            Good (100%)
+            {t("chart.good")} (100%)
           </span>
           <span className="flex items-center gap-1">
             <span className="h-2 w-2 rounded-full bg-sky-500" />
-            Neutral (66%)
+            {t("chart.neutral")} (66%)
           </span>
           <span className="flex items-center gap-1">
             <span className="h-2 w-2 rounded-full bg-rose-500" />
-            Caution (33%)
+            {t("chart.caution")} (33%)
           </span>
         </div>
       </div>
@@ -270,6 +272,7 @@ export function SoulRadarChart({
   peluang: ReadingLike;
   potensi: ReadingLike;
 }) {
+  const t = useTranslate();
   const dimensions = [
     "cipta",
     "rasa",
@@ -323,18 +326,18 @@ export function SoulRadarChart({
       <div className="flex items-center justify-center gap-4 text-[10px] text-muted-foreground">
         <span className="flex items-center gap-1">
           <span className="h-2 w-2 rounded-full bg-sky-500" />
-          Peluang (Today)
+          Peluang ({t("chart.today")})
         </span>
         <span className="flex items-center gap-1">
           <span className="h-2 w-2 rounded-full bg-amber-500" />
-          Potensi (Birth)
+          Potensi ({t("chart.birth")})
         </span>
       </div>
 
       {/* Soul Summary Card */}
       <Card className="flex-1 border-violet-200/50 dark:border-violet-800/50 bg-gradient-to-br from-violet-50/50 to-purple-50/50 dark:from-violet-950/20 dark:to-purple-950/20 p-3">
         <p className="text-xs font-semibold text-violet-700 dark:text-violet-300 mb-2">
-          Soul Profile
+          {t("chart.soulProfile")}
         </p>
         <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-[11px]">
           {dimensions.map((dim) => {
@@ -360,7 +363,9 @@ export function SoulRadarChart({
             );
           })}
           <div className="col-span-2 mt-1 flex items-center gap-1.5">
-            <span className="text-muted-foreground">Dualitas:</span>
+            <span className="text-muted-foreground">
+              {t("dashboard.dualitas")}:
+            </span>
             <span className="font-semibold">{peluang?.dualitas ?? "-"}</span>
             {peluang?.afirmasi?.name && (
               <>
@@ -399,6 +404,7 @@ export function ComparisonBarChart({
     full_urip?: number;
   };
 }) {
+  const t = useTranslate();
   const metrics = [
     {
       key: "Total Urip",
@@ -471,11 +477,11 @@ export function ComparisonBarChart({
       <div className="flex items-center justify-center gap-4 text-[10px] text-muted-foreground">
         <span className="flex items-center gap-1">
           <span className="h-2 w-2 rounded-full bg-sky-500" />
-          Peluang (Today)
+          Peluang ({t("chart.today")})
         </span>
         <span className="flex items-center gap-1">
           <span className="h-2 w-2 rounded-full bg-amber-500" />
-          Potensi (Birth)
+          Potensi ({t("chart.birth")})
         </span>
       </div>
 

@@ -65,7 +65,7 @@ export function OracleInsightPage() {
       disabled: false,
     },
     {
-      title: t("nav.oracleInsight", "Oracle Insight"),
+      title: t("nav.oracleInsight"),
       href: "/oracle-insight",
       isActive: true,
       disabled: false,
@@ -122,7 +122,7 @@ export function OracleInsightPage() {
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
-                {t("nav.oracleInsight", "Oracle Insight")}
+                {t("nav.oracleInsight")}
               </h1>
               <p className="text-sm text-muted-foreground">
                 {t(

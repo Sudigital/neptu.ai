@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react-swc";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
+import { VitePWA } from "vite-plugin-pwa";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -21,6 +22,41 @@ export default defineConfig({
         Buffer: true,
         global: true,
         process: true,
+      },
+    }),
+    VitePWA({
+      registerType: "autoUpdate",
+      includeAssets: ["images/logo.svg", "apple-touch-icon.png"],
+      workbox: {
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3 MB
+      },
+      manifest: {
+        name: "Neptu — Balinese Astrology AI",
+        short_name: "Neptu",
+        description:
+          "Discover your cosmic potential with ancient Balinese astrology powered by AI on Solana.",
+        theme_color: "#7c3aed",
+        background_color: "#0a0a0b",
+        display: "standalone",
+        start_url: "/",
+        icons: [
+          {
+            src: "pwa-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "pwa-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+          },
+          {
+            src: "pwa-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any maskable",
+          },
+        ],
       },
     }),
   ],

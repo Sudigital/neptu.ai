@@ -357,7 +357,7 @@ export function Dashboard() {
               <Tabs defaultValue="24h" className="w-full">
                 <TabsList>
                   <TabsTrigger value="24h" className="gap-1">
-                    <span>🕐</span> 24h Energy
+                    <span>🕐</span> {t("chart.24hEnergy")}
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="24h" className="mt-2">
@@ -374,7 +374,7 @@ export function Dashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 items-stretch">
                 <div className="min-w-0 overflow-hidden flex flex-col">
                   <h3 className="text-sm font-semibold mb-3">
-                    🧠 Soul Dimensions
+                    🧠 {t("chart.soulDimensions")}
                   </h3>
                   <SoulRadarChart
                     peluang={reading.peluang}
@@ -386,7 +386,7 @@ export function Dashboard() {
 
                 <div className="min-w-0 overflow-hidden flex flex-col">
                   <h3 className="text-sm font-semibold mb-3">
-                    ⚖️ Peluang vs Potensi
+                    ⚖️ {t("chart.peluangVsPotensi")}
                   </h3>
                   <ComparisonBarChart
                     peluang={reading.peluang}
