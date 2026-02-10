@@ -7,10 +7,11 @@ import {
   Settings,
   Wrench,
   UserCog,
-  Heart,
+  Users,
   Wallet,
   HelpCircle,
   BookOpen,
+  Sparkles,
 } from "lucide-react";
 import { Logo } from "@/assets/logo";
 import { useTranslate } from "@/hooks/use-translate";
@@ -45,7 +46,12 @@ export function useSidebarData(): SidebarData {
             {
               title: t("nav.compatibility"),
               url: "/compatibility",
-              icon: Heart,
+              icon: Users,
+            },
+            {
+              title: t("nav.oracleInsight", "Oracle Insight"),
+              url: "/oracle-insight",
+              icon: Sparkles,
             },
           ],
         },

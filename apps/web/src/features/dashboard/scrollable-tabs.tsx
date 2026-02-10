@@ -94,9 +94,9 @@ export function ScrollableTabs({
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           <TabsList className="w-max">
-            <TabsTrigger value="general" className="gap-1">
-              <span>✨</span>
-              {t("dashboard.general")}
+            <TabsTrigger value="24h" className="gap-1">
+              <span>🕐</span>
+              {t("dashboard.24h", "24h Energy")}
             </TabsTrigger>
             {interests.map((interest: string) => (
               <TabsTrigger key={interest} value={interest} className="gap-1">

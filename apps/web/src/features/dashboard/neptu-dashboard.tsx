@@ -4,15 +4,14 @@ import { useNavigate } from "@tanstack/react-router";
 import { format, isToday, isPast, addDays, subDays } from "date-fns";
 import {
   Calendar as CalendarIcon,
+  LayoutDashboard,
   Sparkles,
   Sun,
   Moon,
   Star,
   Loader2,
-  Bot,
   ChevronLeft,
   ChevronRight,
-  RefreshCw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -23,18 +22,20 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
 import { Main } from "@/components/layout/main";
 import { neptuApi } from "@/lib/api";
 import { useUser } from "@/hooks/use-user";
 import { useTranslate } from "@/hooks/use-translate";
-import { useSettingsStore } from "@/stores/settings-store";
 import { Logo } from "@/assets/logo";
-import { InterestOracle } from "./interest-oracle";
-import { ScrollableTabs } from "./scrollable-tabs";
-import { HighlightedText } from "./highlighted-text";
 import { DashboardHeader } from "./dashboard-header";
 import { ReadingDetailCard } from "./reading-detail-card";
+import {
+  HourlyGrid,
+  SoulRadarChart,
+  ComparisonBarChart,
+} from "./dashboard-charts";
 
 export function Dashboard() {
   const {
@@ -44,7 +45,6 @@ export function Dashboard() {
     user,
     isLoading: userLoading,
   } = useUser();
-  const { language } = useSettingsStore();
   const t = useTranslate();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -83,32 +83,7 @@ export function Dashboard() {
     queryFn: () => neptuApi.getReading(walletAddress!, targetDateStr),
     enabled: !!walletAddress && !!user?.birthDate,
     retry: false,
-  });
-
-  const {
-    data: aiInterpretation,
-    isLoading: aiLoading,
-    refetch: refetchAI,
-  } = useQuery({
-    queryKey: [
-      "ai-interpretation",
-      walletAddress,
-      targetDateStr,
-      user?.birthDate,
-      language,
-    ],
-    queryFn: () =>
-      neptuApi.getDateInterpretation(
-        user?.birthDate || "",
-        targetDateStr,
-        language,
-      ),
-    enabled:
-      !!user?.birthDate &&
-      !!readingData?.reading &&
-      !!import.meta.env.VITE_WORKER_URL,
-    retry: false,
-    staleTime: 1000 * 60 * 30,
+    placeholderData: (prev) => prev,
   });
 
   useEffect(() => {
@@ -179,16 +154,23 @@ export function Dashboard() {
 
       <Main>
         <div className="mb-4 sm:mb-6">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
-            {t("dashboard.title")}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {isToday(selectedDate)
-              ? t("dashboard.subtitle.today")
-              : isPast(selectedDate)
-                ? t("dashboard.subtitle.past")
-                : t("dashboard.subtitle.future")}
-          </p>
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-900/30">
+              <LayoutDashboard className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+            </div>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
+                {t("dashboard.title")}
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                {isToday(selectedDate)
+                  ? t("dashboard.subtitle.today")
+                  : isPast(selectedDate)
+                    ? t("dashboard.subtitle.past")
+                    : t("dashboard.subtitle.future")}
+              </p>
+            </div>
+          </div>
         </div>
 
         {readingLoading ? (
@@ -370,97 +352,48 @@ export function Dashboard() {
               </div>
             </div>
 
-            {/* Right Side - AI Interpretation */}
-            <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-3 sm:gap-4">
-              <Tabs defaultValue="general" className="w-full">
-                <ScrollableTabs interests={user?.interests || []} t={t} />
-
-                <TabsContent value="general" className="mt-0">
-                  <Card className="py-2 gap-0 px-3 sm:px-4">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2 sm:gap-3">
-                        <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-violet-100 dark:bg-violet-900/30">
-                          <Bot className="h-4 w-4 sm:h-5 sm:w-5 text-violet-600 dark:text-violet-400" />
-                        </div>
-                        <div>
-                          <h3 className="text-base sm:text-lg font-semibold tracking-tight">
-                            {t("dashboard.oracleInsight")}
-                          </h3>
-                          <p className="text-[10px] sm:text-xs text-muted-foreground">
-                            {t("dashboard.aiInterpretationFor")}{" "}
-                            {isToday(selectedDate)
-                              ? t("dashboard.today").toLowerCase()
-                              : format(selectedDate, "MMM d, yyyy")}
-                          </p>
-                        </div>
-                      </div>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => refetchAI()}
-                        disabled={aiLoading}
-                      >
-                        <RefreshCw
-                          className={cn("h-5 w-5", aiLoading && "animate-spin")}
-                        />
-                      </Button>
-                    </div>
-                    <div className="space-y-1.5">
-                      {aiLoading ? (
-                        <div className="flex items-center justify-center py-4 sm:py-6">
-                          <div className="text-center">
-                            <Loader2 className="mx-auto h-6 w-6 sm:h-8 sm:w-8 animate-spin text-violet-600" />
-                            <p className="mt-2 sm:mt-3 text-sm sm:text-base text-muted-foreground">
-                              {t("dashboard.consultingOracle")}
-                            </p>
-                          </div>
-                        </div>
-                      ) : aiInterpretation?.interpretation ? (
-                        <HighlightedText
-                          text={aiInterpretation.interpretation}
-                        />
-                      ) : (
-                        <div className="text-center py-4 sm:py-6">
-                          <div className="rounded-full bg-gradient-to-br from-violet-100 to-purple-100 p-4 sm:p-6 inline-block dark:from-violet-900/30 dark:to-purple-900/30">
-                            <Bot className="h-8 w-8 sm:h-12 sm:w-12 text-violet-600 dark:text-violet-400" />
-                          </div>
-                          <h3 className="mt-3 sm:mt-4 text-base sm:text-lg font-semibold">
-                            {t("dashboard.oracleInsight")}
-                          </h3>
-                          <p className="mt-2 text-sm sm:text-base text-muted-foreground max-w-sm mx-auto">
-                            {t("dashboard.selectDatePrompt")}
-                          </p>
-                          <Button
-                            className="mt-4 bg-gradient-to-r from-violet-600 to-purple-600"
-                            onClick={() => refetchAI()}
-                            disabled={!user?.birthDate}
-                          >
-                            <Sparkles className="mr-2 h-4 w-4" />
-                            {t("dashboard.getInterpretation")}
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  </Card>
+            {/* Right Side - 24h Energy + Charts */}
+            <div className="lg:col-span-7 xl:col-span-8 space-y-4 min-w-0">
+              <Tabs defaultValue="24h" className="w-full">
+                <TabsList>
+                  <TabsTrigger value="24h" className="gap-1">
+                    <span>🕐</span> 24h Energy
+                  </TabsTrigger>
+                </TabsList>
+                <TabsContent value="24h" className="mt-2">
+                  <HourlyGrid
+                    selectedDate={selectedDate}
+                    peluang={reading.peluang}
+                  />
                 </TabsContent>
-
-                {user?.interests &&
-                  user.interests.length > 0 &&
-                  user.interests.map((interest: string) => (
-                    <TabsContent
-                      key={interest}
-                      value={interest}
-                      className="mt-0"
-                    >
-                      <InterestOracle
-                        interest={interest}
-                        birthDate={user?.birthDate || ""}
-                        targetDate={targetDateStr}
-                        language={language}
-                      />
-                    </TabsContent>
-                  ))}
               </Tabs>
+
+              <Separator />
+
+              {/* Charts — 2 columns */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 items-stretch">
+                <div className="min-w-0 overflow-hidden flex flex-col">
+                  <h3 className="text-sm font-semibold mb-3">
+                    🧠 Soul Dimensions
+                  </h3>
+                  <SoulRadarChart
+                    peluang={reading.peluang}
+                    potensi={reading.potensi}
+                  />
+                </div>
+
+                <Separator className="md:hidden" />
+
+                <div className="min-w-0 overflow-hidden flex flex-col">
+                  <h3 className="text-sm font-semibold mb-3">
+                    ⚖️ Peluang vs Potensi
+                  </h3>
+                  <ComparisonBarChart
+                    peluang={reading.peluang}
+                    potensi={reading.potensi}
+                  />
+                </div>
+              </div>
             </div>
           </section>
         ) : null}

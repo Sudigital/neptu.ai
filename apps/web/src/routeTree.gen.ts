@@ -16,6 +16,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as CryptosIndexRouteImport } from './routes/cryptos/index'
 import { Route as CryptosSymbolRouteImport } from './routes/cryptos/$symbol'
 import { Route as AuthenticatedWalletRouteImport } from './routes/_authenticated/wallet'
+import { Route as AuthenticatedOracleInsightRouteImport } from './routes/_authenticated/oracle-insight'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCompatibilityRouteImport } from './routes/_authenticated/compatibility'
 import { Route as AuthenticatedComingSoonRouteImport } from './routes/_authenticated/coming-soon'
@@ -66,6 +67,12 @@ const AuthenticatedWalletRoute = AuthenticatedWalletRouteImport.update({
   path: '/wallet',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedOracleInsightRoute =
+  AuthenticatedOracleInsightRouteImport.update({
+    id: '/oracle-insight',
+    path: '/oracle-insight',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -163,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/coming-soon': typeof AuthenticatedComingSoonRoute
   '/compatibility': typeof AuthenticatedCompatibilityRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/oracle-insight': typeof AuthenticatedOracleInsightRoute
   '/wallet': typeof AuthenticatedWalletRoute
   '/cryptos/$symbol': typeof CryptosSymbolRoute
   '/cryptos/': typeof CryptosIndexRoute
@@ -185,6 +193,7 @@ export interface FileRoutesByTo {
   '/coming-soon': typeof AuthenticatedComingSoonRoute
   '/compatibility': typeof AuthenticatedCompatibilityRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/oracle-insight': typeof AuthenticatedOracleInsightRoute
   '/wallet': typeof AuthenticatedWalletRoute
   '/cryptos/$symbol': typeof CryptosSymbolRoute
   '/cryptos': typeof CryptosIndexRoute
@@ -210,6 +219,7 @@ export interface FileRoutesById {
   '/_authenticated/coming-soon': typeof AuthenticatedComingSoonRoute
   '/_authenticated/compatibility': typeof AuthenticatedCompatibilityRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/oracle-insight': typeof AuthenticatedOracleInsightRoute
   '/_authenticated/wallet': typeof AuthenticatedWalletRoute
   '/cryptos/$symbol': typeof CryptosSymbolRoute
   '/cryptos/': typeof CryptosIndexRoute
@@ -235,6 +245,7 @@ export interface FileRouteTypes {
     | '/coming-soon'
     | '/compatibility'
     | '/dashboard'
+    | '/oracle-insight'
     | '/wallet'
     | '/cryptos/$symbol'
     | '/cryptos/'
@@ -257,6 +268,7 @@ export interface FileRouteTypes {
     | '/coming-soon'
     | '/compatibility'
     | '/dashboard'
+    | '/oracle-insight'
     | '/wallet'
     | '/cryptos/$symbol'
     | '/cryptos'
@@ -281,6 +293,7 @@ export interface FileRouteTypes {
     | '/_authenticated/coming-soon'
     | '/_authenticated/compatibility'
     | '/_authenticated/dashboard'
+    | '/_authenticated/oracle-insight'
     | '/_authenticated/wallet'
     | '/cryptos/$symbol'
     | '/cryptos/'
@@ -355,6 +368,13 @@ declare module '@tanstack/react-router' {
       path: '/wallet'
       fullPath: '/wallet'
       preLoaderRoute: typeof AuthenticatedWalletRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/oracle-insight': {
+      id: '/_authenticated/oracle-insight'
+      path: '/oracle-insight'
+      fullPath: '/oracle-insight'
+      preLoaderRoute: typeof AuthenticatedOracleInsightRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
@@ -493,6 +513,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedComingSoonRoute: typeof AuthenticatedComingSoonRoute
   AuthenticatedCompatibilityRoute: typeof AuthenticatedCompatibilityRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedOracleInsightRoute: typeof AuthenticatedOracleInsightRoute
   AuthenticatedWalletRoute: typeof AuthenticatedWalletRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
 }
@@ -502,6 +523,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedComingSoonRoute: AuthenticatedComingSoonRoute,
   AuthenticatedCompatibilityRoute: AuthenticatedCompatibilityRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedOracleInsightRoute: AuthenticatedOracleInsightRoute,
   AuthenticatedWalletRoute: AuthenticatedWalletRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
 }

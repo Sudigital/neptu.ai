@@ -154,12 +154,19 @@ export function CompatibilityPage() {
 
       <Main>
         <div className="mb-4 sm:mb-6">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
-            {t("compatibility.title")}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {t("compatibility.subtitle")}
-          </p>
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-100 dark:bg-teal-900/30">
+              <Users className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+            </div>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
+                {t("compatibility.title")}
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                {t("compatibility.subtitle")}
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Date Input — two date pickers side by side */}
@@ -216,21 +223,6 @@ export function CompatibilityPage() {
             </Button>
           )}
         </div>
-
-        {/* Empty State */}
-        {!reading && !isPending && (
-          <div className="text-center py-16 sm:py-24">
-            <div className="rounded-full bg-gradient-to-br from-rose-100 to-pink-100 p-6 inline-block dark:from-rose-900/30 dark:to-pink-900/30">
-              <Heart className="h-12 w-12 text-rose-500 dark:text-rose-400" />
-            </div>
-            <h3 className="mt-4 text-lg font-semibold">
-              {t("compatibility.mitraSatru")}
-            </h3>
-            <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto">
-              {t("compatibility.enterDates")}
-            </p>
-          </div>
-        )}
 
         {/* Results */}
         {reading && styles && category && (
