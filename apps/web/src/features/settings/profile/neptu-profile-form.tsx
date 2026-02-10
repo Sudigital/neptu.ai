@@ -7,7 +7,6 @@ import { useUser } from "@/hooks/use-user";
 import { useTranslate } from "@/hooks/use-translate";
 import { neptuApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
@@ -30,7 +29,15 @@ const INTEREST_EMOJIS: Record<UserInterest, string> = {
   travel: "✈️",
   creativity: "🎨",
   education: "📚",
-  relationships: "🤝",
+  friendship: "👋",
+  selfgrowth: "🌱",
+  mindfulness: "🧘",
+  crypto: "🪙",
+  fitness: "💪",
+  purpose: "🧭",
+  balance: "☯️",
+  luck: "🍀",
+  intimacy: "🔥",
 };
 
 export function NeptuProfileForm() {
@@ -148,11 +155,15 @@ function ProfileFormInner({ user, walletAddress, t }: ProfileFormInnerProps) {
     updateProfile.mutate(payload);
   };
 
+  const MAX_INTERESTS = 3;
+
   const toggleInterest = (interest: string) => {
     setInterests((prev) =>
       prev.includes(interest)
         ? prev.filter((i) => i !== interest)
-        : [...prev, interest],
+        : prev.length < MAX_INTERESTS
+          ? [...prev, interest]
+          : prev,
     );
   };
 
@@ -237,24 +248,34 @@ function ProfileFormInner({ user, walletAddress, t }: ProfileFormInnerProps) {
       <div className="space-y-2">
         <Label>{t("settings.interests")}</Label>
         <p className="text-xs text-muted-foreground mb-4">
-          {t("settings.interests.desc")}
+          {t("settings.interests.desc")} ({interests.length}/{MAX_INTERESTS})
         </p>
-        <div className="grid grid-cols-2 gap-3">
-          {USER_INTERESTS.map((interest) => (
-            <div key={interest} className="flex items-center space-x-3">
-              <Checkbox
-                id={`interest-${interest}`}
-                checked={interests.includes(interest)}
-                onCheckedChange={() => toggleInterest(interest)}
-              />
-              <Label
-                htmlFor={`interest-${interest}`}
-                className="cursor-pointer text-sm font-normal"
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 auto-rows-fr">
+          {USER_INTERESTS.map((interest) => {
+            const selected = interests.includes(interest);
+            const disabled = !selected && interests.length >= MAX_INTERESTS;
+            return (
+              <button
+                key={interest}
+                type="button"
+                onClick={() => toggleInterest(interest)}
+                disabled={disabled}
+                className={cn(
+                  "flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm transition-all text-left h-full",
+                  selected
+                    ? "border-purple-500 bg-purple-500/10 text-purple-600 dark:text-purple-400 ring-1 ring-purple-500/30"
+                    : "border-border bg-card text-muted-foreground hover:border-purple-400/40 hover:bg-accent disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-border disabled:hover:bg-card",
+                )}
               >
-                {INTEREST_EMOJIS[interest]} {t(`interest.${interest}`)}
-              </Label>
-            </div>
-          ))}
+                <span className="shrink-0 text-base">
+                  {INTEREST_EMOJIS[interest]}
+                </span>
+                <span className="leading-snug">
+                  {t(`interest.${interest}`)}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 

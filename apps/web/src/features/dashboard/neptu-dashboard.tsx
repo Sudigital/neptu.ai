@@ -17,13 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   Popover,
   PopoverContent,
@@ -163,13 +157,15 @@ export function Dashboard() {
         <DashboardHeader topNav={topNav} t={t} />
         <Main>
           <div className="flex h-[50vh] items-center justify-center">
-            <Card className="w-full max-w-md">
-              <CardHeader className="text-center">
-                <CardTitle>{t("dashboard.connectWallet")}</CardTitle>
-                <CardDescription>
+            <Card className="w-full max-w-md py-6 px-6">
+              <div className="text-center">
+                <h3 className="text-lg font-semibold tracking-tight">
+                  {t("dashboard.connectWallet")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
                   {t("dashboard.connectWalletDesc")}
-                </CardDescription>
-              </CardHeader>
+                </p>
+              </div>
             </Card>
           </div>
         </Main>
@@ -205,14 +201,16 @@ export function Dashboard() {
             </div>
           </div>
         ) : readingError ? (
-          <Card className="mx-auto max-w-md">
-            <CardHeader className="text-center">
-              <CardTitle className="text-destructive">Error</CardTitle>
-              <CardDescription>
+          <Card className="mx-auto max-w-md py-6 px-6">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold tracking-tight text-destructive">
+                Error
+              </h3>
+              <p className="text-sm text-muted-foreground">
                 Failed to load your reading. Please try again.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+              </p>
+            </div>
+            <div>
               <Button
                 className="w-full"
                 onClick={() =>
@@ -223,7 +221,7 @@ export function Dashboard() {
               >
                 Retry
               </Button>
-            </CardContent>
+            </div>
           </Card>
         ) : reading ? (
           <section className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-12">
@@ -251,9 +249,7 @@ export function Dashboard() {
                       )}
                     >
                       <CalendarIcon className="mr-1.5 sm:mr-2 h-4 w-4" />
-                      {isToday(selectedDate)
-                        ? t("dashboard.today")
-                        : format(selectedDate, "MMM d, yyyy")}
+                      {format(selectedDate, "MMM d, yyyy")}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="center">
@@ -380,43 +376,38 @@ export function Dashboard() {
                 <ScrollableTabs interests={user?.interests || []} t={t} />
 
                 <TabsContent value="general" className="mt-0">
-                  <Card>
-                    <CardHeader className="px-3 sm:px-4 py-2 sm:py-3">
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2 sm:gap-3">
-                          <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-violet-100 dark:bg-violet-900/30">
-                            <Bot className="h-4 w-4 sm:h-5 sm:w-5 text-violet-600 dark:text-violet-400" />
-                          </div>
-                          <div>
-                            <CardTitle className="text-base sm:text-lg">
-                              {t("dashboard.oracleInsight")}
-                            </CardTitle>
-                            <CardDescription className="text-xs sm:text-sm">
-                              {t("dashboard.aiInterpretationFor")}{" "}
-                              {isToday(selectedDate)
-                                ? t("dashboard.today").toLowerCase()
-                                : format(selectedDate, "MMM d, yyyy")}
-                            </CardDescription>
-                          </div>
+                  <Card className="py-2 gap-0 px-3 sm:px-4">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-violet-100 dark:bg-violet-900/30">
+                          <Bot className="h-4 w-4 sm:h-5 sm:w-5 text-violet-600 dark:text-violet-400" />
                         </div>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={() => refetchAI()}
-                          disabled={aiLoading}
-                        >
-                          <RefreshCw
-                            className={cn(
-                              "h-5 w-5",
-                              aiLoading && "animate-spin",
-                            )}
-                          />
-                        </Button>
+                        <div>
+                          <h3 className="text-base sm:text-lg font-semibold tracking-tight">
+                            {t("dashboard.oracleInsight")}
+                          </h3>
+                          <p className="text-[10px] sm:text-xs text-muted-foreground">
+                            {t("dashboard.aiInterpretationFor")}{" "}
+                            {isToday(selectedDate)
+                              ? t("dashboard.today").toLowerCase()
+                              : format(selectedDate, "MMM d, yyyy")}
+                          </p>
+                        </div>
                       </div>
-                    </CardHeader>
-                    <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-4 pt-0 pb-3 sm:pb-4">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => refetchAI()}
+                        disabled={aiLoading}
+                      >
+                        <RefreshCw
+                          className={cn("h-5 w-5", aiLoading && "animate-spin")}
+                        />
+                      </Button>
+                    </div>
+                    <div className="space-y-1.5">
                       {aiLoading ? (
-                        <div className="flex items-center justify-center py-8 sm:py-12">
+                        <div className="flex items-center justify-center py-4 sm:py-6">
                           <div className="text-center">
                             <Loader2 className="mx-auto h-6 w-6 sm:h-8 sm:w-8 animate-spin text-violet-600" />
                             <p className="mt-2 sm:mt-3 text-sm sm:text-base text-muted-foreground">
@@ -429,7 +420,7 @@ export function Dashboard() {
                           text={aiInterpretation.interpretation}
                         />
                       ) : (
-                        <div className="text-center py-8 sm:py-12">
+                        <div className="text-center py-4 sm:py-6">
                           <div className="rounded-full bg-gradient-to-br from-violet-100 to-purple-100 p-4 sm:p-6 inline-block dark:from-violet-900/30 dark:to-purple-900/30">
                             <Bot className="h-8 w-8 sm:h-12 sm:w-12 text-violet-600 dark:text-violet-400" />
                           </div>
@@ -449,7 +440,7 @@ export function Dashboard() {
                           </Button>
                         </div>
                       )}
-                    </CardContent>
+                    </div>
                   </Card>
                 </TabsContent>
 

@@ -5,16 +5,24 @@ import { Button } from "@/components/ui/button";
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const icons: Record<string, string> = {
-  career: "💼",
-  finance: "💰",
   love: "💕",
+  career: "💼",
   health: "🏃",
-  spirituality: "🙏",
+  finance: "💰",
   family: "👨‍👩‍👧‍👦",
-  travel: "✈️",
+  friendship: "👋",
+  intimacy: "🔥",
+  spirituality: "🙏",
+  mindfulness: "🧘",
+  selfgrowth: "🌱",
+  purpose: "🧭",
+  balance: "☯️",
   creativity: "🎨",
+  travel: "✈️",
+  fitness: "💪",
   education: "📚",
-  relationships: "🤝",
+  luck: "🍀",
+  crypto: "🪙",
 };
 
 export function ScrollableTabs({
@@ -87,7 +95,7 @@ export function ScrollableTabs({
         >
           <TabsList className="w-max">
             <TabsTrigger value="general" className="gap-1">
-              <span>🌴</span>
+              <span>✨</span>
               {t("dashboard.general")}
             </TabsTrigger>
             {interests.map((interest: string) => (

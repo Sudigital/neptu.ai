@@ -3,13 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Loader2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { neptuApi } from "@/lib/api";
 import { HighlightedText } from "./highlighted-text";
 
@@ -62,10 +56,50 @@ const interestConfig: Record<
     bgColor: "bg-indigo-100 dark:bg-indigo-900/30",
     iconColor: "text-indigo-600 dark:text-indigo-400",
   },
-  relationships: {
-    icon: "🤝",
+  friendship: {
+    icon: "👋",
     bgColor: "bg-teal-100 dark:bg-teal-900/30",
     iconColor: "text-teal-600 dark:text-teal-400",
+  },
+  selfgrowth: {
+    icon: "🌱",
+    bgColor: "bg-lime-100 dark:bg-lime-900/30",
+    iconColor: "text-lime-600 dark:text-lime-400",
+  },
+  mindfulness: {
+    icon: "🧘",
+    bgColor: "bg-violet-100 dark:bg-violet-900/30",
+    iconColor: "text-violet-600 dark:text-violet-400",
+  },
+  crypto: {
+    icon: "🪙",
+    bgColor: "bg-yellow-100 dark:bg-yellow-900/30",
+    iconColor: "text-yellow-600 dark:text-yellow-400",
+  },
+  fitness: {
+    icon: "💪",
+    bgColor: "bg-red-100 dark:bg-red-900/30",
+    iconColor: "text-red-600 dark:text-red-400",
+  },
+  purpose: {
+    icon: "🧭",
+    bgColor: "bg-slate-100 dark:bg-slate-900/30",
+    iconColor: "text-slate-600 dark:text-slate-400",
+  },
+  balance: {
+    icon: "☯️",
+    bgColor: "bg-stone-100 dark:bg-stone-900/30",
+    iconColor: "text-stone-600 dark:text-stone-400",
+  },
+  luck: {
+    icon: "🍀",
+    bgColor: "bg-emerald-100 dark:bg-emerald-900/30",
+    iconColor: "text-emerald-600 dark:text-emerald-400",
+  },
+  intimacy: {
+    icon: "🔥",
+    bgColor: "bg-rose-100 dark:bg-rose-900/30",
+    iconColor: "text-rose-600 dark:text-rose-400",
   },
 };
 
@@ -74,10 +108,33 @@ function parseInsights(
   interest: string,
 ): { affirmation: string; action: string; mainText: string } {
   const defaults: Record<string, { affirmation: string; action: string }> = {
-    career: { affirmation: "I AM SUCCESSFUL", action: "Network" },
-    finance: { affirmation: "I AM ABUNDANT", action: "Invest wisely" },
     love: { affirmation: "I AM LOVED", action: "Express gratitude" },
+    career: { affirmation: "I AM SUCCESSFUL", action: "Network" },
     health: { affirmation: "I AM VITAL", action: "Move your body" },
+    finance: { affirmation: "I AM ABUNDANT", action: "Invest wisely" },
+    family: { affirmation: "I AM CONNECTED", action: "Reach out to family" },
+    friendship: {
+      affirmation: "I AM SUPPORTED",
+      action: "Connect with a friend",
+    },
+    intimacy: { affirmation: "I AM PASSIONATE", action: "Be present and open" },
+    spirituality: { affirmation: "I AM ALIGNED", action: "Meditate" },
+    mindfulness: { affirmation: "I AM PRESENT", action: "Breathe deeply" },
+    selfgrowth: { affirmation: "I AM EVOLVING", action: "Learn something new" },
+    purpose: {
+      affirmation: "I AM PURPOSEFUL",
+      action: "Reflect on your mission",
+    },
+    balance: { affirmation: "I AM BALANCED", action: "Rest and recharge" },
+    creativity: { affirmation: "I AM CREATIVE", action: "Create something" },
+    travel: {
+      affirmation: "I AM ADVENTUROUS",
+      action: "Explore your surroundings",
+    },
+    fitness: { affirmation: "I AM STRONG", action: "Move your body" },
+    education: { affirmation: "I AM WISE", action: "Read or study" },
+    luck: { affirmation: "I AM FORTUNATE", action: "Trust your intuition" },
+    crypto: { affirmation: "I AM PROSPEROUS", action: "Research the market" },
   };
   const fallback = defaults[interest] || {
     affirmation: "I AM FOCUSED",
@@ -143,46 +200,41 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
   };
 
   return (
-    <Card>
-      <CardHeader className="px-3 sm:px-4 py-2 sm:py-3">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div
-              className={cn(
-                "flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full",
-                config.bgColor,
-              )}
-            >
-              <span className="text-base sm:text-xl">{config.icon}</span>
-            </div>
-            <div>
-              <CardTitle className="text-base sm:text-lg capitalize">
-                {interest} Insight
-              </CardTitle>
-              <CardDescription className="text-xs sm:text-sm">
-                Guidance for {format(new Date(targetDate), "MMM d, yyyy")}
-              </CardDescription>
-            </div>
-          </div>
-          <Button
-            size="icon"
-            variant="ghost"
-            className="h-8 w-8 sm:h-9 sm:w-9"
-            onClick={() => refetch()}
-            disabled={isLoading}
+    <Card className="py-2 gap-0 px-3 sm:px-4">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div
+            className={cn(
+              "flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full",
+              config.bgColor,
+            )}
           >
-            <RefreshCw
-              className={cn(
-                "h-4 w-4 sm:h-5 sm:w-5",
-                isLoading && "animate-spin",
-              )}
-            />
-          </Button>
+            <span className="text-base sm:text-xl">{config.icon}</span>
+          </div>
+          <div>
+            <h3 className="text-base sm:text-lg font-semibold tracking-tight capitalize">
+              {interest} Insight
+            </h3>
+            <p className="text-[10px] sm:text-xs text-muted-foreground">
+              Guidance for {format(new Date(targetDate), "MMM d, yyyy")}
+            </p>
+          </div>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-4 pt-0 pb-3 sm:pb-4">
+        <Button
+          size="icon"
+          variant="ghost"
+          className="h-8 w-8 sm:h-9 sm:w-9"
+          onClick={() => refetch()}
+          disabled={isLoading}
+        >
+          <RefreshCw
+            className={cn("h-4 w-4 sm:h-5 sm:w-5", isLoading && "animate-spin")}
+          />
+        </Button>
+      </div>
+      <div className="space-y-1.5">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-6 sm:py-8 text-center">
+          <div className="flex flex-col items-center justify-center py-4 sm:py-6 text-center">
             <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-muted-foreground" />
             <p className="mt-2 text-xs sm:text-sm text-muted-foreground">
               Analyzing {interest}...
@@ -191,13 +243,13 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
         ) : insights.mainText ? (
           <HighlightedText text={insights.mainText} />
         ) : (
-          <div className="text-center py-6 sm:py-8">
+          <div className="text-center py-4 sm:py-6">
             <p className="text-sm sm:text-base text-muted-foreground">
               No specific insight available for {interest} at this time.
             </p>
           </div>
         )}
-      </CardContent>
+      </div>
     </Card>
   );
 }

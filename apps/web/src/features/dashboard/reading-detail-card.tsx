@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface ReadingData {
   sapta_wara?: { name?: string };
@@ -58,10 +60,8 @@ export function ReadingDetailCard({
   warigaPrefix,
 }: ReadingDetailCardProps) {
   return (
-    <div
-      className={`rounded-lg sm:rounded-xl border ${borderClass} ${bgClass} p-3 sm:p-4`}
-    >
-      <div className="flex items-center justify-between mb-2 sm:mb-3">
+    <Card className={cn("py-0 gap-0 px-3 sm:px-4", borderClass, bgClass)}>
+      <div className="flex items-center justify-between py-2 sm:py-2.5">
         <div className="flex items-center gap-1.5 sm:gap-2">
           <div
             className={`flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-md sm:rounded-lg ${iconBgClass}`}
@@ -85,7 +85,7 @@ export function ReadingDetailCard({
           {totalUrip}
         </span>
       </div>
-      <div className="space-y-1 sm:space-y-1.5">
+      <div className="space-y-1 sm:space-y-1.5 pb-2 sm:pb-2.5">
         <Row
           label={t("dashboard.sapta")}
           value={t(
@@ -136,6 +136,6 @@ export function ReadingDetailCard({
           )}
         />
       </div>
-    </div>
+    </Card>
   );
 }

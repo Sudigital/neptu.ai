@@ -421,16 +421,24 @@ export const CACHE_TTL = {
 // ============================================================================
 
 export const USER_INTERESTS = [
-  "career",
   "love",
+  "career",
   "health",
-  "spirituality",
   "finance",
   "family",
-  "travel",
+  "friendship",
+  "intimacy",
+  "spirituality",
+  "mindfulness",
+  "selfgrowth",
+  "purpose",
+  "balance",
   "creativity",
+  "travel",
+  "fitness",
   "education",
-  "relationships",
+  "luck",
+  "crypto",
 ] as const;
 
 export type UserInterest = (typeof USER_INTERESTS)[number];
