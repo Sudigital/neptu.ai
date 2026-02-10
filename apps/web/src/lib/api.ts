@@ -422,7 +422,7 @@ export const neptuApi = {
       success: boolean;
       transactions: Array<{
         id: string;
-        txSignature: string;
+        txSignature: string | null;
         transactionType: string;
         readingType: string | null;
         solAmount: number | null;
@@ -432,6 +432,7 @@ export const neptuApi = {
         status: string;
         createdAt: string;
         confirmedAt: string | null;
+        description?: string | null;
       }>;
     }>(`/api/token/transactions/${walletAddress}`, { params });
     return data;

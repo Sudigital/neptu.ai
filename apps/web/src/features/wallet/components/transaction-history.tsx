@@ -22,7 +22,7 @@ const DEVNET_CLUSTER_PARAM = "?cluster=devnet";
 
 interface Transaction {
   id: string;
-  txSignature: string;
+  txSignature: string | null;
   transactionType: string;
   readingType: string | null;
   solAmount: number | null;
@@ -32,6 +32,7 @@ interface Transaction {
   status: string;
   createdAt: string;
   confirmedAt: string | null;
+  description?: string | null;
 }
 
 interface TransactionHistoryProps {
@@ -77,7 +78,8 @@ const STATUS_VARIANTS: Record<string, "default" | "secondary" | "destructive"> =
     failed: "destructive",
   };
 
-function formatTxSignature(sig: string): string {
+function formatTxSignature(sig: string | null): string {
+  if (!sig) return "—";
   if (sig.length <= 16) return sig;
   return `${sig.slice(0, 8)}...${sig.slice(-8)}`;
 }
@@ -165,15 +167,21 @@ export function TransactionHistory({
                       )}
                     </div>
                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <a
-                        href={getExplorerUrl(tx.txSignature)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 hover:text-foreground transition-colors font-mono"
-                      >
-                        {formatTxSignature(tx.txSignature)}
-                        <ExternalLink className="h-3 w-3" />
-                      </a>
+                      {tx.txSignature ? (
+                        <a
+                          href={getExplorerUrl(tx.txSignature)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 hover:text-foreground transition-colors font-mono"
+                        >
+                          {formatTxSignature(tx.txSignature)}
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      ) : (
+                        <span className="font-mono">
+                          {tx.description || "Pending"}
+                        </span>
+                      )}
                       <span>&middot;</span>
                       <span>
                         {format(new Date(tx.createdAt), "MMM d, yyyy HH:mm")}

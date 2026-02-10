@@ -191,8 +191,12 @@ oracle.post("/interpret", async (c) => {
       language,
     );
 
-    // Cache for 6 hours
-    await c.env.CACHE.put(cacheKey, interpretation, { expirationTtl: 21600 });
+    // Cache for 6 hours (non-critical — don't fail if KV limit reached)
+    try {
+      await c.env.CACHE.put(cacheKey, interpretation, { expirationTtl: 21600 });
+    } catch (cacheErr) {
+      console.warn("[Oracle] Cache put failed (KV limit?):", cacheErr);
+    }
 
     return c.json({
       success: true,

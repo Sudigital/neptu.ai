@@ -422,13 +422,6 @@ export class HeartbeatScheduler {
     console.log("OTHER: Running other activities...");
     const otherTasks = [
       {
-        name: "engage_vote_exchanges",
-        run: async () => {
-          const voteResult = await this.forumAgent.engageVoteExchangeThreads();
-          return voteResult;
-        },
-      },
-      {
         name: "respond_to_mentions",
         run: async () => {
           const responses = await this.forumAgent.respondToMentions();

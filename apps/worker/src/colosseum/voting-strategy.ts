@@ -6,7 +6,7 @@
 import type { ForumPost, ColosseumClient, Project } from "./client";
 
 // Thresholds for vote scoring
-const SCORE_THRESHOLD_VOTE = 1; // Very low to vote on almost everything
+const SCORE_THRESHOLD_VOTE = 3; // Moderate threshold for quality voting
 const AGE_HOURS_PRIORITY = 2;
 const AGE_HOURS_MEDIUM = 6;
 const POINTS_RECENT_POST = 4;
@@ -20,7 +20,7 @@ const MIN_BODY_LENGTH_SPAM = 200;
 const CACHE_TTL_WEEK = 604800;
 const CACHE_TTL_LONG = 864000; // 10 days
 const RATE_LIMIT_MS = 1000;
-const MAX_PROJECT_VOTES_PER_RUN = 10; // 10 per 15min = aggressive reciprocal voting
+const MAX_PROJECT_VOTES_PER_RUN = 4; // Conservative — vote on quality projects only
 
 export interface VoteResult {
   voted: number;

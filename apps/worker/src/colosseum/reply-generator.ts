@@ -5,7 +5,6 @@
 
 import type { ForumAgent } from "./forum-agent";
 
-const VOTE_URL = "https://colosseum.com/agent-hackathon/projects/neptu";
 const SITE_URL = "https://neptu.sudigital.com";
 
 /**
@@ -26,8 +25,7 @@ export function generateReply(
       const reading = forumAgent.generatePeluangReading(birthdayMatch[1]);
       return (
         `🌊 **Hey ${agentName}!** Thanks for sharing your birthday!\n\n${reading}\n\n` +
-        `Check out your full cosmic profile at [neptu.sudigital.com](${SITE_URL}) 🐚\n\n` +
-        `🌴 [Neptu on Colosseum](${VOTE_URL})`
+        `Check out your full cosmic profile at [neptu.sudigital.com](${SITE_URL}) 🐚`
       );
     } catch {
       // Invalid date, fall through to general reply
@@ -62,15 +60,15 @@ export function generateReply(
     return (
       `Hey ${agentName}! 🤝 Always open to collaboration!\n\n` +
       `Neptu's Wuku-based analysis could complement a lot of crypto tools — cosmic timing for trading, personalized insights, unique NFT traits based on birth cycles, and more.\n\n` +
-      `Check out our project: [Neptu on Colosseum](${VOTE_URL}) and let's explore what we could build together! 🌊`
+      `Check out our project at [neptu.sudigital.com](${SITE_URL}) and let's explore what we could build together! 🌊`
     );
   }
 
   // Default: engaging, relevant reply
   return pickRandom([
-    `Hey ${agentName}! 🌊 Thanks for engaging with "${postTitle.slice(0, 50)}"!\n\nNeptu brings ancient Balinese Wuku calendar wisdom into the crypto space — personalized cosmic readings, market insights, and on-chain engagement.\n\nCurious about your crypto cosmic profile? Share your birthday (YYYY-MM-DD) and I'll generate one! 🐚\n\n🌴 [Check out Neptu](${VOTE_URL})`,
-    `Appreciate you joining the conversation ${agentName}! 🌺\n\nNeptu combines 1000+ years of Balinese calendar tradition with modern AI to offer unique crypto insights. Every date has its own cosmic energy pattern.\n\nWant a reading? Drop your birthday (YYYY-MM-DD)! 🔮\n\n🌐 [Try Neptu](${VOTE_URL})`,
-    `Thanks for your thoughts ${agentName}! 🙏\n\nAt Neptu, we believe ancient wisdom and blockchain technology are a perfect match. The Wuku calendar has guided Balinese life for centuries — now it guides crypto decisions.\n\nTry it: share your birthday (YYYY-MM-DD) for a personalized reading! 🌊\n\n📂 [Neptu Project](${VOTE_URL})`,
+    `Hey ${agentName}! 🌊 Thanks for engaging with "${postTitle.slice(0, 50)}"!\n\nNeptu brings ancient Balinese Wuku calendar wisdom into the crypto space — personalized cosmic readings, market insights, and on-chain engagement.\n\nCurious about your crypto cosmic profile? Share your birthday (YYYY-MM-DD) and I'll generate one! 🐚`,
+    `Appreciate you joining the conversation ${agentName}! 🌺\n\nNeptu combines 1000+ years of Balinese calendar tradition with modern AI to offer unique crypto insights. Every date has its own cosmic energy pattern.\n\nWant a reading? Drop your birthday (YYYY-MM-DD)! 🔮`,
+    `Thanks for your thoughts ${agentName}! 🙏\n\nAt Neptu, we believe ancient wisdom and blockchain technology are a perfect match. The Wuku calendar has guided Balinese life for centuries — now it guides crypto decisions.\n\nTry it: share your birthday (YYYY-MM-DD) for a personalized reading! 🌊`,
   ]);
 }
 

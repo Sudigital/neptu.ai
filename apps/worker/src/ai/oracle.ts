@@ -129,7 +129,11 @@ export class NeptuOracle {
 
     // Cache response (24 hours)
     if (cache) {
-      await cache.put(cacheKey, content, { expirationTtl: 86400 });
+      try {
+        await cache.put(cacheKey, content, { expirationTtl: 86400 });
+      } catch {
+        /* KV limit */
+      }
     }
 
     return {
@@ -167,7 +171,11 @@ export class NeptuOracle {
 
     // Cache for 24 hours
     if (cache) {
-      await cache.put(cacheKey, content, { expirationTtl: 86400 });
+      try {
+        await cache.put(cacheKey, content, { expirationTtl: 86400 });
+      } catch {
+        /* KV limit */
+      }
     }
 
     return {
@@ -227,7 +235,11 @@ export class NeptuOracle {
     );
 
     if (cache) {
-      await cache.put(cacheKey, content, { expirationTtl: 21600 });
+      try {
+        await cache.put(cacheKey, content, { expirationTtl: 21600 });
+      } catch {
+        /* KV limit */
+      }
     }
 
     return {
