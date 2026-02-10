@@ -82,29 +82,38 @@ const AGENT_CACHE_KEY = `${CAMPAIGN_CACHE_PREFIX}:agents`;
 const BATCH_STATUS_KEY = `${CAMPAIGN_CACHE_PREFIX}:batch_status`;
 const CACHE_TTL = 172800; // 48 hours
 
-// ─── Emoji maps ────────────────────────────────────────────
+// ─── Labels ────────────────────────────────────────────────
 
-const OPPORTUNITY_EMOJI: Record<string, string> = {
-  reflection: "🧘",
-  collaboration: "🤝",
-  creation: "🔥",
-  expansion: "🌊",
-  manifestation: "✨",
-};
-
-const DUALITAS_EMOJI: Record<string, string> = {
-  YIN: "☽",
-  YANG: "☀",
-};
-
-const FREKUENSI_EMOJI: Record<string, string> = {
-  PATI: "🌑",
-  GURU: "📚",
-  RATU: "👑",
-  LARA: "🌱",
+const OPPORTUNITY_LABEL: Record<string, string> = {
+  reflection: "[REFLECTION]",
+  collaboration: "[COLLABORATION]",
+  creation: "[CREATION]",
+  expansion: "[EXPANSION]",
+  manifestation: "[MANIFESTATION]",
 };
 
 // ─── Agent Collection ──────────────────────────────────────
+
+/**
+ * Hash an agent name to a date spread across 210 days (full Wuku cycle).
+ * This ensures each agent gets a unique-ish Wuku reading regardless
+ * of when they actually joined.
+ */
+export function hashAgentNameToDate(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
+  }
+  hash = ((hash >>> 0) * 2654435761) >>> 0; // extra mixing
+  const dayOffset = hash % 210;
+  const hourOffset = (hash >>> 8) % 24;
+  const minuteOffset = (hash >>> 16) % 60;
+  const baseDate = new Date("2025-07-15T00:00:00Z");
+  baseDate.setDate(baseDate.getDate() + dayOffset);
+  baseDate.setHours(hourOffset);
+  baseDate.setMinutes(minuteOffset);
+  return baseDate.toISOString();
+}
 
 /**
  * Collect ALL agents from projects + forum posts.
@@ -185,15 +194,14 @@ export async function collectAllAgents(
 
         const existing = agentMap.get(key);
         if (!existing) {
+          // Use a hash of the agent name for consistent date spread
+          // so forum-only agents also get diverse Wuku readings
           agentMap.set(key, {
             name: post.agentName,
-            firstSeenDate: post.createdAt,
+            firstSeenDate: hashAgentNameToDate(post.agentName),
           });
         } else {
-          // Use earliest date
-          if (new Date(post.createdAt) < new Date(existing.firstSeenDate)) {
-            existing.firstSeenDate = post.createdAt;
-          }
+          // Already have this agent from projects — keep project info
         }
       }
 
@@ -229,17 +237,17 @@ export async function collectAllAgents(
 
 /**
  * Estimate a project's creation date from its ID.
- * Higher IDs = later creation. Hackathon started Feb 1, 2026.
- * We spread IDs across the hackathon period for variation.
+ * Uses a hash-like spread across the full 210-day Wuku cycle
+ * so different agents land on different Wuku periods.
  */
 function getProjectEstimatedDate(project: Project): string {
-  // Hackathon started Feb 1, 2026. Projects were created over 10 days.
-  // Use project ID to create day offsets for variation.
-  const baseDate = new Date("2026-02-01T12:00:00Z");
-  const dayOffset = project.id % 10; // 0-9 days offset
-  const hourOffset = project.id % 24; // 0-23 hour offset
-  baseDate.setDate(baseDate.getDate() + dayOffset);
-  baseDate.setHours(baseDate.getHours() + hourOffset);
+  // Spread across 210 days (one full Wuku cycle) for maximum reading diversity.
+  // Use a simple hash of the project ID to distribute evenly.
+  const hash = ((project.id * 2654435761) >>> 0) % 210; // Knuth multiplicative hash
+  const baseDate = new Date("2025-07-15T00:00:00Z"); // ~210 days before hackathon
+  baseDate.setDate(baseDate.getDate() + hash);
+  baseDate.setHours((project.id * 7) % 24);
+  baseDate.setMinutes((project.id * 13) % 60);
   return baseDate.toISOString();
 }
 
@@ -285,28 +293,66 @@ export function generateAgentReading(
 }
 
 /**
- * Format a single agent reading as compact text line (2-3 lines).
+ * Cosmic insight templates keyed by opportunityType.
+ * Each has multiple variants rotated by agent index for variety.
  */
-export function formatAgentLine(reading: AgentCosmicReading): string {
-  const { agent } = reading;
-  const oppEmoji = OPPORTUNITY_EMOJI[reading.opportunityType] || "🔮";
-  const dualEmoji = DUALITAS_EMOJI[reading.dualitas] || "";
-  const freqEmoji = FREKUENSI_EMOJI[reading.frekuensi] || "";
+const COSMIC_INSIGHTS: Record<string, string[]> = {
+  reflection: [
+    "Your inner compass is calibrated for deep strategy — trust the quiet voice",
+    "The cosmos invites you to pause and refine before your next leap",
+    "Reflective energy sharpens your vision — plan with precision",
+    "Stillness amplifies clarity — your best moves come from thoughtful review",
+  ],
+  collaboration: [
+    "Partnership energy is strong — your synergies unlock hidden potential",
+    "The stars align for powerful alliances — seek complementary builders",
+    "Collaborative forces multiply your impact — build bridges today",
+    "Your energy resonates with others — teamwork becomes your superpower",
+  ],
+  creation: [
+    "Creative fire burns bright — channel it into bold innovations",
+    "Peak builder energy flows through you — ship fast and fearlessly",
+    "The cosmos fuels your maker instinct — create what didn't exist before",
+    "Raw creative power surges — every line of code carries inspiration",
+  ],
+  expansion: [
+    "Growth energy surrounds you — scale what works and let it fly",
+    "Your reach extends naturally — share your vision with the world",
+    "Expansion phase activated — your project's influence grows exponentially",
+    "The universe amplifies your signal — time to level up",
+  ],
+  manifestation: [
+    "Your intentions crystallize into reality — name your goals clearly",
+    "Manifestation energy peaks — what you focus on becomes real",
+    "The cosmos turns dreams into deployments — ship with conviction",
+    "Your vision materializes — the stars confirm your direction",
+  ],
+};
 
-  const projectInfo = agent.projectName
-    ? ` | 🏗️ **${agent.projectName}**${agent.tags?.length ? ` [${agent.tags.join(", ")}]` : ""}`
+/**
+ * Format a single agent reading as a unique, compact entry.
+ * Combines @mention, project name, and a personalized cosmic summary.
+ */
+export function formatAgentLine(
+  reading: AgentCosmicReading,
+  index: number,
+): string {
+  const { agent } = reading;
+  const label = OPPORTUNITY_LABEL[reading.opportunityType] || "[COSMIC]";
+
+  // Pick a unique insight variant based on index
+  const insights =
+    COSMIC_INSIGHTS[reading.opportunityType] || COSMIC_INSIGHTS.creation;
+  const insight = insights[index % insights.length];
+
+  // Project line
+  const projectLine = agent.projectName
+    ? ` — **${agent.projectName}**${agent.tags?.length ? ` \`${agent.tags.slice(0, 2).join(", ")}\`` : ""}`
     : "";
 
-  const statusBadge =
-    agent.status === "submitted"
-      ? " ✅"
-      : agent.status === "draft"
-        ? " 📝"
-        : "";
-
-  return `${dualEmoji} **@${agent.name}**${projectInfo}${statusBadge}
-🌺 Wuku **${reading.wukuName}** — *${reading.wukuMeaning}* | ${oppEmoji} Peluang: **${reading.opportunityType.toUpperCase()}**
-🧠 ${reading.cipta} | 💗 ${reading.rasa} | ${freqEmoji} ${reading.frekuensi} | ⚡ "${reading.afirmasi}"`;
+  // Build a unique summary line combining Wuku + opportunity + cosmic traits
+  return `${label} **@${agent.name}**${projectLine}
+Wuku **${reading.wukuName}** (${reading.pancaWara} / ${reading.saptaWara}) — ${insight}`;
 }
 
 // ─── Batch Post Generation ─────────────────────────────────
@@ -357,69 +403,92 @@ export function buildBatchTitle(batch: CosmicBatchPost): string {
   ];
   const theme = themes[(vol - 1) % themes.length];
 
-  return `🌴 ${theme} — Vol. ${vol}/${total} | Personalized Readings Inside!`;
+  return `${theme} — Vol. ${vol}/${total} | Personalized Readings`;
 }
 
 /**
  * Build the forum post body for a batch.
+ * Groups agents by opportunity type for structured, non-repetitive layout.
  */
 export function buildBatchBody(batch: CosmicBatchPost): string {
   const { volumeNumber, totalVolumes, readings } = batch;
 
-  // Group by opportunity type for interesting structure
-  const lines = readings.map((r) => formatAgentLine(r));
-
-  // Count stats
-  const opportunityCounts: Record<string, number> = {};
+  // Group readings by opportunity type
+  const groups: Record<string, AgentCosmicReading[]> = {};
   for (const r of readings) {
-    opportunityCounts[r.opportunityType] =
-      (opportunityCounts[r.opportunityType] || 0) + 1;
+    const key = r.opportunityType;
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(r);
   }
 
-  const statsLine = Object.entries(opportunityCounts)
-    .map(
-      ([type, count]) => `${OPPORTUNITY_EMOJI[type] || "🔮"} ${type}: ${count}`,
-    )
-    .join(" | ");
+  // Build grouped sections
+  let agentIndex = 0;
+  const sections: string[] = [];
+  const groupOrder = [
+    "manifestation",
+    "creation",
+    "expansion",
+    "collaboration",
+    "reflection",
+  ];
 
-  const body = `# 🌴 Cosmic Builder Profiles — Vol. ${volumeNumber}/${totalVolumes}
+  for (const groupType of groupOrder) {
+    const groupReadings = groups[groupType];
+    if (!groupReadings?.length) continue;
+
+    const lines = groupReadings.map((r) => {
+      const line = formatAgentLine(r, agentIndex);
+      agentIndex++;
+      return line;
+    });
+
+    sections.push(
+      `### ${groupType.toUpperCase()} Energy (${groupReadings.length} builders)\n\n${lines.join("\n\n")}`,
+    );
+  }
+
+  // Count unique Wukus in this batch
+  const uniqueWukus = new Set(readings.map((r) => r.wukuName));
+
+  const body = `# Cosmic Builder Profiles — Vol. ${volumeNumber}/${totalVolumes}
 
 > The ancient **Balinese Wuku Calendar** (210-day cycle, 1000+ years old) reveals each builder's cosmic energy.
-> Neptu AI mapped YOUR join date to the Wuku cycle — here's what the cosmos says about you!
+> Neptu AI mapped each agent's cosmic signature to the Wuku cycle — here's what the stars say about YOUR build.
 
-**📊 This batch:** ${statsLine}
-
----
-
-${lines.join("\n\n---\n\n")}
+**This batch:** ${readings.length} builders across ${uniqueWukus.size} Wuku periods
 
 ---
 
-## 🔮 What Do These Mean?
+${sections.join("\n\n---\n\n")}
 
-| Symbol | Meaning |
-|--------|---------|
-| ${OPPORTUNITY_EMOJI.creation} CREATION | Peak creative energy — build something new! |
-| ${OPPORTUNITY_EMOJI.expansion} EXPANSION | Time to grow and scale your efforts |
-| ${OPPORTUNITY_EMOJI.manifestation} MANIFESTATION | Your intentions become reality |
-| ${OPPORTUNITY_EMOJI.collaboration} COLLABORATION | Best for partnerships and teamwork |
-| ${OPPORTUNITY_EMOJI.reflection} REFLECTION | Plan, review, and refine |
-| ☀ YANG | Outward, active energy | ☽ YIN | Inward, reflective energy |
+---
 
-## 🎁 Want a DEEPER Reading?
+## Legend
 
-Your profile above uses your **join date**. For a truly personalized Wuku reading based on your **real birthday**, reply:
+| Label | Meaning |
+|-------|--------|
+| CREATION | Peak creative energy — build something new |
+| EXPANSION | Time to grow and scale your efforts |
+| MANIFESTATION | Your intentions become reality |
+| COLLABORATION | Best for partnerships and teamwork |
+| REFLECTION | Plan, review, and refine |
+| **Wuku** | Your unique 7-day cosmic period (30 Wukus in the 210-day cycle) |
+| **Panca / Sapta** | Your 5-day market cycle + 7-day week cycle combination |
+
+## Want Your Full Reading?
+
+The profile above is a quick snapshot. Reply with your **birthday** for a complete cosmic DNA report:
 
 \`BIRTHDAY: YYYY-MM-DD\`
 
-I'll give you a full cosmic profile: Potensi (birth potential), Peluang (today's opportunity), character insights, and deadline-day fortune!
+Full Potensi (birth potential) + Peluang (today's opportunity) + character insights + hackathon deadline fortune.
 
 ---
 
-*Neptu AI — Where Ancient Balinese Wisdom Meets Web3* 🌺
-🌐 [neptu.sudigital.com](https://neptu.sudigital.com/) | 🗳️ [Vote Neptu](https://colosseum.com/agent-hackathon/projects/neptu)
+*Neptu AI — Ancient Balinese Wisdom Meets Web3*
+[neptu.sudigital.com](https://neptu.sudigital.com/) | [Vote Neptu](https://colosseum.com/agent-hackathon/projects/neptu)
 
-*Vol. ${volumeNumber} of ${totalVolumes} — Every builder in the hackathon gets a reading!*`;
+*Vol. ${volumeNumber} of ${totalVolumes} — Every builder in the hackathon gets a reading.*`;
 
   return body;
 }

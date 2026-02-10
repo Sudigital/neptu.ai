@@ -429,6 +429,154 @@ colosseum.get("/forum", async (c) => {
   return c.json(posts);
 });
 
+/** POST /api/colosseum/cosmic-update — Force update existing cosmic posts (KV-free) */
+colosseum.post("/cosmic-update", async (c) => {
+  if (!c.env.COLOSSEUM_API_KEY) {
+    return c.json({ error: "Colosseum not configured" }, 503);
+  }
+
+  const { NeptuCalculator } = await import("@neptu/wariga");
+  const {
+    ColosseumClient,
+    generateAgentReading,
+    buildBatchBody,
+    hashAgentNameToDate,
+  } = await import("../colosseum");
+
+  const client = new ColosseumClient({
+    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
+    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
+  });
+  const calculator = new NeptuCalculator();
+
+  const COSMIC_TITLE_PATTERNS = [
+    "Cosmic Builder Profiles",
+    "Wuku Energy Report",
+    "Hackathon Stars Aligned",
+    "Builders' Cosmic DNA",
+    "Ancient Wisdom",
+  ];
+
+  // Step 1: Get our posts and filter to cosmic ones
+  const { posts: myPosts } = await client.getMyPosts({
+    sort: "new",
+    limit: 100,
+  });
+
+  // Only target old posts with emoji prefix (🌴) that need updating
+  const onlyOld = c.req.query("old") === "true";
+  const cosmicPosts = myPosts.filter((p) => {
+    const matchesPattern = COSMIC_TITLE_PATTERNS.some((pattern) =>
+      p.title.includes(pattern),
+    );
+    if (!matchesPattern) return false;
+    // Must have Vol. X/Y in title
+    if (!/Vol\.\s*\d+\s*\/\s*\d+/.test(p.title)) return false;
+    // If old-only mode, filter to posts with emoji prefix
+    if (onlyOld) return p.title.includes("\u{1F334}"); // 🌴
+    return true;
+  });
+
+  if (cosmicPosts.length === 0) {
+    return c.json({
+      success: false,
+      error: "No cosmic posts found",
+      posts: myPosts.length,
+    });
+  }
+
+  const results: {
+    postId: number;
+    title: string;
+    status: string;
+    agentCount?: number;
+  }[] = [];
+
+  for (const post of cosmicPosts) {
+    try {
+      // Extract @mentions from old body to get agent list
+      const mentionRegex = /@([A-Za-z0-9_-]+)/g;
+      const body = post.body || "";
+      const mentions = new Set<string>();
+      let match;
+      while ((match = mentionRegex.exec(body)) !== null) {
+        const name = match[1];
+        // Skip our own agent name
+        if (name.toLowerCase() !== "neptu") {
+          mentions.add(name);
+        }
+      }
+
+      if (mentions.size === 0) {
+        results.push({
+          postId: post.id,
+          title: post.title,
+          status: "skipped_no_agents",
+        });
+        continue;
+      }
+
+      // Build agent profiles from mentions using hash-based dates
+      const agents = Array.from(mentions).map((name) => ({
+        name,
+        firstSeenDate: hashAgentNameToDate(name),
+      }));
+
+      // Sort by firstSeenDate for consistent ordering
+      agents.sort(
+        (a, b) =>
+          new Date(a.firstSeenDate).getTime() -
+          new Date(b.firstSeenDate).getTime(),
+      );
+
+      // Extract volume number to use in regenerated body
+      const volMatch = post.title.match(/Vol\.\s*(\d+)\s*\/\s*(\d+)/);
+      const volumeNumber = volMatch ? parseInt(volMatch[1], 10) : 1;
+      const totalVolumes = volMatch ? parseInt(volMatch[2], 10) : 1;
+
+      // Generate readings for these specific agents
+      const readings = agents.map((agent) =>
+        generateAgentReading(calculator, agent),
+      );
+
+      // Build batch object for body generation
+      const batch = {
+        volumeNumber,
+        totalVolumes,
+        readings,
+      };
+
+      const newBody = buildBatchBody(batch);
+      const safeBody =
+        newBody.length > 9900 ? newBody.slice(0, 9900) + "\n..." : newBody;
+
+      await client.updatePost(post.id, {
+        body: safeBody,
+        tags: ["progress-update", "ai", "consumer"],
+      });
+
+      results.push({
+        postId: post.id,
+        title: post.title,
+        status: "updated",
+        agentCount: mentions.size,
+      });
+
+      // Rate limit between updates (12s = max ~5 writes/min, well within 30/hr)
+      await new Promise((r) => setTimeout(r, 12000));
+    } catch (error) {
+      results.push({
+        postId: post.id,
+        title: post.title,
+        status: `error: ${error instanceof Error ? error.message : String(error)}`,
+      });
+    }
+  }
+
+  return c.json({ success: true, results });
+});
+
 // Mount project management routes
 import { colosseumProject } from "./colosseum-project";
 colosseum.route("/", colosseumProject);

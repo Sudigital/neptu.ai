@@ -157,11 +157,32 @@ export function Wallet() {
       const totalAmount = rewardsData.totalPending;
       const claimNonce = Date.now();
 
-      // 1. Build the claim transaction via API
+      // 0. Fetch blockhash client-side (avoids Solana RPC rate-limiting on CF Workers)
+      const rpcUrl =
+        import.meta.env.VITE_SOLANA_RPC_URL || "https://api.devnet.solana.com";
+      const bhRes = await fetch(rpcUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          id: 1,
+          method: "getLatestBlockhash",
+          params: [{ commitment: "confirmed" }],
+        }),
+      });
+      const bhData = (await bhRes.json()) as {
+        result?: { value: { blockhash: string; lastValidBlockHeight: number } };
+      };
+      if (!bhData.result) throw new Error("Failed to fetch blockhash");
+      const { blockhash, lastValidBlockHeight } = bhData.result.value;
+
+      // 1. Build the claim transaction via API (with client-provided blockhash)
       const buildResult = await neptuApi.buildClaimInstruction(
         walletAddress,
         totalAmount,
         claimNonce,
+        blockhash,
+        lastValidBlockHeight,
       );
 
       if (!buildResult.success || !buildResult.serializedTransaction) {

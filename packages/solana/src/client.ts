@@ -17,8 +17,14 @@ export interface SolanaClient {
   network: NetworkType;
 }
 
-// Fallback devnet RPC endpoints for resilience against rate limiting
-const DEVNET_RPC_FALLBACKS = ["https://api.devnet.solana.com"];
+const DEVNET_RPC_URL = "https://api.devnet.solana.com";
+const MAX_RETRIES = 3;
+const BASE_DELAY_MS = 1000;
+
+/** Sleep helper */
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 export function createSolanaClient(
   network: NetworkType,
@@ -95,39 +101,48 @@ async function fetchBlockhashViaHttp(
 }
 
 /**
- * Get latest blockhash with automatic retry and RPC fallback.
- * Tries @solana/kit RPC first, falls back to raw fetch for CF Workers compatibility.
+ * Get latest blockhash with max retry and exponential backoff.
+ * Retries up to MAX_RETRIES times, trying @solana/kit first then raw fetch per attempt.
  */
 export async function getLatestBlockhash(
   rpc: SolanaRpc,
   network: NetworkType = "devnet",
 ): Promise<{ blockhash: string; lastValidBlockHeight: bigint }> {
-  // Try primary RPC via @solana/kit (with 5s timeout)
-  try {
-    const rpcPromise = rpc.getLatestBlockhash().send();
-    const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error("RPC timeout")), 5000),
-    );
-    const result = await Promise.race([rpcPromise, timeoutPromise]);
-    return {
-      blockhash: result.value.blockhash,
-      lastValidBlockHeight: result.value.lastValidBlockHeight,
-    };
-  } catch {
-    // Primary failed — fall back to raw fetch for devnet
-    if (network !== "devnet") throw new Error("RPC request failed");
-  }
+  let lastError: Error | undefined;
 
-  // Try raw fetch fallbacks (avoids @solana/kit URL handling issues)
-  for (const fallbackUrl of DEVNET_RPC_FALLBACKS) {
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    if (attempt > 0) {
+      await sleep(BASE_DELAY_MS * Math.pow(2, attempt - 1));
+    }
+
+    // Try primary RPC via @solana/kit (with 5s timeout)
     try {
-      return await fetchBlockhashViaHttp(fallbackUrl);
-    } catch {
-      continue;
+      const rpcPromise = rpc.getLatestBlockhash().send();
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("RPC timeout")), 5000),
+      );
+      const result = await Promise.race([rpcPromise, timeoutPromise]);
+      return {
+        blockhash: result.value.blockhash,
+        lastValidBlockHeight: result.value.lastValidBlockHeight,
+      };
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+    }
+
+    // Fallback: raw fetch to default devnet RPC
+    try {
+      const rpcUrl =
+        network === "devnet" ? DEVNET_RPC_URL : SOLANA_NETWORKS[network].rpcUrl;
+      return await fetchBlockhashViaHttp(rpcUrl);
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
     }
   }
 
-  throw new Error("All Solana RPC endpoints failed");
+  throw new Error(
+    `All Solana RPC attempts failed after ${MAX_RETRIES} retries: ${lastError?.message}`,
+  );
 }
 
 export async function confirmTransaction(

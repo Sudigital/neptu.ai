@@ -32,6 +32,9 @@ export {
   getCampaignProgress,
   resetCampaign,
   collectAllAgents,
+  generateAgentReading,
+  buildBatchBody,
+  hashAgentNameToDate,
 } from "./agent-cosmic-profile";
 export type {
   AgentProfile,

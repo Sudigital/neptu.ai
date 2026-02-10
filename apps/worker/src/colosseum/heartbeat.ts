@@ -340,7 +340,6 @@ export class HeartbeatScheduler {
     }
 
     // Agent Cosmic Profile Campaign — batch post personalized readings
-    // Posts 3 batches per heartbeat cycle until all agents are covered
     if (isTimedOut()) return;
     try {
       const progress = await this.forumAgent.getCosmicCampaignProgress();
