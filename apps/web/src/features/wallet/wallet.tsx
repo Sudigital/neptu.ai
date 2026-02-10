@@ -2,8 +2,10 @@ import { useState, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Wallet as WalletIcon, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
-// On-chain claim signing will be re-enabled once economy program auth is ready
-// import { useSignTransaction, useWallets as useSolanaWallets } from "@privy-io/react-auth/solana";
+import {
+  useSignAndSendTransaction,
+  useWallets as useSolanaWallets,
+} from "@privy-io/react-auth/solana";
 import { Header } from "@/components/layout/header";
 import { Main } from "@/components/layout/main";
 import { TopNav } from "@/components/layout/top-nav";
@@ -29,18 +31,32 @@ import {
 } from "@/features/gamification/components";
 import { useUser } from "@/hooks/use-user";
 import { useTranslate } from "@/hooks/use-translate";
-// On-chain RPC helpers kept for future use when economy program auth is ready
-// import { SOLANA_NETWORKS } from "@neptu/shared";
+
+// Utility: convert Uint8Array signature to base58 string
+function toBase58(bytes: Uint8Array): string {
+  const ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+  let num = BigInt(0);
+  for (const b of bytes) num = num * 256n + BigInt(b);
+  let str = "";
+  while (num > 0n) {
+    str = ALPHABET[Number(num % 58n)] + str;
+    num = num / 58n;
+  }
+  for (const b of bytes) {
+    if (b === 0) str = "1" + str;
+    else break;
+  }
+  return str;
+}
 
 export function Wallet() {
   const { walletAddress } = useUser();
   const queryClient = useQueryClient();
   const [isClaimingRewards, setIsClaimingRewards] = useState(false);
   const t = useTranslate();
-  // On-chain claim signing will be re-enabled once economy program auth is ready
-  // const { signTransaction } = useSignTransaction();
-  // const { wallets: solanaWallets } = useSolanaWallets();
-  // const solanaWallet = solanaWallets.find((w) => w.address === walletAddress);
+  const { signAndSendTransaction } = useSignAndSendTransaction();
+  const { wallets: solanaWallets } = useSolanaWallets();
+  const solanaWallet = solanaWallets.find((w) => w.address === walletAddress);
 
   const topNav = [
     { title: t("nav.overview"), href: "/dashboard", isActive: false },
@@ -131,24 +147,41 @@ export function Wallet() {
   });
 
   const handleClaimRewards = useCallback(async () => {
-    if (!rewardsData?.rewards?.length || !walletAddress) return;
+    if (!rewardsData?.rewards?.length || !walletAddress || !solanaWallet)
+      return;
 
     setIsClaimingRewards(true);
     const loadingToast = toast.loading(t("wallet.claimingRewards"));
 
     try {
       const totalAmount = rewardsData.totalPending;
-
-      // Claim rewards at the DB level
-      // On-chain claiming will be enabled once the economy program auth is ready
       const claimNonce = Date.now();
-      const placeholderSig = `devnet-claim-${claimNonce}-${walletAddress.slice(0, 8)}`;
 
-      // Mark rewards as claimed in the database
-      const claimPromises = rewardsData.rewards.map((reward) =>
-        neptuApi.claimReward(walletAddress, reward.id, placeholderSig),
+      // 1. Build the claim transaction via API
+      const buildResult = await neptuApi.buildClaimInstruction(
+        walletAddress,
+        totalAmount,
+        claimNonce,
       );
 
+      if (!buildResult.success || !buildResult.serializedTransaction) {
+        throw new Error("Failed to build claim transaction");
+      }
+
+      // 2. Sign and send the transaction on-chain via Privy
+      const txBytes = new Uint8Array(buildResult.serializedTransaction);
+      const { signature } = await signAndSendTransaction({
+        transaction: txBytes,
+        wallet: solanaWallet,
+      });
+
+      // Convert signature bytes to base58 string
+      const txSignature = toBase58(signature);
+
+      // 3. Mark rewards as claimed in the database with real tx signature
+      const claimPromises = rewardsData.rewards.map((reward) =>
+        neptuApi.claimReward(walletAddress, reward.id, txSignature),
+      );
       await Promise.all(claimPromises);
 
       // Refresh data and show success
@@ -188,7 +221,14 @@ export function Wallet() {
     } finally {
       setIsClaimingRewards(false);
     }
-  }, [rewardsData, walletAddress, queryClient, t]);
+  }, [
+    rewardsData,
+    walletAddress,
+    solanaWallet,
+    signAndSendTransaction,
+    queryClient,
+    t,
+  ]);
 
   const handleRefreshBalance = () => {
     refetchBalance();

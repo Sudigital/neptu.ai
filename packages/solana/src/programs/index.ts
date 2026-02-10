@@ -96,6 +96,7 @@ export interface NeptuPrograms {
   economyAuthorityPda: Address;
   economyStatePda: Address;
   pricingConfigPda: Address;
+  rewardsPoolAta: Address;
 }
 
 export interface PricingConfig {
@@ -211,6 +212,12 @@ export async function createNeptuPrograms(
     programIds.economy,
   );
 
+  // Rewards pool is the ATA of the economy authority PDA for the NEPTU mint
+  const rewardsPoolAta = await deriveAssociatedTokenAddress(
+    economyAuthorityPda,
+    mintPda,
+  );
+
   return {
     network,
     tokenProgramId: programIds.token,
@@ -220,6 +227,7 @@ export async function createNeptuPrograms(
     economyAuthorityPda,
     economyStatePda,
     pricingConfigPda,
+    rewardsPoolAta,
   };
 }
 
@@ -274,6 +282,7 @@ export function buildPayWithSolInstruction(
       createAccountMeta(treasury, { isWritable: true }),
       createAccountMeta(programs.mintPda, { isWritable: true }),
       createAccountMeta(userNeptuAccount, { isWritable: true }),
+      createAccountMeta(programs.rewardsPoolAta, { isWritable: true }),
       createAccountMeta(programs.economyAuthorityPda),
       createAccountMeta(TOKEN_PROGRAM),
       createAccountMeta(ASSOCIATED_TOKEN_PROGRAM),
@@ -333,6 +342,7 @@ export function buildClaimRewardsInstruction(
       createAccountMeta(claimRecordPda, { isWritable: true }),
       createAccountMeta(programs.mintPda, { isWritable: true }),
       createAccountMeta(userNeptuAccount, { isWritable: true }),
+      createAccountMeta(programs.rewardsPoolAta, { isWritable: true }),
       createAccountMeta(programs.economyAuthorityPda),
       createAccountMeta(TOKEN_PROGRAM),
       createAccountMeta(ASSOCIATED_TOKEN_PROGRAM),

@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_lang::system_program;
 use anchor_spl::{
     associated_token::AssociatedToken,
-    token::{burn, mint_to, transfer, Burn, Mint, MintTo, Token, TokenAccount, Transfer},
+    token::{burn, transfer, Burn, Mint, Token, TokenAccount, Transfer},
 };
 
 declare_id!("6Zxc4uCXKqWS6spnW7u9wA81PChgws6wbGAKJyi8PnvT");
@@ -101,7 +101,7 @@ pub mod neptu_economy {
     }
 
     /// Pay with SOL to get a reading - receives NEPTU reward
-    /// User pays fee, SOL goes to treasury, NEPTU minted to user
+    /// User pays SOL fee, SOL goes to treasury, NEPTU transferred from rewards pool
     pub fn pay_with_sol(ctx: Context<PayWithSol>, reading_type: ReadingType) -> Result<()> {
         let config = &ctx.accounts.pricing_config;
         let sol_price = config.get_sol_price(&reading_type);
@@ -127,15 +127,15 @@ pub mod neptu_economy {
         )?;
         msg!("Transferred {} lamports to treasury", sol_price);
 
-        // Mint NEPTU reward to user from ecosystem pool
+        // Transfer NEPTU reward from rewards pool to user (NOT minting)
         let seeds = &[b"economy".as_ref(), &[ctx.bumps.economy_authority]];
         let signer_seeds = &[&seeds[..]];
 
-        mint_to(
+        transfer(
             CpiContext::new_with_signer(
                 ctx.accounts.token_program.to_account_info(),
-                MintTo {
-                    mint: ctx.accounts.neptu_mint.to_account_info(),
+                Transfer {
+                    from: ctx.accounts.rewards_pool.to_account_info(),
                     to: ctx.accounts.user_neptu_account.to_account_info(),
                     authority: ctx.accounts.economy_authority.to_account_info(),
                 },
@@ -143,7 +143,7 @@ pub mod neptu_economy {
             ),
             neptu_reward,
         )?;
-        msg!("Minted {} NEPTU to user", neptu_reward);
+        msg!("Transferred {} NEPTU reward to user", neptu_reward);
 
         Ok(())
     }
@@ -195,16 +195,16 @@ pub mod neptu_economy {
     }
 
     /// Claim accumulated gamification rewards
-    /// User initiates, pays fee, receives NEPTU from ecosystem pool
+    /// User initiates, backend signs authorization, NEPTU transferred from rewards pool
     pub fn claim_rewards(
         ctx: Context<ClaimRewards>,
         amount: u64,
         nonce: u64,
         _signature: [u8; 64],
     ) -> Result<()> {
-        // In production, verify the signature from backend
+        // In production, verify the Ed25519 signature from backend
         // The signature proves user earned this amount
-        // For hackathon, we trust the backend validation
+        // For now, the backend co-signs the transaction as authority
 
         msg!("Claiming {} NEPTU rewards, nonce: {}", amount, nonce);
 
@@ -222,15 +222,15 @@ pub mod neptu_economy {
             .checked_add(amount)
             .ok_or(NeptuError::Overflow)?;
 
-        // Mint NEPTU from ecosystem pool to user
+        // Transfer NEPTU from rewards pool to user (NOT minting)
         let seeds = &[b"economy".as_ref(), &[ctx.bumps.economy_authority]];
         let signer_seeds = &[&seeds[..]];
 
-        mint_to(
+        transfer(
             CpiContext::new_with_signer(
                 ctx.accounts.token_program.to_account_info(),
-                MintTo {
-                    mint: ctx.accounts.neptu_mint.to_account_info(),
+                Transfer {
+                    from: ctx.accounts.rewards_pool.to_account_info(),
                     to: ctx.accounts.user_neptu_account.to_account_info(),
                     authority: ctx.accounts.economy_authority.to_account_info(),
                 },
@@ -238,7 +238,7 @@ pub mod neptu_economy {
             ),
             amount,
         )?;
-        msg!("Claimed {} NEPTU to user", amount);
+        msg!("Transferred {} NEPTU from rewards pool to user", amount);
 
         Ok(())
     }
@@ -404,7 +404,15 @@ pub struct PayWithSol<'info> {
     )]
     pub user_neptu_account: Account<'info, TokenAccount>,
 
-    /// CHECK: Economy authority PDA (mint authority)
+    /// Rewards pool: ATA owned by economy_authority PDA
+    #[account(
+        mut,
+        associated_token::mint = neptu_mint,
+        associated_token::authority = economy_authority,
+    )]
+    pub rewards_pool: Account<'info, TokenAccount>,
+
+    /// CHECK: Economy authority PDA (rewards pool owner)
     #[account(
         seeds = [b"economy"],
         bump,
@@ -468,7 +476,15 @@ pub struct ClaimRewards<'info> {
     )]
     pub user_neptu_account: Account<'info, TokenAccount>,
 
-    /// CHECK: Economy authority PDA (mint authority)
+    /// Rewards pool: ATA owned by economy_authority PDA
+    #[account(
+        mut,
+        associated_token::mint = neptu_mint,
+        associated_token::authority = economy_authority,
+    )]
+    pub rewards_pool: Account<'info, TokenAccount>,
+
+    /// CHECK: Economy authority PDA (rewards pool owner)
     #[account(
         seeds = [b"economy"],
         bump,

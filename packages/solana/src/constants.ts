@@ -20,6 +20,9 @@ const MINT_PDA = "J4rUwfHS74XKTcNAX5wh5vuwYH4Fv5MR4Pdo4Gt4dhrq";
 // Economy authority PDA derived from ["economy"] + economy program ID
 const ECONOMY_AUTHORITY_PDA = "BRW7fxvTcnnzi6dvgfiCoTnWJRFSMCirKAGRVn41Co4E";
 
+// Rewards pool ATA: owned by economy authority PDA, holds tokens for reward distribution
+const REWARDS_POOL_ATA = "74ghaUNLKLaFvLN74G8yex8hougvJkqwJEBYxpSJ1ZL";
+
 // Get env safely (works in both Node/Bun and Cloudflare Workers)
 const getEnv = (key: string): string => {
   if (typeof process !== "undefined" && process.env) {
@@ -31,13 +34,13 @@ const getEnv = (key: string): string => {
 export const DEVNET_ADDRESSES: NeptuAddresses = {
   tokenMint: getEnv("NEPTU_TOKEN_MINT") || MINT_PDA,
   treasury: getEnv("NEPTU_TREASURY") || ECONOMY_AUTHORITY_PDA,
-  rewardsPool: getEnv("NEPTU_REWARDS_POOL") || ECONOMY_AUTHORITY_PDA,
+  rewardsPool: getEnv("NEPTU_REWARDS_POOL") || REWARDS_POOL_ATA,
 } as const;
 
 export const MAINNET_ADDRESSES: NeptuAddresses = {
   tokenMint: MINT_PDA,
   treasury: ECONOMY_AUTHORITY_PDA,
-  rewardsPool: ECONOMY_AUTHORITY_PDA,
+  rewardsPool: REWARDS_POOL_ATA,
 } as const;
 
 export function getAddresses(network: NetworkType): NeptuAddresses {
