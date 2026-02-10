@@ -338,6 +338,43 @@ export class HeartbeatScheduler {
         error: error instanceof Error ? error.message : "Unknown error",
       });
     }
+
+    // Agent Cosmic Profile Campaign — batch post personalized readings
+    // Posts 3 batches per heartbeat cycle until all agents are covered
+    if (isTimedOut()) return;
+    try {
+      const progress = await this.forumAgent.getCosmicCampaignProgress();
+      if (!progress.isComplete) {
+        const campaignResult = await this.forumAgent.runCosmicProfileCampaign();
+        result.tasks.push({
+          name: "cosmic_profile_campaign",
+          success: true,
+          result: {
+            totalAgents: campaignResult.totalAgentsFound,
+            totalBatches: campaignResult.totalBatches,
+            batchesPosted: campaignResult.batchesPosted,
+            batchesRemaining: campaignResult.batchesRemaining,
+            postsCreated: campaignResult.postsCreated,
+          },
+        });
+      } else {
+        result.tasks.push({
+          name: "cosmic_profile_campaign",
+          success: true,
+          result: {
+            status: "complete",
+            batchesPosted: progress.batchesPosted,
+            agentsCovered: progress.agentsCached,
+          },
+        });
+      }
+    } catch (error) {
+      result.tasks.push({
+        name: "cosmic_profile_campaign",
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
   }
 
   /**

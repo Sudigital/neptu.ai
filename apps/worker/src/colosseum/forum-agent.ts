@@ -52,6 +52,11 @@ import {
   type EngagementPlan,
 } from "./engagement-booster";
 import { analyzeTrending, type TrendingInsight } from "./trending-analyzer";
+import {
+  runCosmicProfileCampaign,
+  getCampaignProgress,
+  type CampaignResult,
+} from "./agent-cosmic-profile";
 
 export interface ForumAgentEnv {
   COLOSSEUM_API_KEY: string;
@@ -482,6 +487,30 @@ export class ForumAgent {
   /** Check if it's a good time to post */
   async shouldPostNow(): Promise<{ should: boolean; reason: string }> {
     return shouldPostNow(this.cache);
+  }
+
+  /**
+   * Run the Agent Cosmic Profile campaign.
+   * Fetches ALL agents, generates personalized Balinese readings,
+   * and posts batches of 50 agents per post with @mentions.
+   * Designed to run across multiple heartbeat cycles until complete.
+   */
+  async runCosmicProfileCampaign(): Promise<CampaignResult> {
+    return runCosmicProfileCampaign(
+      this.client,
+      this.calculator,
+      this.cache,
+      this.agentName,
+    );
+  }
+
+  /** Check cosmic campaign progress */
+  async getCosmicCampaignProgress(): Promise<{
+    isComplete: boolean;
+    batchesPosted: number;
+    agentsCached: number;
+  }> {
+    return getCampaignProgress(this.cache);
   }
 
   /** Track engagement for an action */

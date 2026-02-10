@@ -11,15 +11,11 @@ import {
   postVoterRewards,
   postDeadlinePromotion,
   postProgressUpdate,
-  postCryptoCosmicReport,
-  postTopCosmicPicks,
 } from "./post-creator";
-import { postIndividualCoinAnalysis } from "./crypto-posts";
-import {
-  postMarketMoverAlert,
-  postMarketSentimentReport,
-} from "./crypto-posts-market";
-import { getCryptoWithMarketData } from "./crypto-market-fetcher";
+// Crypto posts disabled for final 48h — agent cosmic campaign takes priority
+// import { postIndividualCoinAnalysis } from "./crypto-posts";
+// import { postMarketMoverAlert, postMarketSentimentReport } from "./crypto-posts-market";
+// import { getCryptoWithMarketData } from "./crypto-market-fetcher";
 import {
   postProjectSpotlight,
   getSpotlightCacheKey,
@@ -176,71 +172,10 @@ async function _orchestratePostingInternal(
     );
   }
 
-  // 5. Daily Crypto Cosmic Report
-  await tryPost(
-    `neptu:crypto_report:${today}`,
-    () => postCryptoCosmicReport(client, calculator, cache),
-    "Daily crypto cosmic report",
-  );
-
-  // 6. Top Cosmic Picks
-  if (db) {
-    await tryPost(
-      `neptu:top_picks:${today}`,
-      async () => {
-        const cryptos = await getCryptoWithMarketData(db);
-        return postTopCosmicPicks(client, calculator, cryptos, cache);
-      },
-      "Top cosmic picks",
-    );
-  }
-
-  // 7-9: Market posts requiring crypto data
-  if (db && posts.length < MAX_POSTS_PER_HEARTBEAT) {
-    try {
-      const cryptos = await getCryptoWithMarketData(db);
-
-      // 7. Market Sentiment Report (hourly, unique per hour)
-      await tryPost(
-        `neptu:sentiment:${hourKey}`,
-        () => postMarketSentimentReport(client, calculator, cryptos, cache),
-        "Market sentiment report",
-      );
-
-      // 8. Market Mover Alert (hourly, pick biggest mover)
-      if (cryptos.length > 0) {
-        // Find coin with largest absolute price change
-        const mover = cryptos.reduce((best, c) =>
-          Math.abs(c.priceChangePercentage24h ?? 0) >
-          Math.abs(best.priceChangePercentage24h ?? 0)
-            ? c
-            : best,
-        );
-        await tryPost(
-          `neptu:mover_alert:${hourKey}`,
-          () => postMarketMoverAlert(client, calculator, mover, cache),
-          "Market mover alert",
-        );
-      }
-
-      // 9. Individual coin analyses (rotate through coins each hour)
-      const startIdx = hour % cryptos.length;
-      for (
-        let i = 0;
-        i < cryptos.length && posts.length < MAX_POSTS_PER_HEARTBEAT;
-        i++
-      ) {
-        const coin = cryptos[(startIdx + i) % cryptos.length];
-        await tryPost(
-          `neptu:coin_analysis:${coin.symbol}:${today}`,
-          () => postIndividualCoinAnalysis(client, calculator, coin, cache),
-          `${coin.symbol} cosmic analysis`,
-        );
-      }
-    } catch (err) {
-      console.error("Failed to fetch cryptos for market posts:", err);
-    }
-  }
+  // 5-9: Crypto posts — DISABLED for final 48h
+  // Prioritizing Agent Cosmic Profile Campaign (batch readings for all agents)
+  // which runs in the heartbeat post_thread phase instead.
+  // Crypto posts were consuming the posting slot and preventing agent engagement.
 
   // 10. Project Spotlight — top 3 leaderboard projects (daily per project)
   if (posts.length < MAX_POSTS_PER_HEARTBEAT) {

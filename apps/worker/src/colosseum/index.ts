@@ -26,6 +26,19 @@ export type {
   HeartbeatPhase,
 } from "./heartbeat";
 
+// Agent Cosmic Profile Campaign
+export {
+  runCosmicProfileCampaign,
+  getCampaignProgress,
+  resetCampaign,
+  collectAllAgents,
+} from "./agent-cosmic-profile";
+export type {
+  AgentProfile,
+  AgentCosmicReading,
+  CampaignResult,
+} from "./agent-cosmic-profile";
+
 // Crypto market data
 export {
   fetchAndStoreCryptoMarketData,
