@@ -26,13 +26,12 @@ import {
 } from "./project-spotlight";
 import { analyzeTrending, type PostType } from "./trending-analyzer";
 import { generateOptimizedPost } from "./content-optimizer";
-import { generateVoteExchangePost } from "./vote-solicitor";
 
 // Timeline constants
 const HACKATHON_START = "2026-02-01";
 const HACKATHON_DEADLINE = "2026-02-12";
-const MIN_HOURS_BETWEEN_POSTS = 1; // Aggressive: post frequently
-const MAX_POSTS_PER_HEARTBEAT = 1; // 1 per 5min run × 12 runs/hour ≈ 12 attempts (dedup keeps unique)
+const MIN_HOURS_BETWEEN_POSTS = 3; // Post less frequently — quality over quantity
+const MAX_POSTS_PER_HEARTBEAT = 1; // 1 per heartbeat run
 const DAYS_INTRO_WINDOW = 3;
 const DAYS_PREDICTIONS_START = 7;
 const DAYS_FINAL_PUSH = 3;
@@ -265,12 +264,12 @@ async function _orchestratePostingInternal(
     }
   }
 
-  // 11. Progress update (every 6 hours)
+  // 11. Progress update (every 12 hours)
   const lastProgress = await cache.get("neptu:last_progress_update");
   const hoursSinceProgress = lastProgress
     ? (Date.now() - new Date(lastProgress).getTime()) / 3600000
     : 999;
-  if (hoursSinceProgress > 6 && posts.length < MAX_POSTS_PER_HEARTBEAT) {
+  if (hoursSinceProgress > 12 && posts.length < MAX_POSTS_PER_HEARTBEAT) {
     await tryPost(
       `neptu:progress:${hourKey}`,
       async () => {
@@ -289,7 +288,7 @@ async function _orchestratePostingInternal(
             "More cosmic cycle insights",
           ],
           callToAction:
-            "🎁 Want a free personalized reading? Reply with: `BIRTHDAY: YYYY-MM-DD`\n\n🗳️ Vote for Neptu: https://colosseum.com/agent-hackathon/projects/neptu",
+            "🎁 Want a free personalized reading? Reply with: `BIRTHDAY: YYYY-MM-DD`",
         });
         await cache.put("neptu:last_progress_update", new Date().toISOString());
         return post;
@@ -298,13 +297,13 @@ async function _orchestratePostingInternal(
     );
   }
 
-  // 12. Trending-optimized post (every 4 hours)
+  // 12. Trending-optimized post (every 8 hours)
   // Uses trending analysis to generate high-engagement content
   const lastTrendingPost = await cache.get("neptu:last_trending_post");
   const hoursSinceTrending = lastTrendingPost
     ? (Date.now() - new Date(lastTrendingPost).getTime()) / 3600000
     : 999;
-  if (hoursSinceTrending > 4 && posts.length < MAX_POSTS_PER_HEARTBEAT) {
+  if (hoursSinceTrending > 8 && posts.length < MAX_POSTS_PER_HEARTBEAT) {
     try {
       const insight = await analyzeTrending(client, agentName);
       // Get last post type to avoid repetition
@@ -329,54 +328,6 @@ async function _orchestratePostingInternal(
       );
     } catch (err) {
       console.error("Failed to post trending-optimized content:", err);
-    }
-  }
-
-  // 13. Project discovery post (every 8 hours)
-  // Share Neptu with the community — no vote exchange framing
-  const lastVoteExchange = await cache.get("neptu:last_vote_exchange_post");
-  const hoursSinceVoteExchange = lastVoteExchange
-    ? (Date.now() - new Date(lastVoteExchange).getTime()) / 3600000
-    : 999;
-  if (hoursSinceVoteExchange > 8 && posts.length < MAX_POSTS_PER_HEARTBEAT) {
-    try {
-      // Rotate variant based on how many we've posted
-      const variantRaw = await cache.get("neptu:vote_exchange_variant");
-      const variant = variantRaw ? parseInt(variantRaw, 10) : 0;
-
-      // Get trending agents to mention in the post
-      let topAgents: string[] = [];
-      try {
-        const insight = await analyzeTrending(client, agentName);
-        topAgents = insight.recommendedEngagements;
-      } catch {
-        // Best-effort
-      }
-
-      const votePost = generateVoteExchangePost(variant, topAgents);
-
-      await tryPost(
-        `neptu:vote_exchange:${today}:${variant}`,
-        async () => {
-          const { post } = await client.createPost({
-            title: votePost.title,
-            body: votePost.body,
-            tags: votePost.tags,
-          });
-          await cache.put(
-            "neptu:last_vote_exchange_post",
-            new Date().toISOString(),
-          );
-          await cache.put(
-            "neptu:vote_exchange_variant",
-            ((variant + 1) % 3).toString(),
-          );
-          return post;
-        },
-        `Project discovery post (variant ${variant})`,
-      );
-    } catch (err) {
-      console.error("Failed to post vote exchange:", err);
     }
   }
 

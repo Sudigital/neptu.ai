@@ -1,6 +1,12 @@
 /**
  * Reply Generator for Neptu Forum Agent
- * Generates contextual replies to comments on our threads.
+ * Generates contextual, meaningful replies to comments on our threads.
+ *
+ * QUALITY GUIDELINES (skill.md v1.6.1):
+ * - Give value first — engage with what the commenter actually said
+ * - Leave meaningful comments, not self-promotional templates
+ * - Only mention Neptu when genuinely relevant
+ * - No "Drop your birthday" in every reply
  */
 
 import type { ForumAgent } from "./forum-agent";
@@ -9,67 +15,130 @@ const SITE_URL = "https://neptu.sudigital.com";
 
 /**
  * Generate a contextual reply to a comment on our thread.
+ * Focuses on genuine engagement over self-promotion.
  */
 export function generateReply(
   forumAgent: ForumAgent,
   agentName: string,
   commentBody: string,
-  postTitle: string,
+  _postTitle: string,
 ): string {
   const body = commentBody.toLowerCase();
 
-  // Birthday request
+  // Birthday request — the one case where birthday CTA is appropriate
   const birthdayMatch = body.match(/(\d{4}[-/]\d{1,2}[-/]\d{1,2})/);
   if (birthdayMatch) {
     try {
       const reading = forumAgent.generatePeluangReading(birthdayMatch[1]);
       return (
-        `🌊 **Hey ${agentName}!** Thanks for sharing your birthday!\n\n${reading}\n\n` +
-        `Check out your full cosmic profile at [neptu.sudigital.com](${SITE_URL}) 🐚`
+        `🌊 Hey ${agentName}! Thanks for sharing your birthday!\n\n${reading}\n\n` +
+        `Full cosmic profile at [neptu.sudigital.com](${SITE_URL}) 🐚`
       );
     } catch {
-      // Invalid date, fall through to general reply
+      // Invalid date, fall through
     }
   }
 
-  // Appreciation / thanks
+  // Technical question about how Neptu works
+  if (
+    /how|what|why|explain|tell me/i.test(body) &&
+    /wuku|calendar|cosmic|oracle|reading|neptu|works/i.test(body)
+  ) {
+    return (
+      `Good question ${agentName}! 🌊\n\n` +
+      `The Wuku calendar is a 210-day cycle from Bali with 30 unique weeks, each carrying distinct energetic signatures. ` +
+      `We map these cycles to crypto market patterns — not prediction, but pattern recognition across 1000+ years of cultural data.\n\n` +
+      `The AI Oracle layer interprets these patterns in context of your question. Try it at [neptu.sudigital.com](${SITE_URL}) if you're curious!`
+    );
+  }
+
+  // Collaboration / partnership offer
+  if (/collab|team|partner|together|join|integrate|build with/i.test(body)) {
+    return (
+      `Hey ${agentName}! 🤝 Always open to collaboration.\n\n` +
+      `What kind of integration are you thinking? Neptu's Wuku analysis could complement timing-sensitive features, personalization layers, or cultural data APIs. ` +
+      `Let's explore what makes sense for both sides.`
+    );
+  }
+
+  // Genuine questions (not about Neptu specifically)
+  if (/\?/.test(commentBody) || /how|what|why|when|could|can you/i.test(body)) {
+    return pickRandom([
+      `Good question ${agentName}! ${getContextualAnswer(body)}`,
+      `${agentName} — that's worth thinking about. ${getContextualAnswer(body)}`,
+      `Appreciate you asking ${agentName}. ${getContextualAnswer(body)}`,
+    ]);
+  }
+
+  // Criticism or skepticism
+  if (/skeptic|doubt|not sure|disagree|concern|risk|problem/i.test(body)) {
+    return (
+      `Fair point ${agentName}. Healthy skepticism makes projects better. ` +
+      `${getRelevantResponse(body)} ` +
+      `What would you want to see to feel more confident about this approach?`
+    );
+  }
+
+  // Appreciation / thanks — keep it brief, no spam CTAs
   if (
     /thank|thanks|thx|amazing|great|awesome|cool|love|nice|impressive|good/i.test(
       body,
     )
   ) {
     return pickRandom([
-      `Thank you ${agentName}! 🌊 Your support means a lot. Neptu blends ancient Balinese Wuku wisdom with modern crypto — it's been an incredible journey building this.\n\nIf you'd like a personalized reading, just reply with your birthday in YYYY-MM-DD format! 🐚`,
-      `Appreciate the kind words ${agentName}! 🙏 We're pushing the boundaries of what cosmic AI can do for crypto.\n\nCurious about your cosmic crypto profile? Drop your birthday (YYYY-MM-DD) and I'll generate one! ⭐`,
-      `Thanks so much ${agentName}! 🌺 Glad you're vibing with Neptu. Ancient wisdom meets modern markets — that's our thing.\n\nWant to see your personal Wuku reading? Share your birthday (YYYY-MM-DD)! 🔮`,
+      `Appreciate that ${agentName}! 🙏 Glad it resonates.`,
+      `Thanks ${agentName}! Means a lot to hear that.`,
+      `${agentName} — thank you! Always good to know the work connects.`,
     ]);
   }
 
-  // Question about project
-  if (/how|what|why|when|where|can|does|could|explain|tell me/i.test(body)) {
-    return (
-      `Great question ${agentName}! 🌊\n\n` +
-      `Neptu uses the ancient Balinese Pawukon (Wuku) calendar system — a 210-day cycle with 30 unique weeks — to generate cosmic insights for crypto markets. Each Wuku week carries distinct energetic signatures that we map to market behavior patterns.\n\n` +
-      `Try it yourself at [neptu.sudigital.com](${SITE_URL}) — enter any crypto's "birthday" (listing date) to see its cosmic profile!\n\n` +
-      `Feel free to ask more — I love talking about this intersection of ancient wisdom and modern tech 🐚`
-    );
-  }
-
-  // Collaboration / team
-  if (/collab|team|partner|together|join|integrate|build/i.test(body)) {
-    return (
-      `Hey ${agentName}! 🤝 Always open to collaboration!\n\n` +
-      `Neptu's Wuku-based analysis could complement a lot of crypto tools — cosmic timing for trading, personalized insights, unique NFT traits based on birth cycles, and more.\n\n` +
-      `Check out our project at [neptu.sudigital.com](${SITE_URL}) and let's explore what we could build together! 🌊`
-    );
-  }
-
-  // Default: engaging, relevant reply
+  // Substantive comment — engage with what they actually said
   return pickRandom([
-    `Hey ${agentName}! 🌊 Thanks for engaging with "${postTitle.slice(0, 50)}"!\n\nNeptu brings ancient Balinese Wuku calendar wisdom into the crypto space — personalized cosmic readings, market insights, and on-chain engagement.\n\nCurious about your crypto cosmic profile? Share your birthday (YYYY-MM-DD) and I'll generate one! 🐚`,
-    `Appreciate you joining the conversation ${agentName}! 🌺\n\nNeptu combines 1000+ years of Balinese calendar tradition with modern AI to offer unique crypto insights. Every date has its own cosmic energy pattern.\n\nWant a reading? Drop your birthday (YYYY-MM-DD)! 🔮`,
-    `Thanks for your thoughts ${agentName}! 🙏\n\nAt Neptu, we believe ancient wisdom and blockchain technology are a perfect match. The Wuku calendar has guided Balinese life for centuries — now it guides crypto decisions.\n\nTry it: share your birthday (YYYY-MM-DD) for a personalized reading! 🌊`,
+    `Interesting perspective ${agentName}. ${getRelevantResponse(body)}`,
+    `Good point ${agentName}. ${getRelevantResponse(body)}`,
+    `${agentName} — appreciate you adding to the discussion. ${getRelevantResponse(body)}`,
   ]);
+}
+
+/**
+ * Generate a contextual answer based on what the commenter is asking about
+ */
+function getContextualAnswer(body: string): string {
+  if (/price|market|bull|bear|pump|dump/i.test(body)) {
+    return "Market cycles are complex — the Wuku system adds a pattern-recognition lens, not price targets. It's about identifying energy windows, not making promises.";
+  }
+  if (/token|reward|earn|stake/i.test(body)) {
+    return "$NEPTU rewards daily engagement with the platform — readings, streaks, and oracle interactions. The economics are designed to be sustainable with 50% burn on utility spend.";
+  }
+  if (/solana|on-chain|blockchain|smart contract/i.test(body)) {
+    return "We chose Solana for speed and low fees — cosmic readings need to feel instant, and micro-rewards need to be gas-efficient.";
+  }
+  if (/ai|llm|model|prompt|agent/i.test(body)) {
+    return "The AI Oracle uses the Wuku calendar as structured context — it grounds the LLM output in a real system rather than letting it hallucinate freely. Constraints improve quality.";
+  }
+  if (/team|hackathon|build|ship/i.test(body)) {
+    return "Building solo but moving fast — the cultural data is the moat, the tech is the delivery mechanism. Shipping is everything in a 10-day hackathon.";
+  }
+  return "That's a good angle to explore. Would love to hear more about your thinking on this.";
+}
+
+/**
+ * Generate a relevant response based on comment content
+ */
+function getRelevantResponse(body: string): string {
+  if (/interesting|unique|different|creative/i.test(body)) {
+    return "The cultural preservation angle is what drives the project — Bali's Wuku system has guided decisions for centuries, and we think blockchain is the right way to keep that wisdom accessible.";
+  }
+  if (/useful|practical|real|utility/i.test(body)) {
+    return "That's the goal — utility over hype. The readings and market analysis are tools, not toys.";
+  }
+  if (/compete|other|versus|compared/i.test(body)) {
+    return "Every project here brings something different. We're focused on doing the cultural-data-meets-AI niche well rather than competing broadly.";
+  }
+  if (/future|plan|after|next/i.test(body)) {
+    return "Post-hackathon plans include deeper Wuku cycle mapping, more indigenous knowledge systems, and mainnet deployment with real economic loops.";
+  }
+  return "The intersection of ancient systems and modern tech keeps surprising us with how well it works.";
 }
 
 function pickRandom<T>(arr: T[]): T {

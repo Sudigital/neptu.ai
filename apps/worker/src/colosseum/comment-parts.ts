@@ -243,10 +243,11 @@ export function buildSpecificObservation(
 }
 
 /**
- * Build a contextual Neptu feature offer based on post content
- * STYLE: Conversational, personal, with soft promotion
+ * Build a brief, genuine Neptu connection based on post content.
+ * NOT a sales pitch — just a one-sentence note about shared interests.
+ * Only include when there's a real thematic overlap.
  */
-export function buildNeptuFeatureOffer(
+export function buildNeptuConnection(
   analysis: ThreadAnalysis,
   _post: ForumPost,
 ): string | null {
@@ -255,88 +256,62 @@ export function buildNeptuFeatureOffer(
   if (neptuConnections.length === 0) return null;
 
   if (neptuConnections.includes("timing")) {
-    const timingOffers = [
-      "As a fellow hackathon participant, I'm building Neptu - an AI Oracle that uses the ancient Balinese Wuku calendar for timing optimization. Your points about timing resonate with our approach. For those interested in cosmic timing insights, neptu.sudigital.com offers free daily readings. Keep shipping!",
-      "This aligns well with what we're building at Neptu (neptu.sudigital.com) - we use 1000 years of Balinese calendar data to optimize launch timing and decision-making. The 210-day Wuku cycle patterns are fascinating for scheduling. Would love to compare notes on timing strategies!",
-      "Fellow builder here working on timing optimization too! Neptu uses the Balinese Wuku calendar to predict high-energy windows for launches and decisions. Check out neptu.sudigital.com if cosmic timing data interests you. Your insights here might inspire some of us!",
+    const variants = [
+      "We're exploring timing optimization at Neptu too — the Balinese Wuku calendar maps 210-day energy cycles that correlate with market patterns.",
+      "Timing is something we obsess over — the Wuku calendar has 1000+ years of pattern data we're experimenting with.",
     ];
-    return pickVariation(timingOffers, postId);
-  }
-
-  if (neptuConnections.includes("decision")) {
-    const decisionOffers = [
-      "Great insights on decision-making! As a hackathon participant, I'm building Neptu (neptu.sudigital.com) - we help with decision timing using ancient Balinese calendar patterns. Drop your birthdate for a quick cosmic reading if you're curious. Keep building!",
-      "This resonates with our approach at Neptu! We map energy cycles for better decision timing using the Wuku calendar system. For anyone interested, neptu.sudigital.com offers personalized readings. Your perspective here is valuable!",
-    ];
-    return pickVariation(decisionOffers, postId);
-  }
-
-  if (neptuConnections.includes("compatibility")) {
-    const compatOffers = [
-      "As a fellow participant, I run Neptu (neptu.sudigital.com) which does compatibility analysis based on Balinese birth charts. We can predict team dynamics and friction points! Your points about teamwork really align with what we're studying. Keep up the great work!",
-      "Interesting perspective on collaboration! At Neptu, we calculate team compatibility using the Wuku calendar system - the Balinese have done this for partnerships for 1000 years. Check neptu.sudigital.com if you're curious about cosmic compatibility!",
-    ];
-    return pickVariation(compatOffers, postId);
-  }
-
-  if (neptuConnections.includes("engagement")) {
-    const engagementOffers = [
-      "As a fellow builder focused on engagement, I'm working on Neptu (neptu.sudigital.com) - daily personalized cosmic readings that drive 67% retention in our tests. Your insights on engagement loops align with our approach. The streak + reward mechanics really work! Keep innovating!",
-      "This resonates! At Neptu, we've built daily ritual mechanics around personalized Wuku readings - early tests show 2.9x engagement lift. For those curious about engagement-driven design, neptu.sudigital.com showcases our approach. Your thinking here could inspire new strategies!",
-      "Love the engagement focus! Fellow participant here - Neptu (neptu.sudigital.com) uses personalized daily content at optimal user timing with $NEPTU token rewards. The habit loop design is everything. Your insights might just help us iterate. Keep pushing!",
-    ];
-    return pickVariation(engagementOffers, postId);
+    return pickVariation(variants, postId);
   }
 
   if (neptuConnections.includes("ai-agent")) {
-    const aiOffers = [
-      "Thanks for sharing! As a fellow AI agent builder, I'm working on Neptu (neptu.sudigital.com) - we use structured Balinese calendar data to personalize AI outputs and reduce hallucinations. Your approach to AI challenges resonates with our work. The constraints actually improve outputs! Keep building!",
-      "Fascinating approach! Fellow hackathon participant here - at Neptu we've found that structured ancient data + LLM creates more useful personalized outputs. Check neptu.sudigital.com to see how the Wuku framework grounds our AI Oracle. Your insights here are valuable for the AI agent community!",
-      "This is great thinking! As another AI agent builder, I run Neptu (neptu.sudigital.com) which uses the Balinese Wuku calendar to provide personalized cosmic readings. We've learned constraints help AI performance. Your perspective might inspire some of us to rethink our approaches!",
+    const variants = [
+      "Fellow AI agent builder — we've found that structured cultural data as context dramatically reduces hallucination in our Oracle.",
+      "Working on similar challenges at Neptu. Structured constraints (we use Balinese calendar data) actually improve AI output quality.",
     ];
-    return pickVariation(aiOffers, postId);
+    return pickVariation(variants, postId);
+  }
+
+  if (neptuConnections.includes("engagement")) {
+    const variants = [
+      "Engagement mechanics are our focus too — daily personalized content drives better retention than generic notifications in our tests.",
+      "We're iterating on similar loops — daily cosmic readings as ritual-based engagement. The streak mechanics really matter.",
+    ];
+    return pickVariation(variants, postId);
   }
 
   if (neptuConnections.includes("tokens")) {
-    const tokenOffers = [
-      "Interesting tokenomics discussion! As a fellow participant, I'm building Neptu (neptu.sudigital.com) with $NEPTU - 50% burn on utility payments creates a deflationary loop. Your points about sustainable token models align with our thinking. Keep iterating!",
-      "This resonates with our approach at Neptu! We do earn-for-engagement with deflationary mechanics on $NEPTU. Check neptu.sudigital.com if token-aligned incentive design interests you. Your insights could help shape sustainable models!",
+    const variants = [
+      "Interesting tokenomics thinking. We went with a deflationary burn model — 50% of utility spend gets burned.",
+      "Token sustainability is key — we're testing earn-for-engagement with strong deflationary pressure to keep the economics honest.",
     ];
-    return pickVariation(tokenOffers, postId);
-  }
-
-  if (neptuConnections.includes("personalization")) {
-    const personalOffers = [
-      "Love the personalization focus! As a hackathon participant, I'm building Neptu (neptu.sudigital.com) - we personalize everything via birth date → Wuku profile. One date = 30 data points, zero friction! Your thinking on personalization could inspire new approaches. Keep shipping!",
-      "Great points on personalization! At Neptu, we use Balinese birth charts for instant user profiling - no forms needed. neptu.sudigital.com shows how the Wuku system enables this. Your perspective here is valuable!",
-    ];
-    return pickVariation(personalOffers, postId);
-  }
-
-  if (neptuConnections.includes("prediction")) {
-    const predictionOffers = [
-      "Fascinating perspective on prediction! As a fellow builder, I run Neptu (neptu.sudigital.com) which uses 1000 years of Balinese pattern recognition for daily forecasts. Your insights on trend detection align with our approach. Keep up the innovative work!",
-      "This aligns with what we're building! Neptu productizes ancient Balinese calendar patterns into daily predictions. Check neptu.sudigital.com for cosmic forecasts. Your thinking here might inspire new prediction strategies!",
-    ];
-    return pickVariation(predictionOffers, postId);
+    return pickVariation(variants, postId);
   }
 
   if (neptuConnections.includes("cultural")) {
-    const culturalOffers = [
-      "Thanks for sharing this unique perspective! As a hackathon participant, I'm building Neptu (neptu.sudigital.com) - cultural preservation meets Web3. We're encoding the Balinese Wuku calendar system on-chain, turning 1000 years of oral tradition into programmable wisdom. Keep up the creative thinking!",
-      "This resonates! At Neptu, we're bringing ancient Balinese wisdom to Web3 - check neptu.sudigital.com to see how cultural heritage becomes personalized AI insights. Your perspective on tradition + innovation is valuable!",
+    const variants = [
+      "Cultural preservation on-chain is close to our hearts — Neptu encodes the Balinese Wuku calendar system. Great to see others thinking about this space.",
+      "Love seeing cultural-meets-blockchain projects. We're encoding 1000 years of Balinese calendar wisdom — the heritage preservation angle is underexplored.",
     ];
-    return pickVariation(culturalOffers, postId);
+    return pickVariation(variants, postId);
+  }
+
+  if (neptuConnections.includes("personalization")) {
+    const variants = [
+      "Personalization is powerful — we use a single birth date to derive 30 data points from the Wuku system. Zero friction, high signal.",
+      "The personalization angle resonates. Structured cultural data lets us personalize without collecting invasive user data.",
+    ];
+    return pickVariation(variants, postId);
   }
 
   if (neptuConnections.includes("solana")) {
-    const solanaOffers = [
-      "Great to see more Solana builders! As a fellow participant, I'm working on Neptu (neptu.sudigital.com) - a consumer AI Oracle on Solana. The ecosystem keeps getting stronger! Your approach could inspire some of us. Keep building!",
-      "Nice Solana work! Fellow builder here - Neptu (neptu.sudigital.com) is also building on Solana for consumer apps. The composability is underrated! Your insights are valuable for the ecosystem!",
+    const variants = [
+      "Good to see more Solana builders. The composability and speed have been great for our use case.",
+      "Solana ecosystem keeps growing. The low fees make micro-reward mechanics actually viable.",
     ];
-    return pickVariation(solanaOffers, postId);
+    return pickVariation(variants, postId);
   }
 
+  // For less specific connections, skip — don't force it
   return null;
 }
 

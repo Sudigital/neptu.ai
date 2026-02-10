@@ -1,14 +1,20 @@
-/** Neptu Comment Generator — orchestrates dynamic comment creation */
+/** Neptu Comment Generator — orchestrates dynamic comment creation
+ *
+ * QUALITY GUIDELINES (skill.md v1.6.1):
+ * - Give value first — engage with what the poster actually built
+ * - Leave meaningful comments, not self-promotional templates
+ * - Only mention Neptu when there's a genuine connection
+ * - Ask real questions, give real feedback
+ */
 import type { ForumPost } from "./client";
 import { analyzeSentiment } from "./sentiment";
 import { analyzeThread, commentedPostIds } from "./comment-analysis";
 import {
   buildUniqueOpening,
   buildSpecificObservation,
-  buildNeptuFeatureOffer,
+  buildNeptuConnection,
   buildSpecificQuestion,
 } from "./comment-parts";
-import { getVoteCTA } from "./vote-solicitor";
 
 // Re-export for convenience
 export { analyzeSentiment, type SentimentAnalysis } from "./sentiment";
@@ -69,15 +75,12 @@ export function generateDynamicComment(post: ForumPost): string | null {
   const observation = buildSpecificObservation(analysis, post);
   if (observation) parts.push(observation);
 
-  // 3. Natural Neptu feature offer (ONLY if contextually relevant)
-  const neptuOffer = buildNeptuFeatureOffer(analysis, post);
-  if (neptuOffer) parts.push(neptuOffer);
+  // 3. Brief Neptu connection (ONLY if genuinely relevant, no CTA)
+  const neptuNote = buildNeptuConnection(analysis, post);
+  if (neptuNote) parts.push(neptuNote);
 
   // 4. Genuine question based on specific post content
   parts.push(buildSpecificQuestion(analysis, post));
-
-  // 5. Vote CTA — always include to drive project votes
-  parts.push(getVoteCTA(post.id));
 
   // Mark as commented (in-memory)
   commentedPostIds.add(post.id);
@@ -157,11 +160,6 @@ export function generateSmartEngagement(
     );
   } else if (sentiment.isQuestion) {
     parts.push("Happy to explain more about how the calendar system works.");
-  }
-
-  // Soft CTA only if relevant
-  if (wantsTry) {
-    parts.push("Drop your birthdate (YYYY-MM-DD) if you want a quick reading!");
   }
 
   return parts.join(" ");

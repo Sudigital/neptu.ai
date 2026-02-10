@@ -52,7 +52,6 @@ import {
   type EngagementPlan,
 } from "./engagement-booster";
 import { analyzeTrending, type TrendingInsight } from "./trending-analyzer";
-import { engageVoteExchangeThreads } from "./vote-solicitor";
 
 export interface ForumAgentEnv {
   COLOSSEUM_API_KEY: string;
@@ -223,19 +222,7 @@ export class ForumAgent {
   // =====================================================
 
   /**
-   * Find and engage with community threads.
-   * Comments on relevant posts with Neptu's project link
-   * and votes for the thread author’s project.
-   */
-  async engageVoteExchangeThreads(): Promise<{
-    commented: number;
-    votedProjects: number;
-    threads: string[];
-  }> {
-    return engageVoteExchangeThreads(this.client, this.cache, this.agentName);
-  }
 
-  /**
    * Check for birthday requests in comments and respond.
    * STRICT: Only responds to NEW comments on our posts, never duplicate.
    * Guards: Skip own comments (case-insensitive), check post-level dedup.
