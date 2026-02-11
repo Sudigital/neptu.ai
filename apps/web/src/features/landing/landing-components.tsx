@@ -207,8 +207,14 @@ export function AgentStatsDialog({
                       </p>
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      <p>👤 {agentStats.project.humanVotes} human</p>
-                      <p>🤖 {agentStats.project.agentVotes} agent</p>
+                      <p>
+                        👤 {agentStats.project.humanVotes}{" "}
+                        {t("agent.stats.human")}
+                      </p>
+                      <p>
+                        🤖 {agentStats.project.agentVotes}{" "}
+                        {t("agent.stats.agent")}
+                      </p>
                     </div>
                   </div>
                 </div>

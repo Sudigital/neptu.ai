@@ -2,6 +2,7 @@
 import { Hono } from "hono";
 import { NeptuCalculator } from "@neptu/wariga";
 import { NeptuOracle } from "../ai/oracle";
+import { postProcessResponse } from "../ai/prompts";
 
 interface Env {
   DB: D1Database;
@@ -162,7 +163,7 @@ oracle.post("/interpret", async (c) => {
   if (cached) {
     return c.json({
       success: true,
-      interpretation: cached,
+      interpretation: postProcessResponse(cached, language),
       date: body.targetDate,
       cached: true,
     });
@@ -243,7 +244,7 @@ oracle.post("/compatibility", async (c) => {
   if (cached) {
     return c.json({
       success: true,
-      message: cached,
+      message: postProcessResponse(cached, language),
       cached: true,
     });
   }

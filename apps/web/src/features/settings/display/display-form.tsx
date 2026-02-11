@@ -2,6 +2,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { showSubmittedData } from "@/lib/show-submitted-data";
+import { useTranslate } from "@/hooks/use-translate";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -14,32 +15,23 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-const items = [
-  {
-    id: "recents",
-    label: "Recents",
-  },
-  {
-    id: "home",
-    label: "Home",
-  },
-  {
-    id: "applications",
-    label: "Applications",
-  },
-  {
-    id: "desktop",
-    label: "Desktop",
-  },
-  {
-    id: "downloads",
-    label: "Downloads",
-  },
-  {
-    id: "documents",
-    label: "Documents",
-  },
+const ITEM_IDS = [
+  "recents",
+  "home",
+  "applications",
+  "desktop",
+  "downloads",
+  "documents",
 ] as const;
+
+const ITEM_LABEL_KEYS: Record<string, string> = {
+  recents: "settings.display.recents",
+  home: "settings.display.home",
+  applications: "settings.display.applications",
+  desktop: "settings.display.desktop",
+  downloads: "settings.display.downloads",
+  documents: "settings.display.documents",
+};
 
 const displayFormSchema = z.object({
   items: z.array(z.string()).refine((value) => value.some((item) => item), {
@@ -55,6 +47,12 @@ const defaultValues: Partial<DisplayFormValues> = {
 };
 
 export function DisplayForm() {
+  const t = useTranslate();
+  const items = ITEM_IDS.map((id) => ({
+    id,
+    label: t(ITEM_LABEL_KEYS[id], id),
+  }));
+
   const form = useForm<DisplayFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(displayFormSchema as any),
@@ -73,9 +71,14 @@ export function DisplayForm() {
           render={() => (
             <FormItem>
               <div className="mb-4">
-                <FormLabel className="text-base">Sidebar</FormLabel>
+                <FormLabel className="text-base">
+                  {t("settings.display.sidebar", "Sidebar")}
+                </FormLabel>
                 <FormDescription>
-                  Select the items you want to display in the sidebar.
+                  {t(
+                    "settings.display.sidebarDesc",
+                    "Select the items you want to display in the sidebar.",
+                  )}
                 </FormDescription>
               </div>
               {items.map((item) => (
@@ -87,7 +90,7 @@ export function DisplayForm() {
                     return (
                       <FormItem
                         key={item.id}
-                        className="flex flex-row items-start"
+                        className="flex flex-row items-start gap-2"
                       >
                         <FormControl>
                           <Checkbox
@@ -115,7 +118,9 @@ export function DisplayForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Update display</Button>
+        <Button type="submit">
+          {t("settings.display.update", "Update display")}
+        </Button>
       </form>
     </Form>
   );

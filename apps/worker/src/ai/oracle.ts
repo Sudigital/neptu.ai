@@ -6,6 +6,7 @@ import {
   generateDailyPrompt,
   generateDateInterpretationPrompt,
   generateCompatibilityPrompt,
+  postProcessResponse,
 } from "./prompts";
 
 interface OracleConfig {
@@ -114,7 +115,7 @@ export class NeptuOracle {
     if (cache) {
       const cached = await cache.get(cacheKey);
       if (cached) {
-        return { message: cached, cached: true };
+        return { message: postProcessResponse(cached, language), cached: true };
       }
     }
 
@@ -122,10 +123,11 @@ export class NeptuOracle {
     const userPrompt = generateUserPrompt(question, potensi, peluang, language);
 
     // Call AI
-    const { content, tokensUsed } = await this.callAzureOpenAI(
+    const { content: rawContent, tokensUsed } = await this.callAzureOpenAI(
       getSystemPrompt(language),
       userPrompt,
     );
+    const content = postProcessResponse(rawContent, language);
 
     // Cache response (24 hours)
     if (cache) {
@@ -158,16 +160,17 @@ export class NeptuOracle {
     if (cache) {
       const cached = await cache.get(cacheKey);
       if (cached) {
-        return { message: cached, cached: true };
+        return { message: postProcessResponse(cached, language), cached: true };
       }
     }
 
     const userPrompt = generateDailyPrompt(potensi, peluang, language);
 
-    const { content, tokensUsed } = await this.callAzureOpenAI(
+    const { content: rawContent, tokensUsed } = await this.callAzureOpenAI(
       getSystemPrompt(language),
       userPrompt,
     );
+    const content = postProcessResponse(rawContent, language);
 
     // Cache for 24 hours
     if (cache) {
@@ -207,7 +210,7 @@ export class NeptuOracle {
       userPrompt,
     );
 
-    return content;
+    return postProcessResponse(content, language);
   }
 
   /**
@@ -223,16 +226,17 @@ export class NeptuOracle {
     if (cache) {
       const cached = await cache.get(cacheKey);
       if (cached) {
-        return { message: cached, cached: true };
+        return { message: postProcessResponse(cached, language), cached: true };
       }
     }
 
     const userPrompt = generateCompatibilityPrompt(result, language);
 
-    const { content, tokensUsed } = await this.callAzureOpenAI(
+    const { content: rawContent, tokensUsed } = await this.callAzureOpenAI(
       getSystemPrompt(language),
       userPrompt,
     );
+    const content = postProcessResponse(rawContent, language);
 
     if (cache) {
       try {

@@ -292,6 +292,7 @@ export const neptuApi = {
     const { data } = await api.get<{
       success: boolean;
       balance: { raw: string; formatted: number };
+      pendingRewards: number;
     }>(`/api/wallet/balance/${walletAddress}`);
     return data;
   },
@@ -302,6 +303,7 @@ export const neptuApi = {
       success: boolean;
       sol: { lamports: string; formatted: number };
       neptu: { raw: string; formatted: number };
+      pendingRewards: number;
     }>(`/api/wallet/balances/${walletAddress}`);
     return data;
   },

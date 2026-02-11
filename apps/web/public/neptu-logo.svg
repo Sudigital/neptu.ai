@@ -1,15 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 130" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 170" fill="none">
   <defs>
     <linearGradient id="neptuGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#9955FF" />
       <stop offset="100%" style="stop-color:#7C3AED" />
     </linearGradient>
+    <clipPath id="petalClipL">
+      <rect x="-70" y="-70" width="70" height="140" />
+    </clipPath>
   </defs>
 
-  <g transform="translate(65, 65)">
-    <!-- 8 Petals / Network Connections (Mandala Style) -->
+  <g transform="translate(85, 85)">
+    <!-- 0° petal base layer (under 315°) -->
+    <path d="M0 -10 C 10 -30, 20 -40, 0 -55 C -20 -40, -10 -30, 0 -10" stroke="url(#neptuGrad)" stroke-width="8" fill="none" />
+    <!-- 45° through 315° in order -->
     <g stroke="url(#neptuGrad)" stroke-width="8" fill="none">
-        <path d="M0 -10 C 10 -30, 20 -40, 0 -55 C -20 -40, -10 -30, 0 -10" />
         <path d="M0 -10 C 10 -30, 20 -40, 0 -55 C -20 -40, -10 -30, 0 -10" transform="rotate(45)" />
         <path d="M0 -10 C 10 -30, 20 -40, 0 -55 C -20 -40, -10 -30, 0 -10" transform="rotate(90)" />
         <path d="M0 -10 C 10 -30, 20 -40, 0 -55 C -20 -40, -10 -30, 0 -10" transform="rotate(135)" />
@@ -17,6 +21,10 @@
         <path d="M0 -10 C 10 -30, 20 -40, 0 -55 C -20 -40, -10 -30, 0 -10" transform="rotate(225)" />
         <path d="M0 -10 C 10 -30, 20 -40, 0 -55 C -20 -40, -10 -30, 0 -10" transform="rotate(270)" />
         <path d="M0 -10 C 10 -30, 20 -40, 0 -55 C -20 -40, -10 -30, 0 -10" transform="rotate(315)" />
+    </g>
+    <!-- 0° petal top layer clipped to left half (over 315°) -->
+    <g clip-path="url(#petalClipL)">
+        <path d="M0 -10 C 10 -30, 20 -40, 0 -55 C -20 -40, -10 -30, 0 -10" stroke="url(#neptuGrad)" stroke-width="8" fill="none" />
     </g>
 
     <!-- Nodes at tips (Key feature of Concept 1) -->

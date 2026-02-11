@@ -141,7 +141,9 @@ export function Wallet() {
     onError: (error) => {
       toast.error(t("wallet.checkInFailed"), {
         description:
-          error instanceof Error ? error.message : "Please try again.",
+          error instanceof Error
+            ? error.message
+            : t("wallet.tryAgain", "Please try again."),
       });
     },
   });
@@ -284,6 +286,7 @@ export function Wallet() {
             balance={balanceData?.balance?.formatted ?? 0}
             rawBalance={balanceData?.balance?.raw ?? "0"}
             walletAddress={walletAddress}
+            pendingRewards={balanceData?.pendingRewards ?? 0}
             onRefresh={handleRefreshBalance}
             isLoading={balanceLoading}
             isRefreshing={isRefreshingBalance}

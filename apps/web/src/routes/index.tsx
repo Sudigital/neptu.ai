@@ -140,7 +140,7 @@ function LandingPage() {
             >
               <span className="flex h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-primary animate-pulse mr-1.5 sm:mr-2" />
               <span className="text-xs sm:text-sm font-medium text-muted-foreground">
-                Colosseum Agent Hackathon 2026
+                {t("landing.hackathonBadge", "Colosseum Agent Hackathon 2026")}
               </span>
             </motion.div>
 

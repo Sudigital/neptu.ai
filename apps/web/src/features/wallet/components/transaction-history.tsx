@@ -44,28 +44,33 @@ interface TransactionHistoryProps {
 const TX_TYPE_CONFIG: Record<
   string,
   {
-    label: string;
+    labelKey: string;
+    labelDefault: string;
     icon: React.ReactNode;
     colorClass: string;
   }
 > = {
   sol_payment: {
-    label: "SOL Payment",
+    labelKey: "wallet.tx.solPayment",
+    labelDefault: "SOL Payment",
     icon: <ArrowUpRight className="h-4 w-4" />,
     colorClass: "text-red-500",
   },
   neptu_payment: {
-    label: "NEPTU Payment",
+    labelKey: "wallet.tx.neptuPayment",
+    labelDefault: "NEPTU Payment",
     icon: <ArrowUpRight className="h-4 w-4" />,
     colorClass: "text-orange-500",
   },
   neptu_reward: {
-    label: "NEPTU Reward",
+    labelKey: "wallet.tx.neptuReward",
+    labelDefault: "NEPTU Reward",
     icon: <ArrowDownRight className="h-4 w-4" />,
     colorClass: "text-green-500",
   },
   neptu_burn: {
-    label: "NEPTU Burn",
+    labelKey: "wallet.tx.neptuBurn",
+    labelDefault: "NEPTU Burn",
     icon: <Flame className="h-4 w-4" />,
     colorClass: "text-amber-500",
   },
@@ -138,7 +143,8 @@ export function TransactionHistory({
         <div className="space-y-2 max-h-[400px] overflow-y-auto">
           {transactions.map((tx) => {
             const typeConfig = TX_TYPE_CONFIG[tx.transactionType] || {
-              label: tx.transactionType,
+              labelKey: "",
+              labelDefault: tx.transactionType,
               icon: <ArrowUpRight className="h-4 w-4" />,
               colorClass: "text-muted-foreground",
             };
@@ -159,7 +165,11 @@ export function TransactionHistory({
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium">{typeConfig.label}</p>
+                      <p className="text-sm font-medium">
+                        {typeConfig.labelKey
+                          ? t(typeConfig.labelKey, typeConfig.labelDefault)
+                          : typeConfig.labelDefault}
+                      </p>
                       {tx.readingType && (
                         <Badge variant="outline" className="text-xs">
                           {tx.readingType}
@@ -179,7 +189,7 @@ export function TransactionHistory({
                         </a>
                       ) : (
                         <span className="font-mono">
-                          {tx.description || "Pending"}
+                          {tx.description || t("wallet.tx.pending", "Pending")}
                         </span>
                       )}
                       <span>&middot;</span>
@@ -203,7 +213,7 @@ export function TransactionHistory({
                   )}
                   {tx.neptuBurned != null && tx.neptuBurned > 0 && (
                     <p className="text-xs text-amber-500">
-                      {tx.neptuBurned} burned
+                      {tx.neptuBurned} {t("wallet.tx.burned", "burned")}
                     </p>
                   )}
                   <Badge

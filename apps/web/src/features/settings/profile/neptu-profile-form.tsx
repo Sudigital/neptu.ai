@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, parseISO, subYears } from "date-fns";
-import { Loader2, Calendar, Lock, AlertCircle } from "lucide-react";
+import {
+  Loader2,
+  Calendar,
+  Lock,
+  AlertCircle,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { USER_INTERESTS, type UserInterest } from "@neptu/shared";
 import { useUser } from "@/hooks/use-user";
 import { useTranslate } from "@/hooks/use-translate";
@@ -41,7 +48,8 @@ const INTEREST_EMOJIS: Record<UserInterest, string> = {
 };
 
 export function NeptuProfileForm() {
-  const { user, walletAddress, hasWallet, isError, refetch } = useUser();
+  const { user, walletAddress, hasWallet, isLoading, isError, refetch } =
+    useUser();
   const t = useTranslate();
 
   // No wallet connected
@@ -49,8 +57,20 @@ export function NeptuProfileForm() {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
         <p className="text-muted-foreground">
-          Please connect your wallet to view profile settings.
+          {t(
+            "settings.profile.connectWallet",
+            "Please connect your wallet to view profile settings.",
+          )}
         </p>
+      </div>
+    );
+  }
+
+  // Loading user data
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -59,9 +79,11 @@ export function NeptuProfileForm() {
   if (isError) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center gap-4">
-        <p className="text-muted-foreground">Failed to load profile data.</p>
+        <p className="text-muted-foreground">
+          {t("settings.profile.loadError", "Failed to load profile data.")}
+        </p>
         <Button variant="outline" onClick={() => refetch()}>
-          Try Again
+          {t("settings.profile.tryAgain", "Try Again")}
         </Button>
       </div>
     );
@@ -96,6 +118,7 @@ function ProfileFormInner({ user, walletAddress, t }: ProfileFormInnerProps) {
   );
 
   const hasBirthDate = !!user?.birthDate;
+  const [showBirthDate, setShowBirthDate] = useState(false);
   const maxDate = subYears(new Date(), 13);
   const minDate = subYears(new Date(), 100);
 
@@ -175,10 +198,25 @@ function ProfileFormInner({ user, walletAddress, t }: ProfileFormInnerProps) {
 
         {hasBirthDate ? (
           <>
-            {/* Birth date is set - show as disabled */}
+            {/* Birth date is set - hidden by default */}
             <div className="flex items-center gap-2 rounded-md border bg-muted/50 px-3 py-2 text-sm">
               <Lock className="h-4 w-4 text-muted-foreground" />
-              <span>{format(parseISO(user.birthDate!), "MMMM d, yyyy")}</span>
+              <span>
+                {showBirthDate
+                  ? format(parseISO(user.birthDate!), "MMMM d, yyyy")
+                  : "••••••••••"}
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowBirthDate(!showBirthDate)}
+                className="ml-auto text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {showBirthDate ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
             </div>
             <Alert variant="default" className="mt-2">
               <AlertCircle className="h-4 w-4" />

@@ -27,7 +27,7 @@ export function DashboardHeader({
   t,
 }: DashboardHeaderProps) {
   return (
-    <Header>
+    <Header fixed>
       <TopNav links={topNav} />
       <div className="ms-auto flex items-center gap-2 sm:gap-4">
         {showVoteButton && (

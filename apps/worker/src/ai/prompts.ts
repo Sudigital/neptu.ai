@@ -1,20 +1,69 @@
 import type { Potensi, Peluang, CompatibilityResult } from "@neptu/shared";
+import {
+  LANGUAGE_LABELS,
+  TERM_TRANSLATIONS,
+  translateTerm,
+  postProcessResponse,
+} from "./translations";
+
+export { postProcessResponse };
 
 /**
- * Language labels for AI response instructions
+ * Build a glossary of translated terms for the AI to use.
+ * Only includes terms that appear in the reading data.
  */
-const LANGUAGE_LABELS: Record<string, string> = {
-  en: "English",
-  fr: "French",
-  de: "German",
-  es: "Spanish",
-  pt: "Portuguese",
-  ru: "Russian",
-  ja: "Japanese",
-  ko: "Korean",
-  zh: "Chinese",
-  id: "Indonesian",
-};
+function buildTranslationGlossary(
+  potensi: Potensi,
+  peluang: Peluang | undefined,
+  language: string,
+): string {
+  if (language === "en") return "";
+
+  const langLabel = LANGUAGE_LABELS[language] || language;
+  const terms: [string, string][] = [];
+
+  const addTerm = (original: string | undefined) => {
+    if (!original) return;
+    const translated = TERM_TRANSLATIONS[original]?.[language];
+    if (translated && translated !== original) {
+      terms.push([original, translated]);
+    }
+  };
+
+  // Collect all terms from reading data
+  addTerm(potensi.lahir_untuk?.name);
+  addTerm(potensi.lahir_untuk?.description);
+  addTerm(potensi.cipta?.name);
+  addTerm(potensi.rasa?.name);
+  addTerm(potensi.karsa?.name);
+  addTerm(potensi.afirmasi?.name);
+  addTerm(potensi.frekuensi?.name);
+  addTerm(potensi.tindakan?.name);
+  addTerm(potensi.sapta_wara?.name);
+  addTerm(potensi.panca_wara?.name);
+  addTerm(potensi.sad_wara?.name);
+  addTerm(potensi.wuku?.name);
+  addTerm(potensi.siklus?.name);
+  addTerm(potensi.kanda_pat?.name);
+  if (peluang) {
+    addTerm(peluang.diberi_hak_untuk?.name);
+    addTerm(peluang.diberi_hak_untuk?.description);
+    addTerm(peluang.tindakan?.name);
+    addTerm(peluang.afirmasi?.name);
+    addTerm(peluang.frekuensi?.name);
+    addTerm(peluang.sapta_wara?.name);
+    addTerm(peluang.panca_wara?.name);
+    addTerm(peluang.sad_wara?.name);
+    addTerm(peluang.wuku?.name);
+    addTerm(peluang.siklus?.name);
+    addTerm(peluang.kanda_pat?.name);
+  }
+
+  if (terms.length === 0) return "";
+
+  const glossary = terms.map(([en, tr]) => `  "${en}" → "${tr}"`).join("\n");
+  return `\n\nTRANSLATION GLOSSARY (use these ${langLabel} terms instead of the English/Balinese originals):\n${glossary}\nAlways use the translated terms above in your response, wrapped in double quotes.`;
+}
 
 /**
  * Get language instruction for AI
@@ -24,7 +73,7 @@ function getLanguageInstruction(language: string = "en"): string {
   if (language === "en") {
     return "";
   }
-  return `\n\nIMPORTANT: Respond ONLY in ${langLabel}. All your responses must be written in ${langLabel}, not English.`;
+  return `\n\nIMPORTANT: Respond ONLY in ${langLabel}. All your responses must be written in ${langLabel}, not English. When mentioning Balinese terms (like RATU, LARA, PATI, GURU, wuku names, tindakan, etc.), translate them using their ${langLabel} equivalents. Do NOT leave English/Balinese terms untranslated in your response.`;
 }
 
 /**
@@ -74,41 +123,57 @@ export function extractUserContext(question: string): {
 /**
  * Convert reading data to JSON for AI to analyze directly
  */
-export function formatReadingData(potensi: Potensi, peluang?: Peluang): string {
+export function formatReadingData(
+  potensi: Potensi,
+  peluang?: Peluang,
+  language: string = "en",
+): string {
+  const uripLabel = translateTerm("urip", language);
   const data: Record<string, unknown> = {
     birth_reading: {
-      wuku: potensi.wuku.name,
+      wuku: translateTerm(potensi.wuku.name, language),
       sapta_wara: {
-        name: potensi.sapta_wara.name,
-        urip: potensi.sapta_wara.urip,
+        name: translateTerm(potensi.sapta_wara.name, language),
+        [uripLabel]: potensi.sapta_wara.urip,
       },
       panca_wara: {
-        name: potensi.panca_wara.name,
-        urip: potensi.panca_wara.urip,
+        name: translateTerm(potensi.panca_wara.name, language),
+        [uripLabel]: potensi.panca_wara.urip,
       },
-      total_urip: potensi.total_urip,
-      frekuensi: potensi.frekuensi.name,
-      life_purpose: potensi.lahir_untuk?.name,
-      life_purpose_meaning: potensi.lahir_untuk?.description,
-      psychosocial: potensi.cipta.name,
-      emotional: potensi.rasa.name,
-      behavioral: potensi.karsa.name,
+      sad_wara: {
+        name: translateTerm(potensi.sad_wara.name, language),
+        [uripLabel]: potensi.sad_wara.urip,
+      },
+      [`total_${uripLabel}`]: potensi.total_urip,
+      frekuensi: translateTerm(potensi.frekuensi.name, language),
+      life_purpose: translateTerm(potensi.lahir_untuk?.name, language),
+      life_purpose_meaning: translateTerm(
+        potensi.lahir_untuk?.description,
+        language,
+      ),
+      psychosocial: translateTerm(potensi.cipta.name, language),
+      emotional: translateTerm(potensi.rasa.name, language),
+      behavioral: translateTerm(potensi.karsa.name, language),
       duality: potensi.dualitas,
-      affirmation: potensi.afirmasi?.name,
+      affirmation: translateTerm(potensi.afirmasi?.name, language),
     },
   };
 
   if (peluang) {
     data.today_reading = {
-      wuku: peluang.wuku.name,
-      sapta_wara: peluang.sapta_wara.name,
-      panca_wara: peluang.panca_wara.name,
-      total_urip: peluang.total_urip,
-      frekuensi: peluang.frekuensi.name,
-      opportunity: peluang.diberi_hak_untuk?.name,
-      opportunity_meaning: peluang.diberi_hak_untuk?.description,
-      cycle: peluang.siklus.name,
-      recommended_action: peluang.tindakan.name,
+      wuku: translateTerm(peluang.wuku.name, language),
+      sapta_wara: translateTerm(peluang.sapta_wara.name, language),
+      panca_wara: translateTerm(peluang.panca_wara.name, language),
+      sad_wara: translateTerm(peluang.sad_wara.name, language),
+      [`total_${uripLabel}`]: peluang.total_urip,
+      frekuensi: translateTerm(peluang.frekuensi.name, language),
+      opportunity: translateTerm(peluang.diberi_hak_untuk?.name, language),
+      opportunity_meaning: translateTerm(
+        peluang.diberi_hak_untuk?.description,
+        language,
+      ),
+      cycle: translateTerm(peluang.siklus.name, language),
+      recommended_action: translateTerm(peluang.tindakan.name, language),
     };
   }
 
@@ -136,11 +201,11 @@ export function generateUserPrompt(
 
   return `Here is someone's Balinese Wuku reading data:
 
-${formatReadingData(potensi, peluang)}${interestSection}
+${formatReadingData(potensi, peluang, language)}${interestSection}
 
 They ask: "${cleanQuestion}"
 
-Look at the actual data values and give them a natural, personalized answer. When mentioning key terms (affirmations, actions, life purpose), wrap them in quotes like "TERM".${interests.length > 0 ? " Consider their interests when relevant to the question." : ""}${langNote}`;
+Look at the actual data values and give them a natural, personalized answer. When mentioning key terms (affirmations, actions, life purpose), wrap them in quotes like "TERM".${interests.length > 0 ? " Consider their interests when relevant to the question." : ""}${langNote}${buildTranslationGlossary(potensi, peluang || undefined, language)}`;
 }
 
 /**
@@ -157,11 +222,11 @@ export function generateDailyPrompt(
       : "";
   return `Here is someone's Wuku reading for today:
 
-${formatReadingData(potensi, peluang)}
+${formatReadingData(potensi, peluang, language)}
 
-Give a brief natural insight (2-3 sentences) about what you see in this data. Notice how their birth energy (${potensi.total_urip}) relates to today's energy (${peluang.total_urip}). What stands out?
+Give a brief natural insight (2-3 sentences) about what you see in this data. Notice how their birth wuku ${translateTerm(potensi.wuku.name, language)} (${translateTerm("urip", language)} ${potensi.total_urip}) relates to today's wuku ${translateTerm(peluang.wuku.name, language)} (${translateTerm("urip", language)} ${peluang.total_urip}). What stands out?
 
-When mentioning key terms like the affirmation or action, wrap them in quotes like "TERM".${langNote}`;
+When mentioning key terms like the affirmation or action, wrap them in quotes like "TERM".${langNote}${buildTranslationGlossary(potensi, peluang, language)}`;
 }
 
 /**
@@ -185,32 +250,46 @@ export function generateDateInterpretationPrompt(
       ? `\n\nIMPORTANT: Write all content in ${LANGUAGE_LABELS[language] || "English"}.`
       : "";
 
+  // Translate key terms for non-English languages
+  const actionLabel = translateTerm(peluang.tindakan?.name, language);
+  const purposeLabel = translateTerm(potensi.lahir_untuk?.name, language);
+  const affirmationLabel = translateTerm(peluang.afirmasi?.name, language);
+  const opportunityLabel = translateTerm(
+    peluang.diberi_hak_untuk?.name,
+    language,
+  );
+  const opportunityDescLabel = translateTerm(
+    peluang.diberi_hak_untuk?.description,
+    language,
+  );
+
   return `Here is someone's Balinese Wuku reading:
 
 BIRTH CHART (their permanent potential):
-${formatReadingData(potensi)}
+${formatReadingData(potensi, undefined, language)}
 
 ${isToday ? "TODAY'S" : `${targetDate.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}`} READING:
-Wuku: ${peluang.wuku.name}
-Sapta Wara: ${peluang.sapta_wara.name} (urip: ${peluang.sapta_wara.urip})
-Panca Wara: ${peluang.panca_wara.name} (urip: ${peluang.panca_wara.urip})
-Total Urip: ${peluang.total_urip}
-Frekuensi: ${peluang.frekuensi.name}
-Opportunity: ${peluang.diberi_hak_untuk?.name} - ${peluang.diberi_hak_untuk?.description}
-Cycle: ${peluang.siklus.name}
-Recommended Action: ${peluang.tindakan?.name}
-Affirmation: ${peluang.afirmasi?.name}
+Wuku: ${translateTerm(peluang.wuku.name, language)}
+Sapta Wara: ${translateTerm(peluang.sapta_wara.name, language)} (${translateTerm("urip", language)}: ${peluang.sapta_wara.urip})
+Panca Wara: ${translateTerm(peluang.panca_wara.name, language)} (${translateTerm("urip", language)}: ${peluang.panca_wara.urip})
+Sad Wara: ${translateTerm(peluang.sad_wara.name, language)} (${translateTerm("urip", language)}: ${peluang.sad_wara.urip})
+Total ${translateTerm("urip", language)}: ${peluang.total_urip}
+Frekuensi: ${translateTerm(peluang.frekuensi.name, language)}
+Opportunity: ${opportunityLabel} - ${opportunityDescLabel}
+Cycle: ${translateTerm(peluang.siklus.name, language)}
+Recommended Action: ${actionLabel}
+Affirmation: ${affirmationLabel}
 
 Write a warm, personalized interpretation (3-4 paragraphs) for ${dateLabel}:
 
-1. How their birth energy (urip ${potensi.total_urip}) combines with ${dateLabel}'s energy (urip ${peluang.total_urip})
+1. How their birth wuku ${translateTerm(potensi.wuku.name, language)} (${translateTerm("urip", language)} ${potensi.total_urip}) combines with ${dateLabel}'s wuku ${translateTerm(peluang.wuku.name, language)} (${translateTerm("urip", language)} ${peluang.total_urip})
 2. What opportunities or challenges this combination presents
-3. Practical guidance based on the recommended action "${peluang.tindakan?.name}"
-4. End with encouragement connected to their life purpose: "${potensi.lahir_untuk?.name}"
+3. Practical guidance based on the recommended action "${actionLabel}"
+4. End with encouragement connected to their life purpose: "${purposeLabel}"
 
-IMPORTANT FORMATTING: When mentioning the affirmation "${peluang.afirmasi?.name}", the action "${peluang.tindakan?.name}", or the life purpose "${potensi.lahir_untuk?.name}", always wrap them in double quotes like "TERM" in your response so they stand out.
+IMPORTANT FORMATTING: When mentioning the affirmation "${affirmationLabel}", the action "${actionLabel}", or the life purpose "${purposeLabel}", always wrap them in double quotes like "TERM" in your response so they stand out.
 
-Be specific to the actual data values. Speak directly to them in second person.${langNote}`;
+Be specific to the actual data values. Speak directly to them in second person.${langNote}${buildTranslationGlossary(potensi, peluang, language)}`;
 }
 
 // Keep backward compatibility
@@ -231,31 +310,33 @@ export function generateCompatibilityPrompt(
   return `Here is a Mitra Satru compatibility reading between two people based on the Balinese Wuku calendar:
 
 PERSON 1 (born ${result.person1.date}):
-- Wuku: ${result.person1.wuku.name}
-- Sapta Wara: ${result.person1.sapta_wara.name} (urip: ${result.person1.sapta_wara.urip})
-- Panca Wara: ${result.person1.panca_wara.name} (urip: ${result.person1.panca_wara.urip})
-- Total Urip: ${result.person1.total_urip}
-- Frekuensi: ${result.mitraSatru.person1Frekuensi.name}
-- Life Purpose: ${result.person1.lahir_untuk?.name} - ${result.person1.lahir_untuk?.description}
-- Psychosocial: ${result.person1.cipta.name}
-- Emotional: ${result.person1.rasa.name}
-- Behavioral: ${result.person1.karsa.name}
+- Wuku: ${translateTerm(result.person1.wuku.name, language)}
+- Sapta Wara: ${translateTerm(result.person1.sapta_wara.name, language)} (${translateTerm("urip", language)}: ${result.person1.sapta_wara.urip})
+- Panca Wara: ${translateTerm(result.person1.panca_wara.name, language)} (${translateTerm("urip", language)}: ${result.person1.panca_wara.urip})
+- Sad Wara: ${translateTerm(result.person1.sad_wara.name, language)} (${translateTerm("urip", language)}: ${result.person1.sad_wara.urip})
+- Total ${translateTerm("urip", language)}: ${result.person1.total_urip}
+- Frekuensi: ${translateTerm(result.mitraSatru.person1Frekuensi.name, language)}
+- Life Purpose: ${translateTerm(result.person1.lahir_untuk?.name, language)} - ${translateTerm(result.person1.lahir_untuk?.description, language)}
+- Psychosocial: ${translateTerm(result.person1.cipta.name, language)}
+- Emotional: ${translateTerm(result.person1.rasa.name, language)}
+- Behavioral: ${translateTerm(result.person1.karsa.name, language)}
 
 PERSON 2 (born ${result.person2.date}):
-- Wuku: ${result.person2.wuku.name}
-- Sapta Wara: ${result.person2.sapta_wara.name} (urip: ${result.person2.sapta_wara.urip})
-- Panca Wara: ${result.person2.panca_wara.name} (urip: ${result.person2.panca_wara.urip})
-- Total Urip: ${result.person2.total_urip}
-- Frekuensi: ${result.mitraSatru.person2Frekuensi.name}
-- Life Purpose: ${result.person2.lahir_untuk?.name} - ${result.person2.lahir_untuk?.description}
-- Psychosocial: ${result.person2.cipta.name}
-- Emotional: ${result.person2.rasa.name}
-- Behavioral: ${result.person2.karsa.name}
+- Wuku: ${translateTerm(result.person2.wuku.name, language)}
+- Sapta Wara: ${translateTerm(result.person2.sapta_wara.name, language)} (${translateTerm("urip", language)}: ${result.person2.sapta_wara.urip})
+- Panca Wara: ${translateTerm(result.person2.panca_wara.name, language)} (${translateTerm("urip", language)}: ${result.person2.panca_wara.urip})
+- Sad Wara: ${translateTerm(result.person2.sad_wara.name, language)} (${translateTerm("urip", language)}: ${result.person2.sad_wara.urip})
+- Total ${translateTerm("urip", language)}: ${result.person2.total_urip}
+- Frekuensi: ${translateTerm(result.mitraSatru.person2Frekuensi.name, language)}
+- Life Purpose: ${translateTerm(result.person2.lahir_untuk?.name, language)} - ${translateTerm(result.person2.lahir_untuk?.description, language)}
+- Psychosocial: ${translateTerm(result.person2.cipta.name, language)}
+- Emotional: ${translateTerm(result.person2.rasa.name, language)}
+- Behavioral: ${translateTerm(result.person2.karsa.name, language)}
 
 MITRA SATRU PAIRING:
-- Person 1 Frekuensi: ${result.mitraSatru.person1Frekuensi.name}
-- Person 2 Frekuensi: ${result.mitraSatru.person2Frekuensi.name}
-- Combined Frekuensi: ${result.mitraSatru.combinedFrekuensi.name}
+- Person 1 Frekuensi: ${translateTerm(result.mitraSatru.person1Frekuensi.name, language)}
+- Person 2 Frekuensi: ${translateTerm(result.mitraSatru.person2Frekuensi.name, language)}
+- Combined Frekuensi: ${translateTerm(result.mitraSatru.combinedFrekuensi.name, language)}
 - Category: ${result.mitraSatru.category} (${result.mitraSatru.description})
 - Overall Score: ${result.scores.overall}/100
 - Frekuensi Score: ${result.scores.frekuensi}/100
@@ -268,7 +349,7 @@ ${result.dimensions.map((d) => `- ${d.dimension}: P1=${d.person1Value}, P2=${d.p
 Write a warm, insightful summary (2-3 paragraphs) of this compatibility reading:
 
 1. What the ${result.mitraSatru.category} relationship means for these two people — are they naturally aligned, balanced, or challenged?
-2. How their individual energies (urip ${result.person1.total_urip} and ${result.person2.total_urip}) interact, and what their matching/differing dimensions reveal
+2. How their individual energies (${translateTerm(result.person1.wuku.name, language)} ${translateTerm("urip", language)} ${result.person1.total_urip} and ${translateTerm(result.person2.wuku.name, language)} ${translateTerm("urip", language)} ${result.person2.total_urip}) interact, and what their matching/differing dimensions reveal
 3. Practical relationship advice based on their combined Frekuensi "${result.mitraSatru.combinedFrekuensi.name}" and their life purposes
 
 When mentioning key terms like Frekuensi names, life purposes, or dimensions, wrap them in double quotes like "TERM".

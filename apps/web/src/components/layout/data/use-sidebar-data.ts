@@ -11,7 +11,6 @@ import {
   Wallet,
   HelpCircle,
   BookOpen,
-  Sparkles,
 } from "lucide-react";
 import { Logo } from "@/assets/logo";
 import { useTranslate } from "@/hooks/use-translate";
@@ -31,7 +30,7 @@ export function useSidebarData(): SidebarData {
         {
           name: "Neptu",
           logo: Logo,
-          plan: "Your Balinese Soul, On-Chain",
+          plan: t("sidebar.plan", "Your Balinese Soul, On-Chain"),
         },
       ],
       navGroups: [
@@ -47,11 +46,6 @@ export function useSidebarData(): SidebarData {
               title: t("nav.compatibility"),
               url: "/compatibility",
               icon: Users,
-            },
-            {
-              title: t("nav.oracleInsight"),
-              url: "/oracle-insight",
-              icon: Sparkles,
             },
           ],
         },
@@ -103,13 +97,13 @@ export function useSidebarData(): SidebarData {
               title: t("nav.learn"),
               url: "/coming-soon",
               icon: BookOpen,
-              badge: "Soon",
+              badge: t("badge.soon", "Soon"),
             },
             {
               title: t("nav.help"),
               url: "/coming-soon",
               icon: HelpCircle,
-              badge: "Soon",
+              badge: t("badge.soon", "Soon"),
             },
           ],
         },

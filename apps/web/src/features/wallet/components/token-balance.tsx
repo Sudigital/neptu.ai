@@ -8,11 +8,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Coins, Loader2, RefreshCw, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslate } from "@/hooks/use-translate";
 
 interface TokenBalanceProps {
   balance: number;
   rawBalance: string;
   walletAddress: string;
+  pendingRewards?: number;
   onRefresh: () => void;
   isLoading?: boolean;
   isRefreshing?: boolean;
@@ -25,11 +27,13 @@ export function TokenBalance({
   balance,
   rawBalance,
   walletAddress,
+  pendingRewards = 0,
   onRefresh,
   isLoading = false,
   isRefreshing = false,
   className,
 }: TokenBalanceProps) {
+  const t = useTranslate();
   const explorerUrl = `${SOLANA_EXPLORER_BASE}/${walletAddress}?cluster=devnet`;
 
   if (isLoading) {
@@ -49,9 +53,11 @@ export function TokenBalance({
           <div>
             <CardTitle className="flex items-center gap-2">
               <Coins className="h-5 w-5 text-primary" />
-              NEPTU Balance
+              {t("wallet.neptuBalance", "NEPTU Balance")}
             </CardTitle>
-            <CardDescription>Your token holdings</CardDescription>
+            <CardDescription>
+              {t("wallet.tokenHoldings", "Your token holdings")}
+            </CardDescription>
           </div>
           <Button
             variant="ghost"
@@ -70,13 +76,21 @@ export function TokenBalance({
         {/* Main balance display */}
         <div className="text-center py-4">
           <p className="text-4xl font-bold">{balance.toFixed(2)}</p>
-          <p className="text-sm text-muted-foreground">NEPTU</p>
+          <p className="text-sm text-muted-foreground">
+            NEPTU ({t("wallet.onChain", "on-chain")})
+          </p>
+          {pendingRewards > 0 && (
+            <p className="text-xs text-amber-500/70 mt-1">
+              + {pendingRewards.toFixed(2)}{" "}
+              {t("wallet.pendingRewards", "pending rewards")}
+            </p>
+          )}
         </div>
 
         {/* Raw balance (for debugging/transparency) */}
         <div className="flex items-center justify-between p-2 rounded-lg bg-muted/50 text-xs">
           <span className="text-muted-foreground">
-            Raw balance (base units)
+            {t("wallet.rawBalance", "Raw balance (base units)")}
           </span>
           <span className="font-mono">{rawBalance}</span>
         </div>
@@ -85,7 +99,7 @@ export function TokenBalance({
         <Button variant="outline" size="sm" className="w-full" asChild>
           <a href={explorerUrl} target="_blank" rel="noopener noreferrer">
             <ExternalLink className="mr-2 h-4 w-4" />
-            View on Solana Explorer
+            {t("wallet.viewExplorer", "View on Solana Explorer")}
           </a>
         </Button>
       </CardContent>

@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "@tanstack/react-router";
 import { showSubmittedData } from "@/lib/show-submitted-data";
+import { useTranslate } from "@/hooks/use-translate";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -39,6 +39,7 @@ const defaultValues: Partial<NotificationsFormValues> = {
 };
 
 export function NotificationsForm() {
+  const t = useTranslate();
   const form = useForm<NotificationsFormValues>({
     resolver: zodResolver(notificationsFormSchema),
     defaultValues,
@@ -55,34 +56,41 @@ export function NotificationsForm() {
           name="type"
           render={({ field }) => (
             <FormItem className="relative space-y-3">
-              <FormLabel>Notify me about...</FormLabel>
+              <FormLabel>
+                {t("settings.notif.notifyAbout", "Notify me about...")}
+              </FormLabel>
               <FormControl>
                 <RadioGroup
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                   className="flex flex-col gap-2"
                 >
-                  <FormItem className="flex items-center">
+                  <FormItem className="flex items-center gap-2">
                     <FormControl>
                       <RadioGroupItem value="all" />
                     </FormControl>
                     <FormLabel className="font-normal">
-                      All new messages
+                      {t("settings.notif.allMessages", "All new messages")}
                     </FormLabel>
                   </FormItem>
-                  <FormItem className="flex items-center">
+                  <FormItem className="flex items-center gap-2">
                     <FormControl>
                       <RadioGroupItem value="mentions" />
                     </FormControl>
                     <FormLabel className="font-normal">
-                      Direct messages and mentions
+                      {t(
+                        "settings.notif.directMessages",
+                        "Direct messages and mentions",
+                      )}
                     </FormLabel>
                   </FormItem>
-                  <FormItem className="flex items-center">
+                  <FormItem className="flex items-center gap-2">
                     <FormControl>
                       <RadioGroupItem value="none" />
                     </FormControl>
-                    <FormLabel className="font-normal">Nothing</FormLabel>
+                    <FormLabel className="font-normal">
+                      {t("settings.notif.nothing", "Nothing")}
+                    </FormLabel>
                   </FormItem>
                 </RadioGroup>
               </FormControl>
@@ -91,7 +99,9 @@ export function NotificationsForm() {
           )}
         />
         <div className="relative">
-          <h3 className="mb-4 text-lg font-medium">Email Notifications</h3>
+          <h3 className="mb-4 text-lg font-medium">
+            {t("settings.notif.emailTitle", "Email Notifications")}
+          </h3>
           <div className="space-y-4">
             <FormField
               control={form.control}
@@ -100,10 +110,16 @@ export function NotificationsForm() {
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
                     <FormLabel className="text-base">
-                      Communication emails
+                      {t(
+                        "settings.notif.communication",
+                        "Communication emails",
+                      )}
                     </FormLabel>
                     <FormDescription>
-                      Receive emails about your account activity.
+                      {t(
+                        "settings.notif.communicationDesc",
+                        "Receive emails about your account activity.",
+                      )}
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -122,10 +138,13 @@ export function NotificationsForm() {
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
                     <FormLabel className="text-base">
-                      Marketing emails
+                      {t("settings.notif.marketing", "Marketing emails")}
                     </FormLabel>
                     <FormDescription>
-                      Receive emails about new products, features, and more.
+                      {t(
+                        "settings.notif.marketingDesc",
+                        "Receive emails about new products, features, and more.",
+                      )}
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -143,9 +162,14 @@ export function NotificationsForm() {
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
-                    <FormLabel className="text-base">Social emails</FormLabel>
+                    <FormLabel className="text-base">
+                      {t("settings.notif.social", "Social emails")}
+                    </FormLabel>
                     <FormDescription>
-                      Receive emails for friend requests, follows, and more.
+                      {t(
+                        "settings.notif.socialDesc",
+                        "Receive emails for friend requests, follows, and more.",
+                      )}
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -163,9 +187,14 @@ export function NotificationsForm() {
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
-                    <FormLabel className="text-base">Security emails</FormLabel>
+                    <FormLabel className="text-base">
+                      {t("settings.notif.security", "Security emails")}
+                    </FormLabel>
                     <FormDescription>
-                      Receive emails about your account activity and security.
+                      {t(
+                        "settings.notif.securityDesc",
+                        "Receive emails about your account activity and security.",
+                      )}
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -194,23 +223,24 @@ export function NotificationsForm() {
               </FormControl>
               <div className="space-y-1 leading-none">
                 <FormLabel>
-                  Use different settings for my mobile devices
+                  {t(
+                    "settings.notif.mobileSettings",
+                    "Use different settings for my mobile devices",
+                  )}
                 </FormLabel>
                 <FormDescription>
-                  You can manage your mobile notifications in the{" "}
-                  <Link
-                    to="/settings"
-                    className="underline decoration-dashed underline-offset-4 hover:decoration-solid"
-                  >
-                    mobile settings
-                  </Link>{" "}
-                  page.
+                  {t(
+                    "settings.notif.mobileSettingsDesc",
+                    "You can manage your mobile notifications in the mobile settings page.",
+                  )}
                 </FormDescription>
               </div>
             </FormItem>
           )}
         />
-        <Button type="submit">Update notifications</Button>
+        <Button type="submit">
+          {t("settings.notif.update", "Update notifications")}
+        </Button>
       </form>
     </Form>
   );

@@ -19,6 +19,8 @@
     "web": "bun run --filter=@neptu/web dev",
     "worker": "bun run --filter=@neptu/worker dev",
     "docs": "bun run --filter=@neptu/docs dev",
+    "translate": "bun run scripts/translate-i18n.ts",
+    "translate:diff": "bun run scripts/translate-i18n.ts --diff",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -27,6 +29,7 @@
     "@types/bun": "^1.3.8",
     "husky": "^9.1.7",
     "prettier": "^3.6.2",
+    "sharp": "^0.34.5",
     "turbo": "^2.8.3",
     "typescript": "^5.9.3",
     "vitepress": "^1.6.4",
@@ -53,6 +56,6 @@
   "dependencies": {
     "@privy-io/react-auth": "^3.13.1",
     "recharts": "^3.7.0",
-    "wrangler": "4"
+    "wrangler": "4.64.0"
   }
 }

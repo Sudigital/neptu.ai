@@ -1,0 +1,60 @@
+import { Sparkles, Loader2, Bot } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { useTranslate } from "@/hooks/use-translate";
+import { HighlightedText } from "./highlighted-text";
+
+interface OracleTabPanelProps {
+  aiLoading: boolean;
+  interpretation?: string;
+}
+
+export function OracleTabPanel({
+  aiLoading,
+  interpretation,
+}: OracleTabPanelProps) {
+  const t = useTranslate();
+
+  return (
+    <Card className="py-5 px-5 gap-0">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-900/30">
+          <Bot className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+        </div>
+        <div>
+          <h3 className="text-sm font-semibold">
+            {t("dashboard.oracleInsight", "Today's Oracle")}
+          </h3>
+          <p className="text-[11px] text-muted-foreground">
+            {t("oracle.subtitle", "Your personal Balinese astrology guide")}
+          </p>
+        </div>
+      </div>
+      <Separator className="mb-4" />
+      {aiLoading ? (
+        <div className="flex flex-col items-center justify-center py-8 text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-violet-600" />
+          <p className="mt-3 text-sm text-muted-foreground">
+            {t("dashboard.consultingOracle", "Consulting the Oracle...")}
+          </p>
+        </div>
+      ) : interpretation ? (
+        <div className="prose prose-sm dark:prose-invert max-w-none">
+          <HighlightedText text={interpretation} />
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center text-center py-8">
+          <div className="rounded-full bg-violet-100 dark:bg-violet-900/30 p-4">
+            <Sparkles className="h-8 w-8 text-violet-600 dark:text-violet-400" />
+          </div>
+          <p className="mt-3 text-sm text-muted-foreground max-w-sm">
+            {t(
+              "dashboard.selectDatePrompt",
+              "Select a date to receive personalized guidance based on Balinese astrology and your birth chart.",
+            )}
+          </p>
+        </div>
+      )}
+    </Card>
+  );
+}

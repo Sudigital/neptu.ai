@@ -1,9 +1,9 @@
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { Loader2, RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { useTranslate } from "@/hooks/use-translate";
 import { neptuApi } from "@/lib/api";
 import { HighlightedText } from "./highlighted-text";
 
@@ -171,7 +171,10 @@ export function InterestOracle({
   targetDate: string;
   language: string;
 }) {
-  const { data, isLoading, refetch } = useQuery({
+  const t = useTranslate();
+  const interestName = t(`interest.${interest}`, interest);
+
+  const { data, isLoading } = useQuery({
     queryKey: ["oracle-interest", interest, birthDate, targetDate, language],
     queryFn: () =>
       neptuApi.askOracle(
@@ -201,7 +204,7 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
 
   return (
     <Card className="py-2 gap-0 px-3 sm:px-4">
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center gap-2">
         <div className="flex items-center gap-2 sm:gap-3">
           <div
             className={cn(
@@ -213,31 +216,21 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
           </div>
           <div>
             <h3 className="text-base sm:text-lg font-semibold tracking-tight capitalize">
-              {interest} Insight
+              {interestName} {t("oracle.insight")}
             </h3>
             <p className="text-[10px] sm:text-xs text-muted-foreground">
-              Guidance for {format(new Date(targetDate), "MMM d, yyyy")}
+              {t("oracle.guidanceFor")}{" "}
+              {format(new Date(targetDate), "MMM d, yyyy")}
             </p>
           </div>
         </div>
-        <Button
-          size="icon"
-          variant="ghost"
-          className="h-8 w-8 sm:h-9 sm:w-9"
-          onClick={() => refetch()}
-          disabled={isLoading}
-        >
-          <RefreshCw
-            className={cn("h-4 w-4 sm:h-5 sm:w-5", isLoading && "animate-spin")}
-          />
-        </Button>
       </div>
       <div className="space-y-1.5">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-4 sm:py-6 text-center">
             <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-muted-foreground" />
             <p className="mt-2 text-xs sm:text-sm text-muted-foreground">
-              Analyzing {interest}...
+              {t("oracle.analyzing")} {interestName}...
             </p>
           </div>
         ) : insights.mainText ? (
@@ -245,7 +238,7 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
         ) : (
           <div className="text-center py-4 sm:py-6">
             <p className="text-sm sm:text-base text-muted-foreground">
-              No specific insight available for {interest} at this time.
+              {t("oracle.noInsight")}
             </p>
           </div>
         )}

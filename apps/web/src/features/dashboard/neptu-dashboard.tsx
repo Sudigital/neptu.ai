@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { format, isToday, isPast, addDays, subDays } from "date-fns";
@@ -22,20 +22,21 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Main } from "@/components/layout/main";
 import { neptuApi } from "@/lib/api";
 import { useUser } from "@/hooks/use-user";
 import { useTranslate } from "@/hooks/use-translate";
+import { useSettingsStore } from "@/stores/settings-store";
 import { Logo } from "@/assets/logo";
 import { DashboardHeader } from "./dashboard-header";
 import { ReadingDetailCard } from "./reading-detail-card";
-import {
-  HourlyGrid,
-  SoulRadarChart,
-  ComparisonBarChart,
-} from "./dashboard-charts";
+import { ScrollableTabsList } from "./scrollable-tabs";
+import { InterestOracle } from "./interest-oracle";
+import { OracleTabPanel } from "./oracle-tab-panel";
+import { HourlyGrid, SoulRadarChart } from "./dashboard-charts";
+import { ComparisonBarChart } from "./comparison-bar-chart";
 
 export function Dashboard() {
   const {
@@ -46,9 +47,37 @@ export function Dashboard() {
     isLoading: userLoading,
   } = useUser();
   const t = useTranslate();
+  const { language } = useSettingsStore();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
+  const interests = useMemo(() => user?.interests || [], [user?.interests]);
+  const targetDateStr = format(selectedDate, "yyyy-MM-dd");
+
+  // AI Oracle interpretation query
+  const {
+    data: aiInterpretation,
+    isLoading: aiLoading,
+    refetch: _refetchAI,
+  } = useQuery({
+    queryKey: [
+      "ai-interpretation",
+      walletAddress,
+      targetDateStr,
+      user?.birthDate,
+      language,
+    ],
+    queryFn: () =>
+      neptuApi.getDateInterpretation(
+        user?.birthDate || "",
+        targetDateStr,
+        language,
+      ),
+    enabled: !!user?.birthDate && !!import.meta.env.VITE_WORKER_URL,
+    retry: false,
+    staleTime: 1000 * 60 * 30,
+  });
 
   const topNav = [
     {
@@ -71,8 +100,6 @@ export function Dashboard() {
       external: true,
     },
   ];
-
-  const targetDateStr = format(selectedDate, "yyyy-MM-dd");
 
   const {
     data: readingData,
@@ -111,16 +138,42 @@ export function Dashboard() {
     if (!readingData?.reading) return null;
     const { potensi, peluang } = readingData.reading;
     if (!potensi || !peluang) return null;
-    const potensiName = potensi.lahir_untuk?.name || potensi.frekuensi?.name;
-    const peluangName =
-      peluang.diberi_hak_untuk?.name || peluang.frekuensi?.name;
+    const potensiName = t(
+      `wariga.lahirUntuk.${potensi.lahir_untuk?.name}`,
+      potensi.lahir_untuk?.name || potensi.frekuensi?.name || "",
+    );
+    const peluangName = t(
+      `wariga.lahirUntuk.${peluang.diberi_hak_untuk?.name}`,
+      peluang.diberi_hak_untuk?.name || peluang.frekuensi?.name || "",
+    );
+    const potensiDesc = t(
+      `wariga.lahirUntukDesc.${potensi.lahir_untuk?.description}`,
+      potensi.lahir_untuk?.description || "",
+    );
+    const peluangDesc = t(
+      `wariga.lahirUntukDesc.${peluang.diberi_hak_untuk?.description}`,
+      peluang.diberi_hak_untuk?.description || "",
+    );
+    const actionName = t(
+      `wariga.tindakan.${peluang.tindakan?.name?.replace(/\s+/g, "_")}`,
+      peluang.tindakan?.name || "mindfulness",
+    );
     return {
-      potensiSummary: `You were born with ${potensiName} energy (${potensi.lahir_untuk?.description || ""}). Your Wuku is ${potensi.wuku?.name}, giving you a Total Urip of ${potensi.total_urip}.`,
-      peluangSummary: `Today's energy is ${peluangName} (${peluang.diberi_hak_untuk?.description || ""}). The recommended action is ${peluang.tindakan?.name || "mindfulness"}.`,
+      potensiSummary: t("dashboard.potensiSummary")
+        .replace("{name}", potensiName)
+        .replace("{description}", potensiDesc)
+        .replace("{wuku}", potensi.wuku?.name || "")
+        .replace("{totalUrip}", String(potensi.total_urip ?? "")),
+      peluangSummary: t("dashboard.peluangSummary")
+        .replace("{name}", peluangName)
+        .replace("{description}", peluangDesc)
+        .replace("{action}", actionName),
       alignment:
         potensi.frekuensi?.name === peluang.frekuensi?.name
           ? `✨ ${t("dashboard.perfectAlignment")}`
-          : `Today's ${peluangName} energy complements your ${potensiName} nature.`,
+          : t("dashboard.energyComplements")
+              .replace("{peluang}", peluangName)
+              .replace("{potensi}", potensiName),
     };
   };
   const readingSummary = getReadingSummary();
@@ -178,7 +231,7 @@ export function Dashboard() {
             <div className="text-center">
               <Loader2 className="mx-auto h-8 w-8 animate-spin" />
               <p className="text-muted-foreground mt-2">
-                Calculating your reading...
+                {t("dashboard.calculatingReading")}
               </p>
             </div>
           </div>
@@ -186,10 +239,10 @@ export function Dashboard() {
           <Card className="mx-auto max-w-md py-6 px-6">
             <div className="text-center">
               <h3 className="text-lg font-semibold tracking-tight text-destructive">
-                Error
+                {t("dashboard.error")}
               </h3>
               <p className="text-sm text-muted-foreground">
-                Failed to load your reading. Please try again.
+                {t("dashboard.failedToLoad")}
               </p>
             </div>
             <div>
@@ -201,7 +254,7 @@ export function Dashboard() {
                   })
                 }
               >
-                Retry
+                {t("dashboard.retry")}
               </Button>
             </div>
           </Card>
@@ -352,48 +405,72 @@ export function Dashboard() {
               </div>
             </div>
 
-            {/* Right Side - 24h Energy + Charts */}
+            {/* Right Side - Tabs: 24h Energy, Oracle Insight, Interests */}
             <div className="lg:col-span-7 xl:col-span-8 space-y-4 min-w-0">
               <Tabs defaultValue="24h" className="w-full">
-                <TabsList>
-                  <TabsTrigger value="24h" className="gap-1">
-                    <span>🕐</span> {t("chart.24hEnergy")}
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent value="24h" className="mt-2">
+                <ScrollableTabsList interests={interests} t={t} />
+
+                {/* Energy & Charts Tab */}
+                <TabsContent value="24h" className="mt-2 space-y-4">
                   <HourlyGrid
                     selectedDate={selectedDate}
                     peluang={reading.peluang}
                   />
+
+                  <Separator />
+
+                  {/* Charts — 2 columns */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 items-stretch">
+                    <div className="min-w-0 overflow-hidden flex flex-col">
+                      <h3 className="text-sm font-semibold mb-3">
+                        🧠 {t("chart.soulDimensions")}
+                      </h3>
+                      <SoulRadarChart
+                        peluang={reading.peluang}
+                        potensi={reading.potensi}
+                      />
+                    </div>
+
+                    <Separator className="md:hidden" />
+
+                    <div className="min-w-0 overflow-hidden flex flex-col">
+                      <h3 className="text-sm font-semibold mb-3">
+                        ⚖️ {t("chart.peluangVsPotensi")}
+                      </h3>
+                      <ComparisonBarChart
+                        peluang={reading.peluang}
+                        potensi={reading.potensi}
+                      />
+                    </div>
+                  </div>
                 </TabsContent>
+
+                {/* Oracle Insight Tab */}
+                <TabsContent value="oracle" className="mt-2">
+                  <OracleTabPanel
+                    aiLoading={aiLoading}
+                    interpretation={aiInterpretation?.interpretation}
+                  />
+                </TabsContent>
+
+                {/* Interest Oracle Tabs */}
+                {interests.map((interest: string) => (
+                  <TabsContent
+                    key={`content-${interest}`}
+                    value={`interest-${interest}`}
+                    className="mt-2"
+                  >
+                    {user?.birthDate && (
+                      <InterestOracle
+                        interest={interest}
+                        birthDate={user.birthDate}
+                        targetDate={targetDateStr}
+                        language={language}
+                      />
+                    )}
+                  </TabsContent>
+                ))}
               </Tabs>
-
-              <Separator />
-
-              {/* Charts — 2 columns */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 items-stretch">
-                <div className="min-w-0 overflow-hidden flex flex-col">
-                  <h3 className="text-sm font-semibold mb-3">
-                    🧠 {t("chart.soulDimensions")}
-                  </h3>
-                  <SoulRadarChart
-                    peluang={reading.peluang}
-                    potensi={reading.potensi}
-                  />
-                </div>
-
-                <Separator className="md:hidden" />
-
-                <div className="min-w-0 overflow-hidden flex flex-col">
-                  <h3 className="text-sm font-semibold mb-3">
-                    ⚖️ {t("chart.peluangVsPotensi")}
-                  </h3>
-                  <ComparisonBarChart
-                    peluang={reading.peluang}
-                    potensi={reading.potensi}
-                  />
-                </div>
-              </div>
             </div>
           </section>
         ) : null}

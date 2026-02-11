@@ -5,7 +5,7 @@ export function Logo({ className, ...props }: SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 130 130"
+      viewBox="0 0 128 128"
       fill="none"
       className={cn("size-6", className)}
       {...props}
@@ -15,12 +15,21 @@ export function Logo({ className, ...props }: SVGProps<SVGSVGElement>) {
           <stop offset="0%" style={{ stopColor: "#9955FF" }} />
           <stop offset="100%" style={{ stopColor: "#7C3AED" }} />
         </linearGradient>
+        <clipPath id="petalClipL">
+          <rect x="-70" y="-70" width="70" height="140" />
+        </clipPath>
       </defs>
 
-      <g transform="translate(65, 65)">
-        {/* 8 Petals / Network Connections (Mandala Style) */}
+      <g transform="translate(64, 64)">
+        {/* 0° petal base layer (under 315°) */}
+        <path
+          d="M0 -10 C 10 -30, 20 -40, 0 -55 C -20 -40, -10 -30, 0 -10"
+          stroke="url(#neptuGrad)"
+          strokeWidth="8"
+          fill="none"
+        />
+        {/* 45° through 315° in order — each on top of previous */}
         <g stroke="url(#neptuGrad)" strokeWidth="8" fill="none">
-          <path d="M0 -10 C 10 -30, 20 -40, 0 -55 C -20 -40, -10 -30, 0 -10" />
           <path
             d="M0 -10 C 10 -30, 20 -40, 0 -55 C -20 -40, -10 -30, 0 -10"
             transform="rotate(45)"
@@ -48,6 +57,15 @@ export function Logo({ className, ...props }: SVGProps<SVGSVGElement>) {
           <path
             d="M0 -10 C 10 -30, 20 -40, 0 -55 C -20 -40, -10 -30, 0 -10"
             transform="rotate(315)"
+          />
+        </g>
+        {/* 0° petal top layer clipped to left half (over 315°) */}
+        <g clipPath="url(#petalClipL)">
+          <path
+            d="M0 -10 C 10 -30, 20 -40, 0 -55 C -20 -40, -10 -30, 0 -10"
+            stroke="url(#neptuGrad)"
+            strokeWidth="8"
+            fill="none"
           />
         </g>
 

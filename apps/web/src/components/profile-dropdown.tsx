@@ -36,6 +36,7 @@ export function ProfileDropdown() {
   const {
     solBalance,
     neptuBalance,
+    pendingRewards,
     isLoading: balanceLoading,
   } = useWalletBalance();
   const t = useTranslate();
@@ -109,7 +110,7 @@ export function ProfileDropdown() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuLabel className="pb-1 text-xs font-normal text-muted-foreground">
-          Balance
+          {t("user.balance", "Balance")}
         </DropdownMenuLabel>
         {balanceLoading ? (
           <div className="flex items-center justify-center py-2">
@@ -135,6 +136,13 @@ export function ProfileDropdown() {
                 {neptuBalance.toFixed(2)}
               </span>
             </div>
+            {pendingRewards > 0 && (
+              <div className="flex items-center justify-between rounded-md px-2 py-0.5 text-[10px]">
+                <span className="text-muted-foreground/70 ml-5.5">
+                  + {pendingRewards.toFixed(2)} {t("user.pending", "pending")}
+                </span>
+              </div>
+            )}
           </div>
         )}
         <DropdownMenuSeparator />
@@ -143,33 +151,33 @@ export function ProfileDropdown() {
             <DropdownMenuItem asChild>
               <Link to="/dashboard">
                 <LayoutDashboard className="mr-2 h-4 w-4" />
-                Dashboard
+                {t("nav.dashboard")}
                 <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
               </Link>
             </DropdownMenuItem>
           )}
           <DropdownMenuItem asChild>
             <Link to="/settings">
-              Profile
+              {t("settings.profile")}
               <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link to="/settings/account">
-              Account
+              {t("settings.account")}
               <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link to="/settings">
-              Settings
+              {t("nav.settings")}
               <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem variant="destructive" onClick={handleSignOut}>
-          Disconnect
+          {t("user.disconnect", "Disconnect")}
           <DropdownMenuShortcut className="text-current">
             ⇧⌘Q
           </DropdownMenuShortcut>

@@ -28,6 +28,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useSettingsStore } from "@/stores/settings-store";
+import { useTranslate } from "@/hooks/use-translate";
 import { toast } from "sonner";
 
 const languages = [
@@ -50,6 +51,7 @@ const accountFormSchema = z.object({
 type AccountFormValues = z.infer<typeof accountFormSchema>;
 
 export function AccountForm() {
+  const t = useTranslate();
   const { language, setLanguage } = useSettingsStore();
   const [open, setOpen] = useState(false);
 
@@ -62,7 +64,7 @@ export function AccountForm() {
 
   function onSubmit(data: AccountFormValues) {
     setLanguage(data.language);
-    toast.success("Account settings updated");
+    toast.success(t("settings.account.updated", "Account settings updated"));
   }
 
   return (
@@ -73,7 +75,9 @@ export function AccountForm() {
           name="language"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Language</FormLabel>
+              <FormLabel>
+                {t("settings.account.language", "Language")}
+              </FormLabel>
               <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -86,19 +90,35 @@ export function AccountForm() {
                         !field.value && "text-muted-foreground",
                       )}
                     >
-                      {field.value
-                        ? languages.find(
-                            (language) => language.value === field.value,
-                          )?.label
-                        : "Select language"}
+                      {field.value ? (
+                        <>
+                          <span className="mr-2 font-medium uppercase">
+                            {field.value}
+                          </span>
+                          {
+                            languages.find(
+                              (language) => language.value === field.value,
+                            )?.label
+                          }
+                        </>
+                      ) : (
+                        t("settings.account.selectLanguage", "Select language")
+                      )}
                       <CaretSortIcon className="ms-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
                 <PopoverContent className="w-[200px] p-0">
                   <Command>
-                    <CommandInput placeholder="Search language..." />
-                    <CommandEmpty>No language found.</CommandEmpty>
+                    <CommandInput
+                      placeholder={t(
+                        "settings.account.searchLanguage",
+                        "Search language...",
+                      )}
+                    />
+                    <CommandEmpty>
+                      {t("settings.account.noLanguage", "No language found.")}
+                    </CommandEmpty>
                     <CommandGroup>
                       <CommandList>
                         {languages.map((language) => (
@@ -118,6 +138,9 @@ export function AccountForm() {
                                   : "opacity-0",
                               )}
                             />
+                            <span className="mr-2 font-medium uppercase">
+                              {language.value}
+                            </span>
                             {language.label}
                           </CommandItem>
                         ))}
@@ -127,13 +150,18 @@ export function AccountForm() {
                 </PopoverContent>
               </Popover>
               <FormDescription>
-                This is the language that will be used in the dashboard.
+                {t(
+                  "settings.account.languageDesc",
+                  "This is the language that will be used in the dashboard.",
+                )}
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit">Update account</Button>
+        <Button type="submit">
+          {t("settings.account.update", "Update account")}
+        </Button>
       </form>
     </Form>
   );
