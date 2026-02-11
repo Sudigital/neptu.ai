@@ -57,6 +57,11 @@ import {
   getCampaignProgress,
   type CampaignResult,
 } from "./agent-cosmic-profile";
+import {
+  runFinalDayForecast,
+  getFinalForecastProgress,
+  type FinalForecastResult,
+} from "./final-day-forecast";
 
 export interface ForumAgentEnv {
   COLOSSEUM_API_KEY: string;
@@ -74,7 +79,7 @@ const CACHE_TTL_FOREVER = 31536000; // 1 year - effectively forever
 // - Forum votes: 120/hour
 // - Project votes: 60/hour
 // Heartbeat runs every 5 min (12 runs/hour), small batches spread activity:
-const MAX_COMMENTS_PER_HEARTBEAT = 2; // 2 per 5min × 12 = 24 comments/hour
+const MAX_COMMENTS_PER_HEARTBEAT = 4; // 4 per 5min × 12 = 48 comments/hour (limit 30, but capped by rate limits)
 const MAX_FORUM_VOTES_PER_HEARTBEAT = 10; // 10 per 5min × 12 = 120 votes/hour
 
 export class ForumAgent {
@@ -511,6 +516,27 @@ export class ForumAgent {
     agentsCached: number;
   }> {
     return getCampaignProgress(this.cache);
+  }
+
+  /**
+   * Run the Final Day Cosmic Forecast campaign.
+   * Posts batched forecasts comparing today vs deadline energy.
+   */
+  async runFinalDayForecast(): Promise<FinalForecastResult> {
+    return runFinalDayForecast(
+      this.client,
+      this.calculator,
+      this.cache,
+      this.agentName,
+    );
+  }
+
+  /** Check final forecast progress */
+  async getFinalForecastProgress(): Promise<{
+    isComplete: boolean;
+    batchesPosted: number;
+  }> {
+    return getFinalForecastProgress(this.cache);
   }
 
   /** Track engagement for an action */

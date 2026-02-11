@@ -374,6 +374,41 @@ export class HeartbeatScheduler {
         error: error instanceof Error ? error.message : "Unknown error",
       });
     }
+
+    // Final Day Cosmic Forecast — today vs deadline comparison for all agents
+    if (isTimedOut()) return;
+    try {
+      const forecastProgress = await this.forumAgent.getFinalForecastProgress();
+      if (!forecastProgress.isComplete) {
+        const forecastResult = await this.forumAgent.runFinalDayForecast();
+        result.tasks.push({
+          name: "final_day_forecast",
+          success: true,
+          result: {
+            totalAgents: forecastResult.totalAgents,
+            totalBatches: forecastResult.totalBatches,
+            batchesPosted: forecastResult.batchesPosted,
+            batchesRemaining: forecastResult.batchesRemaining,
+            postsCreated: forecastResult.postsCreated,
+          },
+        });
+      } else {
+        result.tasks.push({
+          name: "final_day_forecast",
+          success: true,
+          result: {
+            status: "complete",
+            batchesPosted: forecastProgress.batchesPosted,
+          },
+        });
+      }
+    } catch (error) {
+      result.tasks.push({
+        name: "final_day_forecast",
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
   }
 
   /**

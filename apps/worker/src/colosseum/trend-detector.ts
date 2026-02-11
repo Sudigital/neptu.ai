@@ -10,7 +10,7 @@ import {
 export { generateTrendAwareComment };
 
 const CACHE_TTL_TREND = 172800; // 48 hours
-const MIN_HOURS_BETWEEN_TREND_POSTS = 24;
+const MIN_HOURS_BETWEEN_TREND_POSTS = 8;
 
 export interface HotTopicResult {
   topics: string[];

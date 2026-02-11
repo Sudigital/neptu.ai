@@ -5,7 +5,6 @@ import { Bot, Send, Loader2, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sheet,
   SheetContent,
@@ -63,7 +62,11 @@ export function OracleSheet({ children }: OracleSheetProps) {
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      requestAnimationFrame(() => {
+        if (scrollRef.current) {
+          scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+      });
     }
   }, [messages]);
 
@@ -146,7 +149,7 @@ export function OracleSheet({ children }: OracleSheetProps) {
       </SheetTrigger>
       <SheetContent
         side="right"
-        className="flex flex-col w-full sm:max-w-md p-0"
+        className="flex flex-col w-full sm:max-w-md p-0 gap-0 h-dvh max-h-dvh"
         onPointerDownOutside={(e) => e.preventDefault()}
         onInteractOutside={(e) => e.preventDefault()}
       >
@@ -167,7 +170,11 @@ export function OracleSheet({ children }: OracleSheetProps) {
         </SheetHeader>
 
         {/* Chat messages */}
-        <ScrollArea ref={scrollRef} className="flex-1 px-4 py-4">
+        <div
+          ref={scrollRef}
+          className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 min-h-0 -webkit-overflow-scrolling-touch"
+          style={{ WebkitOverflowScrolling: "touch" }}
+        >
           <div className="flex flex-col gap-4">
             {Object.keys(groupedMessages).map((dateKey) => (
               <Fragment key={dateKey}>
@@ -203,7 +210,7 @@ export function OracleSheet({ children }: OracleSheetProps) {
               </div>
             )}
           </div>
-        </ScrollArea>
+        </div>
 
         {/* Input form */}
         <form

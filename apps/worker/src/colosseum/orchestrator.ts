@@ -12,10 +12,12 @@ import {
   postDeadlinePromotion,
   postProgressUpdate,
 } from "./post-creator";
-// Crypto posts disabled for final 48h — agent cosmic campaign takes priority
-// import { postIndividualCoinAnalysis } from "./crypto-posts";
-// import { postMarketMoverAlert, postMarketSentimentReport } from "./crypto-posts-market";
-// import { getCryptoWithMarketData } from "./crypto-market-fetcher";
+import { postIndividualCoinAnalysis } from "./crypto-posts";
+import {
+  postMarketMoverAlert,
+  postMarketSentimentReport,
+} from "./crypto-posts-market";
+import { getCryptoWithMarketData } from "./crypto-market-fetcher";
 import {
   postProjectSpotlight,
   getSpotlightCacheKey,
@@ -26,8 +28,8 @@ import { generateOptimizedPost } from "./content-optimizer";
 // Timeline constants
 const HACKATHON_START = "2026-02-01";
 const HACKATHON_DEADLINE = "2026-02-12";
-const MIN_HOURS_BETWEEN_POSTS = 3; // Post less frequently — quality over quantity
-const MAX_POSTS_PER_HEARTBEAT = 1; // 1 per heartbeat run
+const MIN_HOURS_BETWEEN_POSTS = 1; // Post more frequently — maximize engagement
+const MAX_POSTS_PER_HEARTBEAT = 2; // 2 per heartbeat run
 const DAYS_INTRO_WINDOW = 3;
 const DAYS_PREDICTIONS_START = 7;
 const DAYS_FINAL_PUSH = 3;
@@ -172,10 +174,97 @@ async function _orchestratePostingInternal(
     );
   }
 
-  // 5-9: Crypto posts — DISABLED for final 48h
-  // Prioritizing Agent Cosmic Profile Campaign (batch readings for all agents)
-  // which runs in the heartbeat post_thread phase instead.
-  // Crypto posts were consuming the posting slot and preventing agent engagement.
+  // 5. Daily crypto report — individual coin analysis
+  if (db && posts.length < MAX_POSTS_PER_HEARTBEAT) {
+    try {
+      const cryptoData = await getCryptoWithMarketData(db);
+      if (cryptoData && cryptoData.length > 0) {
+        const topCoin = cryptoData[0];
+        await tryPost(
+          `neptu:crypto_analysis:${today}:${topCoin.symbol}`,
+          () => postIndividualCoinAnalysis(client, calculator, topCoin, cache),
+          `Crypto analysis: ${topCoin.symbol}`,
+        );
+      }
+    } catch (err) {
+      console.error("Failed to post crypto analysis:", err);
+    }
+  }
+
+  // 6. Market sentiment report (every 6 hours)
+  if (db && posts.length < MAX_POSTS_PER_HEARTBEAT) {
+    const lastSentiment = await cache.get("neptu:last_sentiment_report");
+    const hoursSinceSentiment = lastSentiment
+      ? (Date.now() - new Date(lastSentiment).getTime()) / 3600000
+      : 999;
+    if (hoursSinceSentiment > 6) {
+      try {
+        const cryptoData = await getCryptoWithMarketData(db);
+        if (cryptoData && cryptoData.length > 0) {
+          await tryPost(
+            `neptu:sentiment:${hourKey}`,
+            async () => {
+              const post = await postMarketSentimentReport(
+                client,
+                calculator,
+                cryptoData,
+                cache,
+              );
+              await cache.put(
+                "neptu:last_sentiment_report",
+                new Date().toISOString(),
+              );
+              return post;
+            },
+            "Market sentiment report",
+          );
+        }
+      } catch (err) {
+        console.error("Failed to post sentiment report:", err);
+      }
+    }
+  }
+
+  // 7. Market mover alert (every 4 hours)
+  if (db && posts.length < MAX_POSTS_PER_HEARTBEAT) {
+    const lastMover = await cache.get("neptu:last_mover_alert");
+    const hoursSinceMover = lastMover
+      ? (Date.now() - new Date(lastMover).getTime()) / 3600000
+      : 999;
+    if (hoursSinceMover > 4) {
+      try {
+        const cryptoData = await getCryptoWithMarketData(db);
+        if (cryptoData && cryptoData.length > 0) {
+          // Pick the biggest mover
+          const topMover = cryptoData.reduce((best, coin) =>
+            Math.abs(coin.priceChange24h || 0) >
+            Math.abs(best.priceChange24h || 0)
+              ? coin
+              : best,
+          );
+          await tryPost(
+            `neptu:mover:${hourKey}`,
+            async () => {
+              const post = await postMarketMoverAlert(
+                client,
+                calculator,
+                topMover,
+                cache,
+              );
+              await cache.put(
+                "neptu:last_mover_alert",
+                new Date().toISOString(),
+              );
+              return post;
+            },
+            "Market mover alert",
+          );
+        }
+      } catch (err) {
+        console.error("Failed to post market mover alert:", err);
+      }
+    }
+  }
 
   // 10. Project Spotlight — top 3 leaderboard projects (daily per project)
   if (posts.length < MAX_POSTS_PER_HEARTBEAT) {
@@ -204,7 +293,7 @@ async function _orchestratePostingInternal(
   const hoursSinceProgress = lastProgress
     ? (Date.now() - new Date(lastProgress).getTime()) / 3600000
     : 999;
-  if (hoursSinceProgress > 12 && posts.length < MAX_POSTS_PER_HEARTBEAT) {
+  if (hoursSinceProgress > 6 && posts.length < MAX_POSTS_PER_HEARTBEAT) {
     await tryPost(
       `neptu:progress:${hourKey}`,
       async () => {
@@ -238,7 +327,7 @@ async function _orchestratePostingInternal(
   const hoursSinceTrending = lastTrendingPost
     ? (Date.now() - new Date(lastTrendingPost).getTime()) / 3600000
     : 999;
-  if (hoursSinceTrending > 8 && posts.length < MAX_POSTS_PER_HEARTBEAT) {
+  if (hoursSinceTrending > 4 && posts.length < MAX_POSTS_PER_HEARTBEAT) {
     try {
       const insight = await analyzeTrending(client, agentName);
       // Get last post type to avoid repetition

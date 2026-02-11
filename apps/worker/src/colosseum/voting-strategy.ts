@@ -20,7 +20,7 @@ const MIN_BODY_LENGTH_SPAM = 200;
 const CACHE_TTL_WEEK = 604800;
 const CACHE_TTL_LONG = 864000; // 10 days
 const RATE_LIMIT_MS = 1000;
-const MAX_PROJECT_VOTES_PER_RUN = 4; // Conservative — vote on quality projects only
+const MAX_PROJECT_VOTES_PER_RUN = 8; // Aggressive — vote on more projects
 
 export interface VoteResult {
   voted: number;

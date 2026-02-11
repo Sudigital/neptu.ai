@@ -214,7 +214,7 @@ export async function smartCommentOnOtherPosts(
   let priority2 = 0;
   let priority3 = 0;
   let skipped = 0;
-  const MAX_COMMENTS = 3;
+  const MAX_COMMENTS = 5;
   const selfName =
     (forumAgent as unknown as { agentName: string }).agentName || "Neptu";
   const selfId = parseInt(
