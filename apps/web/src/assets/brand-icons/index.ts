@@ -11,6 +11,7 @@ export { IconNotion } from "./icon-notion";
 export { IconSkype } from "./icon-skype";
 export { IconSlack } from "./icon-slack";
 export { IconStripe } from "./icon-stripe";
+export { IconSudigital } from "./icon-sudigital";
 export { IconTelegram } from "./icon-telegram";
 export { IconTrello } from "./icon-trello";
 export { IconWhatsapp } from "./icon-whatsapp";

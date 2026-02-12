@@ -20,6 +20,7 @@ export function useWalletBalance() {
   return {
     solBalance: data?.sol?.formatted ?? 0,
     neptuBalance: data?.neptu?.formatted ?? 0,
+    sudigitalBalance: data?.sudigital?.formatted ?? 0,
     pendingRewards: data?.pendingRewards ?? 0,
     isLoading,
     isError,

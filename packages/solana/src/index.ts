@@ -11,6 +11,7 @@ export {
 export {
   LAMPORTS_PER_SOL,
   TOKEN_DECIMALS_MULTIPLIER,
+  SUDIGITAL_DECIMALS_MULTIPLIER,
   DEVNET_ADDRESSES,
   MAINNET_ADDRESSES,
   getAddresses,
@@ -19,19 +20,24 @@ export {
   lamportsToSol,
   neptuToRaw,
   rawToNeptu,
+  sudigitalToRaw,
+  rawToSudigital,
   type NeptuAddresses,
 } from "./constants";
 
 export {
   getTokenBalance,
+  getSudigitalBalance,
   getAssociatedTokenAddress,
   calculateSolPaymentReward,
   calculateNeptuPaymentBurn,
+  calculateSudigitalPayment,
   getReadingPrice,
   type TokenAccount,
   type TokenBalance,
   type RewardCalculation,
   type BurnCalculation,
+  type SudigitalPaymentCalculation,
 } from "./token";
 
 export {

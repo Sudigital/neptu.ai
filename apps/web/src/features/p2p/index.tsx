@@ -3,9 +3,6 @@ import { usePrivy } from "@privy-io/react-auth";
 import { motion } from "framer-motion";
 import {
   ArrowLeftRight,
-  Shield,
-  Zap,
-  DollarSign,
   Flame,
   Lock,
   Wallet,
@@ -20,6 +17,8 @@ import { Badge } from "@/components/ui/badge";
 import { Navbar } from "@/components/navbar";
 import { useTranslate } from "@/hooks/use-translate";
 import { Logo } from "@/assets/logo";
+import { IconSolana, IconSudigital } from "@/assets/brand-icons";
+import { P2PWhySection } from "./p2p-why-section";
 
 const stagger = {
   hidden: { opacity: 0 },
@@ -143,7 +142,7 @@ export function P2PPage() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto"
+              className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto"
             >
               {/* Pay with SOL */}
               <motion.div variants={fadeUp}>
@@ -151,7 +150,7 @@ export function P2PPage() {
                   <CardContent>
                     <div className="flex items-center gap-3 mb-4">
                       <div className="h-10 w-10 rounded-lg bg-green-500/10 flex items-center justify-center">
-                        <DollarSign className="h-5 w-5 text-green-500" />
+                        <IconSolana className="h-5 w-5" />
                       </div>
                       <div>
                         <h3 className="font-semibold">
@@ -180,6 +179,47 @@ export function P2PPage() {
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <CheckCircle2 className="h-3.5 w-3.5 text-green-500 shrink-0" />
                         <span>{t("p2p.paySOL.step3")}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              {/* Pay with SUDIGITAL */}
+              <motion.div variants={fadeUp}>
+                <Card className="h-full border-red-500/30 hover:border-red-500/50 transition-colors">
+                  <CardContent>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="h-10 w-10 rounded-lg bg-red-500/10 flex items-center justify-center">
+                        <IconSudigital className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold">
+                          {t("p2p.paySUDIGITAL.title")}
+                        </h3>
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] text-red-600 border-red-500"
+                        >
+                          {t("p2p.paySUDIGITAL.badge")}
+                        </Badge>
+                      </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {t("p2p.paySUDIGITAL.desc")}
+                    </p>
+                    <div className="mt-4 space-y-2">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-red-500 shrink-0" />
+                        <span>{t("p2p.paySUDIGITAL.step1")}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                        <span>{t("p2p.paySUDIGITAL.step2")}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-red-500 shrink-0" />
+                        <span>{t("p2p.paySUDIGITAL.step3")}</span>
                       </div>
                     </div>
                   </CardContent>
@@ -229,11 +269,11 @@ export function P2PPage() {
 
               {/* P2P Transfer */}
               <motion.div variants={fadeUp}>
-                <Card className="h-full border-blue-500/30 hover:border-blue-500/50 transition-colors">
+                <Card className="h-full border-teal-500/30 hover:border-teal-500/50 transition-colors">
                   <CardContent>
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                        <Users className="h-5 w-5 text-blue-500" />
+                      <div className="h-10 w-10 rounded-lg bg-teal-500/10 flex items-center justify-center">
+                        <Users className="h-5 w-5 text-teal-500" />
                       </div>
                       <div>
                         <h3 className="font-semibold">
@@ -241,7 +281,7 @@ export function P2PPage() {
                         </h3>
                         <Badge
                           variant="outline"
-                          className="text-[10px] text-blue-600 border-blue-500"
+                          className="text-[10px] text-teal-600 border-teal-500"
                         >
                           {t("p2p.transfer.badge")}
                         </Badge>
@@ -252,15 +292,15 @@ export function P2PPage() {
                     </p>
                     <div className="mt-4 space-y-2">
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+                        <CheckCircle2 className="h-3.5 w-3.5 text-teal-500 shrink-0" />
                         <span>{t("p2p.transfer.step1")}</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+                        <CheckCircle2 className="h-3.5 w-3.5 text-teal-500 shrink-0" />
                         <span>{t("p2p.transfer.step2")}</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+                        <CheckCircle2 className="h-3.5 w-3.5 text-teal-500 shrink-0" />
                         <span>{t("p2p.transfer.step3")}</span>
                       </div>
                     </div>
@@ -271,82 +311,7 @@ export function P2PPage() {
           </div>
         </section>
 
-        {/* Why P2P Section */}
-        <section className="border-t bg-muted/50 py-12 sm:py-20">
-          <div className="container mx-auto px-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="text-center mb-10 sm:mb-16"
-            >
-              <h2 className="text-2xl sm:text-4xl font-bold tracking-tight">
-                {t("p2p.whyTitle")}
-              </h2>
-            </motion.div>
-
-            <motion.div
-              variants={stagger}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4 max-w-5xl mx-auto"
-            >
-              <motion.div variants={fadeUp}>
-                <Card className="h-full text-center">
-                  <CardContent>
-                    <Shield className="h-8 w-8 text-primary mx-auto mb-3" />
-                    <h3 className="font-semibold mb-2">
-                      {t("p2p.why.noPool.title")}
-                    </h3>
-                    <p className="text-xs text-muted-foreground">
-                      {t("p2p.why.noPool.desc")}
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-              <motion.div variants={fadeUp}>
-                <Card className="h-full text-center">
-                  <CardContent>
-                    <Flame className="h-8 w-8 text-orange-500 mx-auto mb-3" />
-                    <h3 className="font-semibold mb-2">
-                      {t("p2p.why.deflationary.title")}
-                    </h3>
-                    <p className="text-xs text-muted-foreground">
-                      {t("p2p.why.deflationary.desc")}
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-              <motion.div variants={fadeUp}>
-                <Card className="h-full text-center">
-                  <CardContent>
-                    <Zap className="h-8 w-8 text-amber-500 mx-auto mb-3" />
-                    <h3 className="font-semibold mb-2">
-                      {t("p2p.why.zeroCost.title")}
-                    </h3>
-                    <p className="text-xs text-muted-foreground">
-                      {t("p2p.why.zeroCost.desc")}
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-              <motion.div variants={fadeUp}>
-                <Card className="h-full text-center">
-                  <CardContent>
-                    <Lock className="h-8 w-8 text-green-500 mx-auto mb-3" />
-                    <h3 className="font-semibold mb-2">
-                      {t("p2p.why.fixedSupply.title")}
-                    </h3>
-                    <p className="text-xs text-muted-foreground">
-                      {t("p2p.why.fixedSupply.desc")}
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </motion.div>
-          </div>
-        </section>
+        <P2PWhySection t={t} />
 
         {/* Token Info */}
         <section className="border-t py-12 sm:py-20">

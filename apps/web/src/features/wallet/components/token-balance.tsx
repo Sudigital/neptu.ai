@@ -19,6 +19,9 @@ interface TokenBalanceProps {
   isLoading?: boolean;
   isRefreshing?: boolean;
   className?: string;
+  tokenSymbol?: string;
+  tokenTitle?: string;
+  iconClassName?: string;
 }
 
 const SOLANA_EXPLORER_BASE = "https://explorer.solana.com/address";
@@ -32,6 +35,9 @@ export function TokenBalance({
   isLoading = false,
   isRefreshing = false,
   className,
+  tokenSymbol = "NEPTU",
+  tokenTitle,
+  iconClassName,
 }: TokenBalanceProps) {
   const t = useTranslate();
   const explorerUrl = `${SOLANA_EXPLORER_BASE}/${walletAddress}?cluster=devnet`;
@@ -52,8 +58,8 @@ export function TokenBalance({
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <Coins className="h-5 w-5 text-primary" />
-              {t("wallet.neptuBalance", "NEPTU Balance")}
+              <Coins className={cn("h-5 w-5 text-primary", iconClassName)} />
+              {tokenTitle ?? t("wallet.neptuBalance", "NEPTU Balance")}
             </CardTitle>
             <CardDescription>
               {t("wallet.tokenHoldings", "Your token holdings")}
@@ -77,7 +83,7 @@ export function TokenBalance({
         <div className="text-center py-4">
           <p className="text-4xl font-bold">{balance.toFixed(2)}</p>
           <p className="text-sm text-muted-foreground">
-            NEPTU ({t("wallet.onChain", "on-chain")})
+            {tokenSymbol} ({t("wallet.onChain", "on-chain")})
           </p>
           {pendingRewards > 0 && (
             <p className="text-xs text-amber-500/70 mt-1">

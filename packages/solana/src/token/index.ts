@@ -1,5 +1,6 @@
 export {
   getTokenBalance,
+  getSudigitalBalance,
   getAssociatedTokenAddress,
   neptuToRaw,
   rawToNeptu,
@@ -10,7 +11,9 @@ export {
 export {
   calculateSolPaymentReward,
   calculateNeptuPaymentBurn,
+  calculateSudigitalPayment,
   getReadingPrice,
   type RewardCalculation,
   type BurnCalculation,
+  type SudigitalPaymentCalculation,
 } from "./reward";

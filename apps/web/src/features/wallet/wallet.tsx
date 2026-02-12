@@ -31,6 +31,7 @@ import {
 } from "@/features/gamification/components";
 import { useUser } from "@/hooks/use-user";
 import { useTranslate } from "@/hooks/use-translate";
+import { useWalletBalance } from "@/hooks/use-wallet-balance";
 
 // Utility: convert Uint8Array signature to base58 string
 function toBase58(bytes: Uint8Array): string {
@@ -54,6 +55,7 @@ export function Wallet() {
   const queryClient = useQueryClient();
   const [isClaimingRewards, setIsClaimingRewards] = useState(false);
   const t = useTranslate();
+  const { sudigitalBalance } = useWalletBalance();
   const { signAndSendTransaction } = useSignAndSendTransaction();
   const { wallets: solanaWallets } = useSolanaWallets();
   const solanaWallet = solanaWallets.find((w) => w.address === walletAddress);
@@ -280,7 +282,7 @@ export function Wallet() {
           <p className="text-muted-foreground">{t("wallet.subtitle")}</p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-3">
           {/* Token Balance Card */}
           <TokenBalance
             balance={balanceData?.balance?.formatted ?? 0}
@@ -290,6 +292,19 @@ export function Wallet() {
             onRefresh={handleRefreshBalance}
             isLoading={balanceLoading}
             isRefreshing={isRefreshingBalance}
+          />
+
+          {/* SUDIGITAL Balance Card */}
+          <TokenBalance
+            balance={sudigitalBalance}
+            rawBalance={String(Math.round(sudigitalBalance * 1e6))}
+            walletAddress={walletAddress}
+            onRefresh={handleRefreshBalance}
+            isLoading={balanceLoading}
+            isRefreshing={isRefreshingBalance}
+            tokenSymbol="SUDIGITAL"
+            tokenTitle={t("wallet.sudigitalBalance", "SUDIGITAL Balance")}
+            iconClassName="text-blue-500"
           />
 
           {/* Streak Counter Card */}
@@ -302,7 +317,7 @@ export function Wallet() {
           />
 
           {/* Unclaimed Rewards Card */}
-          <div className="md:col-span-2">
+          <div className="md:col-span-3">
             <UnclaimedRewards
               rewards={rewardsData?.rewards ?? []}
               totalAmount={rewardsData?.totalPending ?? 0}
@@ -316,7 +331,7 @@ export function Wallet() {
           <TokenStatsCard
             stats={statsData?.stats ?? null}
             isLoading={statsLoading}
-            className="md:col-span-2"
+            className="md:col-span-3"
           />
 
           {/* Transaction History */}

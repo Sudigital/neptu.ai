@@ -13,20 +13,13 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Wallet,
-  LayoutDashboard,
-  Loader2,
-  Link2,
-  Copy,
-  Check,
-} from "lucide-react";
+import { Loader2, ExternalLink, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import { useUser } from "@/hooks/use-user";
 import { useWalletBalance } from "@/hooks/use-wallet-balance";
 import { useTranslate } from "@/hooks/use-translate";
-import { NEPTU_TOKEN, SOL_TOKEN } from "@neptu/shared";
-import { IconSolana } from "@/assets/brand-icons";
+import { NEPTU_TOKEN, SOL_TOKEN, SUDIGITAL_TOKEN } from "@neptu/shared";
+import { IconSolana, IconSudigital } from "@/assets/brand-icons";
 import { Logo } from "@/assets/logo";
 
 export function ProfileDropdown() {
@@ -36,6 +29,7 @@ export function ProfileDropdown() {
   const {
     solBalance,
     neptuBalance,
+    sudigitalBalance,
     pendingRewards,
     isLoading: balanceLoading,
   } = useWalletBalance();
@@ -72,7 +66,7 @@ export function ProfileDropdown() {
           <Avatar className="h-8 w-8">
             <AvatarImage src="/avatars/default.jpg" alt={displayName} />
             <AvatarFallback>
-              <Wallet className="h-4 w-4" />
+              <IconSolana className="h-4 w-4" />
             </AvatarFallback>
           </Avatar>
           <div className="hidden flex-col items-start text-sm sm:flex">
@@ -85,26 +79,33 @@ export function ProfileDropdown() {
         <DropdownMenuLabel className="font-normal">
           <div className="flex items-start justify-between gap-2">
             <div className="flex flex-col gap-1.5">
-              <p className="flex items-center gap-1.5 text-sm leading-none font-medium">
-                <Link2 className="h-3 w-3 text-muted-foreground" />
-                {displayName}
-              </p>
+              <p className="text-sm leading-none font-medium">{displayName}</p>
               <p className="text-muted-foreground text-xs leading-none">
                 {chainInfo}
               </p>
             </div>
             {walletAddress && (
-              <button
-                type="button"
-                onClick={handleCopyAddress}
-                className="text-muted-foreground hover:text-foreground transition-colors p-0.5"
-              >
-                {copied ? (
-                  <Check className="h-3.5 w-3.5 text-green-500" />
-                ) : (
-                  <Copy className="h-3.5 w-3.5" />
-                )}
-              </button>
+              <div className="flex items-center gap-1">
+                <a
+                  href={`https://explorer.solana.com/address/${walletAddress}?cluster=${network}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-foreground transition-colors p-0.5"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+                <button
+                  type="button"
+                  onClick={handleCopyAddress}
+                  className="text-muted-foreground hover:text-foreground transition-colors p-0.5"
+                >
+                  {copied ? (
+                    <Check className="h-3.5 w-3.5 text-green-500" />
+                  ) : (
+                    <Copy className="h-3.5 w-3.5" />
+                  )}
+                </button>
+              </div>
             )}
           </div>
         </DropdownMenuLabel>
@@ -117,8 +118,8 @@ export function ProfileDropdown() {
             <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
           </div>
         ) : (
-          <div className="px-2 pb-2 space-y-1">
-            <div className="flex items-center justify-between rounded-md px-2 py-1.5 text-sm">
+          <div className="px-2 pb-1 space-y-0">
+            <div className="flex items-center justify-between rounded-md px-2 py-1 text-sm">
               <span className="flex items-center gap-2 text-muted-foreground">
                 <IconSolana className="h-3.5 w-3.5" />
                 {SOL_TOKEN.SYMBOL}
@@ -127,7 +128,16 @@ export function ProfileDropdown() {
                 {solBalance.toFixed(4)}
               </span>
             </div>
-            <div className="flex items-center justify-between rounded-md px-2 py-1.5 text-sm">
+            <div className="flex items-center justify-between rounded-md px-2 py-1 text-sm">
+              <span className="flex items-center gap-2 text-muted-foreground">
+                <IconSudigital className="h-3.5 w-3.5" />
+                {SUDIGITAL_TOKEN.SYMBOL}
+              </span>
+              <span className="font-mono font-medium">
+                {sudigitalBalance.toFixed(2)}
+              </span>
+            </div>
+            <div className="flex items-center justify-between rounded-md px-2 py-1 text-sm">
               <span className="flex items-center gap-2 text-muted-foreground">
                 <Logo className="h-3.5 w-3.5" />
                 {NEPTU_TOKEN.SYMBOL}
@@ -150,7 +160,6 @@ export function ProfileDropdown() {
           {!isOnDashboard && (
             <DropdownMenuItem asChild>
               <Link to="/dashboard">
-                <LayoutDashboard className="mr-2 h-4 w-4" />
                 {t("nav.dashboard")}
                 <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
               </Link>

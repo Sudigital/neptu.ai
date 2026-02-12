@@ -1,6 +1,11 @@
 import { address } from "@solana/kit";
 import type { SolanaRpc } from "../client";
-import { getAddresses, neptuToRaw, rawToNeptu } from "../constants";
+import {
+  getAddresses,
+  neptuToRaw,
+  rawToNeptu,
+  rawToSudigital,
+} from "../constants";
 import type { NetworkType } from "@neptu/shared";
 
 export interface TokenAccount {
@@ -58,6 +63,42 @@ export async function getTokenBalance(
     return {
       raw,
       formatted: rawToNeptu(raw),
+    };
+  } catch {
+    return { raw: BigInt(0), formatted: 0 };
+  }
+}
+
+export async function getSudigitalBalance(
+  rpc: SolanaRpc,
+  ownerAddress: string,
+  network: NetworkType,
+): Promise<TokenBalance> {
+  const addresses = getAddresses(network);
+  if (!addresses.sudigitalMint) {
+    return { raw: BigInt(0), formatted: 0 };
+  }
+
+  try {
+    const result = await rpc
+      .getTokenAccountsByOwner(
+        address(ownerAddress),
+        { mint: address(addresses.sudigitalMint) },
+        { encoding: "jsonParsed" },
+      )
+      .send();
+
+    if (result.value.length === 0) {
+      return { raw: BigInt(0), formatted: 0 };
+    }
+
+    const account = result.value[0];
+    const parsed = account.account.data as unknown as ParsedTokenAccountData;
+
+    const raw = BigInt(parsed.parsed.info.tokenAmount.amount);
+    return {
+      raw,
+      formatted: rawToSudigital(raw),
     };
   } catch {
     return { raw: BigInt(0), formatted: 0 };

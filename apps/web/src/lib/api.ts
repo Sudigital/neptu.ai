@@ -303,6 +303,7 @@ export const neptuApi = {
       success: boolean;
       sol: { lamports: string; formatted: number };
       neptu: { raw: string; formatted: number };
+      sudigital: { raw: string; formatted: number };
       pendingRewards: number;
     }>(`/api/wallet/balances/${walletAddress}`);
     return data;

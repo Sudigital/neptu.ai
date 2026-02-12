@@ -1,11 +1,21 @@
-import { NEPTU_TOKEN, SOLANA_NETWORKS, type NetworkType } from "@neptu/shared";
+import {
+  NEPTU_TOKEN,
+  SUDIGITAL_TOKEN,
+  SOLANA_NETWORKS,
+  type NetworkType,
+} from "@neptu/shared";
 
 export const LAMPORTS_PER_SOL = 1_000_000_000;
 
 export const TOKEN_DECIMALS_MULTIPLIER = Math.pow(10, NEPTU_TOKEN.DECIMALS);
+export const SUDIGITAL_DECIMALS_MULTIPLIER = Math.pow(
+  10,
+  SUDIGITAL_TOKEN.DECIMALS,
+);
 
 export interface NeptuAddresses {
   tokenMint: string;
+  sudigitalMint: string;
   treasury: string;
   rewardsPool: string;
 }
@@ -33,12 +43,14 @@ const getEnv = (key: string): string => {
 
 export const DEVNET_ADDRESSES: NeptuAddresses = {
   tokenMint: getEnv("NEPTU_TOKEN_MINT") || MINT_PDA,
+  sudigitalMint: getEnv("SUDIGITAL_TOKEN_MINT") || SUDIGITAL_TOKEN.MINT,
   treasury: getEnv("NEPTU_TREASURY") || ECONOMY_AUTHORITY_PDA,
   rewardsPool: getEnv("NEPTU_REWARDS_POOL") || REWARDS_POOL_ATA,
 } as const;
 
 export const MAINNET_ADDRESSES: NeptuAddresses = {
   tokenMint: MINT_PDA,
+  sudigitalMint: SUDIGITAL_TOKEN.MINT,
   treasury: ECONOMY_AUTHORITY_PDA,
   rewardsPool: REWARDS_POOL_ATA,
 } as const;
@@ -72,4 +84,12 @@ export function neptuToRaw(neptu: number): bigint {
 
 export function rawToNeptu(raw: bigint): number {
   return Number(raw) / TOKEN_DECIMALS_MULTIPLIER;
+}
+
+export function sudigitalToRaw(sudigital: number): bigint {
+  return BigInt(Math.round(sudigital * SUDIGITAL_DECIMALS_MULTIPLIER));
+}
+
+export function rawToSudigital(raw: bigint): number {
+  return Number(raw) / SUDIGITAL_DECIMALS_MULTIPLIER;
 }

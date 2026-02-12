@@ -200,7 +200,7 @@ export function PricingPage() {
 
                       <CardContent className="flex-1">
                         {/* Price */}
-                        <div className="text-center mb-4 h-16 flex flex-col items-center justify-center">
+                        <div className="text-center mb-4 h-24 flex flex-col items-center justify-center">
                           {isFree ? (
                             <div className="text-3xl font-bold">
                               {t("pricing.free")}
@@ -214,6 +214,19 @@ export function PricingPage() {
                                 </span>
                               </div>
                               <div className="text-sm text-muted-foreground mt-1">
+                                {t("pricing.or")}{" "}
+                                <span className="font-semibold text-blue-600 dark:text-blue-400">
+                                  {plan.SUDIGITAL} SUDIGITAL
+                                </span>
+                              </div>
+                              <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5">
+                                +{" "}
+                                {t("pricing.earnNeptu").replace(
+                                  "{{amount}}",
+                                  String(plan.SUDIGITAL),
+                                )}
+                              </div>
+                              <div className="text-sm text-muted-foreground mt-0.5">
                                 {t("pricing.or")}{" "}
                                 <span className="font-semibold text-foreground">
                                   {plan.NEPTU} NEPTU

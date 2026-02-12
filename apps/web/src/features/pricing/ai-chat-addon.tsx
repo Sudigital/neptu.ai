@@ -50,7 +50,11 @@ export function AiChatAddon() {
                       SOL
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                    {t("pricing.or")} {AI_CHAT_ADDON.PER_MESSAGE.SUDIGITAL}{" "}
+                    SUDIGITAL
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
                     {t("pricing.or")} {AI_CHAT_ADDON.PER_MESSAGE.NEPTU} NEPTU
                   </p>
                   <p className="text-[10px] text-muted-foreground/60 mt-2">
@@ -70,7 +74,11 @@ export function AiChatAddon() {
                       SOL
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                    {t("pricing.or")} {AI_CHAT_ADDON.PACK_10.SUDIGITAL}{" "}
+                    SUDIGITAL
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
                     {t("pricing.or")} {AI_CHAT_ADDON.PACK_10.NEPTU} NEPTU
                   </p>
                   <p className="text-[10px] text-muted-foreground/60 mt-2">
