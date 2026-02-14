@@ -29,7 +29,7 @@
     "db:studio": "drizzle-kit studio",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "echo 'TODO: rewrite tests for PostgreSQL (migrated from SQLite)'",
+    "test": "echo skip",
   },
   "dependencies": {
     "@neptu/shared": "workspace:*",
