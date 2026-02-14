@@ -4,7 +4,6 @@ on:
   push:
     branches: [main, dev]
     paths:
-      - "apps/api/**"
       - "apps/worker/**"
       - "packages/**"
       - ".github/workflows/deploy-azure.yml"
@@ -12,7 +11,6 @@ on:
 
 env:
   REGISTRY: ${{ secrets.ACR_LOGIN_SERVER }}
-  API_IMAGE: neptu-api
   WORKER_IMAGE: neptu-worker
 
 jobs:
@@ -35,17 +33,45 @@ jobs:
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
 
-      - name: Build and push API image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: apps/api/Dockerfile
-          push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.API_IMAGE }}:${{ github.sha }}
-            ${{ env.REGISTRY }}/${{ env.API_IMAGE }}:${{ env.TAG_ENV }}
-          cache-from: type=gha,scope=api-${{ env.TAG_ENV }}
-          cache-to: type=gha,mode=max,scope=api-${{ env.TAG_ENV }}
+      - name: Create private package stubs for Docker build
+        run: |
+          # Wariga stub (private IP - not in repo)
+          mkdir -p packages/wariga/src
+          cat > packages/wariga/package.json << 'EOF'
+          {"name":"@neptu/wariga","version":"0.1.0","type":"module","main":"./src/index.ts","types":"./src/index.ts","dependencies":{"@neptu/shared":"workspace:*"}}
+          EOF
+          cat > packages/wariga/src/index.ts << 'EOF'
+          import type { Potensi, Peluang, CompatibilityResult, FullReading } from "@neptu/shared";
+          export class NeptuCalculator {
+            constructor(..._a: unknown[]) {}
+            calculatePotensi(_d: Date): Potensi { return {} as Potensi; }
+            calculatePeluang(_d: Date, _b?: Date): Peluang { return {} as Peluang; }
+            calculateCompatibility(_a: Date, _b: Date): CompatibilityResult { return {} as CompatibilityResult; }
+            getFullReading(_b: Date, _t?: Date): FullReading { return {} as FullReading; }
+          }
+          export const database: unknown = {};
+          export const formatCompatibility = (..._a: unknown[]): string => "";
+          export const formatFullReading = (..._a: unknown[]): string => "";
+          export const formatPeluang = (..._a: unknown[]): string => "";
+          export const formatPotensi = (..._a: unknown[]): string => "";
+          EOF
+
+          # API stub (private - not in repo, depends on wariga)
+          mkdir -p apps/api/src
+          cat > apps/api/package.json << 'EOF'
+          {"name":"@neptu/api","version":"0.1.0","type":"module"}
+          EOF
+          echo 'export {};' > apps/api/src/index.ts
+          cat > apps/api/tsconfig.json << 'EOF'
+          {"compilerOptions":{"skipLibCheck":true}}
+          EOF
+
+          # CLI stub
+          mkdir -p apps/cli/src
+          cat > apps/cli/package.json << 'EOF'
+          {"name":"@neptu/cli","version":"0.1.0","type":"module"}
+          EOF
+          echo 'export {};' > apps/cli/src/index.ts
 
       - name: Build and push Worker image
         uses: docker/build-push-action@v6
@@ -63,13 +89,6 @@ jobs:
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Deploy API to Container Apps
-        uses: azure/container-apps-deploy-action@v2
-        with:
-          containerAppName: neptu-api${{ env.SUFFIX }}
-          resourceGroup: ${{ secrets.AZURE_RESOURCE_GROUP }}
-          imageToDeploy: ${{ env.REGISTRY }}/${{ env.API_IMAGE }}:${{ github.sha }}
 
       - name: Deploy Worker to Container Apps
         uses: azure/container-apps-deploy-action@v2
