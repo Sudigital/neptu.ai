@@ -61,6 +61,7 @@ brainstorming/neptu/main.py
 !app.json
 !components.json
 !drizzle.config.ts
+!packages/typescript-config/*.json
 **/*-keypair.json
 **/id.json
 **/wallet.json
