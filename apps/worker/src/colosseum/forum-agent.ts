@@ -52,6 +52,8 @@ import {
   type EngagementPlan,
 } from "./engagement-booster";
 import { analyzeTrending, type TrendingInsight } from "./trending-analyzer";
+import type { CacheStore } from "../cache";
+import type { Database } from "@neptu/drizzle-orm";
 import {
   runCosmicProfileCampaign,
   getCampaignProgress,
@@ -67,8 +69,8 @@ export interface ForumAgentEnv {
   COLOSSEUM_API_KEY: string;
   COLOSSEUM_AGENT_ID?: string;
   COLOSSEUM_AGENT_NAME?: string;
-  CACHE: KVNamespace;
-  DB?: D1Database;
+  CACHE: CacheStore;
+  DB?: Database;
 }
 
 const COMMENT_RATE_LIMIT_MS = 2000; // 2 sec between comments
@@ -84,11 +86,11 @@ const MAX_FORUM_VOTES_PER_HEARTBEAT = 10; // 10 per 5min × 12 = 120 votes/hour
 
 export class ForumAgent {
   private client: ColosseumClient;
-  private cache: KVNamespace;
+  private cache: CacheStore;
   private calculator: NeptuCalculator;
   private agentName: string;
   private agentId: string;
-  private db?: D1Database;
+  private db?: Database;
 
   constructor(env: ForumAgentEnv) {
     this.client = new ColosseumClient(env);

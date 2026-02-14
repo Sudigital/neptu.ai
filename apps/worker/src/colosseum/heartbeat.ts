@@ -12,6 +12,8 @@
 
 import { ColosseumClient } from "./client";
 import { ForumAgent } from "./forum-agent";
+import type { CacheStore } from "../cache";
+import type { Database } from "@neptu/drizzle-orm";
 import {
   replyToAllComments,
   smartCommentOnOtherPosts,
@@ -24,8 +26,8 @@ export interface HeartbeatEnv {
   COLOSSEUM_API_KEY: string;
   COLOSSEUM_AGENT_ID?: string;
   COLOSSEUM_AGENT_NAME?: string;
-  CACHE: KVNamespace;
-  DB?: D1Database;
+  CACHE: CacheStore;
+  DB?: Database;
 }
 
 export type HeartbeatPhase =
@@ -50,7 +52,7 @@ export interface HeartbeatResult {
 export class HeartbeatScheduler {
   private client: ColosseumClient;
   private forumAgent: ForumAgent;
-  private cache: KVNamespace;
+  private cache: CacheStore;
 
   constructor(env: HeartbeatEnv) {
     this.client = new ColosseumClient(env);

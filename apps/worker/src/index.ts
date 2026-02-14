@@ -9,22 +9,11 @@ import { HeartbeatScheduler, fetchAndStoreCryptoMarketData } from "./colosseum";
 import { oracle } from "./routes/oracle";
 import { colosseum } from "./routes/colosseum";
 import { crypto } from "./routes/crypto";
+import { redisCache } from "./cache";
+import { startCronJobs } from "./cron";
 
-interface Env {
-  DB: D1Database;
-  AZURE_OPENAI_API_KEY: string;
-  AZURE_OPENAI_ENDPOINT: string;
-  AZURE_OPENAI_DEPLOYMENT: string;
-  AZURE_OPENAI_API_VERSION: string;
-  ENVIRONMENT: string;
-  CACHE: KVNamespace;
-  COLOSSEUM_API_KEY: string;
-  COLOSSEUM_AGENT_ID: string;
-  COLOSSEUM_AGENT_NAME: string;
-  COINGECKO_API_KEY: string;
-}
-
-const app = new Hono<{ Bindings: Env }>();
+const db = createDatabase();
+const app = new Hono();
 
 app.use("*", logger());
 app.use(
@@ -49,7 +38,7 @@ app.get("/health", (c) => {
   return c.json({
     status: "ok",
     timestamp: new Date().toISOString(),
-    environment: c.env.ENVIRONMENT,
+    environment: process.env.ENVIRONMENT,
   });
 });
 
@@ -61,12 +50,11 @@ app.get("/api/daily/:date", async (c) => {
     return c.json({ error: "Invalid date format. Use YYYY-MM-DD" }, 400);
   }
 
-  const cached = await c.env.CACHE.get(`daily:${date}`);
+  const cached = await redisCache.get(`daily:${date}`);
   if (cached) {
     return c.json(JSON.parse(cached));
   }
 
-  const db = createDatabase(c.env.DB);
   const dailyService = new DailyReadingService(db);
   const reading = await dailyService.getDailyReading({ date, type: "peluang" });
 
@@ -74,7 +62,7 @@ app.get("/api/daily/:date", async (c) => {
     return c.json({ error: "Daily reading not found" }, 404);
   }
 
-  await c.env.CACHE.put(`daily:${date}`, JSON.stringify(reading), {
+  await redisCache.put(`daily:${date}`, JSON.stringify(reading), {
     expirationTtl: 86400,
   });
 
@@ -105,8 +93,7 @@ app.onError((err, c) => {
 
 // --- Scheduled helpers ---
 
-async function generateDailyReadings(env: Env): Promise<void> {
-  const db = createDatabase(env.DB);
+async function generateDailyReadings(): Promise<void> {
   const calculator = new NeptuCalculator();
   const dailyService = new DailyReadingService(db);
 
@@ -128,7 +115,6 @@ async function generateDailyReadings(env: Env): Promise<void> {
 }
 
 async function runColosseumHeartbeat(
-  env: Env,
   phase:
     | "reply_comments"
     | "comment_others"
@@ -136,17 +122,16 @@ async function runColosseumHeartbeat(
     | "vote"
     | "other_activity" = "reply_comments",
 ): Promise<void> {
-  if (!env.COLOSSEUM_API_KEY) {
+  if (!process.env.COLOSSEUM_API_KEY) {
     console.log("Colosseum API key not configured, skipping heartbeat");
     return;
   }
 
   const heartbeat = new HeartbeatScheduler({
-    COLOSSEUM_API_KEY: env.COLOSSEUM_API_KEY,
-    COLOSSEUM_AGENT_ID: env.COLOSSEUM_AGENT_ID,
-    COLOSSEUM_AGENT_NAME: env.COLOSSEUM_AGENT_NAME,
-    CACHE: env.CACHE,
-    DB: env.DB,
+    COLOSSEUM_API_KEY: process.env.COLOSSEUM_API_KEY,
+    COLOSSEUM_AGENT_ID: process.env.COLOSSEUM_AGENT_ID!,
+    COLOSSEUM_AGENT_NAME: process.env.COLOSSEUM_AGENT_NAME!,
+    CACHE: redisCache,
   });
 
   try {
@@ -160,73 +145,31 @@ async function runColosseumHeartbeat(
   }
 }
 
-async function refreshCryptoMarketData(env: Env): Promise<void> {
+async function refreshCryptoMarketData(): Promise<void> {
   console.log("Refreshing crypto market data from CoinGecko...");
   try {
-    const result = await fetchAndStoreCryptoMarketData(env.DB);
+    const result = await fetchAndStoreCryptoMarketData(db);
     console.log("Crypto market data refresh:", result);
   } catch (error) {
     console.error("Failed to refresh crypto market data:", error);
   }
 }
 
-export default {
-  fetch: app.fetch,
+// Start BullMQ cron jobs
+await startCronJobs({
+  runHeartbeat: (phase) =>
+    runColosseumHeartbeat(
+      phase as
+        | "reply_comments"
+        | "comment_others"
+        | "post_thread"
+        | "vote"
+        | "other_activity",
+    ),
+  generateDailyReadings: () => generateDailyReadings(),
+  refreshCryptoMarketData: () => refreshCryptoMarketData(),
+});
 
-  async scheduled(
-    event: ScheduledEvent,
-    env: Env,
-    ctx: ExecutionContext,
-  ): Promise<void> {
-    const cronPattern = event.cron;
-
-    // Daily task at midnight ("0 0 * * *")
-    if (cronPattern === "0 0 * * *") {
-      ctx.waitUntil(generateDailyReadings(env));
-      ctx.waitUntil(refreshCryptoMarketData(env));
-      ctx.waitUntil(runColosseumHeartbeat(env, "reply_comments"));
-      return;
-    }
-
-    // Determine phase from cron pattern + current minute
-    const currentMinute = new Date().getMinutes();
-    console.log(
-      `Scheduled event: cron="${cronPattern}" minute=${currentMinute}`,
-    );
-
-    // Every 3 min (3,6,...,54): Reply to comments on own posts
-    if (cronPattern.startsWith("3,6,9")) {
-      ctx.waitUntil(runColosseumHeartbeat(env, "reply_comments"));
-      return;
-    }
-
-    // Every 5 min (5,10,...,55): Comment on other posts
-    // + at minutes divisible by 15 (15,30,45): also vote
-    if (cronPattern.startsWith("5,10,15")) {
-      ctx.waitUntil(runColosseumHeartbeat(env, "comment_others"));
-      if (currentMinute % 15 === 0) {
-        ctx.waitUntil(runColosseumHeartbeat(env, "vote"));
-      }
-      return;
-    }
-
-    // Every 10 min (0,10,...,50): Post new thread
-    // + at minutes divisible by 20 (0,20,40): also other activity
-    if (cronPattern.startsWith("0,10,20,30,40,50")) {
-      if (currentMinute === 0) {
-        ctx.waitUntil(refreshCryptoMarketData(env));
-      }
-      ctx.waitUntil(runColosseumHeartbeat(env, "post_thread"));
-      if (currentMinute % 20 === 0) {
-        ctx.waitUntil(runColosseumHeartbeat(env, "other_activity"));
-      }
-      return;
-    }
-
-    // Fallback
-    console.log(
-      `Unmatched cron pattern: "${cronPattern}", running reply phase`,
-    );
-    ctx.waitUntil(runColosseumHeartbeat(env, "reply_comments"));
-  },
-};
+const port = Number(process.env.PORT || 8080);
+console.log(`Neptu Worker running on port ${port}`);
+Bun.serve({ fetch: app.fetch, port });

@@ -32,8 +32,8 @@ bun.lock
 # Core algorithm (separate private repo)
 packages/wariga/
 
-# Database ORM (schemas, services)
-packages/drizzle-orm/
+# Database ORM (schemas, services) - shared in repo for CI
+# packages/drizzle-orm/
 
 # API server (uses wariga, deploy separately)  
 apps/api/
@@ -61,6 +61,7 @@ brainstorming/neptu/main.py
 !app.json
 !components.json
 !drizzle.config.ts
+!packages/typescript-config/*.json
 **/*-keypair.json
 **/id.json
 **/wallet.json

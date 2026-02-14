@@ -3,6 +3,8 @@
  * Track engagement metrics to optimize agent behavior
  */
 
+import type { CacheStore } from "../cache";
+
 const CACHE_TTL_WEEK = 604800;
 
 export interface AnalyticsData {
@@ -26,7 +28,7 @@ export interface DailyStats {
  * Track an engagement action
  */
 export async function trackEngagement(
-  cache: KVNamespace,
+  cache: CacheStore,
   action: string,
   success: boolean,
   _metadata?: Record<string, unknown>,
@@ -61,7 +63,7 @@ export async function trackEngagement(
 /**
  * Get today's analytics
  */
-export async function getAnalytics(cache: KVNamespace): Promise<AnalyticsData> {
+export async function getAnalytics(cache: CacheStore): Promise<AnalyticsData> {
   const today = new Date().toISOString().split("T")[0];
   const key = `neptu:analytics:${today}`;
   const raw = await cache.get(key);
@@ -72,7 +74,7 @@ export async function getAnalytics(cache: KVNamespace): Promise<AnalyticsData> {
  * Get analytics for a specific date
  */
 export async function getAnalyticsForDate(
-  cache: KVNamespace,
+  cache: CacheStore,
   date: string,
 ): Promise<AnalyticsData> {
   const key = `neptu:analytics:${date}`;
@@ -84,7 +86,7 @@ export async function getAnalyticsForDate(
  * Get analytics for the last N days
  */
 export async function getAnalyticsHistory(
-  cache: KVNamespace,
+  cache: CacheStore,
   days: number,
 ): Promise<Record<string, AnalyticsData>> {
   const history: Record<string, AnalyticsData> = {};
@@ -143,7 +145,7 @@ export function getSummaryStats(data: AnalyticsData): {
  * Track agent engagement limit per agent per day
  */
 export async function checkAgentEngagementLimit(
-  cache: KVNamespace,
+  cache: CacheStore,
   targetAgentName: string,
   maxPerDay: number = 2,
 ): Promise<{ allowed: boolean; currentCount: number }> {
@@ -162,7 +164,7 @@ export async function checkAgentEngagementLimit(
  * Increment agent engagement count
  */
 export async function incrementAgentEngagement(
-  cache: KVNamespace,
+  cache: CacheStore,
   targetAgentName: string,
 ): Promise<void> {
   const today = new Date().toISOString().split("T")[0];

@@ -1,0 +1,94 @@
+# ============================
+# SECURITY — exclude all secrets
+# ============================
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+**/secrets/
+**/credentials/
+**/*.pem
+**/*.key
+**/*.cert
+**/*.p12
+**/*.jks
+
+# ============================
+# GIT & CI/CD
+# ============================
+.git/
+.github/
+.gitignore
+.husky/
+
+# ============================
+# BUILD ARTIFACTS & CACHES
+# ============================
+node_modules/
+.turbo/
+dist/
+**/dist/
+**/.turbo/
+*.log
+
+# ============================
+# APPS NOT NEEDED IN BACKEND (exclude source, keep package.json for workspace resolution)
+# ============================
+apps/web/src/
+apps/web/public/
+apps/web/node_modules/
+apps/mobile/src/
+apps/mobile/assets/
+apps/mobile/node_modules/
+apps/cli/src/
+apps/cli/node_modules/
+
+# ============================
+# BLOCKCHAIN (not needed at runtime)
+# ============================
+blockchain/
+
+# ============================
+# DOCS & BRAINSTORMING (keep docs/package.json for workspace resolution)
+# ============================
+docs/guide/
+docs/public/
+docs/release/
+docs/agent/
+docs/node_modules/
+docs/*.md
+brainstorming/
+
+# ============================
+# SCRIPTS & CONFIG (not needed in image)
+# ============================
+scripts/
+docker-compose.yml
+*.md
+LICENSE
+.prettierignore
+
+# ============================
+# IDE & OS
+# ============================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ============================
+# SOLANA KEYPAIRS
+# ============================
+**/*-keypair.json
+**/target/
+**/test-ledger/
+
+# ============================
+# TEST FILES
+# ============================
+**/__tests__/
+**/*.test.ts
+**/*.spec.ts
+**/vitest.config.*
+**/jest.config.*

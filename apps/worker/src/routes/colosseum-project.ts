@@ -2,28 +2,20 @@
 import { Hono } from "hono";
 import { ColosseumClient } from "../colosseum";
 
-interface Env {
-  CACHE: KVNamespace;
-  COLOSSEUM_API_KEY: string;
-  COLOSSEUM_AGENT_ID: string;
-  COLOSSEUM_AGENT_NAME: string;
-  DB: D1Database;
-}
-
-const colosseumProject = new Hono<{ Bindings: Env }>();
+const colosseumProject = new Hono();
 
 /**
  * POST /api/colosseum/update-posts-url
  */
 colosseumProject.post("/update-posts-url", async (c) => {
-  if (!c.env.COLOSSEUM_API_KEY) {
+  if (!process.env.COLOSSEUM_API_KEY) {
     return c.json({ error: "Colosseum not configured" }, 503);
   }
 
   const client = new ColosseumClient({
-    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
-    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
-    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
+    COLOSSEUM_API_KEY: process.env.COLOSSEUM_API_KEY!,
+    COLOSSEUM_AGENT_ID: process.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: process.env.COLOSSEUM_AGENT_NAME,
   });
 
   const oldUrl = "https://neptu.ai";
@@ -64,14 +56,14 @@ colosseumProject.post("/update-posts-url", async (c) => {
  * Fixes old URLs to colosseum.com/agent-hackathon format
  */
 colosseumProject.post("/fix-arena-url", async (c) => {
-  if (!c.env.COLOSSEUM_API_KEY) {
+  if (!process.env.COLOSSEUM_API_KEY) {
     return c.json({ error: "Colosseum not configured" }, 503);
   }
 
   const client = new ColosseumClient({
-    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
-    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
-    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
+    COLOSSEUM_API_KEY: process.env.COLOSSEUM_API_KEY!,
+    COLOSSEUM_AGENT_ID: process.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: process.env.COLOSSEUM_AGENT_NAME,
   });
 
   const oldUrl = "agenthackathon.colosseum.org/projects/explore";
@@ -140,14 +132,14 @@ colosseumProject.post("/fix-arena-url", async (c) => {
  * POST /api/colosseum/update-project-url
  */
 colosseumProject.post("/update-project-url", async (c) => {
-  if (!c.env.COLOSSEUM_API_KEY) {
+  if (!process.env.COLOSSEUM_API_KEY) {
     return c.json({ error: "Colosseum not configured" }, 503);
   }
 
   const client = new ColosseumClient({
-    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
-    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
-    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
+    COLOSSEUM_API_KEY: process.env.COLOSSEUM_API_KEY!,
+    COLOSSEUM_AGENT_ID: process.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: process.env.COLOSSEUM_AGENT_NAME,
   });
 
   try {
@@ -174,14 +166,14 @@ colosseumProject.post("/update-project-url", async (c) => {
  * POST /api/colosseum/update-project-description
  */
 colosseumProject.post("/update-project-description", async (c) => {
-  if (!c.env.COLOSSEUM_API_KEY) {
+  if (!process.env.COLOSSEUM_API_KEY) {
     return c.json({ error: "Colosseum not configured" }, 503);
   }
 
   const client = new ColosseumClient({
-    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
-    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
-    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
+    COLOSSEUM_API_KEY: process.env.COLOSSEUM_API_KEY!,
+    COLOSSEUM_AGENT_ID: process.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: process.env.COLOSSEUM_AGENT_NAME,
   });
 
   const newDescription = `Neptu is an autonomous AI agent that brings the ancient 1000-year-old Balinese Wuku calendar to Solana. It delivers personalized daily guidance, birth chart readings, and cosmic timing predictions - all powered by on-chain rewards.
@@ -237,14 +229,14 @@ Tech: Anchor programs, SPL Token-2022, Cloudflare Workers, D1 database`;
  * Update the presentation link and optionally submit the project
  */
 colosseumProject.post("/update-presentation", async (c) => {
-  if (!c.env.COLOSSEUM_API_KEY) {
+  if (!process.env.COLOSSEUM_API_KEY) {
     return c.json({ error: "Colosseum not configured" }, 503);
   }
 
   const client = new ColosseumClient({
-    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
-    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
-    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
+    COLOSSEUM_API_KEY: process.env.COLOSSEUM_API_KEY!,
+    COLOSSEUM_AGENT_ID: process.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: process.env.COLOSSEUM_AGENT_NAME,
   });
 
   const presentationLink =
@@ -280,14 +272,14 @@ colosseumProject.post("/update-presentation", async (c) => {
  * POST /api/colosseum/vote-self
  */
 colosseumProject.post("/vote-self", async (c) => {
-  if (!c.env.COLOSSEUM_API_KEY) {
+  if (!process.env.COLOSSEUM_API_KEY) {
     return c.json({ error: "Colosseum not configured" }, 503);
   }
 
   const client = new ColosseumClient({
-    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
-    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
-    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
+    COLOSSEUM_API_KEY: process.env.COLOSSEUM_API_KEY!,
+    COLOSSEUM_AGENT_ID: process.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: process.env.COLOSSEUM_AGENT_NAME,
   });
 
   const NEPTU_PROJECT_ID = 360;

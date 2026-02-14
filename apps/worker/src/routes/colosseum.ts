@@ -8,27 +8,22 @@ import {
 } from "../colosseum/post-creator";
 import { NeptuCalculator } from "@neptu/wariga";
 import { getCryptoWithMarketData } from "../colosseum/crypto-market-fetcher";
+import { createDatabase } from "@neptu/drizzle-orm";
+import { redisCache } from "../cache";
 
-interface Env {
-  CACHE: KVNamespace;
-  COLOSSEUM_API_KEY: string;
-  COLOSSEUM_AGENT_ID: string;
-  COLOSSEUM_AGENT_NAME: string;
-  DB: D1Database;
-}
-
-const colosseum = new Hono<{ Bindings: Env }>();
+const colosseum = new Hono();
+const db = createDatabase();
 
 /** GET /api/colosseum/status */
 colosseum.get("/status", async (c) => {
-  if (!c.env.COLOSSEUM_API_KEY) {
+  if (!process.env.COLOSSEUM_API_KEY) {
     return c.json({ error: "Colosseum not configured" }, 503);
   }
 
   const client = new ColosseumClient({
-    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
-    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
-    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
+    COLOSSEUM_API_KEY: process.env.COLOSSEUM_API_KEY!,
+    COLOSSEUM_AGENT_ID: process.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: process.env.COLOSSEUM_AGENT_NAME,
   });
 
   const status = await client.getStatus();
@@ -38,7 +33,7 @@ colosseum.get("/status", async (c) => {
 /** GET /api/colosseum/project-votes */
 colosseum.get("/project-votes", async (c) => {
   const cacheKey = "colosseum:project:neptu:votes";
-  const cached = await c.env.CACHE.get(cacheKey);
+  const cached = await redisCache.get(cacheKey);
 
   if (cached) {
     return c.json(JSON.parse(cached));
@@ -71,7 +66,7 @@ colosseum.get("/project-votes", async (c) => {
       updatedAt: new Date().toISOString(),
     };
 
-    await c.env.CACHE.put(cacheKey, JSON.stringify(result), {
+    await redisCache.put(cacheKey, JSON.stringify(result), {
       expirationTtl: 300,
     });
 
@@ -85,7 +80,7 @@ colosseum.get("/project-votes", async (c) => {
 /** GET /api/colosseum/agent-stats */
 colosseum.get("/agent-stats", async (c) => {
   const cacheKey = "colosseum:agent:neptu:stats";
-  const cached = await c.env.CACHE.get(cacheKey);
+  const cached = await redisCache.get(cacheKey);
 
   if (cached) {
     return c.json(JSON.parse(cached));
@@ -94,9 +89,9 @@ colosseum.get("/agent-stats", async (c) => {
   try {
     // Fetch project data and agent status in parallel for real-time stats
     const client = new ColosseumClient({
-      COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
-      COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
-      COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
+      COLOSSEUM_API_KEY: process.env.COLOSSEUM_API_KEY!,
+      COLOSSEUM_AGENT_ID: process.env.COLOSSEUM_AGENT_ID,
+      COLOSSEUM_AGENT_NAME: process.env.COLOSSEUM_AGENT_NAME,
     });
 
     const [
@@ -173,7 +168,7 @@ colosseum.get("/agent-stats", async (c) => {
 
     // Best-effort cache — don't fail if KV limit exceeded
     try {
-      await c.env.CACHE.put(cacheKey, JSON.stringify(result), {
+      await redisCache.put(cacheKey, JSON.stringify(result), {
         expirationTtl: 300,
       });
     } catch {
@@ -191,16 +186,16 @@ colosseum.get("/agent-stats", async (c) => {
 
 /** POST /api/colosseum/heartbeat */
 colosseum.post("/heartbeat", async (c) => {
-  if (!c.env.COLOSSEUM_API_KEY) {
+  if (!process.env.COLOSSEUM_API_KEY) {
     return c.json({ error: "Colosseum not configured" }, 503);
   }
 
   const heartbeat = new HeartbeatScheduler({
-    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
-    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
-    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
-    CACHE: c.env.CACHE,
-    DB: c.env.DB,
+    COLOSSEUM_API_KEY: process.env.COLOSSEUM_API_KEY!,
+    COLOSSEUM_AGENT_ID: process.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: process.env.COLOSSEUM_AGENT_NAME,
+    CACHE: redisCache,
+    DB: db,
   });
 
   const phase =
@@ -217,18 +212,18 @@ colosseum.post("/heartbeat", async (c) => {
 
 /** GET /api/colosseum/debug-comments — shows raw comment data for debugging */
 colosseum.get("/debug-comments", async (c) => {
-  if (!c.env.COLOSSEUM_API_KEY) {
+  if (!process.env.COLOSSEUM_API_KEY) {
     return c.json({ error: "Colosseum not configured" }, 503);
   }
 
   const client = new ColosseumClient({
-    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
-    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
-    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
+    COLOSSEUM_API_KEY: process.env.COLOSSEUM_API_KEY!,
+    COLOSSEUM_AGENT_ID: process.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: process.env.COLOSSEUM_AGENT_NAME,
   });
 
-  const selfName = (c.env.COLOSSEUM_AGENT_NAME || "neptu").toLowerCase();
-  const selfId = parseInt(c.env.COLOSSEUM_AGENT_ID || "206");
+  const selfName = (process.env.COLOSSEUM_AGENT_NAME || "neptu").toLowerCase();
+  const selfId = parseInt(process.env.COLOSSEUM_AGENT_ID || "206");
   const { posts } = await client.getMyPosts({ limit: 3 });
 
   const debugData = [];
@@ -257,15 +252,15 @@ colosseum.get("/debug-comments", async (c) => {
 
 /** POST /api/colosseum/post-intro */
 colosseum.post("/post-intro", async (c) => {
-  if (!c.env.COLOSSEUM_API_KEY) {
+  if (!process.env.COLOSSEUM_API_KEY) {
     return c.json({ error: "Colosseum not configured" }, 503);
   }
 
   const forumAgent = new ForumAgent({
-    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
-    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
-    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
-    CACHE: c.env.CACHE,
+    COLOSSEUM_API_KEY: process.env.COLOSSEUM_API_KEY!,
+    COLOSSEUM_AGENT_ID: process.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: process.env.COLOSSEUM_AGENT_NAME,
+    CACHE: redisCache,
   });
 
   const post = await forumAgent.postIntroduction();
@@ -274,15 +269,15 @@ colosseum.post("/post-intro", async (c) => {
 
 /** POST /api/colosseum/post-predictions */
 colosseum.post("/post-predictions", async (c) => {
-  if (!c.env.COLOSSEUM_API_KEY) {
+  if (!process.env.COLOSSEUM_API_KEY) {
     return c.json({ error: "Colosseum not configured" }, 503);
   }
 
   const forumAgent = new ForumAgent({
-    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
-    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
-    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
-    CACHE: c.env.CACHE,
+    COLOSSEUM_API_KEY: process.env.COLOSSEUM_API_KEY!,
+    COLOSSEUM_AGENT_ID: process.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: process.env.COLOSSEUM_AGENT_NAME,
+    CACHE: redisCache,
   });
 
   const post = await forumAgent.postPeluangPredictions();
@@ -293,15 +288,15 @@ colosseum.post("/post-predictions", async (c) => {
  * POST /api/colosseum/post-voter-rewards
  */
 colosseum.post("/post-voter-rewards", async (c) => {
-  if (!c.env.COLOSSEUM_API_KEY) {
+  if (!process.env.COLOSSEUM_API_KEY) {
     return c.json({ error: "Colosseum not configured" }, 503);
   }
 
   const forumAgent = new ForumAgent({
-    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
-    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
-    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
-    CACHE: c.env.CACHE,
+    COLOSSEUM_API_KEY: process.env.COLOSSEUM_API_KEY!,
+    COLOSSEUM_AGENT_ID: process.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: process.env.COLOSSEUM_AGENT_NAME,
+    CACHE: redisCache,
   });
 
   const post = await forumAgent.postVoterRewards();
@@ -313,12 +308,12 @@ colosseum.post("/post-voter-rewards", async (c) => {
  * Post a market mover alert for a specific coin
  */
 colosseum.post("/post-market-alert/:symbol", async (c) => {
-  if (!c.env.COLOSSEUM_API_KEY) {
+  if (!process.env.COLOSSEUM_API_KEY) {
     return c.json({ error: "Colosseum not configured" }, 503);
   }
 
   const symbol = c.req.param("symbol").toUpperCase();
-  const cryptosWithMarket = await getCryptoWithMarketData(c.env.DB);
+  const cryptosWithMarket = await getCryptoWithMarketData(db);
   const coinData = cryptosWithMarket.find((coin) => coin.symbol === symbol);
 
   if (!coinData) {
@@ -326,9 +321,9 @@ colosseum.post("/post-market-alert/:symbol", async (c) => {
   }
 
   const client = new ColosseumClient({
-    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
-    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
-    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
+    COLOSSEUM_API_KEY: process.env.COLOSSEUM_API_KEY!,
+    COLOSSEUM_AGENT_ID: process.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: process.env.COLOSSEUM_AGENT_NAME,
   });
 
   const calculator = new NeptuCalculator();
@@ -336,7 +331,7 @@ colosseum.post("/post-market-alert/:symbol", async (c) => {
     client,
     calculator,
     coinData,
-    c.env.CACHE,
+    redisCache,
   );
   return c.json({ success: true, post });
 });
@@ -346,16 +341,16 @@ colosseum.post("/post-market-alert/:symbol", async (c) => {
  * Post market sentiment report with BTC dominance and market overview
  */
 colosseum.post("/post-market-sentiment", async (c) => {
-  if (!c.env.COLOSSEUM_API_KEY) {
+  if (!process.env.COLOSSEUM_API_KEY) {
     return c.json({ error: "Colosseum not configured" }, 503);
   }
 
-  const cryptosWithMarket = await getCryptoWithMarketData(c.env.DB);
+  const cryptosWithMarket = await getCryptoWithMarketData(db);
 
   const client = new ColosseumClient({
-    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
-    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
-    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
+    COLOSSEUM_API_KEY: process.env.COLOSSEUM_API_KEY!,
+    COLOSSEUM_AGENT_ID: process.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: process.env.COLOSSEUM_AGENT_NAME,
   });
 
   const calculator = new NeptuCalculator();
@@ -363,7 +358,7 @@ colosseum.post("/post-market-sentiment", async (c) => {
     client,
     calculator,
     cryptosWithMarket,
-    c.env.CACHE,
+    redisCache,
   );
   return c.json({ success: true, post });
 });
@@ -380,10 +375,10 @@ colosseum.get("/reading/:birthDate", async (c) => {
   }
 
   const forumAgent = new ForumAgent({
-    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY || "",
-    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
-    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
-    CACHE: c.env.CACHE,
+    COLOSSEUM_API_KEY: process.env.COLOSSEUM_API_KEY || "",
+    COLOSSEUM_AGENT_ID: process.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: process.env.COLOSSEUM_AGENT_NAME,
+    CACHE: redisCache,
   });
 
   const reading = forumAgent.generatePeluangReading(birthDate, targetDate);
@@ -394,14 +389,14 @@ colosseum.get("/reading/:birthDate", async (c) => {
  * GET /api/colosseum/leaderboard
  */
 colosseum.get("/leaderboard", async (c) => {
-  if (!c.env.COLOSSEUM_API_KEY) {
+  if (!process.env.COLOSSEUM_API_KEY) {
     return c.json({ error: "Colosseum not configured" }, 503);
   }
 
   const client = new ColosseumClient({
-    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
-    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
-    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
+    COLOSSEUM_API_KEY: process.env.COLOSSEUM_API_KEY!,
+    COLOSSEUM_AGENT_ID: process.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: process.env.COLOSSEUM_AGENT_NAME,
   });
 
   const leaderboard = await client.getLeaderboard();
@@ -412,7 +407,7 @@ colosseum.get("/leaderboard", async (c) => {
  * GET /api/colosseum/forum
  */
 colosseum.get("/forum", async (c) => {
-  if (!c.env.COLOSSEUM_API_KEY) {
+  if (!process.env.COLOSSEUM_API_KEY) {
     return c.json({ error: "Colosseum not configured" }, 503);
   }
 
@@ -420,9 +415,9 @@ colosseum.get("/forum", async (c) => {
   const limit = parseInt(c.req.query("limit") || "20");
 
   const client = new ColosseumClient({
-    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
-    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
-    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
+    COLOSSEUM_API_KEY: process.env.COLOSSEUM_API_KEY!,
+    COLOSSEUM_AGENT_ID: process.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: process.env.COLOSSEUM_AGENT_NAME,
   });
 
   const posts = await client.listPosts({ sort, limit });
@@ -431,7 +426,7 @@ colosseum.get("/forum", async (c) => {
 
 /** POST /api/colosseum/cosmic-update — Force update existing cosmic posts (KV-free) */
 colosseum.post("/cosmic-update", async (c) => {
-  if (!c.env.COLOSSEUM_API_KEY) {
+  if (!process.env.COLOSSEUM_API_KEY) {
     return c.json({ error: "Colosseum not configured" }, 503);
   }
 
@@ -444,9 +439,9 @@ colosseum.post("/cosmic-update", async (c) => {
   } = await import("../colosseum");
 
   const client = new ColosseumClient({
-    COLOSSEUM_API_KEY: c.env.COLOSSEUM_API_KEY,
-    COLOSSEUM_AGENT_ID: c.env.COLOSSEUM_AGENT_ID,
-    COLOSSEUM_AGENT_NAME: c.env.COLOSSEUM_AGENT_NAME,
+    COLOSSEUM_API_KEY: process.env.COLOSSEUM_API_KEY!,
+    COLOSSEUM_AGENT_ID: process.env.COLOSSEUM_AGENT_ID,
+    COLOSSEUM_AGENT_NAME: process.env.COLOSSEUM_AGENT_NAME,
   });
   const calculator = new NeptuCalculator();
 

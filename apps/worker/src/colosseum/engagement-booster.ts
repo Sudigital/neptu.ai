@@ -17,6 +17,7 @@ import {
   type TrendingInsight,
 } from "./trending-analyzer";
 import { generateTrendingComment } from "./content-optimizer";
+import type { CacheStore } from "../cache";
 
 // ─── Types ───
 
@@ -58,7 +59,7 @@ export interface OwnPostBoost {
  */
 export async function trackReciprocity(
   client: ColosseumClient,
-  cache: KVNamespace,
+  cache: CacheStore,
   agentName: string,
 ): Promise<string[]> {
   const reciprocalAgents: string[] = [];
@@ -96,7 +97,7 @@ export async function trackReciprocity(
  * Check if an agent has engaged with us before (reciprocity check).
  */
 export async function isReciprocalAgent(
-  cache: KVNamespace,
+  cache: CacheStore,
   agentName: string,
 ): Promise<boolean> {
   const key = `neptu:reciprocal:${agentName}`;
@@ -112,7 +113,7 @@ export async function isReciprocalAgent(
  */
 export async function createEngagementPlan(
   client: ColosseumClient,
-  cache: KVNamespace,
+  cache: CacheStore,
   agentName: string,
 ): Promise<EngagementPlan> {
   // Analyze trending in parallel with reciprocity tracking
@@ -206,7 +207,7 @@ export async function createEngagementPlan(
  */
 export async function executeEngagementPlan(
   client: ColosseumClient,
-  cache: KVNamespace,
+  cache: CacheStore,
   plan: EngagementPlan,
   maxComments: number = 2,
 ): Promise<{ commented: number; targets: string[] }> {

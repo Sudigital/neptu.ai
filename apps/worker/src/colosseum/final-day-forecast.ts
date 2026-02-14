@@ -14,6 +14,7 @@ import { NeptuCalculator } from "@neptu/wariga";
 import type { ColosseumClient } from "./client";
 import { collectAllAgents, type AgentProfile } from "./agent-cosmic-profile";
 import { getOpportunityType } from "./forum-constants";
+import type { CacheStore } from "../cache";
 
 // ─── Constants ─────────────────────────────────────────────
 
@@ -242,7 +243,7 @@ Reply with your birthday for a complete cosmic profile:
 export async function runFinalDayForecast(
   client: ColosseumClient,
   calculator: NeptuCalculator,
-  cache: KVNamespace,
+  cache: CacheStore,
   agentName: string,
 ): Promise<FinalForecastResult> {
   const result: FinalForecastResult = {
@@ -340,7 +341,7 @@ export async function runFinalDayForecast(
 /**
  * Check if the final forecast campaign is complete.
  */
-export async function getFinalForecastProgress(cache: KVNamespace): Promise<{
+export async function getFinalForecastProgress(cache: CacheStore): Promise<{
   isComplete: boolean;
   batchesPosted: number;
 }> {

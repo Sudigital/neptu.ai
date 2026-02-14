@@ -32,6 +32,7 @@
  */
 
 import type { ForumPost, ColosseumClient } from "./client";
+import type { CacheStore } from "../cache";
 
 // ─── Types ───
 
@@ -369,7 +370,7 @@ export async function analyzeTrending(
  * Store in KV: `neptu:post_score:{postId}:{timestamp}` → score
  */
 export async function trackPostScore(
-  cache: KVNamespace,
+  cache: CacheStore,
   postId: number,
   score: number,
   commentCount: number,
@@ -387,7 +388,7 @@ export async function trackPostScore(
  * Calculate score delta for our posts (score gained in last N hours).
  */
 export async function getScoreDelta(
-  cache: KVNamespace,
+  cache: CacheStore,
   postId: number,
   hoursAgo: number = 6,
 ): Promise<{ scoreDelta: number; commentDelta: number }> {

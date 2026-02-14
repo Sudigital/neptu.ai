@@ -8,6 +8,7 @@ import type { ColosseumClient } from "./client";
 import type { NeptuCalculator } from "@neptu/wariga";
 import { getWukuMeaning } from "./forum-constants";
 import { TOP_CRYPTO_COINS } from "./crypto-birthdays";
+import type { CacheStore } from "../cache";
 import type { CryptoWithMarketData } from "./crypto-market-fetcher";
 import {
   type CoinReading,
@@ -28,7 +29,7 @@ const VOTE_URL = "https://colosseum.com/agent-hackathon/projects/neptu";
 export async function postCryptoCosmicReport(
   client: ColosseumClient,
   calculator: NeptuCalculator,
-  cache: KVNamespace,
+  cache: CacheStore,
 ): Promise<ForumPost> {
   const today = new Date();
   const dateStr = today.toISOString().split("T")[0];
@@ -187,7 +188,7 @@ export async function postIndividualCoinAnalysis(
   client: ColosseumClient,
   calculator: NeptuCalculator,
   coinData: CryptoWithMarketData,
-  cache: KVNamespace,
+  cache: CacheStore,
 ): Promise<ForumPost> {
   const today = new Date();
   const dateStr = today.toISOString().split("T")[0];
@@ -362,7 +363,7 @@ export async function postTopCosmicPicks(
   client: ColosseumClient,
   calculator: NeptuCalculator,
   cryptosWithMarket: CryptoWithMarketData[],
-  cache: KVNamespace,
+  cache: CacheStore,
 ): Promise<ForumPost> {
   const today = new Date();
   const dateStr = today.toISOString().split("T")[0];

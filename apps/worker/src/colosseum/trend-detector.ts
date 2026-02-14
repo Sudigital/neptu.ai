@@ -6,6 +6,7 @@ import {
   getTrendTemplate,
   generateTrendAwareComment,
 } from "./trend-templates";
+import type { CacheStore } from "../cache";
 
 export { generateTrendAwareComment };
 
@@ -70,7 +71,7 @@ export async function detectHotTopics(
 
 /** Check if we should post a trend response */
 export async function shouldPostTrendResponse(
-  cache: KVNamespace,
+  cache: CacheStore,
   opportunity: string,
 ): Promise<boolean> {
   // Check if already posted about this trend
@@ -94,7 +95,7 @@ export async function shouldPostTrendResponse(
 /** Post a trend-responsive thread */
 export async function postTrendResponse(
   client: ColosseumClient,
-  cache: KVNamespace,
+  cache: CacheStore,
   opportunity: string,
   relatedPosts: ForumPost[],
 ): Promise<ForumPost | null> {

@@ -661,6 +661,7 @@ export const CORS_ALLOWED_ORIGINS = [
   "https://neptu.sudigital.com",
   "https://neptu-web-production.pages.dev",
   "http://localhost:3001",
+  "http://localhost:3000",
 ] as const;
 
 // ============================================================================

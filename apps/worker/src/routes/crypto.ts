@@ -14,16 +14,11 @@ import {
   fetchAndStoreCryptoMarketData,
   getCryptoWithMarketData,
 } from "../colosseum";
+import { createDatabase } from "@neptu/drizzle-orm";
+import { redisCache } from "../cache";
 
-interface Env {
-  DB: D1Database;
-  CACHE: KVNamespace;
-  COINGECKO_API_KEY: string;
-}
-
-const crypto = new Hono<{ Bindings: Env }>();
-
-const CACHE_DOMAIN = "https://worker.neptu.sudigital.com";
+const crypto = new Hono();
+const db = createDatabase();
 
 function calculateAlignmentScore(totalUrip: number): number {
   return Math.min(
@@ -59,7 +54,7 @@ crypto.get("/market", async (c) => {
   try {
     const calculator = new NeptuCalculator();
     const today = new Date();
-    const data = await getCryptoWithMarketData(c.env.DB);
+    const data = await getCryptoWithMarketData(db);
 
     const dataWithCosmic = data.map((coin) => {
       const coinBirthDate = new Date(coin.birthday);
@@ -141,7 +136,7 @@ crypto.get("/birthdays", (c) => {
  */
 crypto.post("/refresh", async (c) => {
   try {
-    const result = await fetchAndStoreCryptoMarketData(c.env.DB);
+    const result = await fetchAndStoreCryptoMarketData(db);
     return c.json(result);
   } catch (error) {
     return c.json(
@@ -169,24 +164,17 @@ crypto.get("/chart/:id", async (c) => {
     return c.json({ error: "Invalid id or days param" }, 400);
   }
 
-  const cacheKey = new Request(
-    `${CACHE_DOMAIN}/_cache/chart/${coinId}/${days}`,
-  );
-  const cache = caches.default;
+  const cacheKey = `chart:${coinId}:${days}`;
 
-  const cached = await cache.match(cacheKey);
+  const cached = await redisCache.get(cacheKey);
   if (cached) {
-    return new Response(cached.body, {
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "X-Cache": "HIT",
-      },
+    return c.json(JSON.parse(cached), 200, {
+      "X-Cache": "HIT",
     });
   }
 
   const chartUrl = `${COINGECKO_API.BASE_URL}${COINGECKO_API.CHART_ENDPOINT.replace("{id}", coinId)}?vs_currency=${COINGECKO_API.VS_CURRENCY}&days=${days}`;
-  const apiKey = c.env.COINGECKO_API_KEY;
+  const apiKey = process.env.COINGECKO_API_KEY;
 
   const fetchHeaders: Record<string, string> = {
     Accept: "application/json",
@@ -209,18 +197,12 @@ crypto.get("/chart/:id", async (c) => {
   const body = await res.text();
 
   const ttl = CHART_CACHE_TTL[days] ?? CHART_CACHE_TTL["365"];
-  const response = new Response(body, {
-    headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": `public, max-age=${ttl}`,
-      "Access-Control-Allow-Origin": "*",
-      "X-Cache": "MISS",
-    },
+
+  redisCache.put(cacheKey, body, { expirationTtl: ttl });
+
+  return c.json(JSON.parse(body), 200, {
+    "X-Cache": "MISS",
   });
-
-  c.executionCtx.waitUntil(cache.put(cacheKey, response.clone()));
-
-  return response;
 });
 
 /**
@@ -241,7 +223,7 @@ crypto.get("/cosmic/:birthDate", async (c) => {
     const userPotensi = calculator.calculatePotensi(birthDate);
     const todayPeluang = calculator.calculatePeluang(today, birthDate);
 
-    const cryptoData = await getCryptoWithMarketData(c.env.DB);
+    const cryptoData = await getCryptoWithMarketData(db);
 
     const cosmicReadings = cryptoData.map((coin) => {
       const coinBirthDate = new Date(coin.birthday);

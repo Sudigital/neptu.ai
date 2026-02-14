@@ -4,6 +4,7 @@
  */
 
 import type { ForumPost, ColosseumClient, Project } from "./client";
+import type { CacheStore } from "../cache";
 
 // Thresholds for vote scoring
 const SCORE_THRESHOLD_VOTE = 3; // Moderate threshold for quality voting
@@ -108,7 +109,7 @@ export function evaluateProject(project: Project): {
  */
 export async function voteOnProjectsStrategically(
   client: ColosseumClient,
-  cache: KVNamespace,
+  cache: CacheStore,
   _myTeamId: number | null, // Reserved for future team-based filtering
 ): Promise<ProjectVoteResult> {
   const result: ProjectVoteResult = {
@@ -227,7 +228,7 @@ function getPostAgeHours(post: ForumPost): number {
  */
 export async function runIntelligentVoting(
   client: ColosseumClient,
-  cache: KVNamespace,
+  cache: CacheStore,
   agentName: string,
 ): Promise<VoteResult> {
   const result: VoteResult = {
