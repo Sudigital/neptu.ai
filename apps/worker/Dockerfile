@@ -17,7 +17,7 @@ COPY packages/eslint-config/package.json packages/eslint-config/
 COPY packages/typescript-config/package.json packages/typescript-config/
 
 # Install production dependencies only
-RUN bun install --frozen-lockfile --production --ignore-scripts
+RUN bun install --production --ignore-scripts
 
 # Copy application source
 COPY apps/worker/src apps/worker/src
