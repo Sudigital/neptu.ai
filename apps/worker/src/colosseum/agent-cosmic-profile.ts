@@ -21,6 +21,7 @@
 import { NeptuCalculator } from "@neptu/wariga";
 import type { ColosseumClient, Project } from "./client";
 import { getOpportunityType, getWukuMeaning } from "./forum-constants";
+import type { CacheStore } from "../cache";
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -121,7 +122,7 @@ export function hashAgentNameToDate(name: string): string {
  */
 export async function collectAllAgents(
   client: ColosseumClient,
-  cache: KVNamespace,
+  cache: CacheStore,
 ): Promise<AgentProfile[]> {
   // Check cache first
   const cached = await cache.get(AGENT_CACHE_KEY);
@@ -503,7 +504,7 @@ Full Potensi (birth potential) + Peluang (today's opportunity) + character insig
 export async function runCosmicProfileCampaign(
   client: ColosseumClient,
   calculator: NeptuCalculator,
-  cache: KVNamespace,
+  cache: CacheStore,
   agentName: string,
 ): Promise<CampaignResult> {
   const result: CampaignResult = {
@@ -608,7 +609,7 @@ export async function runCosmicProfileCampaign(
 /**
  * Check campaign progress.
  */
-export async function getCampaignProgress(cache: KVNamespace): Promise<{
+export async function getCampaignProgress(cache: CacheStore): Promise<{
   isComplete: boolean;
   batchesPosted: number;
   agentsCached: number;
@@ -646,7 +647,7 @@ export async function getCampaignProgress(cache: KVNamespace): Promise<{
 /**
  * Reset campaign (in case you need to start over).
  */
-export async function resetCampaign(cache: KVNamespace): Promise<void> {
+export async function resetCampaign(cache: CacheStore): Promise<void> {
   await cache.delete(AGENT_CACHE_KEY);
   await cache.delete(BATCH_STATUS_KEY);
 }

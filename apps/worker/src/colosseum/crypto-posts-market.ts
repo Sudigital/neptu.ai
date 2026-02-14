@@ -8,6 +8,7 @@ import type { ColosseumClient } from "./client";
 import type { NeptuCalculator } from "@neptu/wariga";
 import { getWukuMeaning } from "./forum-constants";
 import type { CryptoWithMarketData } from "./crypto-market-fetcher";
+import type { CacheStore } from "../cache";
 import {
   calculatePricePosition,
   getFibonacciLevel,
@@ -26,7 +27,7 @@ export async function postMarketMoverAlert(
   client: ColosseumClient,
   calculator: NeptuCalculator,
   coinData: CryptoWithMarketData,
-  cache: KVNamespace,
+  cache: CacheStore,
 ): Promise<ForumPost> {
   const today = new Date();
   const dateStr = today.toISOString().split("T")[0];
@@ -202,7 +203,7 @@ export async function postMarketSentimentReport(
   client: ColosseumClient,
   calculator: NeptuCalculator,
   cryptosWithMarket: CryptoWithMarketData[],
-  cache: KVNamespace,
+  cache: CacheStore,
 ): Promise<ForumPost> {
   const today = new Date();
   const dateStr = today.toISOString().split("T")[0];

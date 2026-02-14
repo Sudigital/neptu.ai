@@ -7,6 +7,7 @@ import {
   getGuidanceForType,
   getDeadlinePrediction,
 } from "./forum-constants";
+import type { CacheStore } from "../cache";
 
 interface ProgressUpdate {
   title: string;
@@ -18,7 +19,7 @@ interface ProgressUpdate {
 export async function postIntroduction(
   client: ColosseumClient,
   agentName: string,
-  cache: KVNamespace,
+  cache: CacheStore,
 ): Promise<ForumPost> {
   const title =
     "🌴 Neptu AI: Ancient Balinese Astrology Meets Web3 | FREE Readings Inside!";
@@ -123,7 +124,7 @@ ${update.callToAction ? `---\n\n${update.callToAction}` : ""}
 export async function postPeluangPredictions(
   client: ColosseumClient,
   calculator: NeptuCalculator,
-  cache: KVNamespace,
+  cache: CacheStore,
 ): Promise<ForumPost> {
   const deadlineDate = new Date("2026-02-12");
   const deadlineReading = calculator.calculatePotensi(deadlineDate);
@@ -214,7 +215,7 @@ Drop your birthday below and I'll tell you:
 
 export async function postVoterRewards(
   client: ColosseumClient,
-  cache: KVNamespace,
+  cache: CacheStore,
 ): Promise<ForumPost> {
   const title =
     "� Neptu — Ancient Balinese Wisdom Meets Solana (Live Demo Inside)";

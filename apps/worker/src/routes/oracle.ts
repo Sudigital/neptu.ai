@@ -3,17 +3,9 @@ import { Hono } from "hono";
 import { NeptuCalculator } from "@neptu/wariga";
 import { NeptuOracle } from "../ai/oracle";
 import { postProcessResponse } from "../ai/prompts";
+import { redisCache } from "../cache";
 
-interface Env {
-  DB: D1Database;
-  AZURE_OPENAI_API_KEY: string;
-  AZURE_OPENAI_ENDPOINT: string;
-  AZURE_OPENAI_DEPLOYMENT: string;
-  AZURE_OPENAI_API_VERSION: string;
-  CACHE: KVNamespace;
-}
-
-const oracle = new Hono<{ Bindings: Env }>();
+const oracle = new Hono();
 
 /**
  * POST /api/oracle
@@ -31,17 +23,17 @@ oracle.post("/", async (c) => {
     return c.json({ error: "question and birthDate are required" }, 400);
   }
 
-  if (!c.env.AZURE_OPENAI_API_KEY) {
+  if (!process.env.AZURE_OPENAI_API_KEY) {
     return c.json({ error: "AI oracle not configured" }, 503);
   }
 
   try {
     const calculator = new NeptuCalculator();
     const oracleAI = new NeptuOracle({
-      apiKey: c.env.AZURE_OPENAI_API_KEY,
-      endpoint: c.env.AZURE_OPENAI_ENDPOINT,
-      deployment: c.env.AZURE_OPENAI_DEPLOYMENT,
-      apiVersion: c.env.AZURE_OPENAI_API_VERSION,
+      apiKey: process.env.AZURE_OPENAI_API_KEY!,
+      endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+      deployment: process.env.AZURE_OPENAI_DEPLOYMENT,
+      apiVersion: process.env.AZURE_OPENAI_API_VERSION,
     });
 
     const birthDate = new Date(body.birthDate);
@@ -58,7 +50,7 @@ oracle.post("/", async (c) => {
       body.question,
       potensi,
       peluang,
-      c.env.CACHE,
+      redisCache,
       language,
     );
 
@@ -92,17 +84,17 @@ oracle.get("/daily/:birthDate", async (c) => {
     return c.json({ error: "Invalid date format. Use YYYY-MM-DD" }, 400);
   }
 
-  if (!c.env.AZURE_OPENAI_API_KEY) {
+  if (!process.env.AZURE_OPENAI_API_KEY) {
     return c.json({ error: "AI oracle not configured" }, 503);
   }
 
   try {
     const calculator = new NeptuCalculator();
     const oracleAI = new NeptuOracle({
-      apiKey: c.env.AZURE_OPENAI_API_KEY,
-      endpoint: c.env.AZURE_OPENAI_ENDPOINT,
-      deployment: c.env.AZURE_OPENAI_DEPLOYMENT,
-      apiVersion: c.env.AZURE_OPENAI_API_VERSION,
+      apiKey: process.env.AZURE_OPENAI_API_KEY!,
+      endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+      deployment: process.env.AZURE_OPENAI_DEPLOYMENT,
+      apiVersion: process.env.AZURE_OPENAI_API_VERSION,
     });
 
     const birthDate = new Date(birthDateStr);
@@ -114,7 +106,7 @@ oracle.get("/daily/:birthDate", async (c) => {
     const response = await oracleAI.getDailyInterpretation(
       potensi,
       peluang,
-      c.env.CACHE,
+      redisCache,
       language,
     );
 
@@ -151,7 +143,7 @@ oracle.post("/interpret", async (c) => {
     return c.json({ error: "birthDate and targetDate are required" }, 400);
   }
 
-  if (!c.env.AZURE_OPENAI_API_KEY) {
+  if (!process.env.AZURE_OPENAI_API_KEY) {
     return c.json({ error: "AI oracle not configured" }, 503);
   }
 
@@ -159,7 +151,7 @@ oracle.post("/interpret", async (c) => {
 
   // Check cache first (include language in cache key)
   const cacheKey = `interpret:${body.birthDate}:${body.targetDate}:${language}`;
-  const cached = await c.env.CACHE.get(cacheKey);
+  const cached = await redisCache.get(cacheKey);
   if (cached) {
     return c.json({
       success: true,
@@ -172,10 +164,10 @@ oracle.post("/interpret", async (c) => {
   try {
     const calculator = new NeptuCalculator();
     const oracleAI = new NeptuOracle({
-      apiKey: c.env.AZURE_OPENAI_API_KEY,
-      endpoint: c.env.AZURE_OPENAI_ENDPOINT,
-      deployment: c.env.AZURE_OPENAI_DEPLOYMENT,
-      apiVersion: c.env.AZURE_OPENAI_API_VERSION,
+      apiKey: process.env.AZURE_OPENAI_API_KEY!,
+      endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+      deployment: process.env.AZURE_OPENAI_DEPLOYMENT,
+      apiVersion: process.env.AZURE_OPENAI_API_VERSION,
     });
 
     const birthDate = new Date(body.birthDate);
@@ -188,13 +180,13 @@ oracle.post("/interpret", async (c) => {
       potensi,
       peluang,
       targetDate,
-      c.env.CACHE,
+      redisCache,
       language,
     );
 
     // Cache for 6 hours (non-critical — don't fail if KV limit reached)
     try {
-      await c.env.CACHE.put(cacheKey, interpretation, { expirationTtl: 21600 });
+      await redisCache.put(cacheKey, interpretation, { expirationTtl: 21600 });
     } catch (cacheErr) {
       console.warn("[Oracle] Cache put failed (KV limit?):", cacheErr);
     }
@@ -233,14 +225,14 @@ oracle.post("/compatibility", async (c) => {
     return c.json({ error: "birthDate1 and birthDate2 are required" }, 400);
   }
 
-  if (!c.env.AZURE_OPENAI_API_KEY) {
+  if (!process.env.AZURE_OPENAI_API_KEY) {
     return c.json({ error: "AI oracle not configured" }, 503);
   }
 
   const language = body.language || "en";
 
   const cacheKey = `compat:${body.birthDate1}:${body.birthDate2}:${language}`;
-  const cached = await c.env.CACHE.get(cacheKey);
+  const cached = await redisCache.get(cacheKey);
   if (cached) {
     return c.json({
       success: true,
@@ -252,10 +244,10 @@ oracle.post("/compatibility", async (c) => {
   try {
     const calculator = new NeptuCalculator();
     const oracleAI = new NeptuOracle({
-      apiKey: c.env.AZURE_OPENAI_API_KEY,
-      endpoint: c.env.AZURE_OPENAI_ENDPOINT,
-      deployment: c.env.AZURE_OPENAI_DEPLOYMENT,
-      apiVersion: c.env.AZURE_OPENAI_API_VERSION,
+      apiKey: process.env.AZURE_OPENAI_API_KEY!,
+      endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+      deployment: process.env.AZURE_OPENAI_DEPLOYMENT,
+      apiVersion: process.env.AZURE_OPENAI_API_VERSION,
     });
 
     const date1 = new Date(body.birthDate1);
@@ -264,7 +256,7 @@ oracle.post("/compatibility", async (c) => {
 
     const response = await oracleAI.getCompatibilityInterpretation(
       result,
-      c.env.CACHE,
+      redisCache,
       language,
     );
 

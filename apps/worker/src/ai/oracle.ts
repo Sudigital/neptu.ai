@@ -1,5 +1,6 @@
 import type { Potensi, Peluang, CompatibilityResult } from "@neptu/shared";
 import { AzureOpenAI } from "openai";
+import type { CacheStore } from "../cache";
 import {
   getSystemPrompt,
   generateUserPrompt,
@@ -82,9 +83,7 @@ export class NeptuOracle {
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
       ],
-      max_tokens: this.maxTokens,
-      temperature: 0.7,
-      top_p: 1,
+      max_completion_tokens: this.maxTokens,
       model: this.deployment,
     });
 
@@ -101,7 +100,7 @@ export class NeptuOracle {
     question: string,
     potensi: Potensi,
     peluang?: Peluang,
-    cache?: KVNamespace,
+    cache?: CacheStore,
     language: string = "en",
   ): Promise<OracleResponse> {
     const potensiHash = this.hashString(
@@ -151,7 +150,7 @@ export class NeptuOracle {
   async getDailyInterpretation(
     potensi: Potensi,
     peluang: Peluang,
-    cache?: KVNamespace,
+    cache?: CacheStore,
     language: string = "en",
   ): Promise<OracleResponse> {
     const cacheKey = `daily:${potensi.date}:${peluang.date}:${language}`;
@@ -195,7 +194,7 @@ export class NeptuOracle {
     potensi: Potensi,
     peluang: Peluang,
     targetDate: Date,
-    _cache?: KVNamespace,
+    _cache?: CacheStore,
     language: string = "en",
   ): Promise<string> {
     const userPrompt = generateDateInterpretationPrompt(
@@ -218,7 +217,7 @@ export class NeptuOracle {
    */
   async getCompatibilityInterpretation(
     result: CompatibilityResult,
-    cache?: KVNamespace,
+    cache?: CacheStore,
     language: string = "en",
   ): Promise<OracleResponse> {
     const cacheKey = `compat:${result.person1.date}:${result.person2.date}:${language}`;

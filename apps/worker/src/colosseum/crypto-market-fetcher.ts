@@ -7,6 +7,7 @@ import {
   createDatabase,
   CryptoMarketService,
   type CoinGeckoMarketData,
+  type Database,
 } from "@neptu/drizzle-orm";
 import { COINGECKO_IDS, COINGECKO_API } from "@neptu/shared";
 import { TOP_CRYPTO_COINS, type CryptoCoin } from "./crypto-birthdays";
@@ -69,10 +70,10 @@ export async function fetchCoinGeckoMarketData(): Promise<
  * Fetch and store market data in database
  */
 export async function fetchAndStoreCryptoMarketData(
-  db: D1Database,
+  db?: Database,
 ): Promise<{ success: boolean; coinsUpdated: number; error?: string }> {
   try {
-    const database = createDatabase(db);
+    const database = db ?? createDatabase();
     const cryptoService = new CryptoMarketService(database);
 
     // Fetch from CoinGecko
@@ -125,9 +126,9 @@ export interface CryptoWithMarketData extends CryptoCoin {
 }
 
 export async function getCryptoWithMarketData(
-  db: D1Database,
+  db?: Database,
 ): Promise<CryptoWithMarketData[]> {
-  const database = createDatabase(db);
+  const database = db ?? createDatabase();
   const cryptoService = new CryptoMarketService(database);
 
   const symbols = TOP_CRYPTO_COINS.map((c) => c.symbol);

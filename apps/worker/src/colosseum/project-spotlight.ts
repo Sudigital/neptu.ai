@@ -5,6 +5,7 @@
  */
 
 import type { ForumPost, ColosseumClient, LeaderboardEntry } from "./client";
+import type { CacheStore } from "../cache";
 
 /**
  * Generate a spotlight post for a top-ranked project, @mentioning them
@@ -13,7 +14,7 @@ import type { ForumPost, ColosseumClient, LeaderboardEntry } from "./client";
 export async function postProjectSpotlight(
   client: ColosseumClient,
   entry: LeaderboardEntry,
-  cache: KVNamespace,
+  cache: CacheStore,
 ): Promise<ForumPost> {
   const { project, rank, totalVotes } = entry;
   const mention = `@${project.name}`;

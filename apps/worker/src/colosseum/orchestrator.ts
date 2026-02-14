@@ -24,6 +24,8 @@ import {
 } from "./project-spotlight";
 import { analyzeTrending, type PostType } from "./trending-analyzer";
 import { generateOptimizedPost } from "./content-optimizer";
+import type { CacheStore } from "../cache";
+import type { Database } from "@neptu/drizzle-orm";
 
 // Timeline constants
 const HACKATHON_START = "2026-02-01";
@@ -45,9 +47,9 @@ export interface OrchestrateResult {
 export interface OrchestrateOptions {
   client: ColosseumClient;
   calculator: NeptuCalculator;
-  cache: KVNamespace;
+  cache: CacheStore;
   agentName: string;
-  db?: D1Database;
+  db?: Database;
 }
 
 /**
@@ -56,9 +58,9 @@ export interface OrchestrateOptions {
 export async function orchestratePosting(
   client: ColosseumClient,
   calculator: NeptuCalculator,
-  cache: KVNamespace,
+  cache: CacheStore,
   agentName: string,
-  db?: D1Database,
+  db?: Database,
 ): Promise<OrchestrateResult> {
   const now = new Date();
   const daysSinceStart = getDaysSince(HACKATHON_START);
@@ -97,9 +99,9 @@ export async function orchestratePosting(
 async function _orchestratePostingInternal(
   client: ColosseumClient,
   calculator: NeptuCalculator,
-  cache: KVNamespace,
+  cache: CacheStore,
   agentName: string,
-  db: D1Database | undefined,
+  db: Database | undefined,
   now: Date,
   daysSinceStart: number,
   daysUntilDeadline: number,
@@ -401,7 +403,7 @@ function getDaysUntil(dateStr: string): number {
 /**
  * Get hours since last post
  */
-async function getHoursSinceLastPost(cache: KVNamespace): Promise<number> {
+async function getHoursSinceLastPost(cache: CacheStore): Promise<number> {
   const lastPostTime = await cache.get("neptu:last_post_time");
   if (!lastPostTime) return 999; // Large number if never posted
 
@@ -414,7 +416,7 @@ async function getHoursSinceLastPost(cache: KVNamespace): Promise<number> {
 async function getNextActionSuggestion(
   daysSinceStart: number,
   daysUntilDeadline: number,
-  cache: KVNamespace,
+  cache: CacheStore,
 ): Promise<string> {
   const hasIntro = await cache.get("neptu:intro_post_id");
   const hasVoterRewards = await cache.get("neptu:voter_rewards_post_id");
@@ -432,7 +434,7 @@ async function getNextActionSuggestion(
 /**
  * Check if it's a good time to post based on various factors
  */
-export async function shouldPostNow(cache: KVNamespace): Promise<{
+export async function shouldPostNow(cache: CacheStore): Promise<{
   should: boolean;
   reason: string;
 }> {
@@ -465,7 +467,7 @@ export async function shouldPostNow(cache: KVNamespace): Promise<{
  */
 export async function postStrategicProgressUpdate(
   client: ColosseumClient,
-  cache: KVNamespace,
+  cache: CacheStore,
   stats: { posts: number; comments: number; votes: number },
 ): Promise<ForumPost | null> {
   // Check if we've posted an update recently

@@ -7,6 +7,7 @@ import { ColosseumClient, type ForumPost } from "./client";
 import { ForumAgent } from "./forum-agent";
 import { generateReply } from "./reply-generator";
 import type { HeartbeatResult } from "./heartbeat";
+import type { CacheStore } from "../cache";
 
 type TaskEntry = {
   name: string;
@@ -92,7 +93,7 @@ export function countMentions(tasks: TaskEntry[]): number {
 export async function replyToAllComments(
   client: ColosseumClient,
   forumAgent: ForumAgent,
-  cache: KVNamespace,
+  cache: CacheStore,
 ): Promise<{
   replied: number;
   threadsChecked: number;
@@ -200,7 +201,7 @@ export async function replyToAllComments(
 export async function smartCommentOnOtherPosts(
   client: ColosseumClient,
   forumAgent: ForumAgent,
-  cache: KVNamespace,
+  cache: CacheStore,
   isTimedOut: () => boolean,
 ): Promise<{
   commented: number;
@@ -311,7 +312,7 @@ export async function smartCommentOnOtherPosts(
  */
 export async function syncDedupCache(
   client: ColosseumClient,
-  cache: KVNamespace,
+  cache: CacheStore,
 ): Promise<number> {
   // Throttle: run at most once per hour to conserve KV writes
   const throttleKey = "neptu:dedup_sync_last";
@@ -390,7 +391,7 @@ export async function syncDedupCache(
  */
 export async function handlePollAndAnnouncement(
   client: ColosseumClient,
-  cache: KVNamespace,
+  cache: CacheStore,
   status: { announcement?: string | null; hasActivePoll?: boolean } | null,
   result: HeartbeatResult,
 ): Promise<void> {
@@ -458,7 +459,7 @@ export async function handlePollAndAnnouncement(
  */
 export async function trackAnalytics(
   forumAgent: ForumAgent,
-  cache: KVNamespace,
+  cache: CacheStore,
   result: HeartbeatResult,
 ): Promise<void> {
   try {
