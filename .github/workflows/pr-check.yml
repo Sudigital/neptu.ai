@@ -12,10 +12,41 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: latest
+          bun-version: "1.2.23"
+
+      - name: Create private package stubs
+        run: |
+          # Wariga (Balinese calendar engine) - private IP
+          mkdir -p packages/wariga/src
+          cat > packages/wariga/package.json << 'STUB'
+          {"name":"@neptu/wariga","version":"0.1.0","type":"module","main":"./src/index.ts","types":"./src/index.ts","dependencies":{"@neptu/shared":"workspace:*"},"devDependencies":{"@neptu/eslint-config":"workspace:*","@neptu/typescript-config":"workspace:*"}}
+          STUB
+          cat > packages/wariga/src/index.ts << 'STUB'
+          export class NeptuCalculator { [k: string]: unknown; constructor(..._a: unknown[]) {} }
+          export const database: unknown = {};
+          export const formatCompatibility = (..._a: unknown[]): string => "";
+          export const formatFullReading = (..._a: unknown[]): string => "";
+          export const formatPeluang = (..._a: unknown[]): string => "";
+          export const formatPotensi = (..._a: unknown[]): string => "";
+          export type { Afirmasi, BaseReading, CompatibilityResult, DimensionComparison, FullReading, LahirUntuk, MitraSatruCategory, NeptuDatabase, NeptuSoulAttribute, NeptuSoulMetadata, Peluang, Potensi, WukuItem } from "@neptu/shared";
+          STUB
+
+          # API server - private, uses wariga
+          mkdir -p apps/api/src
+          cat > apps/api/package.json << 'STUB'
+          {"name":"@neptu/api","version":"0.1.0","type":"module","scripts":{"typecheck":"echo skip","lint":"echo skip","test":"echo skip"}}
+          STUB
+          echo 'export {};' > apps/api/src/index.ts
+
+          # CLI - private dev tool
+          mkdir -p apps/cli/src
+          cat > apps/cli/package.json << 'STUB'
+          {"name":"@neptu/cli","version":"0.1.0","type":"module","scripts":{"typecheck":"echo skip","lint":"echo skip","test":"echo skip"}}
+          STUB
+          echo 'export {};' > apps/cli/src/index.ts
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: bun install
 
       - name: Typecheck
         run: bun run typecheck
