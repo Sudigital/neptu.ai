@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "NODE_OPTIONS='--max-old-space-size=8192' vite build",
     "deploy": "bun run build && bunx wrangler pages deploy dist --project-name=neptu-web-production --branch=main --commit-dirty=true",
+    "lint": "oxlint .",
     "preview": "vite preview",
-    "format:check": "prettier --check .",
-    "format": "prettier --write ."
+    "format:check": "oxfmt --check .",
+    "format": "oxfmt ."
   },
   "dependencies": {
     "@hookform/resolvers": "3.10.0",
@@ -64,7 +65,6 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
-    "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
     "@tanstack/react-query-devtools": "^5.90.2",
     "@tanstack/react-router-devtools": "^1.132.51",
     "@tanstack/router-plugin": "^1.132.51",
@@ -72,10 +72,8 @@
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.1",
     "@types/react-syntax-highlighter": "^15.5.13",
-    "@vitejs/plugin-react": "^5.1.4",
-    "globals": "^16.4.0",
-    "prettier": "^3.8.1",
-    "prettier-plugin-tailwindcss": "^0.7.2",
+    "@vitejs/plugin-react-swc": "^4.1.0",
+    "rolldown-vite": "^7.3.1",
     "typescript": "~5.9.3",
     "vite": "^7.1.9",
     "vite-plugin-node-polyfills": "^0.25.0",

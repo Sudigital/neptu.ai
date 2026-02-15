@@ -2,10 +2,13 @@ import path from "path";
 
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
-import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react-swc";
+import { defineConfig } from "rolldown-vite";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 import { VitePWA } from "vite-plugin-pwa";
+
+// Chunk size warning threshold (in KB)
+const CHUNK_SIZE_WARNING_LIMIT = 8000;
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -74,18 +77,7 @@ export default defineConfig({
     include: ["@solana-program/memo", "@privy-io/react-auth"],
   },
   build: {
-    chunkSizeWarningLimit: 2500, // Suppress warning for large chunks (Privy, Solana libs)
-    rollupOptions: {
-      onwarn(warning, warn) {
-        // Suppress annotation warnings from Privy library
-        if (
-          warning.code === "INVALID_ANNOTATION" &&
-          warning.message.includes("@privy-io")
-        ) {
-          return;
-        }
-        warn(warning);
-      },
-    },
+    chunkSizeWarningLimit: CHUNK_SIZE_WARNING_LIMIT,
+    // Let Vite/Rolldown handle chunking automatically
   },
 });
