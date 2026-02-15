@@ -1,6 +1,7 @@
 import { handleServerError } from "@/lib/handle-server-error";
 import { PrivyProvider } from "@privy-io/react-auth";
 import { toSolanaWalletConnectors } from "@privy-io/react-auth/solana";
+import { createSolanaRpc, createSolanaRpcSubscriptions } from "@solana/kit";
 import {
   QueryCache,
   QueryClient,
@@ -106,16 +107,20 @@ const solanaConnectors = toSolanaWalletConnectors({
   shouldAutoConnect: true,
 });
 
+const SOLANA_DEVNET_RPC =
+  import.meta.env.VITE_SOLANA_RPC_URL || "https://api.devnet.solana.com";
+const SOLANA_DEVNET_WSS = SOLANA_DEVNET_RPC.replace("https://", "wss://");
+
 const privyConfig = {
   appearance: {
     theme: "dark" as const,
-    accentColor: "#22c55e",
+    accentColor: "#22c55e" as `#${string}`,
     logo: "/neptu-logo.svg",
     landingHeader: "Connect to Neptu",
     showWalletLoginFirst: true,
     walletChainType: "solana-only" as const,
   },
-  loginMethods: ["email", "wallet"],
+  loginMethods: ["wallet", "email"] as ("wallet" | "email")[],
   embeddedWallets: {
     solana: {
       createOnLogin: "users-without-wallets" as const,
@@ -129,14 +134,14 @@ const privyConfig = {
       connectors: solanaConnectors,
     },
   },
-  walletConnectCloudProjectId: undefined,
-  solanaClusters: [
-    {
-      name: "devnet",
-      rpcUrl:
-        import.meta.env.VITE_SOLANA_RPC_URL || "https://api.devnet.solana.com",
+  solana: {
+    rpcs: {
+      "solana:devnet": {
+        rpc: createSolanaRpc(SOLANA_DEVNET_RPC),
+        rpcSubscriptions: createSolanaRpcSubscriptions(SOLANA_DEVNET_WSS),
+      },
     },
-  ],
+  },
 };
 
 // Render the app
@@ -147,11 +152,7 @@ if (!rootElement.innerHTML) {
     <StrictMode>
       <PrivyProvider
         appId={import.meta.env.VITE_PRIVY_APP_ID || ""}
-        config={
-          privyConfig as unknown as Parameters<
-            typeof PrivyProvider
-          >[0]["config"]
-        }
+        config={privyConfig}
       >
         <QueryClientProvider client={queryClient}>
           <ThemeProvider>
