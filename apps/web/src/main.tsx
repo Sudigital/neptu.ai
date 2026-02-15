@@ -21,11 +21,26 @@ import { routeTree } from "./routeTree.gen";
 // Styles
 import "./styles/index.css";
 
+// Intercept Privy SIWS API errors to surface the actual server response
+const originalFetch = window.fetch;
+window.fetch = async (...args) => {
+  const response = await originalFetch(...args);
+  const url = typeof args[0] === "string" ? args[0] : (args[0] as Request).url;
+  if (url.includes("/siws/") && !response.ok) {
+    const clone = response.clone();
+    try {
+      const body = await clone.json();
+      console.error("[Privy SIWS] API error:", response.status, url, body);
+    } catch {
+      console.error("[Privy SIWS] API error:", response.status, url);
+    }
+  }
+  return response;
+};
+
 // Suppress Privy's internal key warning (it's a library bug in their Me component)
 if (import.meta.env.DEV) {
-  // eslint-disable-next-line no-console
   const originalConsoleError = console.error;
-  // eslint-disable-next-line no-console
   console.error = (...args) => {
     if (
       typeof args[0] === "string" &&
