@@ -103,13 +103,13 @@ declare module "@tanstack/react-router" {
 }
 
 // Privy configuration
-const solanaConnectors = toSolanaWalletConnectors({
-  shouldAutoConnect: true,
-});
+const solanaConnectors = toSolanaWalletConnectors();
 
 const SOLANA_DEVNET_RPC =
   import.meta.env.VITE_SOLANA_RPC_URL || "https://api.devnet.solana.com";
 const SOLANA_DEVNET_WSS = SOLANA_DEVNET_RPC.replace("https://", "wss://");
+const SOLANA_MAINNET_RPC = "https://api.mainnet-beta.solana.com";
+const SOLANA_MAINNET_WSS = "wss://api.mainnet-beta.solana.com";
 
 const privyConfig = {
   appearance: {
@@ -123,7 +123,7 @@ const privyConfig = {
   loginMethods: ["wallet", "email"] as ("wallet" | "email")[],
   embeddedWallets: {
     solana: {
-      createOnLogin: "users-without-wallets" as const,
+      createOnLogin: "all-users" as const,
     },
     ethereum: {
       createOnLogin: "off" as const,
@@ -136,6 +136,10 @@ const privyConfig = {
   },
   solana: {
     rpcs: {
+      "solana:mainnet": {
+        rpc: createSolanaRpc(SOLANA_MAINNET_RPC),
+        rpcSubscriptions: createSolanaRpcSubscriptions(SOLANA_MAINNET_WSS),
+      },
       "solana:devnet": {
         rpc: createSolanaRpc(SOLANA_DEVNET_RPC),
         rpcSubscriptions: createSolanaRpcSubscriptions(SOLANA_DEVNET_WSS),
