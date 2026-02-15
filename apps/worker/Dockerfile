@@ -13,7 +13,8 @@ COPY packages/drizzle-orm/package.json packages/drizzle-orm/
 COPY packages/shared/package.json packages/shared/
 COPY packages/solana/package.json packages/solana/
 COPY packages/wariga/package.json packages/wariga/
-COPY packages/eslint-config/package.json packages/eslint-config/
+COPY packages/logger/package.json packages/logger/
+COPY packages/queues/package.json packages/queues/
 COPY packages/typescript-config/package.json packages/typescript-config/
 
 # Install production dependencies only
@@ -27,6 +28,8 @@ COPY packages/drizzle-orm/tsconfig.json packages/drizzle-orm/
 COPY packages/shared/src packages/shared/src
 COPY packages/solana/src packages/solana/src
 COPY packages/wariga/src packages/wariga/src
+COPY packages/logger/src packages/logger/
+COPY packages/queues/src packages/queues/
 COPY packages/typescript-config packages/typescript-config
 COPY tsconfig.json ./
 
