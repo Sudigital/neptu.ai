@@ -157,6 +157,24 @@ if (!rootElement.innerHTML) {
       <PrivyProvider
         appId={import.meta.env.VITE_PRIVY_APP_ID || ""}
         config={privyConfig}
+        events={{
+          login: {
+            onComplete: (params) => {
+              console.info(
+                "[Privy] Login success:",
+                params.loginMethod,
+                params.isNewUser ? "(new user)" : "(existing)"
+              );
+            },
+            onError: (error) => {
+              console.error("[Privy] Login error:", error);
+              console.error(
+                "[Privy] Error details:",
+                JSON.stringify(error, null, 2)
+              );
+            },
+          },
+        }}
       >
         <QueryClientProvider client={queryClient}>
           <ThemeProvider>
