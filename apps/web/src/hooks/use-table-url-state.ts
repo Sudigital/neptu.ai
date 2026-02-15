@@ -1,9 +1,10 @@
-import { useMemo, useState } from "react";
 import type {
   ColumnFiltersState,
   OnChangeFn,
   PaginationState,
 } from "@tanstack/react-table";
+
+import { useMemo, useState } from "react";
 
 type SearchRecord = Record<string, unknown>;
 
@@ -61,12 +62,12 @@ type UseTableUrlStateReturn = {
   // Helpers
   ensurePageInRange: (
     pageCount: number,
-    opts?: { resetTo?: "first" | "last" },
+    opts?: { resetTo?: "first" | "last" }
   ) => void;
 };
 
 export function useTableUrlState(
-  params: UseTableUrlStateParams,
+  params: UseTableUrlStateParams
 ): UseTableUrlStateReturn {
   const {
     search,
@@ -149,6 +150,7 @@ export function useTableUrlState(
           const value = trimGlobal ? next.trim() : next;
           setGlobalFilter(value);
           navigate({
+            replace: true,
             search: (prev) => ({
               ...(prev as SearchRecord),
               [pageKey]: undefined,
@@ -192,7 +194,7 @@ export function useTableUrlState(
 
   const ensurePageInRange = (
     pageCount: number,
-    opts: { resetTo?: "first" | "last" } = { resetTo: "first" },
+    opts: { resetTo?: "first" | "last" } = { resetTo: "first" }
   ) => {
     const currentPage = (search as SearchRecord)[pageKey];
     const pageNum = typeof currentPage === "number" ? currentPage : defaultPage;

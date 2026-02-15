@@ -28,7 +28,6 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint .",
     "test": "echo skip"
   },
   "dependencies": {
@@ -38,10 +37,9 @@
     "zod": "^3.25.56"
   },
   "devDependencies": {
-    "@types/pg": "^8.11.0",
-    "@neptu/eslint-config": "workspace:*",
     "@neptu/typescript-config": "workspace:*",
     "@types/bun": "^1.3.8",
+    "@types/pg": "^8.11.0",
     "drizzle-kit": "^0.30.1",
     "typescript": "^5.9.3"
   }

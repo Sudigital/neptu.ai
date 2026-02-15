@@ -1,60 +1,43 @@
 import { describe, test, expect, beforeAll, afterAll } from "bun:test";
+
+import { GAMIFICATION_REWARDS } from "@neptu/shared";
 import { sql } from "drizzle-orm";
+
 import { UserRewardService, UserService } from "../src";
 import { createTestDatabase, closeTestDatabase } from "./test-helper";
-import { GAMIFICATION_REWARDS } from "@neptu/shared";
+
+const TEST_PREFIX = `w${Date.now()}`;
 
 describe("UserRewardService", () => {
   let rewardService: UserRewardService;
   let userService: UserService;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let db: any;
   let testUserId: string;
+  const createdUserIds: string[] = [];
 
   beforeAll(async () => {
-    const db = createTestDatabase();
-
-    // Create tables
-    await db.run(sql`
-      CREATE TABLE IF NOT EXISTS users (
-        id TEXT PRIMARY KEY,
-        wallet_address TEXT UNIQUE NOT NULL,
-        email TEXT,
-        display_name TEXT,
-        birth_date TEXT,
-        interests TEXT,
-        onboarded INTEGER DEFAULT 0,
-        is_admin INTEGER DEFAULT 0,
-        created_at TEXT NOT NULL DEFAULT (datetime('now')),
-        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-      )
-    `);
-
-    await db.run(sql`
-      CREATE TABLE IF NOT EXISTS user_rewards (
-        id TEXT PRIMARY KEY,
-        user_id TEXT NOT NULL REFERENCES users(id),
-        reward_type TEXT NOT NULL,
-        neptu_amount REAL NOT NULL,
-        status TEXT NOT NULL DEFAULT 'pending',
-        description TEXT,
-        claim_tx_signature TEXT,
-        claimed_at TEXT,
-        expires_at TEXT,
-        created_at TEXT NOT NULL DEFAULT (datetime('now'))
-      )
-    `);
-
+    db = createTestDatabase();
     rewardService = new UserRewardService(db);
     userService = new UserService(db);
 
-    // Create test user
     const user = await userService.createUser({
-      walletAddress: "9WzDXwBbmkg8ZTbNMqUxvQRAyrReward",
+      walletAddress: `${TEST_PREFIX}RewardUsr12345678901234567`,
     });
     testUserId = user.id;
+    createdUserIds.push(user.id);
   });
 
-  afterAll(() => {
-    closeTestDatabase();
+  afterAll(async () => {
+    for (const id of createdUserIds) {
+      try {
+        await db.execute(sql`DELETE FROM user_rewards WHERE user_id = ${id}`);
+        await db.execute(sql`DELETE FROM users WHERE id = ${id}`);
+      } catch {
+        // Ignore cleanup errors
+      }
+    }
+    await closeTestDatabase();
   });
 
   test("should create daily check-in reward", async () => {
@@ -115,7 +98,6 @@ describe("UserRewardService", () => {
   test("should get pending rewards", async () => {
     const pending = await rewardService.getPendingRewards(testUserId);
 
-    // Should have rewards from previous tests
     expect(pending.length).toBeGreaterThan(0);
     expect(pending.every((r) => r.status === "pending")).toBe(true);
   });
@@ -123,7 +105,6 @@ describe("UserRewardService", () => {
   test("should calculate total pending amount", async () => {
     const totalAmount = await rewardService.getTotalPendingAmount(testUserId);
 
-    // Should have accumulated rewards from previous tests
     expect(totalAmount).toBeGreaterThan(0);
   });
 });

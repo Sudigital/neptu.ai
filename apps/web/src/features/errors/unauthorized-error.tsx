@@ -1,6 +1,6 @@
-import { useNavigate, useRouter } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { useTranslate } from "@/hooks/use-translate";
+import { useNavigate, useRouter } from "@tanstack/react-router";
 
 export function UnauthorisedError() {
   const navigate = useNavigate();
@@ -15,10 +15,10 @@ export function UnauthorisedError() {
         <span className="font-medium">
           {t("error.401title", "Unauthorized Access")}
         </span>
-        <p className="text-muted-foreground text-center">
+        <p className="text-center text-muted-foreground">
           {t(
             "error.401desc",
-            "Please log in with the appropriate credentials to access this resource.",
+            "Please log in with the appropriate credentials to access this resource."
           )}
         </p>
         <div className="mt-6 flex gap-4">

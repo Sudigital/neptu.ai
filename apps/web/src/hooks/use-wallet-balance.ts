@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-import { neptuApi } from "@/lib/api";
 import { useUser } from "@/hooks/use-user";
+import { neptuApi } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
 
 const BALANCE_STALE_TIME = 30_000;
 const BALANCE_REFETCH_INTERVAL = 60_000;

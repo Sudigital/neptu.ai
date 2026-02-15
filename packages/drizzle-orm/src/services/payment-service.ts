@@ -1,10 +1,11 @@
 import type { Database } from "../client";
-import { PaymentRepository } from "../repositories/payment-repository";
+
 import {
   toPaymentDTO,
   toPaymentDTOList,
   type PaymentDTO,
 } from "../dto/payment-dto";
+import { PaymentRepository } from "../repositories/payment-repository";
 import {
   createPaymentSchema,
   updatePaymentStatusSchema,
@@ -43,7 +44,7 @@ export class PaymentService {
   }
 
   async getPaymentsByUser(
-    input: GetPaymentsByUserInput,
+    input: GetPaymentsByUserInput
   ): Promise<PaymentDTO[]> {
     const validated = getPaymentsByUserSchema.parse(input);
 
@@ -58,14 +59,14 @@ export class PaymentService {
   }
 
   async confirmPayment(
-    input: UpdatePaymentStatusInput,
+    input: UpdatePaymentStatusInput
   ): Promise<PaymentDTO | null> {
     const validated = updatePaymentStatusSchema.parse(input);
 
     const payment = await this.repository.updateStatus(
       validated.txSignature,
       validated.status,
-      validated.confirmedAt,
+      validated.confirmedAt
     );
 
     return payment ? toPaymentDTO(payment) : null;

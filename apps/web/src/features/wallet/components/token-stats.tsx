@@ -5,10 +5,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2, TrendingUp, Flame, ArrowUpRight, Hash } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useTranslate } from "@/hooks/use-translate";
+import { cn } from "@/lib/utils";
 import { NEPTU_TOKEN } from "@neptu/shared";
+import { Loader2, TrendingUp, Flame, ArrowUpRight, Hash } from "lucide-react";
 
 interface TokenStats {
   totalSolSpent: number;
@@ -77,7 +77,7 @@ export function TokenStatsCard({
           {statItems.map((item) => (
             <div
               key={item.label}
-              className="flex items-center gap-2 p-3 rounded-lg bg-muted/50"
+              className="flex items-center gap-2 rounded-lg bg-muted/50 p-3"
             >
               {item.icon}
               <div>

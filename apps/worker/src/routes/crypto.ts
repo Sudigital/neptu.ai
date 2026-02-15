@@ -1,6 +1,4 @@
-/** Crypto Market API routes */
-import { Hono } from "hono";
-import { NeptuCalculator } from "@neptu/wariga";
+import { createDatabase, type Database } from "@neptu/drizzle-orm";
 import {
   COSMIC_MESSAGES,
   COSMIC_DEFAULT_MESSAGE,
@@ -10,23 +8,32 @@ import {
   DATE_REGEX,
   TOP_CRYPTO_COINS,
 } from "@neptu/shared";
+import { NeptuCalculator } from "@neptu/wariga";
+/** Crypto Market API routes */
+import { Hono } from "hono";
+
+import { redisCache } from "../cache";
 import {
   fetchAndStoreCryptoMarketData,
   getCryptoWithMarketData,
-} from "../colosseum";
-import { createDatabase } from "@neptu/drizzle-orm";
-import { redisCache } from "../cache";
+} from "../crypto-market-fetcher";
 
 const crypto = new Hono();
-const db = createDatabase();
+
+// Lazy db initialization to ensure dotenv is loaded first
+let _db: Database | null = null;
+function getDb(): Database {
+  if (!_db) _db = createDatabase();
+  return _db;
+}
 
 function calculateAlignmentScore(totalUrip: number): number {
   return Math.min(
     ALIGNMENT_THRESHOLDS.MAX_SCORE,
     Math.round(
       (totalUrip / ALIGNMENT_THRESHOLDS.URIP_DIVISOR) *
-        ALIGNMENT_THRESHOLDS.MAX_SCORE,
-    ),
+        ALIGNMENT_THRESHOLDS.MAX_SCORE
+    )
   );
 }
 
@@ -34,7 +41,7 @@ function getCosmicForDate(
   calculator: NeptuCalculator,
   date: Date,
   coinBirthDate: Date,
-  wukuEnergy: number,
+  wukuEnergy: number
 ): { score: number; pancaWara: string; saptaWara: string } {
   const reading = calculator.calculatePeluang(date, coinBirthDate);
   const totalUrip =
@@ -54,7 +61,7 @@ crypto.get("/market", async (c) => {
   try {
     const calculator = new NeptuCalculator();
     const today = new Date();
-    const data = await getCryptoWithMarketData(db);
+    const data = await getCryptoWithMarketData(getDb());
 
     const dataWithCosmic = data.map((coin) => {
       const coinBirthDate = new Date(coin.birthday);
@@ -76,7 +83,7 @@ crypto.get("/market", async (c) => {
             calculator,
             new Date(coin.athDate),
             coinBirthDate,
-            wukuEnergy,
+            wukuEnergy
           )
         : null;
 
@@ -85,7 +92,7 @@ crypto.get("/market", async (c) => {
             calculator,
             new Date(coin.atlDate),
             coinBirthDate,
-            wukuEnergy,
+            wukuEnergy
           )
         : null;
 
@@ -115,7 +122,7 @@ crypto.get("/market", async (c) => {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
       },
-      500,
+      500
     );
   }
 });
@@ -136,7 +143,7 @@ crypto.get("/birthdays", (c) => {
  */
 crypto.post("/refresh", async (c) => {
   try {
-    const result = await fetchAndStoreCryptoMarketData(db);
+    const result = await fetchAndStoreCryptoMarketData(getDb());
     return c.json(result);
   } catch (error) {
     return c.json(
@@ -144,14 +151,14 @@ crypto.post("/refresh", async (c) => {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
       },
-      500,
+      500
     );
   }
 });
 
 /**
  * GET /api/crypto/chart/:id
- * Proxy CoinGecko market_chart API with Cloudflare Cache API.
+ * Proxy CoinGecko market_chart API with Redis caching.
  * :id is the CoinGecko coin id (e.g., "bitcoin", "ethereum")
  * Query params: days (7|30|90|365, default 365)
  */
@@ -190,7 +197,7 @@ crypto.get("/chart/:id", async (c) => {
     console.error(`CoinGecko chart error: ${res.status}`, body);
     return c.json(
       { error: `CoinGecko returned ${res.status}` },
-      res.status === 429 ? 429 : 502,
+      res.status === 429 ? 429 : 502
     );
   }
 
@@ -223,7 +230,7 @@ crypto.get("/cosmic/:birthDate", async (c) => {
     const userPotensi = calculator.calculatePotensi(birthDate);
     const todayPeluang = calculator.calculatePeluang(today, birthDate);
 
-    const cryptoData = await getCryptoWithMarketData(db);
+    const cryptoData = await getCryptoWithMarketData(getDb());
 
     const cosmicReadings = cryptoData.map((coin) => {
       const coinBirthDate = new Date(coin.birthday);
@@ -249,7 +256,7 @@ crypto.get("/cosmic/:birthDate", async (c) => {
 
       const alignment = Math.min(
         ALIGNMENT_THRESHOLDS.MAX_SCORE,
-        wukuMatch + pancawaraMatch + saptawaraMatch + dayAlignment,
+        wukuMatch + pancawaraMatch + saptawaraMatch + dayAlignment
       );
 
       let trend: "bullish" | "bearish" | "neutral";
@@ -283,7 +290,7 @@ crypto.get("/cosmic/:birthDate", async (c) => {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
       },
-      500,
+      500
     );
   }
 });

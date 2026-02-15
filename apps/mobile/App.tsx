@@ -1,4 +1,7 @@
+import { PrivyProvider, usePrivy, useLoginWithOAuth } from "@privy-io/expo";
+import Constants from "expo-constants";
 import { StatusBar } from "expo-status-bar";
+import { useState, useEffect, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -10,9 +13,6 @@ import {
   RefreshControl,
   Linking,
 } from "react-native";
-import { PrivyProvider, usePrivy, useLoginWithOAuth } from "@privy-io/expo";
-import Constants from "expo-constants";
-import { useState, useEffect, useCallback } from "react";
 
 const PRIVY_APP_ID = Constants.expoConfig?.extra?.privyAppId || "";
 const WORKER_URL = "https://worker.neptu.sudigital.com";
@@ -84,7 +84,7 @@ function CryptoCard({ crypto }: { crypto: CryptoData }) {
       style={[styles.cryptoCard, isBirthday && styles.cryptoCardBirthday]}
       onPress={() =>
         Linking.openURL(
-          `https://neptu.sudigital.com/cryptos/${crypto.symbol.toLowerCase()}`,
+          `https://neptu.sudigital.com/cryptos/${crypto.symbol.toLowerCase()}`
         )
       }
     >

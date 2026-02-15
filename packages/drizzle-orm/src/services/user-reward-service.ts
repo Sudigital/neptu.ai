@@ -1,11 +1,13 @@
 import { GAMIFICATION_REWARDS } from "@neptu/shared";
+
 import type { Database } from "../client";
-import { UserRewardRepository } from "../repositories/user-reward-repository";
+
 import {
   toUserRewardDTO,
   toUserRewardDTOList,
   type UserRewardDTO,
 } from "../dto/user-reward-dto";
+import { UserRewardRepository } from "../repositories/user-reward-repository";
 import {
   createUserRewardSchema,
   claimUserRewardSchema,
@@ -42,7 +44,7 @@ export class UserRewardService {
   }
 
   async claimReward(
-    input: ClaimUserRewardInput,
+    input: ClaimUserRewardInput
   ): Promise<UserRewardDTO | null> {
     const validated = claimUserRewardSchema.parse(input);
     const reward = await this.repository.findById(validated.rewardId);
@@ -54,7 +56,7 @@ export class UserRewardService {
     const claimed = await this.repository.claim(
       validated.rewardId,
       validated.claimTxSignature,
-      claimedAt,
+      claimedAt
     );
     return claimed ? toUserRewardDTO(claimed) : null;
   }
@@ -112,7 +114,7 @@ export class UserRewardService {
 
   async grantStreakBonus(
     userId: string,
-    streakDays: number,
+    streakDays: number
   ): Promise<UserRewardDTO | null> {
     let amount = 0;
     let description = "";
@@ -151,7 +153,7 @@ export class UserRewardService {
 
   async grantReferralReward(
     userId: string,
-    isReferrer: boolean,
+    isReferrer: boolean
   ): Promise<UserRewardDTO> {
     const amount = isReferrer
       ? GAMIFICATION_REWARDS.REFERRAL_REWARD

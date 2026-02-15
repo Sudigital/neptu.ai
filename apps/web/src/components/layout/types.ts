@@ -1,3 +1,5 @@
+import type { ElementType } from "react";
+
 import { type LinkProps } from "@tanstack/react-router";
 
 type User = {
@@ -8,14 +10,14 @@ type User = {
 
 type Team = {
   name: string;
-  logo: React.ElementType;
+  logo: ElementType;
   plan: string;
 };
 
 type BaseNavItem = {
   title: string;
   badge?: string;
-  icon?: React.ElementType;
+  icon?: ElementType;
 };
 
 type NavLink = BaseNavItem & {

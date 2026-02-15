@@ -1,4 +1,5 @@
 import type { RewardType, RewardStatus } from "@neptu/shared";
+
 import type { UserReward } from "../schemas/user-rewards";
 
 export interface UserRewardDTO {

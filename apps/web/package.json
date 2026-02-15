@@ -1,13 +1,12 @@
 {
   "name": "@neptu/web",
-  "private": false,
   "version": "2.2.0",
+  "private": false,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "deploy": "bun run build && bunx wrangler pages deploy dist --project-name=neptu-web-production --branch=main --commit-dirty=true",
-    "lint": "eslint .",
     "preview": "vite preview",
     "format:check": "prettier --check .",
     "format": "prettier --write ."
@@ -65,9 +64,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
-    "@eslint/js": "^9.37.0",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
-    "@tanstack/eslint-plugin-query": "^5.91.0",
     "@tanstack/react-query-devtools": "^5.90.2",
     "@tanstack/react-router-devtools": "^1.132.51",
     "@tanstack/router-plugin": "^1.132.51",
@@ -75,15 +72,11 @@
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.1",
     "@types/react-syntax-highlighter": "^15.5.13",
-    "@vitejs/plugin-react-swc": "^4.1.0",
-    "eslint": "^9.37.0",
-    "eslint-plugin-react-hooks": "^7.0.0",
-    "eslint-plugin-react-refresh": "^0.4.23",
+    "@vitejs/plugin-react": "^5.1.4",
     "globals": "^16.4.0",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "typescript": "~5.9.3",
-    "typescript-eslint": "^8.46.0",
     "vite": "^7.1.9",
     "vite-plugin-node-polyfills": "^0.25.0",
     "vite-plugin-pwa": "^1.2.0"

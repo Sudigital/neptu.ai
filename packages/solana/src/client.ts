@@ -1,10 +1,10 @@
+import { SOLANA_NETWORKS, type NetworkType } from "@neptu/shared";
 import {
   createSolanaRpc,
   createSolanaRpcSubscriptions,
   address,
   signature as createSignature,
 } from "@solana/kit";
-import { SOLANA_NETWORKS, type NetworkType } from "@neptu/shared";
 
 export type SolanaRpc = ReturnType<typeof createSolanaRpc>;
 export type SolanaRpcSubscriptions = ReturnType<
@@ -28,7 +28,7 @@ function sleep(ms: number): Promise<void> {
 
 export function createSolanaClient(
   network: NetworkType,
-  rpcUrl?: string,
+  rpcUrl?: string
 ): SolanaClient {
   const config = SOLANA_NETWORKS[network];
   const url = rpcUrl || config.rpcUrl;
@@ -47,7 +47,7 @@ export function createSolanaClient(
 
 export async function getBalance(
   rpc: SolanaRpc,
-  addressStr: string,
+  addressStr: string
 ): Promise<bigint> {
   const result = await rpc.getBalance(address(addressStr)).send();
   return result.value;
@@ -58,7 +58,7 @@ export async function getBalance(
  * on Cloudflare Workers (403/429 from shared IP rate limiting).
  */
 async function fetchBlockhashViaHttp(
-  rpcUrl: string,
+  rpcUrl: string
 ): Promise<{ blockhash: string; lastValidBlockHeight: bigint }> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 5000);
@@ -106,7 +106,7 @@ async function fetchBlockhashViaHttp(
  */
 export async function getLatestBlockhash(
   rpc: SolanaRpc,
-  network: NetworkType = "devnet",
+  network: NetworkType = "devnet"
 ): Promise<{ blockhash: string; lastValidBlockHeight: bigint }> {
   let lastError: Error | undefined;
 
@@ -119,7 +119,7 @@ export async function getLatestBlockhash(
     try {
       const rpcPromise = rpc.getLatestBlockhash().send();
       const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("RPC timeout")), 5000),
+        setTimeout(() => reject(new Error("RPC timeout")), 5000)
       );
       const result = await Promise.race([rpcPromise, timeoutPromise]);
       return {
@@ -141,13 +141,13 @@ export async function getLatestBlockhash(
   }
 
   throw new Error(
-    `All Solana RPC attempts failed after ${MAX_RETRIES} retries: ${lastError?.message}`,
+    `All Solana RPC attempts failed after ${MAX_RETRIES} retries: ${lastError?.message}`
   );
 }
 
 export async function confirmTransaction(
   rpc: SolanaRpc,
-  signatureStr: string,
+  signatureStr: string
 ): Promise<boolean> {
   const result = await rpc
     .getSignatureStatuses([createSignature(signatureStr)])

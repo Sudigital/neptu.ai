@@ -1,9 +1,3 @@
-import { useState } from "react";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -27,9 +21,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useSettingsStore } from "@/stores/settings-store";
 import { useTranslate } from "@/hooks/use-translate";
+import { cn } from "@/lib/utils";
+import { useSettingsStore } from "@/stores/settings-store";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
 
 const languages = [
   { label: "English", value: "en" },
@@ -87,7 +87,7 @@ export function AccountForm() {
                       role="combobox"
                       className={cn(
                         "w-[200px] justify-between",
-                        !field.value && "text-muted-foreground",
+                        !field.value && "text-muted-foreground"
                       )}
                     >
                       {field.value ? (
@@ -97,7 +97,7 @@ export function AccountForm() {
                           </span>
                           {
                             languages.find(
-                              (language) => language.value === field.value,
+                              (language) => language.value === field.value
                             )?.label
                           }
                         </>
@@ -113,7 +113,7 @@ export function AccountForm() {
                     <CommandInput
                       placeholder={t(
                         "settings.account.searchLanguage",
-                        "Search language...",
+                        "Search language..."
                       )}
                     />
                     <CommandEmpty>
@@ -135,7 +135,7 @@ export function AccountForm() {
                                 "size-4",
                                 language.value === field.value
                                   ? "opacity-100"
-                                  : "opacity-0",
+                                  : "opacity-0"
                               )}
                             />
                             <span className="mr-2 font-medium uppercase">
@@ -152,7 +152,7 @@ export function AccountForm() {
               <FormDescription>
                 {t(
                   "settings.account.languageDesc",
-                  "This is the language that will be used in the dashboard.",
+                  "This is the language that will be used in the dashboard."
                 )}
               </FormDescription>
               <FormMessage />

@@ -25,12 +25,23 @@ import { Route as errors404RouteImport } from './routes/(errors)/404'
 import { Route as errors403RouteImport } from './routes/(errors)/403'
 import { Route as errors401RouteImport } from './routes/(errors)/401'
 import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authenticated/settings/route'
+import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedSettingsNotificationsRouteImport } from './routes/_authenticated/settings/notifications'
 import { Route as AuthenticatedSettingsDisplayRouteImport } from './routes/_authenticated/settings/display'
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
 import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings/account'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
+import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
+import { Route as AuthenticatedAdminSubscriptionsRouteImport } from './routes/_authenticated/admin/subscriptions'
+import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin/analytics'
+import { Route as AuthenticatedAdminSettingsRouteRouteImport } from './routes/_authenticated/admin/settings/route'
+import { Route as AuthenticatedAdminSettingsIndexRouteImport } from './routes/_authenticated/admin/settings/index'
+import { Route as AuthenticatedAdminSettingsPricingPlansRouteImport } from './routes/_authenticated/admin/settings/pricing-plans'
+import { Route as AuthenticatedAdminSettingsFeatureFlagsRouteImport } from './routes/_authenticated/admin/settings/feature-flags'
+import { Route as AuthenticatedAdminSettingsCreditPacksRouteImport } from './routes/_authenticated/admin/settings/credit-packs'
+import { Route as AuthenticatedAdminSettingsAccountRouteImport } from './routes/_authenticated/admin/settings/account'
 
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
@@ -113,12 +124,22 @@ const AuthenticatedSettingsRouteRoute =
     path: '/settings',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedSettingsIndexRoute =
   AuthenticatedSettingsIndexRouteImport.update({
     id: '/',
     path: '/',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
 const AuthenticatedSettingsNotificationsRoute =
   AuthenticatedSettingsNotificationsRouteImport.update({
     id: '/notifications',
@@ -149,11 +170,65 @@ const AuthenticatedErrorsErrorRoute =
     path: '/errors/$error',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
+const AuthenticatedAdminSubscriptionsRoute =
+  AuthenticatedAdminSubscriptionsRouteImport.update({
+    id: '/subscriptions',
+    path: '/subscriptions',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminAnalyticsRoute =
+  AuthenticatedAdminAnalyticsRouteImport.update({
+    id: '/analytics',
+    path: '/analytics',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminSettingsRouteRoute =
+  AuthenticatedAdminSettingsRouteRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminSettingsIndexRoute =
+  AuthenticatedAdminSettingsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedAdminSettingsRouteRoute,
+  } as any)
+const AuthenticatedAdminSettingsPricingPlansRoute =
+  AuthenticatedAdminSettingsPricingPlansRouteImport.update({
+    id: '/pricing-plans',
+    path: '/pricing-plans',
+    getParentRoute: () => AuthenticatedAdminSettingsRouteRoute,
+  } as any)
+const AuthenticatedAdminSettingsFeatureFlagsRoute =
+  AuthenticatedAdminSettingsFeatureFlagsRouteImport.update({
+    id: '/feature-flags',
+    path: '/feature-flags',
+    getParentRoute: () => AuthenticatedAdminSettingsRouteRoute,
+  } as any)
+const AuthenticatedAdminSettingsCreditPacksRoute =
+  AuthenticatedAdminSettingsCreditPacksRouteImport.update({
+    id: '/credit-packs',
+    path: '/credit-packs',
+    getParentRoute: () => AuthenticatedAdminSettingsRouteRoute,
+  } as any)
+const AuthenticatedAdminSettingsAccountRoute =
+  AuthenticatedAdminSettingsAccountRouteImport.update({
+    id: '/account',
+    path: '/account',
+    getParentRoute: () => AuthenticatedAdminSettingsRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/p2p': typeof P2pRoute
   '/pricing': typeof PricingRoute
+  '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
   '/401': typeof errors401Route
   '/403': typeof errors403Route
@@ -166,12 +241,22 @@ export interface FileRoutesByFullPath {
   '/wallet': typeof AuthenticatedWalletRoute
   '/cryptos/$symbol': typeof CryptosSymbolRoute
   '/cryptos/': typeof CryptosIndexRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsRouteRouteWithChildren
+  '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
+  '/admin/subscriptions': typeof AuthenticatedAdminSubscriptionsRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/admin/settings/account': typeof AuthenticatedAdminSettingsAccountRoute
+  '/admin/settings/credit-packs': typeof AuthenticatedAdminSettingsCreditPacksRoute
+  '/admin/settings/feature-flags': typeof AuthenticatedAdminSettingsFeatureFlagsRoute
+  '/admin/settings/pricing-plans': typeof AuthenticatedAdminSettingsPricingPlansRoute
+  '/admin/settings/': typeof AuthenticatedAdminSettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -188,12 +273,21 @@ export interface FileRoutesByTo {
   '/wallet': typeof AuthenticatedWalletRoute
   '/cryptos/$symbol': typeof CryptosSymbolRoute
   '/cryptos': typeof CryptosIndexRoute
+  '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
+  '/admin/subscriptions': typeof AuthenticatedAdminSubscriptionsRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
+  '/admin/settings/account': typeof AuthenticatedAdminSettingsAccountRoute
+  '/admin/settings/credit-packs': typeof AuthenticatedAdminSettingsCreditPacksRoute
+  '/admin/settings/feature-flags': typeof AuthenticatedAdminSettingsFeatureFlagsRoute
+  '/admin/settings/pricing-plans': typeof AuthenticatedAdminSettingsPricingPlansRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -201,6 +295,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/p2p': typeof P2pRoute
   '/pricing': typeof PricingRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
   '/(errors)/401': typeof errors401Route
   '/(errors)/403': typeof errors403Route
@@ -213,12 +308,22 @@ export interface FileRoutesById {
   '/_authenticated/wallet': typeof AuthenticatedWalletRoute
   '/cryptos/$symbol': typeof CryptosSymbolRoute
   '/cryptos/': typeof CryptosIndexRoute
+  '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRouteRouteWithChildren
+  '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
+  '/_authenticated/admin/subscriptions': typeof AuthenticatedAdminSubscriptionsRoute
+  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayRoute
   '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/_authenticated/admin/settings/account': typeof AuthenticatedAdminSettingsAccountRoute
+  '/_authenticated/admin/settings/credit-packs': typeof AuthenticatedAdminSettingsCreditPacksRoute
+  '/_authenticated/admin/settings/feature-flags': typeof AuthenticatedAdminSettingsFeatureFlagsRoute
+  '/_authenticated/admin/settings/pricing-plans': typeof AuthenticatedAdminSettingsPricingPlansRoute
+  '/_authenticated/admin/settings/': typeof AuthenticatedAdminSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -226,6 +331,7 @@ export interface FileRouteTypes {
     | '/'
     | '/p2p'
     | '/pricing'
+    | '/admin'
     | '/settings'
     | '/401'
     | '/403'
@@ -238,12 +344,22 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/cryptos/$symbol'
     | '/cryptos/'
+    | '/admin/settings'
+    | '/admin/analytics'
+    | '/admin/subscriptions'
+    | '/admin/users'
     | '/errors/$error'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/display'
     | '/settings/notifications'
+    | '/admin/'
     | '/settings/'
+    | '/admin/settings/account'
+    | '/admin/settings/credit-packs'
+    | '/admin/settings/feature-flags'
+    | '/admin/settings/pricing-plans'
+    | '/admin/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -260,18 +376,28 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/cryptos/$symbol'
     | '/cryptos'
+    | '/admin/analytics'
+    | '/admin/subscriptions'
+    | '/admin/users'
     | '/errors/$error'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/display'
     | '/settings/notifications'
+    | '/admin'
     | '/settings'
+    | '/admin/settings/account'
+    | '/admin/settings/credit-packs'
+    | '/admin/settings/feature-flags'
+    | '/admin/settings/pricing-plans'
+    | '/admin/settings'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/p2p'
     | '/pricing'
+    | '/_authenticated/admin'
     | '/_authenticated/settings'
     | '/(errors)/401'
     | '/(errors)/403'
@@ -284,12 +410,22 @@ export interface FileRouteTypes {
     | '/_authenticated/wallet'
     | '/cryptos/$symbol'
     | '/cryptos/'
+    | '/_authenticated/admin/settings'
+    | '/_authenticated/admin/analytics'
+    | '/_authenticated/admin/subscriptions'
+    | '/_authenticated/admin/users'
     | '/_authenticated/errors/$error'
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/appearance'
     | '/_authenticated/settings/display'
     | '/_authenticated/settings/notifications'
+    | '/_authenticated/admin/'
     | '/_authenticated/settings/'
+    | '/_authenticated/admin/settings/account'
+    | '/_authenticated/admin/settings/credit-packs'
+    | '/_authenticated/admin/settings/feature-flags'
+    | '/_authenticated/admin/settings/pricing-plans'
+    | '/_authenticated/admin/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -420,12 +556,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/settings/': {
       id: '/_authenticated/settings/'
       path: '/'
       fullPath: '/settings/'
       preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
       parentRoute: typeof AuthenticatedSettingsRouteRoute
+    }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
     }
     '/_authenticated/settings/notifications': {
       id: '/_authenticated/settings/notifications'
@@ -462,8 +612,120 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedErrorsErrorRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/users': {
+      id: '/_authenticated/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/subscriptions': {
+      id: '/_authenticated/admin/subscriptions'
+      path: '/subscriptions'
+      fullPath: '/admin/subscriptions'
+      preLoaderRoute: typeof AuthenticatedAdminSubscriptionsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/analytics': {
+      id: '/_authenticated/admin/analytics'
+      path: '/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AuthenticatedAdminAnalyticsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/settings': {
+      id: '/_authenticated/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsRouteRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/settings/': {
+      id: '/_authenticated/admin/settings/'
+      path: '/'
+      fullPath: '/admin/settings/'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminSettingsRouteRoute
+    }
+    '/_authenticated/admin/settings/pricing-plans': {
+      id: '/_authenticated/admin/settings/pricing-plans'
+      path: '/pricing-plans'
+      fullPath: '/admin/settings/pricing-plans'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsPricingPlansRouteImport
+      parentRoute: typeof AuthenticatedAdminSettingsRouteRoute
+    }
+    '/_authenticated/admin/settings/feature-flags': {
+      id: '/_authenticated/admin/settings/feature-flags'
+      path: '/feature-flags'
+      fullPath: '/admin/settings/feature-flags'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsFeatureFlagsRouteImport
+      parentRoute: typeof AuthenticatedAdminSettingsRouteRoute
+    }
+    '/_authenticated/admin/settings/credit-packs': {
+      id: '/_authenticated/admin/settings/credit-packs'
+      path: '/credit-packs'
+      fullPath: '/admin/settings/credit-packs'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsCreditPacksRouteImport
+      parentRoute: typeof AuthenticatedAdminSettingsRouteRoute
+    }
+    '/_authenticated/admin/settings/account': {
+      id: '/_authenticated/admin/settings/account'
+      path: '/account'
+      fullPath: '/admin/settings/account'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsAccountRouteImport
+      parentRoute: typeof AuthenticatedAdminSettingsRouteRoute
+    }
   }
 }
+
+interface AuthenticatedAdminSettingsRouteRouteChildren {
+  AuthenticatedAdminSettingsAccountRoute: typeof AuthenticatedAdminSettingsAccountRoute
+  AuthenticatedAdminSettingsCreditPacksRoute: typeof AuthenticatedAdminSettingsCreditPacksRoute
+  AuthenticatedAdminSettingsFeatureFlagsRoute: typeof AuthenticatedAdminSettingsFeatureFlagsRoute
+  AuthenticatedAdminSettingsPricingPlansRoute: typeof AuthenticatedAdminSettingsPricingPlansRoute
+  AuthenticatedAdminSettingsIndexRoute: typeof AuthenticatedAdminSettingsIndexRoute
+}
+
+const AuthenticatedAdminSettingsRouteRouteChildren: AuthenticatedAdminSettingsRouteRouteChildren =
+  {
+    AuthenticatedAdminSettingsAccountRoute:
+      AuthenticatedAdminSettingsAccountRoute,
+    AuthenticatedAdminSettingsCreditPacksRoute:
+      AuthenticatedAdminSettingsCreditPacksRoute,
+    AuthenticatedAdminSettingsFeatureFlagsRoute:
+      AuthenticatedAdminSettingsFeatureFlagsRoute,
+    AuthenticatedAdminSettingsPricingPlansRoute:
+      AuthenticatedAdminSettingsPricingPlansRoute,
+    AuthenticatedAdminSettingsIndexRoute: AuthenticatedAdminSettingsIndexRoute,
+  }
+
+const AuthenticatedAdminSettingsRouteRouteWithChildren =
+  AuthenticatedAdminSettingsRouteRoute._addFileChildren(
+    AuthenticatedAdminSettingsRouteRouteChildren,
+  )
+
+interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminSettingsRouteRoute: typeof AuthenticatedAdminSettingsRouteRouteWithChildren
+  AuthenticatedAdminAnalyticsRoute: typeof AuthenticatedAdminAnalyticsRoute
+  AuthenticatedAdminSubscriptionsRoute: typeof AuthenticatedAdminSubscriptionsRoute
+  AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
+  {
+    AuthenticatedAdminSettingsRouteRoute:
+      AuthenticatedAdminSettingsRouteRouteWithChildren,
+    AuthenticatedAdminAnalyticsRoute: AuthenticatedAdminAnalyticsRoute,
+    AuthenticatedAdminSubscriptionsRoute: AuthenticatedAdminSubscriptionsRoute,
+    AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
+    AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  }
+
+const AuthenticatedAdminRouteRouteWithChildren =
+  AuthenticatedAdminRouteRoute._addFileChildren(
+    AuthenticatedAdminRouteRouteChildren,
+  )
 
 interface AuthenticatedSettingsRouteRouteChildren {
   AuthenticatedSettingsAccountRoute: typeof AuthenticatedSettingsAccountRoute
@@ -489,6 +751,7 @@ const AuthenticatedSettingsRouteRouteWithChildren =
   )
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
   AuthenticatedComingSoonRoute: typeof AuthenticatedComingSoonRoute
   AuthenticatedCompatibilityRoute: typeof AuthenticatedCompatibilityRoute
@@ -498,6 +761,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
   AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
   AuthenticatedComingSoonRoute: AuthenticatedComingSoonRoute,
   AuthenticatedCompatibilityRoute: AuthenticatedCompatibilityRoute,

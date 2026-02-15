@@ -1,6 +1,17 @@
-import React from "react";
-import { Link } from "@tanstack/react-router";
+import { Logo } from "@/assets/logo";
+import { Navbar } from "@/components/navbar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { useTranslate } from "@/hooks/use-translate";
+import { SUBSCRIPTION_PLANS } from "@neptu/shared";
 import { usePrivy } from "@privy-io/react-auth";
+import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
   Sparkles,
@@ -19,18 +30,8 @@ import {
   Coins,
   Zap,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Navbar } from "@/components/navbar";
-import { useTranslate } from "@/hooks/use-translate";
-import { Logo } from "@/assets/logo";
-import { SUBSCRIPTION_PLANS } from "@neptu/shared";
+import React from "react";
+
 import { AiChatAddon } from "./ai-chat-addon";
 import { PaymentIncentives } from "./payment-incentives";
 
@@ -79,20 +80,20 @@ interface FeatureRowProps {
 
 function FeatureRow({ icon, label, values }: FeatureRowProps) {
   return (
-    <div className="grid grid-cols-5 items-center py-2.5 border-b border-border/50 last:border-0">
+    <div className="grid grid-cols-5 items-center border-b border-border/50 py-2.5 last:border-0">
       <div className="col-span-1 flex items-center gap-2 text-sm text-muted-foreground">
         {icon}
         <span className="hidden sm:inline">{label}</span>
-        <span className="sm:hidden text-xs">{label}</span>
+        <span className="text-xs sm:hidden">{label}</span>
       </div>
       {values.map((val, i) => (
         <div key={i} className="col-span-1 text-center text-sm">
           {typeof val === "string" ? (
             <span className="font-medium">{val}</span>
           ) : val ? (
-            <Check className="h-4 w-4 text-primary mx-auto" />
+            <Check className="mx-auto h-4 w-4 text-primary" />
           ) : (
-            <X className="h-4 w-4 text-muted-foreground/40 mx-auto" />
+            <X className="mx-auto h-4 w-4 text-muted-foreground/40" />
           )}
         </div>
       ))}
@@ -118,19 +119,19 @@ export function PricingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="max-w-3xl mx-auto"
+              className="mx-auto max-w-3xl"
             >
               <Badge
                 variant="outline"
                 className="mb-4 border-primary/50 text-primary"
               >
-                <Sparkles className="h-3 w-3 mr-1" />
+                <Sparkles className="mr-1 h-3 w-3" />
                 {t("pricing.badge")}
               </Badge>
-              <h1 className="text-3xl sm:text-5xl font-bold tracking-tight mb-4">
+              <h1 className="mb-4 text-3xl font-bold tracking-tight sm:text-5xl">
                 {t("pricing.title")}
               </h1>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
                 {t("pricing.subtitle")}
               </p>
             </motion.div>
@@ -141,11 +142,11 @@ export function PricingPage() {
               transition={{ delay: 0.3, duration: 0.5 }}
               className="mt-8 flex flex-wrap items-center justify-center gap-4"
             >
-              <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-4 py-2 rounded-full">
+              <div className="flex items-center gap-2 rounded-full bg-muted/50 px-4 py-2 text-sm text-muted-foreground">
                 <Coins className="h-4 w-4 text-amber-500" />
                 {t("pricing.payWith")}
               </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-4 py-2 rounded-full">
+              <div className="flex items-center gap-2 rounded-full bg-muted/50 px-4 py-2 text-sm text-muted-foreground">
                 <Flame className="h-4 w-4 text-orange-500" />
                 {t("pricing.burnNote")}
               </div>
@@ -161,7 +162,7 @@ export function PricingPage() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto"
+              className="mx-auto grid max-w-6xl gap-6 sm:grid-cols-2 lg:grid-cols-4"
             >
               {tiers.map((tier) => {
                 const plan = SUBSCRIPTION_PLANS[tier.key];
@@ -172,7 +173,7 @@ export function PricingPage() {
                 return (
                   <motion.div key={tier.key} variants={fadeUp}>
                     <Card
-                      className={`relative h-full flex flex-col transition-all hover:shadow-lg hover:-translate-y-1 ${isPopular ? "border-primary shadow-md ring-1 ring-primary/20" : ""}`}
+                      className={`relative flex h-full flex-col transition-all hover:-translate-y-1 hover:shadow-lg ${isPopular ? "border-primary shadow-md ring-1 ring-primary/20" : ""}`}
                     >
                       {tier.badge && (
                         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -184,7 +185,7 @@ export function PricingPage() {
                         </div>
                       )}
 
-                      <CardHeader className="text-center pb-2">
+                      <CardHeader className="pb-2 text-center">
                         <div
                           className={`mx-auto mb-3 h-12 w-12 rounded-xl bg-gradient-to-br ${tier.color} flex items-center justify-center`}
                         >
@@ -193,14 +194,14 @@ export function PricingPage() {
                         <h3 className="text-lg font-bold">
                           {t(`pricing.${tier.key.toLowerCase()}.name`)}
                         </h3>
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <p className="mt-1 text-xs text-muted-foreground">
                           {t(`pricing.${tier.key.toLowerCase()}.desc`)}
                         </p>
                       </CardHeader>
 
                       <CardContent className="flex-1">
                         {/* Price */}
-                        <div className="text-center mb-4 h-24 flex flex-col items-center justify-center">
+                        <div className="mb-4 flex h-24 flex-col items-center justify-center text-center">
                           {isFree ? (
                             <div className="text-3xl font-bold">
                               {t("pricing.free")}
@@ -209,24 +210,24 @@ export function PricingPage() {
                             <>
                               <div className="text-3xl font-bold">
                                 {plan.SOL}
-                                <span className="text-base font-normal text-muted-foreground ml-1">
+                                <span className="ml-1 text-base font-normal text-muted-foreground">
                                   SOL
                                 </span>
                               </div>
-                              <div className="text-sm text-muted-foreground mt-1">
+                              <div className="mt-1 text-sm text-muted-foreground">
                                 {t("pricing.or")}{" "}
                                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                                   {plan.SUDIGITAL} SUDIGITAL
                                 </span>
                               </div>
-                              <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5">
+                              <div className="mt-0.5 text-xs text-emerald-600 dark:text-emerald-400">
                                 +{" "}
                                 {t("pricing.earnNeptu").replace(
                                   "{{amount}}",
-                                  String(plan.SUDIGITAL),
+                                  String(plan.SUDIGITAL)
                                 )}
                               </div>
-                              <div className="text-sm text-muted-foreground mt-0.5">
+                              <div className="mt-0.5 text-sm text-muted-foreground">
                                 {t("pricing.or")}{" "}
                                 <span className="font-semibold text-foreground">
                                   {plan.NEPTU} NEPTU
@@ -237,9 +238,9 @@ export function PricingPage() {
                         </div>
 
                         {/* Duration badge */}
-                        <div className="flex justify-center mb-4">
+                        <div className="mb-4 flex justify-center">
                           <Badge variant="secondary" className="text-xs">
-                            <Calendar className="h-3 w-3 mr-1" />
+                            <Calendar className="mr-1 h-3 w-3" />
                             {isFree
                               ? t("pricing.todayOnly")
                               : t(`pricing.${tier.key.toLowerCase()}.duration`)}
@@ -249,21 +250,21 @@ export function PricingPage() {
                         {/* Features */}
                         <ul className="space-y-2.5">
                           <li className="flex items-center gap-2 text-sm">
-                            <Calendar className="h-4 w-4 text-primary shrink-0" />
+                            <Calendar className="h-4 w-4 shrink-0 text-primary" />
                             <span className="text-muted-foreground">
                               {isFree
                                 ? t("pricing.feature.calendarToday")
                                 : t("pricing.feature.calendarDays", "").replace(
                                     "{days}",
-                                    String(plan.calendarDays),
+                                    String(plan.calendarDays)
                                   )}
                             </span>
                           </li>
                           <li className="flex items-center gap-2 text-sm">
                             {plan.aiFeedback ? (
-                              <Check className="h-4 w-4 text-primary shrink-0" />
+                              <Check className="h-4 w-4 shrink-0 text-primary" />
                             ) : (
-                              <X className="h-4 w-4 text-muted-foreground/40 shrink-0" />
+                              <X className="h-4 w-4 shrink-0 text-muted-foreground/40" />
                             )}
                             <span
                               className={
@@ -277,9 +278,9 @@ export function PricingPage() {
                           </li>
                           <li className="flex items-center gap-2 text-sm">
                             {plan.interest ? (
-                              <Check className="h-4 w-4 text-primary shrink-0" />
+                              <Check className="h-4 w-4 shrink-0 text-primary" />
                             ) : (
-                              <X className="h-4 w-4 text-muted-foreground/40 shrink-0" />
+                              <X className="h-4 w-4 shrink-0 text-muted-foreground/40" />
                             )}
                             <span
                               className={
@@ -293,10 +294,10 @@ export function PricingPage() {
                           </li>
                           {!isFree && (
                             <li className="flex items-center gap-2 text-sm">
-                              <X className="h-4 w-4 text-muted-foreground/40 shrink-0" />
+                              <X className="h-4 w-4 shrink-0 text-muted-foreground/40" />
                               <span className="text-muted-foreground/50">
                                 {t("pricing.feature.aiChat")}
-                                <span className="text-[10px] ml-1 text-muted-foreground/40">
+                                <span className="ml-1 text-[10px] text-muted-foreground/40">
                                   {"("}
                                   {t("pricing.addon")}
                                   {")"}
@@ -308,10 +309,10 @@ export function PricingPage() {
 
                         {/* Savings badge for yearly */}
                         {tier.key === "YEARLY" && (
-                          <div className="mt-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-3 py-2 text-center">
+                          <div className="mt-4 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-center">
                             <div className="flex items-center justify-center gap-1 text-xs">
                               <Zap className="h-3 w-3 text-emerald-500" />
-                              <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+                              <span className="font-medium text-emerald-600 dark:text-emerald-400">
                                 {t("pricing.yearlySave")}
                               </span>
                             </div>
@@ -336,7 +337,7 @@ export function PricingPage() {
                             : authenticated
                               ? t("pricing.subscribe")
                               : t("pricing.connectWallet")}
-                          <ArrowRight className="h-4 w-4 ml-1" />
+                          <ArrowRight className="ml-1 h-4 w-4" />
                         </Button>
                       </CardFooter>
                     </Card>
@@ -353,20 +354,20 @@ export function PricingPage() {
 
         {/* Comparison Table */}
         <section className="pb-16 sm:pb-24">
-          <div className="container mx-auto px-4 max-w-4xl">
+          <div className="container mx-auto max-w-4xl px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <h2 className="text-2xl font-bold text-center mb-8">
+              <h2 className="mb-8 text-center text-2xl font-bold">
                 {t("pricing.compare")}
               </h2>
               <Card>
                 <CardContent className="p-4 sm:p-6">
                   {/* Header */}
-                  <div className="grid grid-cols-5 items-center pb-3 border-b-2 border-border">
+                  <div className="grid grid-cols-5 items-center border-b-2 border-border pb-3">
                     <div className="col-span-1 text-sm font-medium text-muted-foreground">
                       {t("pricing.feature.label")}
                     </div>
@@ -419,7 +420,7 @@ export function PricingPage() {
 
         {/* NEPTU Token Info */}
         <section className="pb-16 sm:pb-24">
-          <div className="container mx-auto px-4 max-w-3xl">
+          <div className="container mx-auto max-w-3xl px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -428,37 +429,37 @@ export function PricingPage() {
             >
               <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
                 <CardContent className="p-6 sm:p-8">
-                  <div className="flex items-center gap-3 mb-4">
+                  <div className="mb-4 flex items-center gap-3">
                     <Logo className="h-8 w-8 text-primary" />
                     <h2 className="text-xl font-bold">
                       {t("pricing.tokenTitle")}
                     </h2>
                   </div>
-                  <div className="grid sm:grid-cols-3 gap-4">
-                    <div className="bg-background/60 rounded-lg p-4 text-center">
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    <div className="rounded-lg bg-background/60 p-4 text-center">
                       <div className="text-2xl font-bold text-primary">50%</div>
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="mt-1 text-xs text-muted-foreground">
                         {t("pricing.tokenBurn")}
                       </p>
                     </div>
-                    <div className="bg-background/60 rounded-lg p-4 text-center">
+                    <div className="rounded-lg bg-background/60 p-4 text-center">
                       <div className="text-2xl font-bold text-primary">1B</div>
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="mt-1 text-xs text-muted-foreground">
                         {t("pricing.tokenSupply")}
                       </p>
                     </div>
-                    <div className="bg-background/60 rounded-lg p-4 text-center">
+                    <div className="rounded-lg bg-background/60 p-4 text-center">
                       <div className="text-2xl font-bold text-primary">SPL</div>
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="mt-1 text-xs text-muted-foreground">
                         {t("pricing.tokenType")}
                       </p>
                     </div>
                   </div>
 
-                  <div className="mt-6 flex flex-wrap gap-3 justify-center">
+                  <div className="mt-6 flex flex-wrap justify-center gap-3">
                     <Link to="/p2p">
                       <Button variant="outline" size="sm">
-                        <ArrowRight className="h-4 w-4 mr-1" />
+                        <ArrowRight className="mr-1 h-4 w-4" />
                         {t("pricing.learnP2P")}
                       </Button>
                     </Link>

@@ -1,14 +1,15 @@
-import axios from "axios";
 import type {
   CompatibilityPair,
   CompatibilityResult,
   RewardType,
 } from "@neptu/shared";
 
+import axios from "axios";
+
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 const WORKER_URL = import.meta.env.VITE_WORKER_URL || "http://localhost:8787";
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
@@ -29,6 +30,7 @@ interface User {
   displayName: string | null;
   interests: string[] | null;
   onboarded: boolean;
+  isAdmin: boolean;
   email: string | null;
   createdAt: string;
 }
@@ -144,7 +146,7 @@ export const neptuApi = {
   async getOrCreateUser(walletAddress: string, birthDate?: string) {
     const { data } = await api.post<{ success: boolean; user: User }>(
       "/api/users",
-      { walletAddress, birthDate },
+      { walletAddress, birthDate }
     );
     return data;
   },
@@ -152,7 +154,7 @@ export const neptuApi = {
   // Get user by wallet
   async getUser(walletAddress: string) {
     const { data } = await api.get<{ success: boolean; user: User }>(
-      `/api/users/${walletAddress}`,
+      `/api/users/${walletAddress}`
     );
     return data;
   },
@@ -160,11 +162,11 @@ export const neptuApi = {
   // Onboard user with birth date, interests, and display name
   async onboardUser(
     walletAddress: string,
-    payload: { birthDate: string; displayName?: string; interests?: string[] },
+    payload: { birthDate: string; displayName?: string; interests?: string[] }
   ) {
     const { data } = await api.post<{ success: boolean; user: User }>(
       `/api/users/${walletAddress}/onboard`,
-      payload,
+      payload
     );
     return data;
   },
@@ -172,11 +174,11 @@ export const neptuApi = {
   // Update user profile (displayName, interests, birthDate)
   async updateProfile(
     walletAddress: string,
-    payload: { displayName?: string; interests?: string[]; birthDate?: string },
+    payload: { displayName?: string; interests?: string[]; birthDate?: string }
   ) {
     const { data } = await api.put<{ success: boolean; user: User }>(
       `/api/users/${walletAddress}`,
-      payload,
+      payload
     );
     return data;
   },
@@ -185,7 +187,7 @@ export const neptuApi = {
   async getReading(walletAddress: string, targetDate?: string) {
     const { data } = await api.get<UserReadingResponse>(
       `/api/users/${walletAddress}/reading`,
-      { params: targetDate ? { targetDate } : undefined },
+      { params: targetDate ? { targetDate } : undefined }
     );
     return data;
   },
@@ -194,7 +196,7 @@ export const neptuApi = {
   async getReadingHistory(walletAddress: string, limit = 10) {
     const { data } = await api.get<{ success: boolean; readings: unknown[] }>(
       `/api/users/${walletAddress}/readings`,
-      { params: { limit } },
+      { params: { limit } }
     );
     return data;
   },
@@ -222,7 +224,7 @@ export const neptuApi = {
     question: string,
     birthDate: string,
     targetDate?: string,
-    language?: string,
+    language?: string
   ) {
     const { data } = await workerApi.post<{
       success: boolean;
@@ -253,7 +255,7 @@ export const neptuApi = {
   async getDateInterpretation(
     birthDate: string,
     targetDate: string,
-    language?: string,
+    language?: string
   ) {
     const { data } = await workerApi.post<{
       success: boolean;
@@ -272,7 +274,7 @@ export const neptuApi = {
   async getCompatibilityInterpretation(
     birthDate1: string,
     birthDate2: string,
-    language?: string,
+    language?: string
   ) {
     const { data } = await workerApi.post<{
       success: boolean;
@@ -367,7 +369,7 @@ export const neptuApi = {
   async claimReward(
     walletAddress: string,
     rewardId: string,
-    claimTxSignature: string,
+    claimTxSignature: string
   ) {
     const { data } = await api.post<{
       success: boolean;
@@ -389,7 +391,7 @@ export const neptuApi = {
     amount: number,
     nonce: number,
     blockhash?: string,
-    lastValidBlockHeight?: number,
+    lastValidBlockHeight?: number
   ) {
     const { data } = await api.post<{
       success: boolean;
@@ -419,7 +421,7 @@ export const neptuApi = {
       limit?: number;
       offset?: number;
       transactionType?: string;
-    },
+    }
   ) {
     const { data } = await api.get<{
       success: boolean;

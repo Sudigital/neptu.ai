@@ -1,5 +1,5 @@
-import { createContext, useContext, useState } from "react";
 import { getCookie, setCookie } from "@/lib/cookies";
+import { createContext, useContext, useState, type ReactNode } from "react";
 
 export type Collapsible = "offcanvas" | "icon" | "none";
 export type Variant = "inset" | "sidebar" | "floating";
@@ -28,7 +28,7 @@ type LayoutContextType = {
 const LayoutContext = createContext<LayoutContextType | null>(null);
 
 type LayoutProviderProps = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 export function LayoutProvider({ children }: LayoutProviderProps) {
@@ -47,7 +47,7 @@ export function LayoutProvider({ children }: LayoutProviderProps) {
     setCookie(
       LAYOUT_COLLAPSIBLE_COOKIE_NAME,
       newCollapsible,
-      LAYOUT_COOKIE_MAX_AGE,
+      LAYOUT_COOKIE_MAX_AGE
     );
   };
 

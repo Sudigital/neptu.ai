@@ -1,5 +1,5 @@
-import { z } from "zod";
 import { DATE_REGEX } from "@neptu/shared";
+import { z } from "zod";
 
 export const createDailyReadingSchema = z.object({
   date: z.string().regex(DATE_REGEX, "Date must be YYYY-MM-DD format"),

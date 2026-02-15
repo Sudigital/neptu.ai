@@ -1,8 +1,9 @@
-import React, { useCallback, useRef, useState } from "react";
-import { Coins } from "lucide-react";
-import { PieChart, Pie, Cell, Sector } from "recharts";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTranslate } from "@/hooks/use-translate";
+import { Coins } from "lucide-react";
+import React, { useCallback, useRef, useState } from "react";
+import { PieChart, Pie, Cell, Sector } from "recharts";
+
 import { type CryptoWithMarketData, formatNumber } from "./crypto-utils";
 
 const SUPPLY_COLORS = ["#22c55e", "#334155"];
@@ -85,16 +86,16 @@ export function SupplyDonutChart({ crypto }: { crypto: CryptoWithMarketData }) {
   return (
     <Card>
       <CardContent>
-        <div className="flex items-center gap-2 mb-4">
+        <div className="mb-4 flex items-center gap-2">
           <Coins className="h-5 w-5 text-primary" />
-          <h4 className="font-semibold text-lg">{t("crypto.market.supply")}</h4>
+          <h4 className="text-lg font-semibold">{t("crypto.market.supply")}</h4>
         </div>
 
         {denominator > 0 ? (
           <div className="flex flex-col items-center">
             <div
               ref={containerRef}
-              className="relative inline-flex items-center justify-center w-48 h-48"
+              className="relative inline-flex h-48 w-48 items-center justify-center"
               onMouseMove={onMouseMove}
               onMouseLeave={() => {
                 onContainerLeave();
@@ -117,7 +118,7 @@ export function SupplyDonutChart({ crypto }: { crypto: CryptoWithMarketData }) {
                     dataKey="value"
                     activeShape={
                       renderActiveShape as unknown as (
-                        props: unknown,
+                        props: unknown
                       ) => React.JSX.Element
                     }
                     onMouseEnter={onPieEnter}
@@ -132,17 +133,17 @@ export function SupplyDonutChart({ crypto }: { crypto: CryptoWithMarketData }) {
                 </PieChart>
               </div>
               {/* Center label */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                 <span className="relative text-2xl font-bold">
                   {ratio}
-                  <span className="absolute -right-4 top-0 text-xs font-medium text-muted-foreground">
+                  <span className="absolute top-0 -right-4 text-xs font-medium text-muted-foreground">
                     %
                   </span>
                 </span>
               </div>
               {activeIndex !== undefined && mouse && (
                 <div
-                  className="absolute z-50 rounded-lg border bg-popover px-3 py-2 text-sm shadow-md pointer-events-none text-left whitespace-nowrap"
+                  className="pointer-events-none absolute z-50 rounded-lg border bg-popover px-3 py-2 text-left text-sm whitespace-nowrap shadow-md"
                   style={{ left: mouse.x, top: mouse.y }}
                 >
                   <p className="font-medium">{data[activeIndex].name}</p>
@@ -154,7 +155,7 @@ export function SupplyDonutChart({ crypto }: { crypto: CryptoWithMarketData }) {
             </div>
 
             {/* Legend */}
-            <div className="w-full mt-4 space-y-2">
+            <div className="mt-4 w-full space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2">
                   <span
@@ -238,7 +239,7 @@ export function CosmicScoreDonut({
   return (
     <div
       ref={containerRef}
-      className="relative inline-flex items-center justify-center w-48 h-48"
+      className="relative inline-flex h-48 w-48 items-center justify-center"
       onMouseMove={onMouseMove}
       onMouseLeave={() => {
         onMouseLeave();
@@ -272,17 +273,17 @@ export function CosmicScoreDonut({
           </Pie>
         </PieChart>
       </div>
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
         <span className="relative text-3xl font-bold text-primary">
           {alignmentScore}
-          <span className="absolute -right-4 top-0 text-xs font-medium text-primary/70">
+          <span className="absolute top-0 -right-4 text-xs font-medium text-primary/70">
             %
           </span>
         </span>
       </div>
       {hovered && mouse && (
         <div
-          className="absolute z-50 rounded-lg border bg-popover px-3 py-2 text-sm shadow-md pointer-events-none text-left whitespace-nowrap"
+          className="pointer-events-none absolute z-50 rounded-lg border bg-popover px-3 py-2 text-left text-sm whitespace-nowrap shadow-md"
           style={{ left: mouse.x, top: mouse.y }}
         >
           <p className="font-medium">{t("crypto.cosmic.alignmentScore")}</p>

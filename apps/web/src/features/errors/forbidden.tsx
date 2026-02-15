@@ -1,6 +1,6 @@
-import { useNavigate, useRouter } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { useTranslate } from "@/hooks/use-translate";
+import { useNavigate, useRouter } from "@tanstack/react-router";
 
 export function ForbiddenError() {
   const navigate = useNavigate();
@@ -15,10 +15,10 @@ export function ForbiddenError() {
         <span className="font-medium">
           {t("error.403title", "Access Forbidden")}
         </span>
-        <p className="text-muted-foreground text-center">
+        <p className="text-center text-muted-foreground">
           {t(
             "error.403desc",
-            "You don't have the necessary permission to view this resource.",
+            "You don't have the necessary permission to view this resource."
           )}
         </p>
         <div className="mt-6 flex gap-4">

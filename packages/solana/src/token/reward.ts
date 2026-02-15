@@ -1,4 +1,5 @@
 import { NEPTU_TOKEN, PRICING, type ReadingType } from "@neptu/shared";
+
 import { neptuToRaw, solToLamports, sudigitalToRaw } from "../constants";
 
 export interface RewardCalculation {
@@ -23,7 +24,7 @@ export interface SudigitalPaymentCalculation {
 }
 
 export function calculateSolPaymentReward(
-  readingType: ReadingType,
+  readingType: ReadingType
 ): RewardCalculation {
   const pricing = PRICING[readingType];
   const solAmount = solToLamports(pricing.SOL);
@@ -37,7 +38,7 @@ export function calculateSolPaymentReward(
 }
 
 export function calculateNeptuPaymentBurn(
-  readingType: ReadingType,
+  readingType: ReadingType
 ): BurnCalculation {
   const pricing = PRICING[readingType];
   const neptuAmount = neptuToRaw(pricing.NEPTU);
@@ -56,7 +57,7 @@ export function calculateNeptuPaymentBurn(
 }
 
 export function calculateSudigitalPayment(
-  readingType: ReadingType,
+  readingType: ReadingType
 ): SudigitalPaymentCalculation {
   const pricing = PRICING[readingType];
   const sudigitalAmount = sudigitalToRaw(pricing.SUDIGITAL);
@@ -72,7 +73,7 @@ export function calculateSudigitalPayment(
 
 export function getReadingPrice(
   readingType: ReadingType,
-  paymentType: "sol" | "neptu" | "sudigital",
+  paymentType: "sol" | "neptu" | "sudigital"
 ): number {
   const pricing = PRICING[readingType];
   switch (paymentType) {

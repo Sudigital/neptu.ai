@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
@@ -34,11 +35,11 @@ interface ReadingDetailCardProps {
 
 function Row({ label, value }: { label: string; value: string | undefined }) {
   return (
-    <div className="flex justify-between items-center">
-      <span className="text-[11px] sm:text-xs text-muted-foreground">
+    <div className="flex items-center justify-between">
+      <span className="text-[11px] text-muted-foreground sm:text-xs">
         {label}
       </span>
-      <span className="text-[11px] sm:text-xs font-medium">{value}</span>
+      <span className="text-[11px] font-medium sm:text-xs">{value}</span>
     </div>
   );
 }
@@ -60,17 +61,17 @@ export function ReadingDetailCard({
   warigaPrefix,
 }: ReadingDetailCardProps) {
   return (
-    <Card className={cn("py-0 gap-0 px-3 sm:px-4", borderClass, bgClass)}>
+    <Card className={cn("gap-0 px-3 py-0 sm:px-4", borderClass, bgClass)}>
       <div className="flex items-center justify-between py-2 sm:py-2.5">
         <div className="flex items-center gap-1.5 sm:gap-2">
           <div
-            className={`flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-md sm:rounded-lg ${iconBgClass}`}
+            className={`flex h-6 w-6 items-center justify-center rounded-md sm:h-7 sm:w-7 sm:rounded-lg ${iconBgClass}`}
           >
             {icon}
           </div>
           <div className="flex flex-col">
             <span
-              className={`text-xs sm:text-sm font-semibold ${labelColorClass}`}
+              className={`text-xs font-semibold sm:text-sm ${labelColorClass}`}
             >
               {label}
             </span>
@@ -81,16 +82,16 @@ export function ReadingDetailCard({
             </span>
           </div>
         </div>
-        <span className={`text-base sm:text-lg font-bold ${uripColorClass}`}>
+        <span className={`text-base font-bold sm:text-lg ${uripColorClass}`}>
           {totalUrip}
         </span>
       </div>
-      <div className="space-y-1 sm:space-y-1.5 pb-2 sm:pb-2.5">
+      <div className="space-y-1 pb-2 sm:space-y-1.5 sm:pb-2.5">
         <Row
           label={t("dashboard.sapta")}
           value={t(
             `wariga.day.${reading?.sapta_wara?.name}`,
-            reading?.sapta_wara?.name,
+            reading?.sapta_wara?.name
           )}
         />
         <Row label={t("dashboard.panca")} value={reading?.panca_wara?.name} />
@@ -99,7 +100,7 @@ export function ReadingDetailCard({
           label={t("dashboard.frekuensi")}
           value={t(
             `${warigaPrefix}.${reading?.frekuensi?.name}`,
-            reading?.frekuensi?.name,
+            reading?.frekuensi?.name
           )}
         />
         <div className={`border-t ${dividerClass} my-1.5 sm:my-2`} />
@@ -107,7 +108,7 @@ export function ReadingDetailCard({
           label={t("dashboard.cipta")}
           value={t(
             `wariga.cipta.${reading?.cipta?.name}`,
-            reading?.cipta?.name,
+            reading?.cipta?.name
           )}
         />
         <Row
@@ -118,21 +119,21 @@ export function ReadingDetailCard({
           label={t("dashboard.karsa")}
           value={t(
             `wariga.karsa.${reading?.karsa?.name?.replace(/[()+-]/g, "_")}`,
-            reading?.karsa?.name,
+            reading?.karsa?.name
           )}
         />
         <Row
           label={t("dashboard.tindakan")}
           value={t(
             `wariga.tindakan.${reading?.tindakan?.name?.replace(/\s+/g, "_")}`,
-            reading?.tindakan?.name,
+            reading?.tindakan?.name
           )}
         />
         <Row
           label={t("dashboard.siklus")}
           value={t(
             `wariga.siklus.${reading?.siklus?.name}`,
-            reading?.siklus?.name,
+            reading?.siklus?.name
           )}
         />
       </div>

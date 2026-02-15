@@ -81,7 +81,7 @@ function getSignature(date: Date, birthday?: Date): CosmicSignature {
 // ---------------------------------------------------------------------------
 
 export function analyzeCrypto(
-  crypto: CryptoWithMarketData,
+  crypto: CryptoWithMarketData
 ): PredictionSummary | null {
   if (!crypto.birthday || !crypto.athDate || !crypto.atlDate) return null;
 
@@ -197,16 +197,16 @@ export function analyzeCrypto(
  */
 export function getNextStrongest(summary: PredictionSummary) {
   const athFull = summary.events.find(
-    (e) => e.type === "ath" && e.matchLevel === "full",
+    (e) => e.type === "ath" && e.matchLevel === "full"
   );
   const athPartial = summary.events.find(
-    (e) => e.type === "ath" && e.matchLevel === "partial",
+    (e) => e.type === "ath" && e.matchLevel === "partial"
   );
   const atlFull = summary.events.find(
-    (e) => e.type === "atl" && e.matchLevel === "full",
+    (e) => e.type === "atl" && e.matchLevel === "full"
   );
   const atlPartial = summary.events.find(
-    (e) => e.type === "atl" && e.matchLevel === "partial",
+    (e) => e.type === "atl" && e.matchLevel === "partial"
   );
 
   return {

@@ -1,4 +1,7 @@
 import { describe, expect, test } from "bun:test";
+
+import { PRICING, NEPTU_TOKEN, SOL_TOKEN } from "@neptu/shared";
+
 import {
   solToLamports,
   lamportsToSol,
@@ -12,7 +15,6 @@ import {
   calculateNeptuPaymentBurn,
   getReadingPrice,
 } from "../src/token/reward";
-import { PRICING, NEPTU_TOKEN, SOL_TOKEN } from "@neptu/shared";
 
 describe("Constants", () => {
   test("LAMPORTS_PER_SOL is correct", () => {
@@ -103,10 +105,10 @@ describe("Reward Calculations", () => {
     const result = calculateSolPaymentReward("COMPATIBILITY");
     expect(result.solAmount).toBe(solToLamports(PRICING.COMPATIBILITY.SOL));
     expect(result.neptuReward).toBe(
-      neptuToRaw(PRICING.COMPATIBILITY.NEPTU_REWARD),
+      neptuToRaw(PRICING.COMPATIBILITY.NEPTU_REWARD)
     );
     expect(result.neptuRewardFormatted).toBe(
-      PRICING.COMPATIBILITY.NEPTU_REWARD,
+      PRICING.COMPATIBILITY.NEPTU_REWARD
     );
   });
 });
@@ -137,7 +139,7 @@ describe("Burn Calculations", () => {
     for (const type of readingTypes) {
       const result = calculateNeptuPaymentBurn(type);
       expect(result.burnAmount + result.treasuryAmount).toBe(
-        result.neptuAmount,
+        result.neptuAmount
       );
     }
   });
@@ -149,7 +151,7 @@ describe("Reading Prices", () => {
     expect(getReadingPrice("PELUANG", "sol")).toBe(PRICING.PELUANG.SOL);
     expect(getReadingPrice("AI_CHAT", "sol")).toBe(PRICING.AI_CHAT.SOL);
     expect(getReadingPrice("COMPATIBILITY", "sol")).toBe(
-      PRICING.COMPATIBILITY.SOL,
+      PRICING.COMPATIBILITY.SOL
     );
   });
 
@@ -158,7 +160,7 @@ describe("Reading Prices", () => {
     expect(getReadingPrice("PELUANG", "neptu")).toBe(PRICING.PELUANG.NEPTU);
     expect(getReadingPrice("AI_CHAT", "neptu")).toBe(PRICING.AI_CHAT.NEPTU);
     expect(getReadingPrice("COMPATIBILITY", "neptu")).toBe(
-      PRICING.COMPATIBILITY.NEPTU,
+      PRICING.COMPATIBILITY.NEPTU
     );
   });
 });

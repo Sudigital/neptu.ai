@@ -1,4 +1,5 @@
 import type { Potensi, Peluang, CompatibilityResult } from "@neptu/shared";
+
 import {
   LANGUAGE_LABELS,
   TERM_TRANSLATIONS,
@@ -15,7 +16,7 @@ export { postProcessResponse };
 function buildTranslationGlossary(
   potensi: Potensi,
   peluang: Peluang | undefined,
-  language: string,
+  language: string
 ): string {
   if (language === "en") return "";
 
@@ -126,7 +127,7 @@ export function extractUserContext(question: string): {
 export function formatReadingData(
   potensi: Potensi,
   peluang?: Peluang,
-  language: string = "en",
+  language: string = "en"
 ): string {
   const uripLabel = translateTerm("urip", language);
   const data: Record<string, unknown> = {
@@ -149,7 +150,7 @@ export function formatReadingData(
       life_purpose: translateTerm(potensi.lahir_untuk?.name, language),
       life_purpose_meaning: translateTerm(
         potensi.lahir_untuk?.description,
-        language,
+        language
       ),
       psychosocial: translateTerm(potensi.cipta.name, language),
       emotional: translateTerm(potensi.rasa.name, language),
@@ -170,7 +171,7 @@ export function formatReadingData(
       opportunity: translateTerm(peluang.diberi_hak_untuk?.name, language),
       opportunity_meaning: translateTerm(
         peluang.diberi_hak_untuk?.description,
-        language,
+        language
       ),
       cycle: translateTerm(peluang.siklus.name, language),
       recommended_action: translateTerm(peluang.tindakan.name, language),
@@ -187,7 +188,7 @@ export function generateUserPrompt(
   question: string,
   potensi: Potensi,
   peluang?: Peluang,
-  language: string = "en",
+  language: string = "en"
 ): string {
   const { interests, cleanQuestion } = extractUserContext(question);
   const interestSection =
@@ -214,7 +215,7 @@ Look at the actual data values and give them a natural, personalized answer. Whe
 export function generateDailyPrompt(
   potensi: Potensi,
   peluang: Peluang,
-  language: string = "en",
+  language: string = "en"
 ): string {
   const langNote =
     language !== "en"
@@ -236,7 +237,7 @@ export function generateDateInterpretationPrompt(
   potensi: Potensi,
   peluang: Peluang,
   targetDate: Date,
-  language: string = "en",
+  language: string = "en"
 ): string {
   const isToday = new Date().toDateString() === targetDate.toDateString();
   const isPast = targetDate < new Date();
@@ -256,11 +257,11 @@ export function generateDateInterpretationPrompt(
   const affirmationLabel = translateTerm(peluang.afirmasi?.name, language);
   const opportunityLabel = translateTerm(
     peluang.diberi_hak_untuk?.name,
-    language,
+    language
   );
   const opportunityDescLabel = translateTerm(
     peluang.diberi_hak_untuk?.description,
-    language,
+    language
   );
 
   return `Here is someone's Balinese Wuku reading:
@@ -300,7 +301,7 @@ export const formatReadingContext = formatReadingData;
  */
 export function generateCompatibilityPrompt(
   result: CompatibilityResult,
-  language: string = "en",
+  language: string = "en"
 ): string {
   const langNote =
     language !== "en"

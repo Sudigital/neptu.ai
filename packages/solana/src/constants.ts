@@ -10,7 +10,7 @@ export const LAMPORTS_PER_SOL = 1_000_000_000;
 export const TOKEN_DECIMALS_MULTIPLIER = Math.pow(10, NEPTU_TOKEN.DECIMALS);
 export const SUDIGITAL_DECIMALS_MULTIPLIER = Math.pow(
   10,
-  SUDIGITAL_TOKEN.DECIMALS,
+  SUDIGITAL_TOKEN.DECIMALS
 );
 
 export interface NeptuAddresses {

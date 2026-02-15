@@ -1,10 +1,11 @@
-import { useMutation } from "@tanstack/react-query";
 import type { CompatibilityResult } from "@neptu/shared";
-import { Loader2, Sparkles } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { neptuApi } from "@/lib/api";
 import { useSettingsStore } from "@/stores/settings-store";
+import { useMutation } from "@tanstack/react-query";
+import { Loader2, Sparkles } from "lucide-react";
 
 export function AiSummaryCard({
   reading,
@@ -25,7 +26,7 @@ export function AiSummaryCard({
       neptuApi.getCompatibilityInterpretation(
         reading.person1.date,
         reading.person2.date,
-        language,
+        language
       ),
   });
 
@@ -33,7 +34,7 @@ export function AiSummaryCard({
 
   return (
     <Card className="h-full border-violet-200/50 dark:border-violet-800/50">
-      <CardHeader className="pb-3 pt-4 px-4">
+      <CardHeader className="px-4 pt-4 pb-3">
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-violet-500" />
           <CardTitle className="text-sm">
@@ -41,13 +42,13 @@ export function AiSummaryCard({
           </CardTitle>
         </div>
       </CardHeader>
-      <CardContent className="px-4 pb-4 flex flex-col flex-1">
+      <CardContent className="flex flex-1 flex-col px-4 pb-4">
         {!message && !isPending && !error && (
-          <div className="flex flex-1 flex-col items-center justify-center text-center gap-3 py-8">
+          <div className="flex flex-1 flex-col items-center justify-center gap-3 py-8 text-center">
             <div className="rounded-full bg-violet-100 p-3 dark:bg-violet-900/30">
               <Sparkles className="h-6 w-6 text-violet-500 dark:text-violet-400" />
             </div>
-            <p className="text-xs text-muted-foreground max-w-[200px]">
+            <p className="max-w-[200px] text-xs text-muted-foreground">
               {t("compatibility.aiSummaryHint")}
             </p>
             <Button
@@ -63,7 +64,7 @@ export function AiSummaryCard({
         )}
 
         {isPending && (
-          <div className="flex flex-1 flex-col items-center justify-center text-center gap-3 py-8">
+          <div className="flex flex-1 flex-col items-center justify-center gap-3 py-8 text-center">
             <Loader2 className="h-6 w-6 animate-spin text-violet-500" />
             <p className="text-xs text-muted-foreground">
               {t("compatibility.aiLoading")}
@@ -72,7 +73,7 @@ export function AiSummaryCard({
         )}
 
         {error && (
-          <div className="flex flex-1 flex-col items-center justify-center text-center gap-3 py-8">
+          <div className="flex flex-1 flex-col items-center justify-center gap-3 py-8 text-center">
             <p className="text-xs text-destructive">
               {t("compatibility.aiError")}
             </p>

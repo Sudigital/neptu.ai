@@ -1,11 +1,14 @@
+import type { RewardType, RewardStatus } from "@neptu/shared";
+
 import { eq, desc, and, sql } from "drizzle-orm";
+
 import type { Database } from "../client";
+
 import {
   userRewards,
   type NewUserReward,
   type UserReward,
 } from "../schemas/user-rewards";
-import type { RewardType, RewardStatus } from "@neptu/shared";
 
 export interface FindUserRewardsOptions {
   userId: string;
@@ -59,7 +62,7 @@ export class UserRewardRepository {
   async claim(
     id: string,
     claimTxSignature: string,
-    claimedAt: string,
+    claimedAt: string
   ): Promise<UserReward | null> {
     const result = await this.db
       .update(userRewards)
@@ -92,7 +95,7 @@ export class UserRewardRepository {
       .select()
       .from(userRewards)
       .where(
-        and(eq(userRewards.userId, userId), eq(userRewards.status, "claimed")),
+        and(eq(userRewards.userId, userId), eq(userRewards.status, "claimed"))
       )
       .orderBy(desc(userRewards.createdAt));
   }
@@ -102,7 +105,7 @@ export class UserRewardRepository {
       .select({ total: sql<number>`COALESCE(SUM(neptu_amount), 0)` })
       .from(userRewards)
       .where(
-        and(eq(userRewards.userId, userId), eq(userRewards.status, "pending")),
+        and(eq(userRewards.userId, userId), eq(userRewards.status, "pending"))
       );
     return Number(result[0]?.total ?? 0);
   }
@@ -112,7 +115,7 @@ export class UserRewardRepository {
       .select({ count: sql<number>`COUNT(*)` })
       .from(userRewards)
       .where(
-        and(eq(userRewards.userId, userId), eq(userRewards.status, "pending")),
+        and(eq(userRewards.userId, userId), eq(userRewards.status, "pending"))
       );
     return result[0]?.count ?? 0;
   }

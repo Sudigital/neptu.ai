@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import React from "react";
 import {
   ComposedChart,
@@ -9,9 +10,10 @@ import {
   ReferenceLine,
   ResponsiveContainer,
 } from "recharts";
-import { Badge } from "@/components/ui/badge";
-import { formatCurrency } from "./crypto-utils";
+
 import type { ChartDataPoint } from "./chart-utils";
+
+import { formatCurrency } from "./crypto-utils";
 
 // ---------------------------------------------------------------------------
 // CustomTooltip
@@ -45,7 +47,7 @@ export function CustomTooltip({ active, payload }: any) {
 
   return (
     <div className="rounded-lg border bg-popover px-3 py-2 text-sm shadow-md">
-      <p className="font-medium mb-1">{data.fullDate}</p>
+      <p className="mb-1 font-medium">{data.fullDate}</p>
       <p className="font-bold" style={{ color: typeColor }}>
         {formatCurrency(displayPrice)}
       </p>

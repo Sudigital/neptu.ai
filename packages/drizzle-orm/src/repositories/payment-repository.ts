@@ -1,5 +1,7 @@
 import { eq, desc, and } from "drizzle-orm";
+
 import type { Database } from "../client";
+
 import { payments, type NewPayment, type Payment } from "../schemas/payments";
 
 export interface FindPaymentsOptions {
@@ -59,7 +61,7 @@ export class PaymentRepository {
   async updateStatus(
     txSignature: string,
     status: "pending" | "confirmed" | "failed",
-    confirmedAt?: string,
+    confirmedAt?: string
   ): Promise<Payment | null> {
     const result = await this.db
       .update(payments)
@@ -79,7 +81,7 @@ export class PaymentRepository {
 
   async sumByUser(
     userId: string,
-    paymentType?: "sol" | "neptu",
+    paymentType?: "sol" | "neptu"
   ): Promise<number> {
     const conditions = [
       eq(payments.userId, userId),

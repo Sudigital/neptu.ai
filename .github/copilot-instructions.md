@@ -30,7 +30,7 @@
 
 ## Code Quality
 
-- **ALWAYS** read and copy verbatim the original context of a file before splitting
+- **ALWAYS** `cp -r` copy verbatim the original context of a file before splitting or working on same layout, dont create new because many files will missing and broken the code
 - **MAINTAIN** each file under 500 lines max — reduce/optimize code first before splitting into separate files. Do **NOT** comment out eslint rules or modify existing eslint config
 - **ALWAYS** deep dive into the current codebase before starting implementation to fully understand existing code and patterns
 - **CLEAN UP** the codebase: remove duplicate/redundant functions, statics, constants. Use common names/variables for reusability. Remove debug and unnecessary `console` statements

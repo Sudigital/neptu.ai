@@ -1,6 +1,5 @@
-import { useState } from "react";
-import { Link, useLocation } from "@tanstack/react-router";
-import { usePrivy } from "@privy-io/react-auth";
+import { IconSolana, IconSudigital } from "@/assets/brand-icons";
+import { Logo } from "@/assets/logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,14 +12,15 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Loader2, ExternalLink, Copy, Check } from "lucide-react";
-import { toast } from "sonner";
+import { useTranslate } from "@/hooks/use-translate";
 import { useUser } from "@/hooks/use-user";
 import { useWalletBalance } from "@/hooks/use-wallet-balance";
-import { useTranslate } from "@/hooks/use-translate";
 import { NEPTU_TOKEN, SOL_TOKEN, SUDIGITAL_TOKEN } from "@neptu/shared";
-import { IconSolana, IconSudigital } from "@/assets/brand-icons";
-import { Logo } from "@/assets/logo";
+import { usePrivy } from "@privy-io/react-auth";
+import { Link, useLocation } from "@tanstack/react-router";
+import { Loader2, ExternalLink, Copy, Check } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export function ProfileDropdown() {
   const { logout } = usePrivy();
@@ -71,7 +71,7 @@ export function ProfileDropdown() {
           </Avatar>
           <div className="hidden flex-col items-start text-sm sm:flex">
             <span className="font-medium">{shortAddress}</span>
-            <span className="text-muted-foreground text-xs">{chainInfo}</span>
+            <span className="text-xs text-muted-foreground">{chainInfo}</span>
           </div>
         </Button>
       </DropdownMenuTrigger>
@@ -80,7 +80,7 @@ export function ProfileDropdown() {
           <div className="flex items-start justify-between gap-2">
             <div className="flex flex-col gap-1.5">
               <p className="text-sm leading-none font-medium">{displayName}</p>
-              <p className="text-muted-foreground text-xs leading-none">
+              <p className="text-xs leading-none text-muted-foreground">
                 {chainInfo}
               </p>
             </div>
@@ -90,14 +90,14 @@ export function ProfileDropdown() {
                   href={`https://explorer.solana.com/address/${walletAddress}?cluster=${network}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-foreground transition-colors p-0.5"
+                  className="p-0.5 text-muted-foreground transition-colors hover:text-foreground"
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
                 </a>
                 <button
                   type="button"
                   onClick={handleCopyAddress}
-                  className="text-muted-foreground hover:text-foreground transition-colors p-0.5"
+                  className="p-0.5 text-muted-foreground transition-colors hover:text-foreground"
                 >
                   {copied ? (
                     <Check className="h-3.5 w-3.5 text-green-500" />
@@ -118,7 +118,7 @@ export function ProfileDropdown() {
             <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
           </div>
         ) : (
-          <div className="px-2 pb-1 space-y-0">
+          <div className="space-y-0 px-2 pb-1">
             <div className="flex items-center justify-between rounded-md px-2 py-1 text-sm">
               <span className="flex items-center gap-2 text-muted-foreground">
                 <IconSolana className="h-3.5 w-3.5" />
@@ -148,7 +148,7 @@ export function ProfileDropdown() {
             </div>
             {pendingRewards > 0 && (
               <div className="flex items-center justify-between rounded-md px-2 py-0.5 text-[10px]">
-                <span className="text-muted-foreground/70 ml-5.5">
+                <span className="ml-5.5 text-muted-foreground/70">
                   + {pendingRewards.toFixed(2)} {t("user.pending", "pending")}
                 </span>
               </div>

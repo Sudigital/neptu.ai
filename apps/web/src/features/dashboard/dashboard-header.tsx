@@ -3,8 +3,8 @@ import { Header } from "@/components/layout/header";
 import { TopNav } from "@/components/layout/top-nav";
 import { ProfileDropdown } from "@/components/profile-dropdown";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { OracleSheet } from "@/features/oracle";
 import { Button } from "@/components/ui/button";
+import { OracleSheet } from "@/features/oracle";
 import { Vote, ExternalLink } from "lucide-react";
 
 interface TopNavLink {
@@ -34,7 +34,7 @@ export function DashboardHeader({
           <Button
             asChild
             size="sm"
-            className="hidden sm:flex bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-lg animate-pulse hover:animate-none"
+            className="hidden animate-pulse bg-gradient-to-r from-amber-500 to-orange-500 font-semibold text-white shadow-lg hover:animate-none hover:from-amber-600 hover:to-orange-600 sm:flex"
           >
             <a
               href="https://colosseum.com/agent-hackathon/projects/neptu"

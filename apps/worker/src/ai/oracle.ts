@@ -1,6 +1,9 @@
 import type { Potensi, Peluang, CompatibilityResult } from "@neptu/shared";
+
 import { AzureOpenAI } from "openai";
+
 import type { CacheStore } from "../cache";
+
 import {
   getSystemPrompt,
   generateUserPrompt,
@@ -52,7 +55,7 @@ export class NeptuOracle {
   private getCacheKey(
     potensiHash: string,
     peluangDate: string | null,
-    question: string,
+    question: string
   ): string {
     const questionHash = this.hashString(question.toLowerCase().trim());
     return `oracle:${potensiHash}:${peluangDate || "potensi"}:${questionHash}`;
@@ -76,7 +79,7 @@ export class NeptuOracle {
    */
   private async callAzureOpenAI(
     systemPrompt: string,
-    userPrompt: string,
+    userPrompt: string
   ): Promise<{ content: string; tokensUsed: number }> {
     const response = await this.client.chat.completions.create({
       messages: [
@@ -101,10 +104,10 @@ export class NeptuOracle {
     potensi: Potensi,
     peluang?: Peluang,
     cache?: CacheStore,
-    language: string = "en",
+    language: string = "en"
   ): Promise<OracleResponse> {
     const potensiHash = this.hashString(
-      `${potensi.wuku.name}:${potensi.total_urip}`,
+      `${potensi.wuku.name}:${potensi.total_urip}`
     );
     const peluangDate = peluang?.date || null;
     const cacheKey =
@@ -124,7 +127,7 @@ export class NeptuOracle {
     // Call AI
     const { content: rawContent, tokensUsed } = await this.callAzureOpenAI(
       getSystemPrompt(language),
-      userPrompt,
+      userPrompt
     );
     const content = postProcessResponse(rawContent, language);
 
@@ -151,7 +154,7 @@ export class NeptuOracle {
     potensi: Potensi,
     peluang: Peluang,
     cache?: CacheStore,
-    language: string = "en",
+    language: string = "en"
   ): Promise<OracleResponse> {
     const cacheKey = `daily:${potensi.date}:${peluang.date}:${language}`;
 
@@ -167,7 +170,7 @@ export class NeptuOracle {
 
     const { content: rawContent, tokensUsed } = await this.callAzureOpenAI(
       getSystemPrompt(language),
-      userPrompt,
+      userPrompt
     );
     const content = postProcessResponse(rawContent, language);
 
@@ -195,18 +198,18 @@ export class NeptuOracle {
     peluang: Peluang,
     targetDate: Date,
     _cache?: CacheStore,
-    language: string = "en",
+    language: string = "en"
   ): Promise<string> {
     const userPrompt = generateDateInterpretationPrompt(
       potensi,
       peluang,
       targetDate,
-      language,
+      language
     );
 
     const { content } = await this.callAzureOpenAI(
       getSystemPrompt(language),
-      userPrompt,
+      userPrompt
     );
 
     return postProcessResponse(content, language);
@@ -218,7 +221,7 @@ export class NeptuOracle {
   async getCompatibilityInterpretation(
     result: CompatibilityResult,
     cache?: CacheStore,
-    language: string = "en",
+    language: string = "en"
   ): Promise<OracleResponse> {
     const cacheKey = `compat:${result.person1.date}:${result.person2.date}:${language}`;
 
@@ -233,7 +236,7 @@ export class NeptuOracle {
 
     const { content: rawContent, tokensUsed } = await this.callAzureOpenAI(
       getSystemPrompt(language),
-      userPrompt,
+      userPrompt
     );
     const content = postProcessResponse(rawContent, language);
 

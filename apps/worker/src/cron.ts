@@ -1,8 +1,11 @@
-import { Queue, Worker, type ConnectionOptions } from "bullmq";
-import { createRedisConnection } from "./cache";
+import type { ConnectionOptions } from "bullmq";
+
+import { createLogger } from "@neptu/logger";
+import { Queue, Worker, createRedisConnection } from "@neptu/queues";
+
+const log = createLogger({ name: "cron" });
 
 interface CronDeps {
-  runHeartbeat: (phase: string) => Promise<void>;
   generateDailyReadings: () => Promise<void>;
   refreshCryptoMarketData: () => Promise<void>;
 }
@@ -21,37 +24,15 @@ export async function startCronJobs(deps: CronDeps): Promise<void> {
     await queue.removeRepeatableByKey(job.key);
   }
 
-  // Every 3 min: Reply to comments
+  // Every 10 min: Refresh crypto market data
   await queue.add(
-    "reply_comments",
-    {},
-    {
-      repeat: { pattern: "*/3 * * * *" },
-      removeOnComplete: 100,
-      removeOnFail: 50,
-    },
-  );
-
-  // Every 5 min: Comment on others + vote at :15,:30,:45
-  await queue.add(
-    "comment_and_vote",
-    {},
-    {
-      repeat: { pattern: "*/5 * * * *" },
-      removeOnComplete: 100,
-      removeOnFail: 50,
-    },
-  );
-
-  // Every 10 min: Post new thread + other activity + market refresh
-  await queue.add(
-    "post_and_refresh",
+    "refresh_market",
     {},
     {
       repeat: { pattern: "*/10 * * * *" },
       removeOnComplete: 100,
       removeOnFail: 50,
-    },
+    }
   );
 
   // Daily midnight: Generate readings + refresh market data
@@ -62,38 +43,19 @@ export async function startCronJobs(deps: CronDeps): Promise<void> {
       repeat: { pattern: "0 0 * * *" },
       removeOnComplete: 100,
       removeOnFail: 50,
-    },
+    }
   );
 
-  // Process jobs (single concurrency to avoid duplicate heartbeat runs)
+  // Process jobs
   new Worker(
     QUEUE_NAME,
     async (job) => {
-      console.log(`[BullMQ] Processing ${job.name}`);
+      log.info({ job: job.name }, "Processing job");
 
       switch (job.name) {
-        case "reply_comments":
-          await deps.runHeartbeat("reply_comments");
+        case "refresh_market":
+          await deps.refreshCryptoMarketData();
           break;
-
-        case "comment_and_vote":
-          await deps.runHeartbeat("comment_others");
-          if (new Date().getMinutes() % 15 === 0) {
-            await deps.runHeartbeat("vote");
-          }
-          break;
-
-        case "post_and_refresh": {
-          const min = new Date().getMinutes();
-          await deps.runHeartbeat("post_thread");
-          if (min % 20 === 0) {
-            await deps.runHeartbeat("other_activity");
-          }
-          if (min === 0) {
-            await deps.refreshCryptoMarketData();
-          }
-          break;
-        }
 
         case "daily_tasks":
           await deps.generateDailyReadings();
@@ -101,8 +63,8 @@ export async function startCronJobs(deps: CronDeps): Promise<void> {
           break;
       }
     },
-    { connection: workerConn, concurrency: 1 },
+    { connection: workerConn, concurrency: 1 }
   );
 
-  console.log("[BullMQ] Cron jobs registered (4 repeatable schedules)");
+  log.info("Cron jobs registered (2 repeatable schedules)");
 }

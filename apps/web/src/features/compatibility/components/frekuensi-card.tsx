@@ -15,10 +15,10 @@ export function FrekuensiCard({
     <Card>
       <CardContent className="pt-4 text-center">
         <CardDescription className="text-xs">{label}</CardDescription>
-        <p className="text-lg sm:text-xl font-bold mt-1">
+        <p className="mt-1 text-lg font-bold sm:text-xl">
           {t(`wariga.lahirUntuk.${name}`, name)}
         </p>
-        <p className="text-xs text-muted-foreground mt-0.5">
+        <p className="mt-0.5 text-xs text-muted-foreground">
           {t(`wariga.lahirUntukDesc.${purpose}`, purpose)}
         </p>
       </CardContent>

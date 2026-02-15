@@ -1,7 +1,26 @@
-import { useState } from "react";
+import type { CompatibilityResult, MitraSatruCategory } from "@neptu/shared";
+
+import { ConfigDrawer } from "@/components/config-drawer";
+import { Header } from "@/components/layout/header";
+import { Main } from "@/components/layout/main";
+import { TopNav } from "@/components/layout/top-nav";
+import { ProfileDropdown } from "@/components/profile-dropdown";
+import { ThemeSwitch } from "@/components/theme-switch";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { ReadingDetailCard } from "@/features/dashboard/reading-detail-card";
+import { OracleSheet } from "@/features/oracle";
+import { useTranslate } from "@/hooks/use-translate";
+import { neptuApi } from "@/lib/api";
+import { cn } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
-import type { CompatibilityResult, MitraSatruCategory } from "@neptu/shared";
 import {
   Calendar as CalendarIcon,
   ExternalLink,
@@ -12,25 +31,8 @@ import {
   Users,
   Vote,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { ConfigDrawer } from "@/components/config-drawer";
-import { Header } from "@/components/layout/header";
-import { Main } from "@/components/layout/main";
-import { TopNav } from "@/components/layout/top-nav";
-import { ProfileDropdown } from "@/components/profile-dropdown";
-import { ThemeSwitch } from "@/components/theme-switch";
-import { OracleSheet } from "@/features/oracle";
-import { ReadingDetailCard } from "@/features/dashboard/reading-detail-card";
-import { neptuApi } from "@/lib/api";
-import { useTranslate } from "@/hooks/use-translate";
+import { useState, type ReactNode } from "react";
+
 import {
   AiSummaryCard,
   CompatibilityScores,
@@ -127,7 +129,7 @@ export function CompatibilityPage() {
           <Button
             asChild
             size="sm"
-            className="hidden sm:flex bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-lg animate-pulse hover:animate-none"
+            className="hidden animate-pulse bg-gradient-to-r from-amber-500 to-orange-500 font-semibold text-white shadow-lg hover:animate-none hover:from-amber-600 hover:to-orange-600 sm:flex"
           >
             <a
               href="https://colosseum.com/agent-hackathon/projects/neptu"
@@ -159,7 +161,7 @@ export function CompatibilityPage() {
               <Users className="h-5 w-5 text-teal-600 dark:text-teal-400" />
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
+              <h1 className="text-xl font-bold tracking-tight sm:text-2xl">
                 {t("compatibility.title")}
               </h1>
               <p className="text-sm text-muted-foreground">
@@ -170,7 +172,7 @@ export function CompatibilityPage() {
         </div>
 
         {/* Date Input — two date pickers side by side */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6">
+        <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
           <DatePickerCard
             label={t("compatibility.person1")}
             icon={
@@ -198,12 +200,12 @@ export function CompatibilityPage() {
         </div>
 
         {/* Check Button */}
-        <div className="flex gap-2 mb-8">
+        <div className="mb-8 flex gap-2">
           <Button
             onClick={handleCheck}
             disabled={!date1 || !date2 || isPending}
             size="lg"
-            className="flex-1 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 h-11"
+            className="h-11 flex-1 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700"
           >
             {isPending ? (
               <>
@@ -251,7 +253,7 @@ function DatePickerCard({
   accentClass,
 }: {
   label: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   date: Date | undefined;
   onSelect: (date: Date | undefined) => void;
   placeholder: string;
@@ -270,18 +272,18 @@ function DatePickerCard({
         <button
           type="button"
           className={cn(
-            "flex items-center gap-3 rounded-xl border p-3 sm:p-4 text-left transition-colors hover:bg-accent/50 w-full cursor-pointer",
-            accentClass,
+            "flex w-full cursor-pointer items-center gap-3 rounded-xl border p-3 text-left transition-colors hover:bg-accent/50 sm:p-4",
+            accentClass
           )}
         >
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted/60">
             {icon}
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0 flex-1">
             <p className="text-xs text-muted-foreground">{label}</p>
             {date ? (
               <>
-                <p className="text-sm font-semibold truncate">
+                <p className="truncate text-sm font-semibold">
                   {format(date, "d MMMM yyyy")}
                 </p>
                 <p className="text-xs text-muted-foreground">
@@ -292,7 +294,7 @@ function DatePickerCard({
               <p className="text-sm text-muted-foreground/60">{placeholder}</p>
             )}
           </div>
-          <CalendarIcon className="h-4 w-4 text-muted-foreground shrink-0" />
+          <CalendarIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
@@ -331,19 +333,19 @@ function CompatibilityResultView({
       {/* Hero Score Card */}
       <div
         className={cn(
-          "rounded-2xl p-5 sm:p-8 text-white shadow-xl",
+          "rounded-2xl p-5 text-white shadow-xl sm:p-8",
           styles.gradient,
-          styles.glow,
+          styles.glow
         )}
       >
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs sm:text-sm font-medium text-white/70 uppercase tracking-wider">
+            <p className="text-xs font-medium tracking-wider text-white/70 uppercase sm:text-sm">
               {t("compatibility.mitraSatru")}
             </p>
-            <h2 className="mt-2 text-4xl sm:text-5xl font-bold tracking-tight">
+            <h2 className="mt-2 text-4xl font-bold tracking-tight sm:text-5xl">
               {reading.scores.overall}
-              <span className="text-lg sm:text-xl font-normal text-white/50">
+              <span className="text-lg font-normal text-white/50 sm:text-xl">
                 /100
               </span>
             </h2>
@@ -352,7 +354,7 @@ function CompatibilityResultView({
                 className={cn(
                   "rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1",
                   styles.badge,
-                  styles.ring,
+                  styles.ring
                 )}
               >
                 {categoryLabel}
@@ -362,19 +364,19 @@ function CompatibilityResultView({
               </span>
             </div>
           </div>
-          <div className="flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm">
-            <Heart className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm sm:h-20 sm:w-20">
+            <Heart className="h-8 w-8 text-white sm:h-10 sm:w-10" />
           </div>
         </div>
         <div className="mt-4 rounded-xl bg-white/10 p-3 backdrop-blur-sm">
-          <p className="text-xs sm:text-sm text-white/85 leading-relaxed">
+          <p className="text-xs leading-relaxed text-white/85 sm:text-sm">
             {t(`compatibility.description.${category}`)}
           </p>
         </div>
       </div>
 
       {/* 3-Column Layout: Person 1 | AI (full center) | Person 2 */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_1fr] gap-4">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1fr_1fr]">
         {/* Left Column — Person 1 */}
         <div className="space-y-4">
           <FrekuensiCard
@@ -402,7 +404,7 @@ function CompatibilityResultView({
             subtitle={reading.person1.date}
             reading={reading.person1}
             icon={
-              <Sun className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-amber-600 dark:text-amber-400" />
+              <Sun className="h-3 w-3 text-amber-600 sm:h-3.5 sm:w-3.5 dark:text-amber-400" />
             }
             totalUrip={reading.person1.total_urip}
             borderClass="border-amber-200/50 dark:border-amber-800/50"
@@ -445,7 +447,7 @@ function CompatibilityResultView({
             subtitle={reading.person2.date}
             reading={reading.person2}
             icon={
-              <Moon className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-sky-600 dark:text-sky-400" />
+              <Moon className="h-3 w-3 text-sky-600 sm:h-3.5 sm:w-3.5 dark:text-sky-400" />
             }
             totalUrip={reading.person2.total_urip}
             borderClass="border-sky-200/50 dark:border-sky-800/50"

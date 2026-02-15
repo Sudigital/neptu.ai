@@ -1,4 +1,5 @@
 import { text, pgTable, index, numeric, timestamp } from "drizzle-orm/pg-core";
+
 import { users } from "./users";
 
 export const tokenTransactions = pgTable(
@@ -39,7 +40,7 @@ export const tokenTransactions = pgTable(
     index("token_tx_signature_idx").on(table.txSignature),
     index("token_tx_status_idx").on(table.status),
     index("token_tx_type_idx").on(table.transactionType),
-  ],
+  ]
 );
 
 export type TokenTransaction = typeof tokenTransactions.$inferSelect;

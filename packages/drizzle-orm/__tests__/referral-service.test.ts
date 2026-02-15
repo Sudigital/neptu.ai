@@ -1,80 +1,50 @@
 import { describe, test, expect, beforeAll, afterAll } from "bun:test";
+
 import { sql } from "drizzle-orm";
+
 import { ReferralService, UserService } from "../src";
 import { createTestDatabase, closeTestDatabase } from "./test-helper";
+
+const TEST_PREFIX = `r${Date.now()}`;
 
 describe("ReferralService", () => {
   let referralService: ReferralService;
   let userService: UserService;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let db: any;
   let referrerUserId: string;
   let refereeUserId: string;
+  const createdUserIds: string[] = [];
 
   beforeAll(async () => {
-    const db = createTestDatabase();
-
-    // Create tables
-    await db.run(sql`
-      CREATE TABLE IF NOT EXISTS users (
-        id TEXT PRIMARY KEY,
-        wallet_address TEXT UNIQUE NOT NULL,
-        email TEXT,
-        display_name TEXT,
-        birth_date TEXT,
-        interests TEXT,
-        onboarded INTEGER DEFAULT 0,
-        is_admin INTEGER DEFAULT 0,
-        created_at TEXT NOT NULL DEFAULT (datetime('now')),
-        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-      )
-    `);
-
-    await db.run(sql`
-      CREATE TABLE IF NOT EXISTS referrals (
-        id TEXT PRIMARY KEY,
-        referrer_id TEXT NOT NULL REFERENCES users(id),
-        referee_id TEXT UNIQUE NOT NULL REFERENCES users(id),
-        referrer_reward_amount REAL,
-        referee_reward_amount REAL,
-        referrer_reward_paid TEXT NOT NULL DEFAULT 'pending',
-        referee_reward_paid TEXT NOT NULL DEFAULT 'pending',
-        referrer_reward_tx_signature TEXT,
-        referee_reward_tx_signature TEXT,
-        completed_at TEXT,
-        created_at TEXT NOT NULL DEFAULT (datetime('now'))
-      )
-    `);
-
-    await db.run(sql`
-      CREATE TABLE IF NOT EXISTS user_rewards (
-        id TEXT PRIMARY KEY,
-        user_id TEXT NOT NULL REFERENCES users(id),
-        reward_type TEXT NOT NULL,
-        neptu_amount REAL NOT NULL,
-        status TEXT NOT NULL DEFAULT 'pending',
-        description TEXT,
-        claim_tx_signature TEXT,
-        claimed_at TEXT,
-        expires_at TEXT,
-        created_at TEXT NOT NULL DEFAULT (datetime('now'))
-      )
-    `);
-
+    db = createTestDatabase();
     referralService = new ReferralService(db);
     userService = new UserService(db);
 
-    // Create test users
     const referrer = await userService.createUser({
-      walletAddress: "9WzDXwBbmkg8ZTbNMqUxvQRAReferrerX",
+      walletAddress: `${TEST_PREFIX}ReferrerUsr123456789012345`,
     });
     const referee = await userService.createUser({
-      walletAddress: "7KQNqLgVr5xMfWdF9vTp6t6rURefereeX",
+      walletAddress: `${TEST_PREFIX}RefereeUsr1234567890123456`,
     });
     referrerUserId = referrer.id;
     refereeUserId = referee.id;
+    createdUserIds.push(referrer.id, referee.id);
   });
 
-  afterAll(() => {
-    closeTestDatabase();
+  afterAll(async () => {
+    for (const id of createdUserIds) {
+      try {
+        await db.execute(sql`DELETE FROM user_rewards WHERE user_id = ${id}`);
+        await db.execute(
+          sql`DELETE FROM referrals WHERE referrer_id = ${id} OR referee_id = ${id}`
+        );
+        await db.execute(sql`DELETE FROM users WHERE id = ${id}`);
+      } catch {
+        // Ignore cleanup errors
+      }
+    }
+    await closeTestDatabase();
   });
 
   test("should create referral", async () => {
@@ -95,7 +65,7 @@ describe("ReferralService", () => {
       referralService.createReferral({
         referrerId: referrerUserId,
         refereeId: refereeUserId,
-      }),
+      })
     ).rejects.toThrow("User has already been referred");
   });
 
@@ -104,7 +74,7 @@ describe("ReferralService", () => {
       referralService.createReferral({
         referrerId: referrerUserId,
         refereeId: referrerUserId,
-      }),
+      })
     ).rejects.toThrow("Cannot refer yourself");
   });
 
@@ -137,7 +107,7 @@ describe("ReferralService", () => {
     const code = referralService.generateReferralCode(referrerUserId);
     const isValid = await referralService.validateReferralCode(
       code,
-      referrerUserId,
+      referrerUserId
     );
 
     expect(isValid).toBe(true);
@@ -146,7 +116,7 @@ describe("ReferralService", () => {
   test("should not validate incorrect referral code", async () => {
     const isValid = await referralService.validateReferralCode(
       "NEPTU-INVALID1",
-      referrerUserId,
+      referrerUserId
     );
 
     expect(isValid).toBe(false);

@@ -1,5 +1,7 @@
 import { eq, desc, and, sql } from "drizzle-orm";
+
 import type { Database } from "../client";
+
 import {
   referrals,
   type NewReferral,
@@ -62,7 +64,7 @@ export class ReferralRepository {
   async markReferrerPaid(
     id: string,
     txSignature: string,
-    completedAt: string,
+    completedAt: string
   ): Promise<Referral | null> {
     const result = await this.db
       .update(referrals)
@@ -79,7 +81,7 @@ export class ReferralRepository {
   async markRefereePaid(
     id: string,
     txSignature: string,
-    completedAt: string,
+    completedAt: string
   ): Promise<Referral | null> {
     const result = await this.db
       .update(referrals)
@@ -98,7 +100,7 @@ export class ReferralRepository {
       .select({ count: sql<number>`COUNT(*)` })
       .from(referrals)
       .where(eq(referrals.referrerId, userId));
-    return result[0]?.count ?? 0;
+    return Number(result[0]?.count ?? 0);
   }
 
   async getPendingReferrerRewards(userId: string): Promise<Referral[]> {
@@ -108,8 +110,8 @@ export class ReferralRepository {
       .where(
         and(
           eq(referrals.referrerId, userId),
-          eq(referrals.referrerRewardPaid, "pending"),
-        ),
+          eq(referrals.referrerRewardPaid, "pending")
+        )
       );
   }
 }

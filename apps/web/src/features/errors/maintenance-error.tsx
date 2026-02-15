@@ -12,10 +12,10 @@ export function MaintenanceError() {
         <span className="font-medium">
           {t("error.503title", "Website is under maintenance!")}
         </span>
-        <p className="text-muted-foreground text-center">
+        <p className="text-center text-muted-foreground">
           {t(
             "error.503desc",
-            "The site is not available at the moment. We'll be back online shortly.",
+            "The site is not available at the moment. We'll be back online shortly."
           )}
         </p>
         <div className="mt-6 flex gap-4">

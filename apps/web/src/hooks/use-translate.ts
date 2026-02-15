@@ -1,6 +1,6 @@
-import { useMemo } from "react";
-import { useSettingsStore } from "@/stores/settings-store";
 import { createTranslate, type TranslateFn } from "@/i18n";
+import { useSettingsStore } from "@/stores/settings-store";
+import { useMemo } from "react";
 
 /**
  * Hook to get the translate function based on current language setting

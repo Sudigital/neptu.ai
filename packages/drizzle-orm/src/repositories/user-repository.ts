@@ -1,12 +1,35 @@
-import { eq } from "drizzle-orm";
+import { eq, desc, asc, ilike, or, count, sql } from "drizzle-orm";
+
 import type { Database } from "../client";
+
 import { users, type NewUser, type User } from "../schemas/users";
+
+export interface ListUsersOptions {
+  page: number;
+  limit: number;
+  search?: string;
+  sortBy: "createdAt" | "walletAddress" | "displayName";
+  sortOrder: "asc" | "desc";
+}
+
+export interface PaginatedResult<T> {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
 
 export class UserRepository {
   constructor(private db: Database) {}
 
   async create(data: NewUser): Promise<User> {
-    await this.db.insert(users).values(data);
+    const now = new Date();
+    await this.db.insert(users).values({
+      ...data,
+      createdAt: data.createdAt ?? now,
+      updatedAt: data.updatedAt ?? now,
+    });
     const result = await this.findById(data.id);
     if (!result) {
       throw new Error("Failed to create user");
@@ -34,7 +57,7 @@ export class UserRepository {
 
   async update(
     id: string,
-    data: Partial<Omit<NewUser, "id">>,
+    data: Partial<Omit<NewUser, "id">>
   ): Promise<User | null> {
     await this.db
       .update(users)
@@ -52,7 +75,7 @@ export class UserRepository {
 
   async findOrCreate(
     walletAddress: string,
-    data?: Partial<NewUser>,
+    data?: Partial<NewUser>
   ): Promise<User> {
     const existing = await this.findByWalletAddress(walletAddress);
     if (existing) {
@@ -65,5 +88,72 @@ export class UserRepository {
       walletAddress,
       ...data,
     });
+  }
+
+  async list(options: ListUsersOptions): Promise<PaginatedResult<User>> {
+    const { page, limit, search, sortBy, sortOrder } = options;
+    const offset = (page - 1) * limit;
+
+    const orderFn = sortOrder === "asc" ? asc : desc;
+    const orderColumn =
+      sortBy === "walletAddress"
+        ? users.walletAddress
+        : sortBy === "displayName"
+          ? users.displayName
+          : users.createdAt;
+
+    let query = this.db.select().from(users).$dynamic();
+    let countQuery = this.db.select({ count: count() }).from(users).$dynamic();
+
+    if (search) {
+      const searchCondition = or(
+        ilike(users.walletAddress, `%${search}%`),
+        ilike(users.displayName, `%${search}%`),
+        ilike(users.email, `%${search}%`)
+      );
+      query = query.where(searchCondition);
+      countQuery = countQuery.where(searchCondition);
+    }
+
+    const [data, totalResult] = await Promise.all([
+      query.orderBy(orderFn(orderColumn)).limit(limit).offset(offset),
+      countQuery,
+    ]);
+
+    const total = totalResult[0]?.count ?? 0;
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
+  async getStats(): Promise<{
+    total: number;
+    onboarded: number;
+    admins: number;
+    todayNew: number;
+  }> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const result = await this.db
+      .select({
+        total: count(),
+        onboarded: sql<number>`COUNT(*) FILTER (WHERE ${users.onboarded} = true)`,
+        admins: sql<number>`COUNT(*) FILTER (WHERE ${users.isAdmin} = true)`,
+        todayNew: sql<number>`COUNT(*) FILTER (WHERE ${users.createdAt} >= ${today})`,
+      })
+      .from(users);
+
+    return {
+      total: result[0]?.total ?? 0,
+      onboarded: Number(result[0]?.onboarded ?? 0),
+      admins: Number(result[0]?.admins ?? 0),
+      todayNew: Number(result[0]?.todayNew ?? 0),
+    };
   }
 }

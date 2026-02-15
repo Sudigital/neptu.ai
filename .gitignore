@@ -35,8 +35,8 @@ packages/wariga/
 # Database ORM (schemas, services) - shared in repo for CI
 # packages/drizzle-orm/
 
-# API server (uses wariga, deploy separately)  
-apps/api/
+# API server
+# apps/api/
 
 # CLI dev tool
 apps/cli/

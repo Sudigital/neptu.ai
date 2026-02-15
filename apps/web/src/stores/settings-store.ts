@@ -14,6 +14,6 @@ export const useSettingsStore = create<SettingsState>()(
     }),
     {
       name: "neptu-settings",
-    },
-  ),
+    }
+  )
 );

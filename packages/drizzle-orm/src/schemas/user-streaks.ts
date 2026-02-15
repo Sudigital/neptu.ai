@@ -1,4 +1,5 @@
 import { text, pgTable, index, integer, timestamp } from "drizzle-orm/pg-core";
+
 import { users } from "./users";
 
 export const userStreaks = pgTable(
@@ -20,7 +21,7 @@ export const userStreaks = pgTable(
       .notNull()
       .defaultNow(),
   },
-  (table) => [index("user_streaks_user_idx").on(table.userId)],
+  (table) => [index("user_streaks_user_idx").on(table.userId)]
 );
 
 export type UserStreak = typeof userStreaks.$inferSelect;

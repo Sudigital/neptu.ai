@@ -1,8 +1,3 @@
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { showSubmittedData } from "@/lib/show-submitted-data";
-import { useTranslate } from "@/hooks/use-translate";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -14,6 +9,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useTranslate } from "@/hooks/use-translate";
+import { showSubmittedData } from "@/lib/show-submitted-data";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const ITEM_IDS = [
   "recents",
@@ -77,7 +77,7 @@ export function DisplayForm() {
                 <FormDescription>
                   {t(
                     "settings.display.sidebarDesc",
-                    "Select the items you want to display in the sidebar.",
+                    "Select the items you want to display in the sidebar."
                   )}
                 </FormDescription>
               </div>
@@ -100,8 +100,8 @@ export function DisplayForm() {
                                 ? field.onChange([...field.value, item.id])
                                 : field.onChange(
                                     field.value?.filter(
-                                      (value) => value !== item.id,
-                                    ),
+                                      (value) => value !== item.id
+                                    )
                                   );
                             }}
                           />

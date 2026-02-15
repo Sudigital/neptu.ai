@@ -1,6 +1,6 @@
-import { useNavigate, useRouter } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { useTranslate } from "@/hooks/use-translate";
+import { useNavigate, useRouter } from "@tanstack/react-router";
 
 export function NotFoundError() {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ export function NotFoundError() {
           {t("error.404")}
         </h1>
         <span className="font-medium">{t("error.404title")}</span>
-        <p className="text-muted-foreground text-center">
+        <p className="text-center text-muted-foreground">
           {t("error.404desc")}
         </p>
         <div className="mt-6 flex gap-4">

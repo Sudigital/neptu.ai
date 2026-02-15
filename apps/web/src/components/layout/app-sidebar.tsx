@@ -1,10 +1,11 @@
-import { useLayout } from "@/context/layout-provider";
 import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { useLayout } from "@/context/layout-provider";
+
 // import { AppTitle } from './app-title'
 import { useSidebarData } from "./data/use-sidebar-data";
 import { NavGroup } from "./nav-group";

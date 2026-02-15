@@ -1,10 +1,11 @@
+import { Card } from "@/components/ui/card";
+import { useTranslate } from "@/hooks/use-translate";
+import { neptuApi } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Loader2 } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { useTranslate } from "@/hooks/use-translate";
-import { neptuApi } from "@/lib/api";
+
 import { HighlightedText } from "./highlighted-text";
 
 const interestConfig: Record<
@@ -105,7 +106,7 @@ const interestConfig: Record<
 
 function parseInsights(
   message: string | undefined,
-  interest: string,
+  interest: string
 ): { affirmation: string; action: string; mainText: string } {
   const defaults: Record<string, { affirmation: string; action: string }> = {
     love: { affirmation: "I AM LOVED", action: "Express gratitude" },
@@ -187,7 +188,7 @@ AFFIRMATION: [a short powerful affirmation for ${interest}, max 5 words]
 ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
         birthDate,
         targetDate,
-        language,
+        language
       ),
     enabled: !!birthDate,
     refetchOnWindowFocus: false,
@@ -203,22 +204,22 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
   };
 
   return (
-    <Card className="py-2 gap-0 px-3 sm:px-4">
+    <Card className="gap-0 px-3 py-2 sm:px-4">
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-2 sm:gap-3">
           <div
             className={cn(
-              "flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full",
-              config.bgColor,
+              "flex h-8 w-8 items-center justify-center rounded-full sm:h-10 sm:w-10",
+              config.bgColor
             )}
           >
             <span className="text-base sm:text-xl">{config.icon}</span>
           </div>
           <div>
-            <h3 className="text-base sm:text-lg font-semibold tracking-tight capitalize">
+            <h3 className="text-base font-semibold tracking-tight capitalize sm:text-lg">
               {interestName} {t("oracle.insight")}
             </h3>
-            <p className="text-[10px] sm:text-xs text-muted-foreground">
+            <p className="text-[10px] text-muted-foreground sm:text-xs">
               {t("oracle.guidanceFor")}{" "}
               {format(new Date(targetDate), "MMM d, yyyy")}
             </p>
@@ -227,17 +228,17 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
       </div>
       <div className="space-y-1.5">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-4 sm:py-6 text-center">
-            <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-muted-foreground" />
-            <p className="mt-2 text-xs sm:text-sm text-muted-foreground">
+          <div className="flex flex-col items-center justify-center py-4 text-center sm:py-6">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground sm:h-8 sm:w-8" />
+            <p className="mt-2 text-xs text-muted-foreground sm:text-sm">
               {t("oracle.analyzing")} {interestName}...
             </p>
           </div>
         ) : insights.mainText ? (
           <HighlightedText text={insights.mainText} />
         ) : (
-          <div className="text-center py-4 sm:py-6">
-            <p className="text-sm sm:text-base text-muted-foreground">
+          <div className="py-4 text-center sm:py-6">
+            <p className="text-sm text-muted-foreground sm:text-base">
               {t("oracle.noInsight")}
             </p>
           </div>

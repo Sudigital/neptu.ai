@@ -1,5 +1,7 @@
 import { eq, asc } from "drizzle-orm";
+
 import type { Database } from "../client";
+
 import {
   pricingPlans,
   type NewPricingPlan,
@@ -53,7 +55,7 @@ export class PricingPlanRepository {
 
   async update(
     id: string,
-    data: Partial<Omit<NewPricingPlan, "id">>,
+    data: Partial<Omit<NewPricingPlan, "id">>
   ): Promise<PricingPlan | null> {
     await this.db
       .update(pricingPlans)

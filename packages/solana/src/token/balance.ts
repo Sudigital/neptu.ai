@@ -1,12 +1,15 @@
+import type { NetworkType } from "@neptu/shared";
+
 import { address } from "@solana/kit";
+
 import type { SolanaRpc } from "../client";
+
 import {
   getAddresses,
   neptuToRaw,
   rawToNeptu,
   rawToSudigital,
 } from "../constants";
-import type { NetworkType } from "@neptu/shared";
 
 export interface TokenAccount {
   address: string;
@@ -36,7 +39,7 @@ interface ParsedTokenAccountData {
 export async function getTokenBalance(
   rpc: SolanaRpc,
   ownerAddress: string,
-  network: NetworkType,
+  network: NetworkType
 ): Promise<TokenBalance> {
   const addresses = getAddresses(network);
   if (!addresses.tokenMint) {
@@ -48,7 +51,7 @@ export async function getTokenBalance(
       .getTokenAccountsByOwner(
         address(ownerAddress),
         { mint: address(addresses.tokenMint) },
-        { encoding: "jsonParsed" },
+        { encoding: "jsonParsed" }
       )
       .send();
 
@@ -72,7 +75,7 @@ export async function getTokenBalance(
 export async function getSudigitalBalance(
   rpc: SolanaRpc,
   ownerAddress: string,
-  network: NetworkType,
+  network: NetworkType
 ): Promise<TokenBalance> {
   const addresses = getAddresses(network);
   if (!addresses.sudigitalMint) {
@@ -84,7 +87,7 @@ export async function getSudigitalBalance(
       .getTokenAccountsByOwner(
         address(ownerAddress),
         { mint: address(addresses.sudigitalMint) },
-        { encoding: "jsonParsed" },
+        { encoding: "jsonParsed" }
       )
       .send();
 
@@ -108,7 +111,7 @@ export async function getSudigitalBalance(
 export async function getAssociatedTokenAddress(
   rpc: SolanaRpc,
   ownerAddress: string,
-  network: NetworkType,
+  network: NetworkType
 ): Promise<string | null> {
   const addresses = getAddresses(network);
   if (!addresses.tokenMint) {
@@ -120,7 +123,7 @@ export async function getAssociatedTokenAddress(
       .getTokenAccountsByOwner(
         address(ownerAddress),
         { mint: address(addresses.tokenMint) },
-        { encoding: "jsonParsed" },
+        { encoding: "jsonParsed" }
       )
       .send();
 

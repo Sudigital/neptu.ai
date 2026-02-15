@@ -1,10 +1,11 @@
 import type { Database } from "../client";
-import { TokenTransactionRepository } from "../repositories/token-transaction-repository";
+
 import {
   toTokenTransactionDTO,
   toTokenTransactionDTOList,
   type TokenTransactionDTO,
 } from "../dto/token-transaction-dto";
+import { TokenTransactionRepository } from "../repositories/token-transaction-repository";
 import {
   createTokenTransactionSchema,
   updateTokenTransactionStatusSchema,
@@ -29,7 +30,7 @@ export class TokenTransactionService {
   }
 
   async createTransaction(
-    input: CreateTokenTransactionInput,
+    input: CreateTokenTransactionInput
   ): Promise<TokenTransactionDTO> {
     const validated = createTokenTransactionSchema.parse(input);
 
@@ -48,14 +49,14 @@ export class TokenTransactionService {
   }
 
   async getTransactionBySignature(
-    txSignature: string,
+    txSignature: string
   ): Promise<TokenTransactionDTO | null> {
     const transaction = await this.repository.findByTxSignature(txSignature);
     return transaction ? toTokenTransactionDTO(transaction) : null;
   }
 
   async getTransactionsByUser(
-    input: GetTokenTransactionsByUserInput,
+    input: GetTokenTransactionsByUserInput
   ): Promise<TokenTransactionDTO[]> {
     const validated = getTokenTransactionsByUserSchema.parse(input);
 
@@ -71,14 +72,14 @@ export class TokenTransactionService {
   }
 
   async confirmTransaction(
-    input: UpdateTokenTransactionStatusInput,
+    input: UpdateTokenTransactionStatusInput
   ): Promise<TokenTransactionDTO | null> {
     const validated = updateTokenTransactionStatusSchema.parse(input);
 
     const transaction = await this.repository.updateStatus(
       validated.txSignature,
       validated.status,
-      validated.confirmedAt,
+      validated.confirmedAt
     );
 
     return transaction ? toTokenTransactionDTO(transaction) : null;

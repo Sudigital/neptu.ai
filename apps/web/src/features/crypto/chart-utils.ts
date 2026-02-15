@@ -44,14 +44,14 @@ export function formatPriceData(
   atl?: number | null,
   athDate?: string | null,
   atlDate?: string | null,
-  currentPrice?: number | null,
+  currentPrice?: number | null
 ): ChartDataPoint[] {
   const prices = rawData.prices;
   if (!prices?.length) return [];
 
   const step = Math.max(1, Math.floor(prices.length / 90));
   const sampled = prices.filter(
-    (_, i) => i % step === 0 || i === prices.length - 1,
+    (_, i) => i % step === 0 || i === prices.length - 1
   );
 
   const athTs = athDate ? new Date(athDate).getTime() : null;
@@ -115,7 +115,7 @@ export function formatPriceData(
 export function mergeWithPredictions(
   historyData: ChartDataPoint[],
   events: CosmicPredictionEvent[],
-  currentPrice: number,
+  currentPrice: number
 ): ChartDataPoint[] {
   if (!events.length) return historyData;
 
@@ -181,7 +181,7 @@ export function mergeWithPredictions(
 
   // Merge: history (without last duplicate if near "now") + bridge + predictions
   const hist = historyData.filter(
-    (p) => p.timestamp < now.getTime() - 86400000,
+    (p) => p.timestamp < now.getTime() - 86400000
   );
   return [...hist, bridge, ...predPoints];
 }

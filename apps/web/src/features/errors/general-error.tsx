@@ -1,9 +1,11 @@
-import { useNavigate, useRouter } from "@tanstack/react-router";
-import { cn } from "@/lib/utils";
+import type { HTMLAttributes } from "react";
+
 import { Button } from "@/components/ui/button";
 import { useTranslate } from "@/hooks/use-translate";
+import { cn } from "@/lib/utils";
+import { useNavigate, useRouter } from "@tanstack/react-router";
 
-type GeneralErrorProps = React.HTMLAttributes<HTMLDivElement> & {
+type GeneralErrorProps = HTMLAttributes<HTMLDivElement> & {
   minimal?: boolean;
 };
 
@@ -24,7 +26,7 @@ export function GeneralError({
           </h1>
         )}
         <span className="font-medium">{t("error.500title")}</span>
-        <p className="text-muted-foreground text-center">
+        <p className="text-center text-muted-foreground">
           {t("error.500desc")}
         </p>
         {!minimal && (

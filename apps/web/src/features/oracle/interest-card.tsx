@@ -1,7 +1,3 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Loader2, RefreshCw } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -11,6 +7,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { neptuApi } from "@/lib/api";
+import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { Loader2, RefreshCw } from "lucide-react";
+import { useState } from "react";
+
 import { HighlightedText } from "../dashboard/highlighted-text";
 
 const interestConfig: Record<
@@ -196,7 +197,7 @@ const defaultInsights: Record<string, { affirmation: string; action: string }> =
 
 function parseInsights(
   message: string | undefined,
-  interest: string,
+  interest: string
 ): { affirmation: string; action: string; mainText: string } {
   const fallback = defaultInsights[interest] || {
     affirmation: "I AM FOCUSED",
@@ -248,7 +249,7 @@ AFFIRMATION: [a short powerful affirmation for ${interest}, max 5 words]
 ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
         birthDate,
         targetDate,
-        language,
+        language
       ),
     enabled: !!birthDate,
     refetchOnWindowFocus: false,
@@ -268,9 +269,9 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
     <>
       <Card
         className={cn(
-          "py-4 px-4 gap-0 cursor-pointer transition-all hover:shadow-md hover:scale-[1.02] border",
+          "cursor-pointer gap-0 border px-4 py-4 transition-all hover:scale-[1.02] hover:shadow-md",
           config.bgColor,
-          config.borderColor,
+          config.borderColor
         )}
         onClick={() => {
           if (!isLoading) setDialogOpen(true);
@@ -281,18 +282,18 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
             className={cn(
               "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl",
               config.bgColor,
-              "ring-1 ring-black/5 dark:ring-white/10",
+              "ring-1 ring-black/5 dark:ring-white/10"
             )}
           >
             <span className="text-2xl">{config.icon}</span>
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0 flex-1">
             <h3 className="text-sm font-semibold capitalize">{config.label}</h3>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
+            <p className="mt-0.5 text-[11px] text-muted-foreground">
               {config.tagline}
             </p>
             {isLoading ? (
-              <div className="flex items-center gap-1.5 mt-2">
+              <div className="mt-2 flex items-center gap-1.5">
                 <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
                 <span className="text-[11px] text-muted-foreground">
                   Consulting oracle...
@@ -300,10 +301,10 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
               </div>
             ) : insights.affirmation ? (
               <div className="mt-2 space-y-1">
-                <p className="text-xs font-medium text-foreground/80 truncate">
+                <p className="truncate text-xs font-medium text-foreground/80">
                   ✨ {insights.affirmation}
                 </p>
-                <p className="text-[11px] text-muted-foreground truncate">
+                <p className="truncate text-[11px] text-muted-foreground">
                   → {insights.action}
                 </p>
               </div>
@@ -313,7 +314,7 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
       </Card>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-h-[80vh] max-w-lg overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <span className="text-xl">{config.icon}</span>
@@ -326,24 +327,24 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
             <div className="grid grid-cols-2 gap-2">
               <div
                 className={cn(
-                  "rounded-lg p-3 border",
+                  "rounded-lg border p-3",
                   config.bgColor,
-                  config.borderColor,
+                  config.borderColor
                 )}
               >
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+                <p className="mb-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
                   Affirmation
                 </p>
                 <p className="text-sm font-bold">{insights.affirmation}</p>
               </div>
               <div
                 className={cn(
-                  "rounded-lg p-3 border",
+                  "rounded-lg border p-3",
                   config.bgColor,
-                  config.borderColor,
+                  config.borderColor
                 )}
               >
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+                <p className="mb-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
                   Action
                 </p>
                 <p className="text-sm font-bold">{insights.action}</p>
@@ -363,7 +364,7 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
                 <HighlightedText text={insights.mainText} />
               </div>
             ) : (
-              <div className="text-center py-6">
+              <div className="py-6 text-center">
                 <p className="text-sm text-muted-foreground">
                   No specific insight available at this time.
                 </p>
@@ -373,7 +374,7 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
                   className="mt-3"
                   onClick={() => refetch()}
                 >
-                  <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+                  <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
                   Get Insight
                 </Button>
               </div>
@@ -390,8 +391,8 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
                 >
                   <RefreshCw
                     className={cn(
-                      "h-3.5 w-3.5 mr-1.5",
-                      isLoading && "animate-spin",
+                      "mr-1.5 h-3.5 w-3.5",
+                      isLoading && "animate-spin"
                     )}
                   />
                   Refresh

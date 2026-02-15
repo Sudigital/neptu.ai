@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import type { ComponentType } from "react";
+
 import { ConfigDrawer } from "@/components/config-drawer";
 import { Header } from "@/components/layout/header";
 import { ProfileDropdown } from "@/components/profile-dropdown";
@@ -9,6 +10,7 @@ import { GeneralError } from "@/features/errors/general-error";
 import { MaintenanceError } from "@/features/errors/maintenance-error";
 import { NotFoundError } from "@/features/errors/not-found-error";
 import { UnauthorisedError } from "@/features/errors/unauthorized-error";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/errors/$error")({
   component: RouteComponent,
@@ -17,7 +19,7 @@ export const Route = createFileRoute("/_authenticated/errors/$error")({
 function RouteComponent() {
   const { error } = Route.useParams();
 
-  const errorMap: Record<string, React.ComponentType> = {
+  const errorMap: Record<string, ComponentType> = {
     unauthorized: UnauthorisedError,
     forbidden: ForbiddenError,
     "not-found": NotFoundError,

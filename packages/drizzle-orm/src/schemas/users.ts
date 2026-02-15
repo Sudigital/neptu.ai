@@ -25,7 +25,7 @@ export const users = pgTable(
       .notNull()
       .defaultNow(),
   },
-  (table) => [index("users_wallet_idx").on(table.walletAddress)],
+  (table) => [index("users_wallet_idx").on(table.walletAddress)]
 );
 
 export type User = typeof users.$inferSelect;

@@ -1,4 +1,5 @@
 import { text, pgTable, index, timestamp, jsonb } from "drizzle-orm/pg-core";
+
 import { users } from "./users";
 
 export const readings = pgTable(
@@ -24,7 +25,7 @@ export const readings = pgTable(
     index("readings_user_idx").on(table.userId),
     index("readings_type_idx").on(table.type),
     index("readings_date_idx").on(table.targetDate),
-  ],
+  ]
 );
 
 export type Reading = typeof readings.$inferSelect;

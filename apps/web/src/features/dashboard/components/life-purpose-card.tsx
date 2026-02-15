@@ -1,5 +1,5 @@
-import { Star } from "lucide-react";
 import { useTranslate } from "@/hooks/use-translate";
+import { Star } from "lucide-react";
 
 type LifePurposeCardProps = {
   lahirUntuk?: {

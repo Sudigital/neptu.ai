@@ -22,7 +22,7 @@ export interface TokenTransactionDTO {
 }
 
 export function toTokenTransactionDTO(
-  tx: TokenTransaction,
+  tx: TokenTransaction
 ): TokenTransactionDTO {
   return {
     id: tx.id,
@@ -42,7 +42,7 @@ export function toTokenTransactionDTO(
 }
 
 export function toTokenTransactionDTOList(
-  transactions: TokenTransaction[],
+  transactions: TokenTransaction[]
 ): TokenTransactionDTO[] {
   return transactions.map(toTokenTransactionDTO);
 }

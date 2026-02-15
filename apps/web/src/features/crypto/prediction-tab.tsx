@@ -1,3 +1,6 @@
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { useTranslate } from "@/hooks/use-translate";
 import {
   Calendar,
   Sparkles,
@@ -10,11 +13,9 @@ import {
   ChevronUp,
   ChevronDown,
 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { useTranslate } from "@/hooks/use-translate";
-import { type CryptoWithMarketData, formatCurrency } from "./crypto-utils";
+
 import { analyzeCrypto, type CosmicPredictionEvent } from "./cosmic-prediction";
+import { type CryptoWithMarketData, formatCurrency } from "./crypto-utils";
 
 export function PredictionTab({ crypto }: { crypto: CryptoWithMarketData }) {
   const t = useTranslate();
@@ -64,28 +65,28 @@ export function PredictionTab({ crypto }: { crypto: CryptoWithMarketData }) {
       {/* Price Position Card */}
       <Card>
         <CardContent>
-          <div className="flex items-center gap-2 mb-4">
+          <div className="mb-4 flex items-center gap-2">
             <Target className="h-5 w-5 text-primary" />
-            <h4 className="font-semibold text-lg">
+            <h4 className="text-lg font-semibold">
               {t("crypto.prediction.pricePosition")}
             </h4>
           </div>
           <div className="mb-6">
-            <div className="flex justify-between text-xs text-muted-foreground mb-2">
+            <div className="mb-2 flex justify-between text-xs text-muted-foreground">
               <span>ATL: {formatCurrency(atl)}</span>
               <span>ATH: {formatCurrency(ath)}</span>
             </div>
-            <div className="relative h-4 bg-gradient-to-r from-red-500/20 via-yellow-500/20 to-green-500/20 rounded-full">
+            <div className="relative h-4 rounded-full bg-gradient-to-r from-red-500/20 via-yellow-500/20 to-green-500/20">
               <div
-                className="absolute top-0 h-4 w-1 bg-primary rounded-full transform -translate-x-1/2"
+                className="absolute top-0 h-4 w-1 -translate-x-1/2 transform rounded-full bg-primary"
                 style={{ left: `${Math.min(Math.max(pricePosition, 2), 98)}%` }}
               />
             </div>
-            <div className="text-center mt-2">
+            <div className="mt-2 text-center">
               <span className="text-sm font-medium">
                 Current: {formatCurrency(currentPrice)}
               </span>
-              <span className="text-xs text-muted-foreground ml-2">
+              <span className="ml-2 text-xs text-muted-foreground">
                 ({pricePosition.toFixed(1)}% from ATL)
               </span>
             </div>
@@ -98,10 +99,10 @@ export function PredictionTab({ crypto }: { crypto: CryptoWithMarketData }) {
                   {t("crypto.prediction.toATH")}
                 </span>
               </div>
-              <p className="text-lg sm:text-xl font-bold text-green-600">
+              <p className="text-lg font-bold text-green-600 sm:text-xl">
                 +{athDistance.toFixed(1)}%
               </p>
-              <p className="text-xs text-muted-foreground truncate">
+              <p className="truncate text-xs text-muted-foreground">
                 {formatCurrency(ath - currentPrice)}{" "}
                 {t("crypto.prediction.needed")}
               </p>
@@ -113,10 +114,10 @@ export function PredictionTab({ crypto }: { crypto: CryptoWithMarketData }) {
                   {t("crypto.prediction.fromATL")}
                 </span>
               </div>
-              <p className="text-lg sm:text-xl font-bold text-red-600">
+              <p className="text-lg font-bold text-red-600 sm:text-xl">
                 +{atlDistance.toFixed(1)}%
               </p>
-              <p className="text-xs text-muted-foreground truncate">
+              <p className="truncate text-xs text-muted-foreground">
                 {formatCurrency(currentPrice - atl)}{" "}
                 {t("crypto.prediction.gained")}
               </p>
@@ -128,24 +129,24 @@ export function PredictionTab({ crypto }: { crypto: CryptoWithMarketData }) {
       {/* Market Sentiment */}
       <Card>
         <CardContent>
-          <div className="flex items-center gap-2 mb-4">
+          <div className="mb-4 flex items-center gap-2">
             <Zap className="h-5 w-5 text-primary" />
-            <h4 className="font-semibold text-lg">
+            <h4 className="text-lg font-semibold">
               {t("crypto.prediction.marketSentiment")}
             </h4>
           </div>
           <div className="flex items-center justify-center py-6">
-            <div className={`text-center px-8 py-4 rounded-xl ${sentimentBg}`}>
+            <div className={`rounded-xl px-8 py-4 text-center ${sentimentBg}`}>
               <p className={`text-3xl font-bold ${sentimentColor}`}>
                 {sentiment}
               </p>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="mt-1 text-sm text-muted-foreground">
                 {t("crypto.prediction.basedOnPosition")}
               </p>
             </div>
           </div>
           {crypto.cosmicAlignment && (
-            <div className="rounded-lg bg-primary/5 p-4 mt-4">
+            <div className="mt-4 rounded-lg bg-primary/5 p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Sparkles className="h-4 w-4 text-primary" />
@@ -166,7 +167,7 @@ export function PredictionTab({ crypto }: { crypto: CryptoWithMarketData }) {
                   {cosmicBoost}
                 </Badge>
               </div>
-              <p className="text-xs text-muted-foreground mt-2">
+              <p className="mt-2 text-xs text-muted-foreground">
                 {cosmicScore}% {t("crypto.prediction.cosmicAlignment")} •{" "}
                 {crypto.cosmicAlignment.wuku} {t("crypto.prediction.cycle")}
               </p>
@@ -178,9 +179,9 @@ export function PredictionTab({ crypto }: { crypto: CryptoWithMarketData }) {
       {/* Fibonacci Levels */}
       <Card>
         <CardContent>
-          <div className="flex items-center gap-2 mb-4">
+          <div className="mb-4 flex items-center gap-2">
             <Activity className="h-5 w-5 text-primary" />
-            <h4 className="font-semibold text-lg">
+            <h4 className="text-lg font-semibold">
               {t("crypto.prediction.fibonacci")}
             </h4>
           </div>
@@ -215,16 +216,16 @@ export function PredictionTab({ crypto }: { crypto: CryptoWithMarketData }) {
       {/* Support & Resistance */}
       <Card>
         <CardContent>
-          <div className="flex items-center gap-2 mb-4">
+          <div className="mb-4 flex items-center gap-2">
             <ArrowUp className="h-5 w-5 text-green-500" />
             <ArrowDown className="h-5 w-5 text-red-500" />
-            <h4 className="font-semibold text-lg">
+            <h4 className="text-lg font-semibold">
               {t("crypto.prediction.supportResistance")}
             </h4>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+              <p className="mb-2 flex items-center gap-1 text-xs text-muted-foreground">
                 <ArrowUp className="h-3 w-3 text-green-500" />{" "}
                 {t("crypto.prediction.resistanceLevels")}
               </p>
@@ -248,7 +249,7 @@ export function PredictionTab({ crypto }: { crypto: CryptoWithMarketData }) {
               </div>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+              <p className="mb-2 flex items-center gap-1 text-xs text-muted-foreground">
                 <ArrowDown className="h-3 w-3 text-red-500" />{" "}
                 {t("crypto.prediction.supportLevels")}
               </p>
@@ -278,12 +279,12 @@ export function PredictionTab({ crypto }: { crypto: CryptoWithMarketData }) {
       <Card className="border-yellow-500/50">
         <CardContent>
           <div className="flex items-start gap-3">
-            <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+            <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-yellow-500" />
             <div>
               <p className="text-sm font-medium text-yellow-600">
                 {t("crypto.prediction.disclaimer")}
               </p>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="mt-1 text-xs text-muted-foreground">
                 {t("crypto.prediction.disclaimerText")}
               </p>
             </div>
@@ -330,16 +331,16 @@ function CosmicDatePredictions({
   const renderEvent = (
     ev: CosmicPredictionEvent | undefined,
     colorClass: string,
-    bgClass: string,
+    bgClass: string
   ) => {
-    if (!ev) return <td className="py-3 px-2" />;
+    if (!ev) return <td className="px-2 py-3" />;
     const days = daysFromNow(ev.date);
     return (
-      <td className="py-3 px-2">
+      <td className="px-2 py-3">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
             <span
-              className={`font-mono ${colorClass} ${bgClass} px-2 py-1 rounded text-xs sm:text-sm`}
+              className={`font-mono ${colorClass} ${bgClass} rounded px-2 py-1 text-xs sm:text-sm`}
             >
               {formatEventDate(ev.date)}
             </span>
@@ -366,14 +367,14 @@ function CosmicDatePredictions({
   return (
     <Card className="border-primary/50">
       <CardContent>
-        <div className="flex items-center gap-2 mb-4">
+        <div className="mb-4 flex items-center gap-2">
           <Calendar className="h-5 w-5 text-primary" />
           <Sparkles className="h-5 w-5 text-primary" />
-          <h4 className="font-semibold text-lg">
+          <h4 className="text-lg font-semibold">
             {t("crypto.prediction.cosmicDatePredictions")}
           </h4>
         </div>
-        <p className="text-sm text-muted-foreground mb-4">
+        <p className="mb-4 text-sm text-muted-foreground">
           {t("crypto.prediction.cosmicDateDesc")}
         </p>
 
@@ -381,11 +382,11 @@ function CosmicDatePredictions({
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b">
-                <th className="text-left py-2 px-2 font-medium text-muted-foreground">
+                <th className="px-2 py-2 text-left font-medium text-muted-foreground">
                   #
                 </th>
                 {athEvents.length > 0 && (
-                  <th className="text-left py-2 px-2">
+                  <th className="px-2 py-2 text-left">
                     <div className="flex items-center gap-1">
                       <ArrowUp className="h-3 w-3 text-green-500" />
                       <span className="font-medium text-green-600">
@@ -393,19 +394,19 @@ function CosmicDatePredictions({
                       </span>
                       <Badge
                         variant="outline"
-                        className="ml-1 text-xs border-green-500 text-green-500"
+                        className="ml-1 border-green-500 text-xs text-green-500"
                       >
                         {prediction.athSignature.wuku}
                       </Badge>
                     </div>
-                    <p className="text-xs text-muted-foreground font-normal">
+                    <p className="text-xs font-normal text-muted-foreground">
                       {prediction.athSignature.pancaWara} •{" "}
                       {prediction.athSignature.saptaWara}
                     </p>
                   </th>
                 )}
                 {atlEvents.length > 0 && (
-                  <th className="text-left py-2 px-2">
+                  <th className="px-2 py-2 text-left">
                     <div className="flex items-center gap-1">
                       <ArrowDown className="h-3 w-3 text-red-500" />
                       <span className="font-medium text-red-600">
@@ -413,12 +414,12 @@ function CosmicDatePredictions({
                       </span>
                       <Badge
                         variant="outline"
-                        className="ml-1 text-xs border-red-500 text-red-500"
+                        className="ml-1 border-red-500 text-xs text-red-500"
                       >
                         {prediction.atlSignature.wuku}
                       </Badge>
                     </div>
-                    <p className="text-xs text-muted-foreground font-normal">
+                    <p className="text-xs font-normal text-muted-foreground">
                       {prediction.atlSignature.pancaWara} •{" "}
                       {prediction.atlSignature.saptaWara}
                     </p>
@@ -432,18 +433,18 @@ function CosmicDatePredictions({
                   key={idx}
                   className="border-b last:border-0 hover:bg-muted/50"
                 >
-                  <td className="py-3 px-2 text-muted-foreground">{idx + 1}</td>
+                  <td className="px-2 py-3 text-muted-foreground">{idx + 1}</td>
                   {athEvents.length > 0 &&
                     renderEvent(
                       athEvents[idx],
                       "text-green-600",
-                      "bg-green-500/10",
+                      "bg-green-500/10"
                     )}
                   {atlEvents.length > 0 &&
                     renderEvent(
                       atlEvents[idx],
                       "text-red-600",
-                      "bg-red-500/10",
+                      "bg-red-500/10"
                     )}
                 </tr>
               ))}
@@ -453,16 +454,16 @@ function CosmicDatePredictions({
 
         <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
           <div className="flex items-center gap-2 text-green-600">
-            <div className="w-3 h-3 rounded bg-green-500/20" />
+            <div className="h-3 w-3 rounded bg-green-500/20" />
             <span>{t("crypto.prediction.bullishCosmicEnergy")}</span>
           </div>
           <div className="flex items-center gap-2 text-red-600">
-            <div className="w-3 h-3 rounded bg-red-500/20" />
+            <div className="h-3 w-3 rounded bg-red-500/20" />
             <span>{t("crypto.prediction.bearishCosmicEnergy")}</span>
           </div>
         </div>
 
-        <div className="mt-4 p-3 rounded-lg bg-muted/50">
+        <div className="mt-4 rounded-lg bg-muted/50 p-3">
           <p className="text-xs text-muted-foreground">
             <strong>{t("crypto.prediction.howItWorks")}:</strong>{" "}
             {t("crypto.prediction.howItWorksDesc")}

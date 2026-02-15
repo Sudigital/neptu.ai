@@ -1,4 +1,4 @@
-import React from "react";
+import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import {
   Sparkles,
@@ -8,7 +8,8 @@ import {
   ArrowRight,
   TrendingUp,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import React from "react";
+
 import { FeatureCard, StepCard } from "./landing-components";
 
 const staggerContainer = {
@@ -32,12 +33,12 @@ export default function LandingSections({ t }: { t: (key: string) => string }) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-8 sm:mb-16"
+          className="mb-8 text-center sm:mb-16"
         >
-          <h2 className="text-xl sm:text-3xl md:text-4xl font-bold tracking-tight">
+          <h2 className="text-xl font-bold tracking-tight sm:text-3xl md:text-4xl">
             {t("landing.featuresTitle")}
           </h2>
-          <p className="mt-2 sm:mt-4 text-sm sm:text-lg text-muted-foreground">
+          <p className="mt-2 text-sm text-muted-foreground sm:mt-4 sm:text-lg">
             {t("landing.featuresDesc")}
           </p>
         </motion.div>
@@ -47,7 +48,7 @@ export default function LandingSections({ t }: { t: (key: string) => string }) {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="grid gap-4 sm:gap-6 md:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+          className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 md:gap-8 lg:grid-cols-4"
         >
           <FeatureCard
             icon={<Sparkles className="h-8 w-8 text-[#9945FF]" />}
@@ -83,9 +84,9 @@ export default function LandingSections({ t }: { t: (key: string) => string }) {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="mx-auto max-w-3xl text-center mb-8 sm:mb-16"
+            className="mx-auto mb-8 max-w-3xl text-center sm:mb-16"
           >
-            <h2 className="text-xl sm:text-3xl font-bold tracking-tight">
+            <h2 className="text-xl font-bold tracking-tight sm:text-3xl">
               {t("landing.stepsTitle")}
             </h2>
           </motion.div>
@@ -95,7 +96,7 @@ export default function LandingSections({ t }: { t: (key: string) => string }) {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-0"
+            className="flex flex-col items-center justify-center gap-4 lg:flex-row lg:gap-0"
           >
             <StepCard
               number="01"
@@ -103,14 +104,14 @@ export default function LandingSections({ t }: { t: (key: string) => string }) {
               title={t("landing.step1.title")}
               desc={t("landing.step1.desc")}
             />
-            <ArrowRight className="hidden lg:block h-8 w-8 text-muted-foreground/50 mx-4 flex-shrink-0" />
+            <ArrowRight className="mx-4 hidden h-8 w-8 flex-shrink-0 text-muted-foreground/50 lg:block" />
             <StepCard
               number="02"
               icon={<Calendar className="h-6 w-6" />}
               title={t("landing.step2.title")}
               desc={t("landing.step2.desc")}
             />
-            <ArrowRight className="hidden lg:block h-8 w-8 text-muted-foreground/50 mx-4 flex-shrink-0" />
+            <ArrowRight className="mx-4 hidden h-8 w-8 flex-shrink-0 text-muted-foreground/50 lg:block" />
             <StepCard
               number="03"
               icon={<Sparkles className="h-6 w-6" />}
@@ -124,7 +125,7 @@ export default function LandingSections({ t }: { t: (key: string) => string }) {
       {/* Vote CTA Section */}
       <section
         id="vote"
-        className="py-10 sm:py-16 bg-gradient-to-r from-[#9955FF]/10 to-[#7C3AED]/10"
+        className="bg-gradient-to-r from-[#9955FF]/10 to-[#7C3AED]/10 py-10 sm:py-16"
       >
         <div className="container mx-auto px-4 text-center">
           <motion.div
@@ -133,18 +134,18 @@ export default function LandingSections({ t }: { t: (key: string) => string }) {
             viewport={{ once: true }}
             className="mx-auto max-w-2xl space-y-3 sm:space-y-6"
           >
-            <h2 className="text-xl sm:text-3xl font-bold tracking-tight">
+            <h2 className="text-xl font-bold tracking-tight sm:text-3xl">
               {t("landing.voteTitle")}
             </h2>
-            <p className="text-muted-foreground text-sm sm:text-lg">
+            <p className="text-sm text-muted-foreground sm:text-lg">
               {t("landing.voteDesc")}
             </p>
-            <p className="text-xs sm:text-sm font-medium text-[#7C3AED]">
+            <p className="text-xs font-medium text-[#7C3AED] sm:text-sm">
               🎁 {t("landing.voteReward")}
             </p>
             <Button
               size="lg"
-              className="h-11 sm:h-14 px-6 sm:px-8 text-sm sm:text-lg bg-[#7C3AED] hover:bg-[#7C3AED]/90 text-white w-full sm:w-auto"
+              className="h-11 w-full bg-[#7C3AED] px-6 text-sm text-white hover:bg-[#7C3AED]/90 sm:h-14 sm:w-auto sm:px-8 sm:text-lg"
               asChild
             >
               <a

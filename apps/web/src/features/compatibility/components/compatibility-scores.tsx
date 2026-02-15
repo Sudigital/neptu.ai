@@ -1,4 +1,5 @@
 import type { MitraSatruCategory } from "@neptu/shared";
+
 import { cn } from "@/lib/utils";
 
 interface ScoreBarProps {
@@ -69,7 +70,7 @@ export function CompatibilityScores({
         label={t("compatibility.score.traits", "Traits")}
         score={scores.traits}
       />
-      <div className="border-t pt-3 mt-3">
+      <div className="mt-3 border-t pt-3">
         <ScoreBar
           label={t("compatibility.score.overall", "Overall")}
           score={scores.overall}

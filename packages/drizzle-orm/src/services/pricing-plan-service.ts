@@ -1,6 +1,7 @@
 import type { Database } from "../client";
-import { PricingPlanRepository } from "../repositories/pricing-plan-repository";
+
 import { toPricingPlanDTO, type PricingPlanDTO } from "../dto/pricing-plan-dto";
+import { PricingPlanRepository } from "../repositories/pricing-plan-repository";
 import {
   createPricingPlanSchema,
   updatePricingPlanSchema,
@@ -59,7 +60,7 @@ export class PricingPlanService {
 
   async updatePlan(
     id: string,
-    input: UpdatePricingPlanInput,
+    input: UpdatePricingPlanInput
   ): Promise<PricingPlanDTO | null> {
     const validated = updatePricingPlanSchema.parse(input);
     const updateData: Record<string, unknown> = {};

@@ -1,18 +1,9 @@
-import { useState, useCallback } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Wallet as WalletIcon, ArrowRight } from "lucide-react";
-import { toast } from "sonner";
-import {
-  useSignAndSendTransaction,
-  useWallets as useSolanaWallets,
-} from "@privy-io/react-auth/solana";
+import { ConfigDrawer } from "@/components/config-drawer";
 import { Header } from "@/components/layout/header";
 import { Main } from "@/components/layout/main";
 import { TopNav } from "@/components/layout/top-nav";
-import { ConfigDrawer } from "@/components/config-drawer";
 import { ProfileDropdown } from "@/components/profile-dropdown";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { OracleSheet } from "@/features/oracle";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,17 +12,27 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { neptuApi } from "@/lib/api";
-import { TokenBalance } from "./components/token-balance";
-import { TransactionHistory } from "./components/transaction-history";
-import { TokenStatsCard } from "./components/token-stats";
 import {
   StreakCounter,
   UnclaimedRewards,
 } from "@/features/gamification/components";
-import { useUser } from "@/hooks/use-user";
+import { OracleSheet } from "@/features/oracle";
 import { useTranslate } from "@/hooks/use-translate";
+import { useUser } from "@/hooks/use-user";
 import { useWalletBalance } from "@/hooks/use-wallet-balance";
+import { neptuApi } from "@/lib/api";
+import {
+  useSignAndSendTransaction,
+  useWallets as useSolanaWallets,
+} from "@privy-io/react-auth/solana";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Wallet as WalletIcon, ArrowRight } from "lucide-react";
+import { useState, useCallback } from "react";
+import { toast } from "sonner";
+
+import { TokenBalance } from "./components/token-balance";
+import { TokenStatsCard } from "./components/token-stats";
+import { TransactionHistory } from "./components/transaction-history";
 
 // Utility: convert Uint8Array signature to base58 string
 function toBase58(bytes: Uint8Array): string {
@@ -186,7 +187,7 @@ export function Wallet() {
         totalAmount,
         claimNonce,
         blockhash,
-        lastValidBlockHeight,
+        lastValidBlockHeight
       );
 
       if (!buildResult.success || !buildResult.serializedTransaction) {
@@ -205,7 +206,7 @@ export function Wallet() {
 
       // 3. Mark rewards as claimed in the database with real tx signature
       const claimPromises = rewardsData.rewards.map((reward) =>
-        neptuApi.claimReward(walletAddress, reward.id, txSignature),
+        neptuApi.claimReward(walletAddress, reward.id, txSignature)
       );
       await Promise.all(claimPromises);
 
@@ -214,7 +215,7 @@ export function Wallet() {
       toast.success(t("wallet.claimSuccess"), {
         description: t("wallet.claimSuccessDesc").replace(
           "{amount}",
-          totalAmount.toFixed(2),
+          totalAmount.toFixed(2)
         ),
       });
 
@@ -275,7 +276,7 @@ export function Wallet() {
 
       <Main>
         <div className="mb-6">
-          <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+          <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight">
             <WalletIcon className="h-6 w-6" />
             {t("wallet.title")}
           </h1>
@@ -352,7 +353,7 @@ export function Wallet() {
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <Button
                   variant="outline"
-                  className="h-auto p-4 justify-start"
+                  className="h-auto justify-start p-4"
                   asChild
                 >
                   <a href="/dashboard">
@@ -369,7 +370,7 @@ export function Wallet() {
                 </Button>
                 <Button
                   variant="outline"
-                  className="h-auto p-4 justify-start"
+                  className="h-auto justify-start p-4"
                   disabled
                 >
                   <div className="flex flex-col items-start gap-1">
@@ -384,7 +385,7 @@ export function Wallet() {
                 </Button>
                 <Button
                   variant="outline"
-                  className="h-auto p-4 justify-start"
+                  className="h-auto justify-start p-4"
                   disabled
                 >
                   <div className="flex flex-col items-start gap-1">

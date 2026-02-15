@@ -1,7 +1,10 @@
-import { signature as createSignature } from "@solana/kit";
-import type { SolanaRpc } from "./client";
-import { getAddresses, lamportsToSol, rawToNeptu } from "./constants";
 import type { NetworkType } from "@neptu/shared";
+
+import { signature as createSignature } from "@solana/kit";
+
+import type { SolanaRpc } from "./client";
+
+import { getAddresses, lamportsToSol, rawToNeptu } from "./constants";
 
 export interface TransactionVerification {
   isValid: boolean;
@@ -31,7 +34,7 @@ interface ParsedInstruction {
 export async function verifyTransaction(
   rpc: SolanaRpc,
   signatureStr: string,
-  network: NetworkType,
+  network: NetworkType
 ): Promise<TransactionVerification> {
   try {
     const result = await rpc
@@ -137,7 +140,7 @@ export async function waitForConfirmation(
   rpc: SolanaRpc,
   signatureStr: string,
   maxRetries: number = 30,
-  delayMs: number = 1000,
+  delayMs: number = 1000
 ): Promise<boolean> {
   for (let i = 0; i < maxRetries; i++) {
     const result = await rpc
