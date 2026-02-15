@@ -1,7 +1,7 @@
+import { useTranslate } from "@/hooks/use-translate";
+import { cn } from "@/lib/utils";
 import { isToday, isPast, format } from "date-fns";
 import { Sparkles, Calendar as CalendarIcon, Star } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useTranslate } from "@/hooks/use-translate";
 
 type EnergySummary = {
   potensiSummary: string;
@@ -31,7 +31,7 @@ export function EnergyScoreCard({
           ? "bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700"
           : isPast(selectedDate)
             ? "bg-gradient-to-br from-slate-600 via-slate-500 to-slate-700"
-            : "bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700",
+            : "bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700"
       )}
     >
       <div className="flex items-center justify-between">

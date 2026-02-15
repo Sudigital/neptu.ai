@@ -1,4 +1,5 @@
 import { text, pgTable, index, numeric, timestamp } from "drizzle-orm/pg-core";
+
 import { users } from "./users";
 
 export const userRewards = pgTable(
@@ -36,7 +37,7 @@ export const userRewards = pgTable(
     index("user_rewards_user_idx").on(table.userId),
     index("user_rewards_status_idx").on(table.status),
     index("user_rewards_type_idx").on(table.rewardType),
-  ],
+  ]
 );
 
 export type UserReward = typeof userRewards.$inferSelect;

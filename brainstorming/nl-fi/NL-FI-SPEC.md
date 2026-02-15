@@ -162,7 +162,7 @@ const speechToText = async (audioBuffer: ArrayBuffer, env: Env) => {
         "Content-Type": "audio/wav",
       },
       body: audioBuffer,
-    },
+    }
   );
 
   const result = await response.json();

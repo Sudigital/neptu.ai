@@ -24,7 +24,7 @@ export const LANGUAGE_LABELS: Record<string, string> = {
  */
 export function translateTerm(
   term: string | undefined,
-  language: string,
+  language: string
 ): string {
   if (!term || language === "en") return term || "";
   return TERM_TRANSLATIONS[term]?.[language] || term;
@@ -41,7 +41,7 @@ export function postProcessResponse(text: string, language: string): string {
   // Sort keys by length descending so longer terms are replaced first
   // e.g. "DEEP SLEEP" before "SLEEP", "LARGE INTESTINE" before "LARGE"
   const sortedKeys = Object.keys(TERM_TRANSLATIONS).sort(
-    (a, b) => b.length - a.length,
+    (a, b) => b.length - a.length
   );
 
   for (const term of sortedKeys) {

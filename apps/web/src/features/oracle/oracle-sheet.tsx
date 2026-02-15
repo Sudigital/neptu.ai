@@ -1,8 +1,3 @@
-import { useState, useRef, useEffect, Fragment } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { Bot, Send, Loader2, Sparkles } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,10 +8,22 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { neptuApi } from "@/lib/api";
-import { useUser } from "@/hooks/use-user";
 import { useTranslate } from "@/hooks/use-translate";
+import { useUser } from "@/hooks/use-user";
+import { neptuApi } from "@/lib/api";
+import { cn } from "@/lib/utils";
 import { useSettingsStore } from "@/stores/settings-store";
+import { useMutation } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { Bot, Send, Loader2, Sparkles } from "lucide-react";
+import {
+  Fragment,
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type ReactNode,
+} from "react";
 
 type OracleMessage = {
   id: string;
@@ -26,7 +33,7 @@ type OracleMessage = {
 };
 
 interface OracleSheetProps {
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 export function OracleSheet({ children }: OracleSheetProps) {
@@ -107,7 +114,7 @@ export function OracleSheet({ children }: OracleSheetProps) {
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     const trimmedInput = input.trim();
     if (!trimmedInput || askMutation.isPending) return;
@@ -134,7 +141,7 @@ export function OracleSheet({ children }: OracleSheetProps) {
       acc[key].push(msg);
       return acc;
     },
-    {},
+    {}
   );
 
   return (
@@ -149,7 +156,7 @@ export function OracleSheet({ children }: OracleSheetProps) {
       </SheetTrigger>
       <SheetContent
         side="right"
-        className="flex flex-col w-full sm:max-w-md p-0 gap-0 h-dvh max-h-dvh"
+        className="flex h-dvh max-h-dvh w-full flex-col gap-0 p-0 sm:max-w-md"
         onPointerDownOutside={(e) => e.preventDefault()}
         onInteractOutside={(e) => e.preventDefault()}
       >
@@ -172,7 +179,7 @@ export function OracleSheet({ children }: OracleSheetProps) {
         {/* Chat messages */}
         <div
           ref={scrollRef}
-          className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 min-h-0 -webkit-overflow-scrolling-touch"
+          className="-webkit-overflow-scrolling-touch min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4"
           style={{ WebkitOverflowScrolling: "touch" }}
         >
           <div className="flex flex-col gap-4">
@@ -185,17 +192,17 @@ export function OracleSheet({ children }: OracleSheetProps) {
                   <div
                     key={msg.id}
                     className={cn(
-                      "max-w-[85%] px-3 py-2 text-sm break-words rounded-2xl",
+                      "max-w-[85%] rounded-2xl px-3 py-2 text-sm break-words",
                       msg.sender === "You"
-                        ? "self-end bg-primary text-primary-foreground rounded-br-none"
-                        : "self-start bg-muted rounded-bl-none",
+                        ? "self-end rounded-br-none bg-primary text-primary-foreground"
+                        : "self-start rounded-bl-none bg-muted"
                     )}
                   >
                     {msg.message}
                     <span
                       className={cn(
                         "mt-1 block text-xs opacity-70",
-                        msg.sender === "You" && "text-end",
+                        msg.sender === "You" && "text-end"
                       )}
                     >
                       {format(msg.timestamp, "h:mm a")}
@@ -205,7 +212,7 @@ export function OracleSheet({ children }: OracleSheetProps) {
               </Fragment>
             ))}
             {askMutation.isPending && (
-              <div className="self-start bg-muted px-3 py-2 rounded-2xl rounded-bl-none">
+              <div className="self-start rounded-2xl rounded-bl-none bg-muted px-3 py-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
               </div>
             )}
@@ -215,7 +222,7 @@ export function OracleSheet({ children }: OracleSheetProps) {
         {/* Input form */}
         <form
           onSubmit={handleSubmit}
-          className="border-t p-4 flex items-center gap-2"
+          className="flex items-center gap-2 border-t p-4"
         >
           <input
             type="text"
@@ -226,11 +233,11 @@ export function OracleSheet({ children }: OracleSheetProps) {
                 ? t("oracle.placeholder")
                 : t(
                     "oracle.setBirthDateShort",
-                    "Set your birth date to chat...",
+                    "Set your birth date to chat..."
                   )
             }
             disabled={!birthDate || askMutation.isPending}
-            className="flex-1 h-10 px-3 bg-muted rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+            className="h-10 flex-1 rounded-md bg-muted px-3 text-sm focus:ring-2 focus:ring-ring focus:outline-none disabled:opacity-50"
           />
           <Button
             type="submit"

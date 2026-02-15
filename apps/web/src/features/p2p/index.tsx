@@ -1,4 +1,10 @@
-import React from "react";
+import { IconSolana, IconSudigital } from "@/assets/brand-icons";
+import { Logo } from "@/assets/logo";
+import { Navbar } from "@/components/navbar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { useTranslate } from "@/hooks/use-translate";
 import { usePrivy } from "@privy-io/react-auth";
 import { motion } from "framer-motion";
 import {
@@ -11,13 +17,8 @@ import {
   Clock,
   CheckCircle2,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Navbar } from "@/components/navbar";
-import { useTranslate } from "@/hooks/use-translate";
-import { Logo } from "@/assets/logo";
-import { IconSolana, IconSudigital } from "@/assets/brand-icons";
+import React from "react";
+
 import { P2PWhySection } from "./p2p-why-section";
 
 const stagger = {
@@ -54,7 +55,7 @@ export function P2PPage() {
               </span>
               <Badge
                 variant="outline"
-                className="text-[10px] border-amber-500 text-amber-500"
+                className="border-amber-500 text-[10px] text-amber-500"
               >
                 {t("p2p.soon")}
               </Badge>
@@ -64,7 +65,7 @@ export function P2PPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.6 }}
-              className="mx-auto max-w-3xl text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight"
+              className="mx-auto max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl md:text-6xl"
             >
               {t("p2p.heroTitle1")}{" "}
               <span className="bg-gradient-to-r from-[#9955FF] to-[#7C3AED] bg-clip-text text-transparent">
@@ -76,7 +77,7 @@ export function P2PPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.8 }}
-              className="mx-auto mt-4 sm:mt-6 max-w-2xl text-sm sm:text-lg text-muted-foreground leading-relaxed"
+              className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:mt-6 sm:text-lg"
             >
               {t("p2p.heroDesc")}
             </motion.p>
@@ -85,13 +86,13 @@ export function P2PPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3"
+              className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row"
             >
               {!authenticated ? (
                 <Button
                   size="lg"
                   onClick={login}
-                  className="w-full sm:w-auto h-12 px-8 text-base"
+                  className="h-12 w-full px-8 text-base sm:w-auto"
                 >
                   <Wallet className="mr-2 h-5 w-5" />
                   {t("p2p.connectToTrade")}
@@ -100,7 +101,7 @@ export function P2PPage() {
                 <Button
                   size="lg"
                   disabled
-                  className="w-full sm:w-auto h-12 px-8 text-base opacity-70"
+                  className="h-12 w-full px-8 text-base opacity-70 sm:w-auto"
                 >
                   <Clock className="mr-2 h-5 w-5" />
                   {t("p2p.comingSoon")}
@@ -110,7 +111,7 @@ export function P2PPage() {
                 size="lg"
                 variant="outline"
                 asChild
-                className="w-full sm:w-auto h-12 px-8 text-base"
+                className="h-12 w-full px-8 text-base sm:w-auto"
               >
                 <a href="#how-it-works">
                   {t("p2p.learnMore")} <ArrowRight className="ml-2 h-4 w-4" />
@@ -127,12 +128,12 @@ export function P2PPage() {
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="text-center mb-10 sm:mb-16"
+              className="mb-10 text-center sm:mb-16"
             >
-              <h2 className="text-2xl sm:text-4xl font-bold tracking-tight">
+              <h2 className="text-2xl font-bold tracking-tight sm:text-4xl">
                 {t("p2p.howTitle")}
               </h2>
-              <p className="mt-3 text-sm sm:text-lg text-muted-foreground max-w-2xl mx-auto">
+              <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground sm:text-lg">
                 {t("p2p.howDesc")}
               </p>
             </motion.div>
@@ -142,14 +143,14 @@ export function P2PPage() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto"
+              className="mx-auto grid max-w-6xl gap-6 sm:grid-cols-2 lg:grid-cols-4"
             >
               {/* Pay with SOL */}
               <motion.div variants={fadeUp}>
-                <Card className="h-full border-green-500/30 hover:border-green-500/50 transition-colors">
+                <Card className="h-full border-green-500/30 transition-colors hover:border-green-500/50">
                   <CardContent>
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="h-10 w-10 rounded-lg bg-green-500/10 flex items-center justify-center">
+                    <div className="mb-4 flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/10">
                         <IconSolana className="h-5 w-5" />
                       </div>
                       <div>
@@ -158,7 +159,7 @@ export function P2PPage() {
                         </h3>
                         <Badge
                           variant="outline"
-                          className="text-[10px] text-green-600 border-green-500"
+                          className="border-green-500 text-[10px] text-green-600"
                         >
                           {t("p2p.paySOL.badge")}
                         </Badge>
@@ -169,15 +170,15 @@ export function P2PPage() {
                     </p>
                     <div className="mt-4 space-y-2">
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                        <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-green-500" />
                         <span>{t("p2p.paySOL.step1")}</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                        <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-green-500" />
                         <span>{t("p2p.paySOL.step2")}</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                        <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-green-500" />
                         <span>{t("p2p.paySOL.step3")}</span>
                       </div>
                     </div>
@@ -187,10 +188,10 @@ export function P2PPage() {
 
               {/* Pay with SUDIGITAL */}
               <motion.div variants={fadeUp}>
-                <Card className="h-full border-red-500/30 hover:border-red-500/50 transition-colors">
+                <Card className="h-full border-red-500/30 transition-colors hover:border-red-500/50">
                   <CardContent>
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="h-10 w-10 rounded-lg bg-red-500/10 flex items-center justify-center">
+                    <div className="mb-4 flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-500/10">
                         <IconSudigital className="h-5 w-5" />
                       </div>
                       <div>
@@ -199,7 +200,7 @@ export function P2PPage() {
                         </h3>
                         <Badge
                           variant="outline"
-                          className="text-[10px] text-red-600 border-red-500"
+                          className="border-red-500 text-[10px] text-red-600"
                         >
                           {t("p2p.paySUDIGITAL.badge")}
                         </Badge>
@@ -210,15 +211,15 @@ export function P2PPage() {
                     </p>
                     <div className="mt-4 space-y-2">
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-red-500 shrink-0" />
+                        <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-red-500" />
                         <span>{t("p2p.paySUDIGITAL.step1")}</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                        <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
                         <span>{t("p2p.paySUDIGITAL.step2")}</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-red-500 shrink-0" />
+                        <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-red-500" />
                         <span>{t("p2p.paySUDIGITAL.step3")}</span>
                       </div>
                     </div>
@@ -228,10 +229,10 @@ export function P2PPage() {
 
               {/* Pay with NEPTU */}
               <motion.div variants={fadeUp}>
-                <Card className="h-full border-purple-500/30 hover:border-purple-500/50 transition-colors">
+                <Card className="h-full border-purple-500/30 transition-colors hover:border-purple-500/50">
                   <CardContent>
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="h-10 w-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                    <div className="mb-4 flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500/10">
                         <Logo className="h-5 w-5 text-purple-500" />
                       </div>
                       <div>
@@ -240,7 +241,7 @@ export function P2PPage() {
                         </h3>
                         <Badge
                           variant="outline"
-                          className="text-[10px] text-purple-600 border-purple-500"
+                          className="border-purple-500 text-[10px] text-purple-600"
                         >
                           {t("p2p.payNEPTU.badge")}
                         </Badge>
@@ -251,15 +252,15 @@ export function P2PPage() {
                     </p>
                     <div className="mt-4 space-y-2">
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-purple-500 shrink-0" />
+                        <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-purple-500" />
                         <span>{t("p2p.payNEPTU.step1")}</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Flame className="h-3.5 w-3.5 text-orange-500 shrink-0" />
+                        <Flame className="h-3.5 w-3.5 shrink-0 text-orange-500" />
                         <span>{t("p2p.payNEPTU.step2")}</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-purple-500 shrink-0" />
+                        <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-purple-500" />
                         <span>{t("p2p.payNEPTU.step3")}</span>
                       </div>
                     </div>
@@ -269,10 +270,10 @@ export function P2PPage() {
 
               {/* P2P Transfer */}
               <motion.div variants={fadeUp}>
-                <Card className="h-full border-teal-500/30 hover:border-teal-500/50 transition-colors">
+                <Card className="h-full border-teal-500/30 transition-colors hover:border-teal-500/50">
                   <CardContent>
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="h-10 w-10 rounded-lg bg-teal-500/10 flex items-center justify-center">
+                    <div className="mb-4 flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-teal-500/10">
                         <Users className="h-5 w-5 text-teal-500" />
                       </div>
                       <div>
@@ -281,7 +282,7 @@ export function P2PPage() {
                         </h3>
                         <Badge
                           variant="outline"
-                          className="text-[10px] text-teal-600 border-teal-500"
+                          className="border-teal-500 text-[10px] text-teal-600"
                         >
                           {t("p2p.transfer.badge")}
                         </Badge>
@@ -292,15 +293,15 @@ export function P2PPage() {
                     </p>
                     <div className="mt-4 space-y-2">
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-teal-500 shrink-0" />
+                        <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-teal-500" />
                         <span>{t("p2p.transfer.step1")}</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-teal-500 shrink-0" />
+                        <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-teal-500" />
                         <span>{t("p2p.transfer.step2")}</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-teal-500 shrink-0" />
+                        <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-teal-500" />
                         <span>{t("p2p.transfer.step3")}</span>
                       </div>
                     </div>
@@ -320,9 +321,9 @@ export function P2PPage() {
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="max-w-3xl mx-auto"
+              className="mx-auto max-w-3xl"
             >
-              <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-center mb-10">
+              <h2 className="mb-10 text-center text-2xl font-bold tracking-tight sm:text-4xl">
                 {t("p2p.tokenTitle")}
               </h2>
 
@@ -351,7 +352,7 @@ export function P2PPage() {
                       <span className="text-muted-foreground">
                         {t("p2p.token.maxSupply")}
                       </span>
-                      <span className="font-semibold flex items-center gap-1">
+                      <span className="flex items-center gap-1 font-semibold">
                         <Lock className="h-3 w-3" /> {t("p2p.token.fixed")}
                       </span>
                     </div>
@@ -388,7 +389,7 @@ export function P2PPage() {
                       </span>
                       <Badge
                         variant="outline"
-                        className="text-xs border-amber-500 text-amber-500"
+                        className="border-amber-500 text-xs text-amber-500"
                       >
                         Devnet
                       </Badge>
@@ -401,18 +402,18 @@ export function P2PPage() {
         </section>
 
         {/* CTA */}
-        <section className="border-t py-12 sm:py-20 bg-gradient-to-r from-[#9955FF]/10 to-[#7C3AED]/10">
+        <section className="border-t bg-gradient-to-r from-[#9955FF]/10 to-[#7C3AED]/10 py-12 sm:py-20">
           <div className="container mx-auto px-4 text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="max-w-xl mx-auto space-y-4"
+              className="mx-auto max-w-xl space-y-4"
             >
-              <h2 className="text-2xl sm:text-3xl font-bold">
+              <h2 className="text-2xl font-bold sm:text-3xl">
                 {t("p2p.ctaTitle")}
               </h2>
-              <p className="text-sm sm:text-base text-muted-foreground">
+              <p className="text-sm text-muted-foreground sm:text-base">
                 {t("p2p.ctaDesc")}
               </p>
               {!authenticated ? (
@@ -425,7 +426,7 @@ export function P2PPage() {
                   {t("p2p.ctaButton")}
                 </Button>
               ) : (
-                <p className="text-sm text-primary font-medium">
+                <p className="text-sm font-medium text-primary">
                   ✓ {t("p2p.ctaConnected")}
                 </p>
               )}
@@ -435,15 +436,15 @@ export function P2PPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t py-6 sm:py-12 bg-background">
-        <div className="container mx-auto px-4 flex flex-col items-center justify-between gap-3 sm:gap-6 md:flex-row">
+      <footer className="border-t bg-background py-6 sm:py-12">
+        <div className="container mx-auto flex flex-col items-center justify-between gap-3 px-4 sm:gap-6 md:flex-row">
           <div className="flex items-center gap-2">
-            <Logo className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
-            <span className="text-xs sm:text-sm font-semibold text-muted-foreground">
+            <Logo className="h-5 w-5 text-muted-foreground sm:h-6 sm:w-6" />
+            <span className="text-xs font-semibold text-muted-foreground sm:text-sm">
               Neptu &copy; 2026
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-muted-foreground text-center">
+          <p className="text-center text-xs text-muted-foreground sm:text-sm">
             {t("landing.footer")}
           </p>
         </div>

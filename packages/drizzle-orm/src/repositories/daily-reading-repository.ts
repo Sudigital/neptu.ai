@@ -1,5 +1,7 @@
 import { eq, and, gte, lte, desc } from "drizzle-orm";
+
 import type { Database } from "../client";
+
 import {
   dailyReadings,
   type NewDailyReading,
@@ -23,8 +25,8 @@ export class DailyReadingRepository {
         .where(
           and(
             eq(dailyReadings.date, data.date),
-            eq(dailyReadings.type, data.type),
-          ),
+            eq(dailyReadings.type, data.type)
+          )
         )
         .returning();
       return result[0];
@@ -34,7 +36,7 @@ export class DailyReadingRepository {
 
   async findByDateAndType(
     date: string,
-    type: "peluang",
+    type: "peluang"
   ): Promise<DailyReading | null> {
     const result = await this.db
       .select()
@@ -47,7 +49,7 @@ export class DailyReadingRepository {
   async findByDateRange(
     startDate: string,
     endDate: string,
-    type: "peluang",
+    type: "peluang"
   ): Promise<DailyReading[]> {
     return this.db
       .select()
@@ -56,8 +58,8 @@ export class DailyReadingRepository {
         and(
           eq(dailyReadings.type, type),
           gte(dailyReadings.date, startDate),
-          lte(dailyReadings.date, endDate),
-        ),
+          lte(dailyReadings.date, endDate)
+        )
       )
       .orderBy(desc(dailyReadings.date));
   }

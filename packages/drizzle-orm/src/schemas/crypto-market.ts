@@ -44,7 +44,7 @@ export const cryptoMarket = pgTable(
   (table) => [
     index("crypto_market_symbol_idx").on(table.symbol),
     index("crypto_market_rank_idx").on(table.marketCapRank),
-  ],
+  ]
 );
 
 export type CryptoMarket = typeof cryptoMarket.$inferSelect;
@@ -74,7 +74,7 @@ export const cryptoMarketHistory = pgTable(
     index("crypto_history_coin_idx").on(table.coinId),
     index("crypto_history_recorded_idx").on(table.recordedAt),
     index("crypto_history_symbol_idx").on(table.symbol),
-  ],
+  ]
 );
 
 export type CryptoMarketHistory = typeof cryptoMarketHistory.$inferSelect;

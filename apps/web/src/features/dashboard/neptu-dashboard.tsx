@@ -1,4 +1,20 @@
-import { useState, useEffect, useMemo } from "react";
+import { Logo } from "@/assets/logo";
+import { Main } from "@/components/layout/main";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Card } from "@/components/ui/card";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { useTranslate } from "@/hooks/use-translate";
+import { useUser } from "@/hooks/use-user";
+import { neptuApi } from "@/lib/api";
+import { cn } from "@/lib/utils";
+import { useSettingsStore } from "@/stores/settings-store";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { format, isToday, isPast, addDays, subDays } from "date-fns";
@@ -13,30 +29,15 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Card } from "@/components/ui/card";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
-import { Main } from "@/components/layout/main";
-import { neptuApi } from "@/lib/api";
-import { useUser } from "@/hooks/use-user";
-import { useTranslate } from "@/hooks/use-translate";
-import { useSettingsStore } from "@/stores/settings-store";
-import { Logo } from "@/assets/logo";
+import { useState, useEffect, useMemo } from "react";
+
+import { ComparisonBarChart } from "./comparison-bar-chart";
+import { HourlyGrid, SoulRadarChart } from "./dashboard-charts";
 import { DashboardHeader } from "./dashboard-header";
-import { ReadingDetailCard } from "./reading-detail-card";
-import { ScrollableTabsList } from "./scrollable-tabs";
 import { InterestOracle } from "./interest-oracle";
 import { OracleTabPanel } from "./oracle-tab-panel";
-import { HourlyGrid, SoulRadarChart } from "./dashboard-charts";
-import { ComparisonBarChart } from "./comparison-bar-chart";
+import { ReadingDetailCard } from "./reading-detail-card";
+import { ScrollableTabsList } from "./scrollable-tabs";
 
 export function Dashboard() {
   const {
@@ -72,7 +73,7 @@ export function Dashboard() {
       neptuApi.getDateInterpretation(
         user?.birthDate || "",
         targetDateStr,
-        language,
+        language
       ),
     enabled: !!user?.birthDate && !!import.meta.env.VITE_WORKER_URL,
     retry: false,
@@ -122,7 +123,7 @@ export function Dashboard() {
   if (userLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
-        <Logo className="h-16 w-16 text-primary animate-spin" />
+        <Logo className="h-16 w-16 animate-spin text-primary" />
       </div>
     );
   }
@@ -140,23 +141,23 @@ export function Dashboard() {
     if (!potensi || !peluang) return null;
     const potensiName = t(
       `wariga.lahirUntuk.${potensi.lahir_untuk?.name}`,
-      potensi.lahir_untuk?.name || potensi.frekuensi?.name || "",
+      potensi.lahir_untuk?.name || potensi.frekuensi?.name || ""
     );
     const peluangName = t(
       `wariga.lahirUntuk.${peluang.diberi_hak_untuk?.name}`,
-      peluang.diberi_hak_untuk?.name || peluang.frekuensi?.name || "",
+      peluang.diberi_hak_untuk?.name || peluang.frekuensi?.name || ""
     );
     const potensiDesc = t(
       `wariga.lahirUntukDesc.${potensi.lahir_untuk?.description}`,
-      potensi.lahir_untuk?.description || "",
+      potensi.lahir_untuk?.description || ""
     );
     const peluangDesc = t(
       `wariga.lahirUntukDesc.${peluang.diberi_hak_untuk?.description}`,
-      peluang.diberi_hak_untuk?.description || "",
+      peluang.diberi_hak_untuk?.description || ""
     );
     const actionName = t(
       `wariga.tindakan.${peluang.tindakan?.name?.replace(/\s+/g, "_")}`,
-      peluang.tindakan?.name || "mindfulness",
+      peluang.tindakan?.name || "mindfulness"
     );
     return {
       potensiSummary: t("dashboard.potensiSummary")
@@ -185,7 +186,7 @@ export function Dashboard() {
         <DashboardHeader topNav={topNav} t={t} />
         <Main>
           <div className="flex h-[50vh] items-center justify-center">
-            <Card className="w-full max-w-md py-6 px-6">
+            <Card className="w-full max-w-md px-6 py-6">
               <div className="text-center">
                 <h3 className="text-lg font-semibold tracking-tight">
                   {t("dashboard.connectWallet")}
@@ -212,7 +213,7 @@ export function Dashboard() {
               <LayoutDashboard className="h-5 w-5 text-violet-600 dark:text-violet-400" />
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
+              <h1 className="text-xl font-bold tracking-tight sm:text-2xl">
                 {t("dashboard.title")}
               </h1>
               <p className="text-sm text-muted-foreground">
@@ -230,13 +231,13 @@ export function Dashboard() {
           <div className="flex h-[50vh] items-center justify-center">
             <div className="text-center">
               <Loader2 className="mx-auto h-8 w-8 animate-spin" />
-              <p className="text-muted-foreground mt-2">
+              <p className="mt-2 text-muted-foreground">
                 {t("dashboard.calculatingReading")}
               </p>
             </div>
           </div>
         ) : readingError ? (
-          <Card className="mx-auto max-w-md py-6 px-6">
+          <Card className="mx-auto max-w-md px-6 py-6">
             <div className="text-center">
               <h3 className="text-lg font-semibold tracking-tight text-destructive">
                 {t("dashboard.error")}
@@ -261,7 +262,7 @@ export function Dashboard() {
         ) : reading ? (
           <section className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-12">
             {/* Left Side - Reading Cards */}
-            <div className="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-4 lg:h-[calc(100vh-140px)] flex flex-col gap-3 sm:gap-4 overflow-auto lg:pr-2">
+            <div className="flex flex-col gap-3 overflow-auto sm:gap-4 lg:sticky lg:top-4 lg:col-span-5 lg:h-[calc(100vh-140px)] lg:pr-2 xl:col-span-4">
               {/* Date Navigation */}
               <div className="flex items-center gap-1.5 sm:gap-2">
                 <Button
@@ -269,7 +270,7 @@ export function Dashboard() {
                   variant="outline"
                   size="icon"
                   onClick={goToPreviousDay}
-                  className="h-9 w-9 sm:h-10 sm:w-10 shrink-0"
+                  className="h-9 w-9 shrink-0 sm:h-10 sm:w-10"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
@@ -278,12 +279,12 @@ export function Dashboard() {
                     <Button
                       variant="outline"
                       className={cn(
-                        "flex-1 justify-center font-medium text-sm h-9 sm:h-10",
+                        "h-9 flex-1 justify-center text-sm font-medium sm:h-10",
                         !isToday(selectedDate) &&
-                          "border-violet-500 bg-violet-50 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300",
+                          "border-violet-500 bg-violet-50 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300"
                       )}
                     >
-                      <CalendarIcon className="mr-1.5 sm:mr-2 h-4 w-4" />
+                      <CalendarIcon className="mr-1.5 h-4 w-4 sm:mr-2" />
                       {format(selectedDate, "MMM d, yyyy")}
                     </Button>
                   </PopoverTrigger>
@@ -301,7 +302,7 @@ export function Dashboard() {
                   variant="outline"
                   size="icon"
                   onClick={goToNextDay}
-                  className="h-9 w-9 sm:h-10 sm:w-10 shrink-0"
+                  className="h-9 w-9 shrink-0 sm:h-10 sm:w-10"
                 >
                   <ChevronRight className="h-4 w-4" />
                 </Button>
@@ -310,18 +311,18 @@ export function Dashboard() {
               {/* Energy Score Header */}
               <div
                 className={cn(
-                  "rounded-xl sm:rounded-2xl p-4 sm:p-6 text-white shadow-xl",
+                  "rounded-xl p-4 text-white shadow-xl sm:rounded-2xl sm:p-6",
                   isToday(selectedDate)
                     ? "bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700"
                     : isPast(selectedDate)
                       ? "bg-gradient-to-br from-slate-600 via-slate-500 to-slate-700"
-                      : "bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700",
+                      : "bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700"
                 )}
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-xs sm:text-sm font-medium text-white/80">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="text-xs font-medium text-white/80 sm:text-sm">
                         {isToday(selectedDate)
                           ? t("dashboard.todaysAlignment")
                           : isPast(selectedDate)
@@ -334,30 +335,30 @@ export function Dashboard() {
                         </span>
                       )}
                     </div>
-                    <h2 className="mt-1 text-2xl sm:text-4xl font-bold">
+                    <h2 className="mt-1 text-2xl font-bold sm:text-4xl">
                       {reading.potensi?.total_urip ?? 0} /{" "}
                       {reading.peluang?.total_urip ?? 0}
                     </h2>
-                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-white/70">
+                    <p className="mt-1 text-xs text-white/70 sm:mt-2 sm:text-sm">
                       {t("dashboard.birthEnergy")} /{" "}
                       {isToday(selectedDate)
                         ? t("dashboard.todayEnergy")
                         : format(selectedDate, "MMM d")}
                     </p>
                   </div>
-                  <div className="flex h-14 w-14 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm sm:h-20 sm:w-20">
                     {isToday(selectedDate) ? (
-                      <Sparkles className="h-7 w-7 sm:h-10 sm:w-10 text-white" />
+                      <Sparkles className="h-7 w-7 text-white sm:h-10 sm:w-10" />
                     ) : isPast(selectedDate) ? (
-                      <CalendarIcon className="h-7 w-7 sm:h-10 sm:w-10 text-white" />
+                      <CalendarIcon className="h-7 w-7 text-white sm:h-10 sm:w-10" />
                     ) : (
-                      <Star className="h-7 w-7 sm:h-10 sm:w-10 text-white" />
+                      <Star className="h-7 w-7 text-white sm:h-10 sm:w-10" />
                     )}
                   </div>
                 </div>
                 {readingSummary && (
-                  <div className="mt-3 sm:mt-4 rounded-lg sm:rounded-xl bg-white/10 p-2.5 sm:p-3 backdrop-blur-sm">
-                    <p className="text-xs sm:text-sm text-white/90">
+                  <div className="mt-3 rounded-lg bg-white/10 p-2.5 backdrop-blur-sm sm:mt-4 sm:rounded-xl sm:p-3">
+                    <p className="text-xs text-white/90 sm:text-sm">
                       {readingSummary.alignment}
                     </p>
                   </div>
@@ -371,7 +372,7 @@ export function Dashboard() {
                   subtitle={t("dashboard.peluang.subtitle")}
                   reading={reading.peluang}
                   icon={
-                    <Moon className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-sky-600 dark:text-sky-400" />
+                    <Moon className="h-3 w-3 text-sky-600 sm:h-3.5 sm:w-3.5 dark:text-sky-400" />
                   }
                   totalUrip={reading.peluang?.total_urip || 0}
                   borderClass="border-sky-200/50 dark:border-sky-800/50"
@@ -389,7 +390,7 @@ export function Dashboard() {
                   subtitle={t("dashboard.potensi.subtitle")}
                   reading={reading.potensi}
                   icon={
-                    <Sun className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-amber-600 dark:text-amber-400" />
+                    <Sun className="h-3 w-3 text-amber-600 sm:h-3.5 sm:w-3.5 dark:text-amber-400" />
                   }
                   totalUrip={reading.potensi?.total_urip || 0}
                   borderClass="border-amber-200/50 dark:border-amber-800/50"
@@ -406,7 +407,7 @@ export function Dashboard() {
             </div>
 
             {/* Right Side - Tabs: 24h Energy, Oracle Insight, Interests */}
-            <div className="lg:col-span-7 xl:col-span-8 space-y-4 min-w-0">
+            <div className="min-w-0 space-y-4 lg:col-span-7 xl:col-span-8">
               <Tabs defaultValue="24h" className="w-full">
                 <ScrollableTabsList interests={interests} t={t} />
 
@@ -420,9 +421,9 @@ export function Dashboard() {
                   <Separator />
 
                   {/* Charts — 2 columns */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 items-stretch">
-                    <div className="min-w-0 overflow-hidden flex flex-col">
-                      <h3 className="text-sm font-semibold mb-3">
+                  <div className="grid grid-cols-1 items-stretch gap-3 sm:gap-4 md:grid-cols-2">
+                    <div className="flex min-w-0 flex-col overflow-hidden">
+                      <h3 className="mb-3 text-sm font-semibold">
                         🧠 {t("chart.soulDimensions")}
                       </h3>
                       <SoulRadarChart
@@ -433,8 +434,8 @@ export function Dashboard() {
 
                     <Separator className="md:hidden" />
 
-                    <div className="min-w-0 overflow-hidden flex flex-col">
-                      <h3 className="text-sm font-semibold mb-3">
+                    <div className="flex min-w-0 flex-col overflow-hidden">
+                      <h3 className="mb-3 text-sm font-semibold">
                         ⚖️ {t("chart.peluangVsPotensi")}
                       </h3>
                       <ComparisonBarChart

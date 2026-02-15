@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
+import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 const icons: Record<string, string> = {
   love: "💕",
@@ -92,7 +92,7 @@ export function ScrollableTabs({
   const showArrows = canScrollLeft || canScrollRight;
 
   return (
-    <div className="sticky top-0 z-10 bg-background pb-2 pt-1">
+    <div className="sticky top-0 z-10 bg-background pt-1 pb-2">
       <div className="flex items-center gap-1">
         {showArrows && (
           <Button
@@ -101,7 +101,7 @@ export function ScrollableTabs({
             size="icon"
             className={cn(
               "h-9 w-8 shrink-0",
-              !canScrollLeft && "opacity-50 cursor-not-allowed",
+              !canScrollLeft && "cursor-not-allowed opacity-50"
             )}
             onClick={() => scroll("left")}
             disabled={!canScrollLeft}
@@ -109,7 +109,7 @@ export function ScrollableTabs({
             <ChevronLeft className="h-4 w-4" />
           </Button>
         )}
-        <div ref={scrollRef} className="overflow-x-hidden flex-1">
+        <div ref={scrollRef} className="flex-1 overflow-x-hidden">
           <TabsList className="w-max">
             <TabsTrigger value="24h" className="gap-1">
               <span>🕐</span>
@@ -130,7 +130,7 @@ export function ScrollableTabs({
             size="icon"
             className={cn(
               "h-9 w-8 shrink-0",
-              !canScrollRight && "opacity-50 cursor-not-allowed",
+              !canScrollRight && "cursor-not-allowed opacity-50"
             )}
             onClick={() => scroll("right")}
             disabled={!canScrollRight}
@@ -196,7 +196,7 @@ export function ScrollableTabsList({
           size="icon"
           className={cn(
             "h-9 w-8 shrink-0",
-            !canScrollLeft && "opacity-50 cursor-not-allowed",
+            !canScrollLeft && "cursor-not-allowed opacity-50"
           )}
           onClick={() => scroll("left")}
           disabled={!canScrollLeft}
@@ -204,7 +204,7 @@ export function ScrollableTabsList({
           <ChevronLeft className="h-4 w-4" />
         </Button>
       )}
-      <div ref={scrollRef} className="overflow-x-hidden flex-1">
+      <div ref={scrollRef} className="flex-1 overflow-x-hidden">
         <TabsList className="w-max">
           <TabsTrigger value="24h" className="gap-1">
             <span>🕐</span>
@@ -233,7 +233,7 @@ export function ScrollableTabsList({
           size="icon"
           className={cn(
             "h-9 w-8 shrink-0",
-            !canScrollRight && "opacity-50 cursor-not-allowed",
+            !canScrollRight && "cursor-not-allowed opacity-50"
           )}
           onClick={() => scroll("right")}
           disabled={!canScrollRight}

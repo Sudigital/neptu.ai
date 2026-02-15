@@ -1,29 +1,10 @@
-import React, { useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { usePrivy } from "@privy-io/react-auth";
-import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
-import {
-  Wallet,
-  ChevronDown,
-  Coins,
-  Sparkles,
-  ExternalLink,
-  Menu,
-  FileText,
-  Home,
-  ArrowLeftRight,
-  Tag,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Logo } from "@/assets/logo";
-import { ThemeSwitch } from "@/components/theme-switch";
+import { AgentDialog } from "@/components/agent-dialog";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { ProfileDropdown } from "@/components/profile-dropdown";
-import { AgentDialog } from "@/components/agent-dialog";
-import { useUser } from "@/hooks/use-user";
-import { useTranslate } from "@/hooks/use-translate";
+import { ThemeSwitch } from "@/components/theme-switch";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,6 +21,25 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
+import { useTranslate } from "@/hooks/use-translate";
+import { useUser } from "@/hooks/use-user";
+import { usePrivy } from "@privy-io/react-auth";
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
+import { motion } from "framer-motion";
+import {
+  Wallet,
+  ChevronDown,
+  Coins,
+  Sparkles,
+  ExternalLink,
+  Menu,
+  FileText,
+  Home,
+  ArrowLeftRight,
+  Tag,
+} from "lucide-react";
+import React, { useState } from "react";
 
 const WORKER_URL = import.meta.env.VITE_WORKER_URL || "http://localhost:8787";
 
@@ -74,19 +74,19 @@ export function Navbar() {
       transition={{ type: "spring", stiffness: 100, damping: 20 }}
       className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md"
     >
-      <div className="container mx-auto flex h-14 sm:h-16 items-center justify-between px-4">
+      <div className="container mx-auto flex h-14 items-center justify-between px-4 sm:h-16">
         <div className="flex items-center gap-2 sm:gap-6">
           {/* Mobile Hamburger Menu */}
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="sm" className="md:hidden p-2">
+              <Button variant="ghost" size="sm" className="p-2 md:hidden">
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Menu</span>
               </Button>
             </SheetTrigger>
             <SheetContent
               side="left"
-              className="w-[280px] sm:w-[320px] flex flex-col p-0"
+              className="flex w-[280px] flex-col p-0 sm:w-[320px]"
               aria-describedby={undefined}
             >
               <SheetHeader className="p-4 pb-0">
@@ -95,11 +95,11 @@ export function Navbar() {
                   <span>Neptu</span>
                 </SheetTitle>
               </SheetHeader>
-              <nav className="flex flex-col flex-1 gap-1 mt-4 px-4 overflow-y-auto">
+              <nav className="mt-4 flex flex-1 flex-col gap-1 overflow-y-auto px-4">
                 <SheetClose asChild>
                   <Link
                     to="/"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted transition-colors"
+                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted"
                   >
                     <Home className="h-5 w-5 text-muted-foreground" />
                     <span className="font-medium">
@@ -110,7 +110,7 @@ export function Navbar() {
                 <SheetClose asChild>
                   <Link
                     to="/cryptos"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted transition-colors"
+                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted"
                   >
                     <Coins className="h-5 w-5 text-muted-foreground" />
                     <span className="font-medium">
@@ -121,7 +121,7 @@ export function Navbar() {
                 <SheetClose asChild>
                   <Link
                     to="/pricing"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted transition-colors"
+                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted"
                   >
                     <Tag className="h-5 w-5 text-muted-foreground" />
                     <span className="font-medium">{t("nav.pricing")}</span>
@@ -130,13 +130,13 @@ export function Navbar() {
                 <SheetClose asChild>
                   <Link
                     to="/p2p"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted transition-colors"
+                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted"
                   >
                     <ArrowLeftRight className="h-5 w-5 text-muted-foreground" />
                     <span className="font-medium">{t("nav.p2pTrading")}</span>
                     <Badge
                       variant="outline"
-                      className="text-[10px] border-amber-500 text-amber-500 ml-auto"
+                      className="ml-auto border-amber-500 text-[10px] text-amber-500"
                     >
                       {t("nav.soon")}
                     </Badge>
@@ -147,18 +147,18 @@ export function Navbar() {
                     href="https://docs.neptu.sudigital.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted transition-colors"
+                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted"
                   >
                     <FileText className="h-5 w-5 text-muted-foreground" />
                     <span className="font-medium">{t("nav.docs")}</span>
-                    <ExternalLink className="h-3 w-3 text-muted-foreground ml-auto" />
+                    <ExternalLink className="ml-auto h-3 w-3 text-muted-foreground" />
                   </a>
                 </SheetClose>
 
                 {/* Crypto List in Mobile Menu */}
                 {cryptos && cryptos.length > 0 && (
-                  <div className="mt-4 pt-4 border-t">
-                    <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                  <div className="mt-4 border-t pt-4">
+                    <p className="mb-2 px-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                       {t("nav.topCryptos")}
                     </p>
                     {cryptos.slice(0, 8).map((crypto) => (
@@ -166,7 +166,7 @@ export function Navbar() {
                         <Link
                           to="/cryptos/$symbol"
                           params={{ symbol: crypto.symbol.toLowerCase() }}
-                          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted transition-colors"
+                          className="flex items-center gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-muted"
                         >
                           {crypto.image ? (
                             <img
@@ -175,7 +175,7 @@ export function Navbar() {
                               className="h-5 w-5 rounded-full"
                             />
                           ) : (
-                            <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center text-xs">
+                            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-xs">
                               {crypto.symbol.slice(0, 2)}
                             </div>
                           )}
@@ -189,11 +189,11 @@ export function Navbar() {
                     <SheetClose asChild>
                       <Link
                         to="/cryptos"
-                        className="flex items-center justify-center gap-2 px-3 py-2 mt-2 text-sm text-primary hover:underline"
+                        className="mt-2 flex items-center justify-center gap-2 px-3 py-2 text-sm text-primary hover:underline"
                       >
                         {t("nav.viewAllCryptos").replace(
                           "{{count}}",
-                          String(cryptos.length),
+                          String(cryptos.length)
                         )}
                       </Link>
                     </SheetClose>
@@ -202,7 +202,7 @@ export function Navbar() {
               </nav>
 
               {/* Theme & Language in Sidebar Footer */}
-              <div className="border-t p-4 mt-auto">
+              <div className="mt-auto border-t p-4">
                 <div className="flex items-center justify-between py-2">
                   <span className="text-sm text-muted-foreground">
                     {t("nav.theme")}
@@ -220,22 +220,22 @@ export function Navbar() {
           </Sheet>
 
           <Link to="/" className="flex items-center gap-2">
-            <Logo className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
-            <span className="text-lg sm:text-xl font-bold tracking-tight">
+            <Logo className="h-7 w-7 text-primary sm:h-8 sm:w-8" />
+            <span className="text-lg font-bold tracking-tight sm:text-xl">
               Neptu
             </span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-4">
+          <nav className="hidden items-center gap-4 md:flex">
             <Link
               to="/p2p"
-              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
+              className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
             >
               <ArrowLeftRight className="h-4 w-4" />
               {t("nav.p2p")}
               <Badge
                 variant="outline"
-                className="text-[9px] border-amber-500 text-amber-500 px-1 py-0"
+                className="border-amber-500 px-1 py-0 text-[9px] text-amber-500"
               >
                 {t("nav.soon")}
               </Badge>
@@ -243,7 +243,7 @@ export function Navbar() {
             {cryptos && cryptos.length > 0 ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5">
+                  <button className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
                     <Coins className="h-4 w-4" />
                     {t("nav.cryptos")}
                     <ChevronDown className="h-3 w-3" />
@@ -251,12 +251,12 @@ export function Navbar() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="start"
-                  className="w-56 max-h-80 overflow-y-auto"
+                  className="max-h-80 w-56 overflow-y-auto"
                 >
                   <DropdownMenuLabel>
                     <Link
                       to="/cryptos"
-                      className="flex items-center gap-2 w-full"
+                      className="flex w-full items-center gap-2"
                     >
                       <Sparkles className="h-4 w-4" />
                       {t("nav.allCryptoBirthdays")}
@@ -268,7 +268,7 @@ export function Navbar() {
                       <Link
                         to="/cryptos/$symbol"
                         params={{ symbol: crypto.symbol.toLowerCase() }}
-                        className="flex items-center gap-2 w-full cursor-pointer"
+                        className="flex w-full cursor-pointer items-center gap-2"
                       >
                         {crypto.image ? (
                           <img
@@ -277,7 +277,7 @@ export function Navbar() {
                             className="h-5 w-5 rounded-full"
                           />
                         ) : (
-                          <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center text-xs">
+                          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-xs">
                             {crypto.symbol.slice(0, 2)}
                           </div>
                         )}
@@ -294,11 +294,11 @@ export function Navbar() {
                       <DropdownMenuItem asChild>
                         <Link
                           to="/cryptos"
-                          className="flex items-center justify-center gap-2 w-full text-primary"
+                          className="flex w-full items-center justify-center gap-2 text-primary"
                         >
                           {t("nav.viewAllCryptos").replace(
                             "{{count}}",
-                            String(cryptos.length),
+                            String(cryptos.length)
                           )}
                         </Link>
                       </DropdownMenuItem>
@@ -309,7 +309,7 @@ export function Navbar() {
             ) : (
               <Link
                 to="/cryptos"
-                className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
+                className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
               >
                 <Coins className="h-4 w-4" />
                 {t("nav.cryptos")}
@@ -320,7 +320,7 @@ export function Navbar() {
         <div className="flex items-center gap-1 sm:gap-3">
           <Link
             to="/pricing"
-            className="hidden md:flex text-sm font-medium text-muted-foreground hover:text-primary transition-colors items-center gap-1.5"
+            className="hidden items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary md:flex"
           >
             <Tag className="h-4 w-4" />
             {t("nav.pricing")}
@@ -329,7 +329,7 @@ export function Navbar() {
             href="https://docs.neptu.sudigital.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden md:flex text-sm font-medium text-muted-foreground hover:text-primary transition-colors items-center gap-1.5"
+            className="hidden items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary md:flex"
           >
             <FileText className="h-4 w-4" />
             {t("nav.docs")}
@@ -347,7 +347,7 @@ export function Navbar() {
             <Button
               onClick={login}
               size="sm"
-              className="bg-[#7C3AED] hover:bg-[#7C3AED]/90 text-white text-xs sm:text-sm px-2.5 sm:px-4"
+              className="bg-[#7C3AED] px-2.5 text-xs text-white hover:bg-[#7C3AED]/90 sm:px-4 sm:text-sm"
             >
               <Wallet className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">

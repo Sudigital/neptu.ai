@@ -1,15 +1,16 @@
 import type { Database } from "../client";
-import { ReferralRepository } from "../repositories/referral-repository";
-import { UserRewardService } from "./user-reward-service";
+
 import {
   toReferralDTO,
   toReferralDTOList,
   type ReferralDTO,
 } from "../dto/referral-dto";
+import { ReferralRepository } from "../repositories/referral-repository";
 import {
   createReferralSchema,
   type CreateReferralInput,
 } from "../validators/referral-validator";
+import { UserRewardService } from "./user-reward-service";
 
 export interface ReferralStats {
   totalReferrals: number;
@@ -32,7 +33,7 @@ export class ReferralService {
 
     // Check if referee already has a referral
     const existingReferral = await this.repository.findByRefereeId(
-      validated.refereeId,
+      validated.refereeId
     );
     if (existingReferral) {
       throw new Error("User has already been referred");
@@ -54,7 +55,7 @@ export class ReferralService {
   async processReferralRewards(
     referralId: string,
     referrerTxSignature: string,
-    refereeTxSignature: string,
+    refereeTxSignature: string
   ): Promise<{
     referrerReward: boolean;
     refereeReward: boolean;
@@ -74,7 +75,7 @@ export class ReferralService {
       await this.repository.markReferrerPaid(
         referralId,
         referrerTxSignature,
-        now,
+        now
       );
       referrerReward = true;
     }
@@ -85,7 +86,7 @@ export class ReferralService {
       await this.repository.markRefereePaid(
         referralId,
         refereeTxSignature,
-        now,
+        now
       );
       refereeReward = true;
     }
@@ -108,10 +109,10 @@ export class ReferralService {
 
     const totalReferrals = referrals.length;
     const successfulReferrals = referrals.filter(
-      (r) => r.referrerRewardPaid === "paid",
+      (r) => r.referrerRewardPaid === "paid"
     ).length;
     const pendingRewardsCount = referrals.filter(
-      (r) => r.referrerId === userId && r.referrerRewardPaid === "pending",
+      (r) => r.referrerId === userId && r.referrerRewardPaid === "pending"
     ).length;
     const totalEarned = referrals
       .filter((r) => r.referrerId === userId && r.referrerRewardPaid === "paid")
@@ -142,7 +143,7 @@ export class ReferralService {
 
   async validateReferralCode(
     code: string,
-    referrerId: string,
+    referrerId: string
   ): Promise<boolean> {
     const expectedCode = this.generateReferralCode(referrerId);
     return code === expectedCode;

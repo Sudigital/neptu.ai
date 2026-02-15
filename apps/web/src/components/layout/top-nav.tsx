@@ -1,6 +1,5 @@
-import { Link } from "@tanstack/react-router";
-import { Menu, ExternalLink } from "lucide-react";
-import { cn } from "@/lib/utils";
+import type { HTMLAttributes } from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,8 +7,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
+import { Link } from "@tanstack/react-router";
+import { Menu, ExternalLink } from "lucide-react";
 
-type TopNavProps = React.HTMLAttributes<HTMLElement> & {
+type TopNavProps = HTMLAttributes<HTMLElement> & {
   links: {
     title: string;
     href: string;
@@ -39,7 +41,7 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
                     rel="noopener noreferrer"
                     className={cn(
                       "flex items-center gap-1",
-                      !isActive && "text-muted-foreground",
+                      !isActive && "text-muted-foreground"
                     )}
                   >
                     {title}
@@ -63,7 +65,7 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
       <nav
         className={cn(
           "hidden items-center space-x-4 lg:flex lg:space-x-4 xl:space-x-6",
-          className,
+          className
         )}
         {...props}
       >
@@ -75,8 +77,8 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
               target="_blank"
               rel="noopener noreferrer"
               className={cn(
-                "hover:text-primary text-sm font-medium transition-colors flex items-center gap-1",
-                !isActive && "text-muted-foreground",
+                "flex items-center gap-1 text-sm font-medium transition-colors hover:text-primary",
+                !isActive && "text-muted-foreground"
               )}
             >
               {title}
@@ -87,11 +89,11 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
               key={`${title}-${href}`}
               to={href}
               disabled={disabled}
-              className={`hover:text-primary text-sm font-medium transition-colors ${isActive ? "" : "text-muted-foreground"}`}
+              className={`text-sm font-medium transition-colors hover:text-primary ${isActive ? "" : "text-muted-foreground"}`}
             >
               {title}
             </Link>
-          ),
+          )
         )}
       </nav>
     </>

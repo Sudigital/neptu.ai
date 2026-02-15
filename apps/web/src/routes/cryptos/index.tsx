@@ -1,6 +1,19 @@
-import React, { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Logo } from "@/assets/logo";
+import { Navbar } from "@/components/navbar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  type CryptoWithMarketData,
+  formatCurrency,
+  formatPercentage,
+  getAge,
+  isBirthdayToday,
+  isBirthdayThisMonth,
+} from "@/features/crypto/crypto-utils";
+import { useTranslate } from "@/hooks/use-translate";
 import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
   Calendar,
@@ -11,20 +24,7 @@ import {
   LayoutGrid,
   List,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Logo } from "@/assets/logo";
-import { Navbar } from "@/components/navbar";
-import { useTranslate } from "@/hooks/use-translate";
-import {
-  type CryptoWithMarketData,
-  formatCurrency,
-  formatPercentage,
-  getAge,
-  isBirthdayToday,
-  isBirthdayThisMonth,
-} from "@/features/crypto/crypto-utils";
+import React, { useState } from "react";
 
 const WORKER_URL = import.meta.env.VITE_WORKER_URL || "http://localhost:8787";
 
@@ -110,12 +110,12 @@ function CryptoBirthdaysPage() {
               <span className="ml-2 hidden sm:inline">Refresh</span>
             </Button>
             {cryptos && (
-              <span className="text-sm text-muted-foreground hidden sm:inline">
+              <span className="hidden text-sm text-muted-foreground sm:inline">
                 {cryptos.length} {t("crypto.cryptocurrencies")}
               </span>
             )}
           </div>
-          <div className="flex items-center gap-1 border rounded-lg p-1">
+          <div className="flex items-center gap-1 rounded-lg border p-1">
             <Button
               variant={viewMode === "grid" ? "secondary" : "ghost"}
               size="sm"
@@ -235,7 +235,7 @@ function CryptoCard({
     <Link
       to="/cryptos/$symbol"
       params={{ symbol: crypto.symbol.toLowerCase() }}
-      className="h-full block"
+      className="block h-full"
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -244,7 +244,7 @@ function CryptoCard({
         className="h-full"
       >
         <Card
-          className={`group relative h-full flex flex-col cursor-pointer overflow-hidden transition-all hover:shadow-lg hover:scale-[1.02] ${
+          className={`group relative flex h-full cursor-pointer flex-col overflow-hidden transition-all hover:scale-[1.02] hover:shadow-lg ${
             isBirthday
               ? "border-2 border-primary ring-2 ring-primary/20"
               : isThisMonth
@@ -254,14 +254,14 @@ function CryptoCard({
         >
           {/* Birthday Badge */}
           {isBirthday && (
-            <div className="absolute right-2 top-2 z-10">
+            <div className="absolute top-2 right-2 z-10">
               <Badge className="animate-pulse bg-primary text-primary-foreground">
                 🎂 {t("crypto.birthdayToday")}
               </Badge>
             </div>
           )}
           {isThisMonth && !isBirthday && (
-            <div className="absolute right-2 top-2 z-10">
+            <div className="absolute top-2 right-2 z-10">
               <Badge variant="secondary">{t("crypto.thisMonth")}</Badge>
             </div>
           )}
@@ -300,7 +300,7 @@ function CryptoCard({
             </div>
           </CardHeader>
 
-          <CardContent className="flex-1 flex flex-col justify-between space-y-3">
+          <CardContent className="flex flex-1 flex-col justify-between space-y-3">
             {/* Price Info - Only show when market data is available */}
             {crypto.currentPrice ? (
               <div className="flex items-center justify-between">
@@ -349,14 +349,14 @@ function CryptoCard({
                     {crypto.cosmicAlignment.alignmentScore}%
                   </Badge>
                 </div>
-                <p className="mt-2 text-xs italic text-muted-foreground line-clamp-2">
+                <p className="mt-2 line-clamp-2 text-xs text-muted-foreground italic">
                   "{crypto.cosmicAlignment.cosmicMessage}"
                 </p>
               </div>
             )}
 
             {/* Click hint */}
-            <p className="text-xs text-center text-muted-foreground mt-auto pt-2 border-t">
+            <p className="mt-auto border-t pt-2 text-center text-xs text-muted-foreground">
               {t("crypto.clickForDetails")}
             </p>
           </CardContent>
@@ -396,7 +396,7 @@ function CryptoListItem({
         transition={{ delay: index * 0.03 }}
       >
         <Card
-          className={`group cursor-pointer transition-all hover:shadow-md hover:bg-muted/30 ${
+          className={`group cursor-pointer transition-all hover:bg-muted/30 hover:shadow-md ${
             isBirthday
               ? "border-2 border-primary ring-2 ring-primary/20"
               : isThisMonth
@@ -404,10 +404,10 @@ function CryptoListItem({
                 : ""
           }`}
         >
-          <CardContent className="py-3 px-4">
+          <CardContent className="px-4 py-3">
             <div className="flex items-center gap-4">
               {/* Rank - hidden on mobile */}
-              <span className="hidden sm:block text-sm text-muted-foreground w-6 text-center">
+              <span className="hidden w-6 text-center text-sm text-muted-foreground sm:block">
                 {index + 1}
               </span>
 
@@ -416,10 +416,10 @@ function CryptoListItem({
                 <img
                   src={crypto.image}
                   alt={crypto.name}
-                  className="h-10 w-10 rounded-full flex-shrink-0"
+                  className="h-10 w-10 flex-shrink-0 rounded-full"
                 />
               ) : (
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 flex-shrink-0">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
                   <span className="text-sm font-bold text-primary">
                     {crypto.symbol.slice(0, 2)}
                   </span>
@@ -427,14 +427,14 @@ function CryptoListItem({
               )}
 
               {/* Name & Birthday */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-semibold truncate">{crypto.name}</span>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="truncate font-semibold">{crypto.name}</span>
                   <span className="text-sm text-muted-foreground">
                     {crypto.symbol}
                   </span>
                   {isBirthday && (
-                    <Badge className="animate-pulse bg-primary text-primary-foreground text-xs">
+                    <Badge className="animate-pulse bg-primary text-xs text-primary-foreground">
                       🎂{" "}
                       <span className="hidden sm:inline">
                         {t("crypto.birthdayToday").replace("!", "")}
@@ -444,7 +444,7 @@ function CryptoListItem({
                   {isThisMonth && !isBirthday && (
                     <Badge
                       variant="secondary"
-                      className="text-xs hidden sm:inline-flex"
+                      className="hidden text-xs sm:inline-flex"
                     >
                       {t("crypto.thisMonth")}
                     </Badge>
@@ -456,7 +456,7 @@ function CryptoListItem({
                     {formatBirthday(crypto.birthday)} • {age}y
                   </span>
                   {/* Show price on mobile inline */}
-                  <span className="sm:hidden ml-1">
+                  <span className="ml-1 sm:hidden">
                     • {formatCurrency(crypto.currentPrice)}
                   </span>
                 </div>
@@ -464,7 +464,7 @@ function CryptoListItem({
 
               {/* Cosmic Score - hidden on mobile */}
               {crypto.cosmicAlignment && (
-                <div className="hidden md:flex items-center gap-2">
+                <div className="hidden items-center gap-2 md:flex">
                   <Sparkles className="h-4 w-4 text-primary" />
                   <Badge variant="outline">
                     {crypto.cosmicAlignment.alignmentScore}%
@@ -473,7 +473,7 @@ function CryptoListItem({
               )}
 
               {/* Price - hidden on mobile */}
-              <div className="hidden sm:block text-right min-w-[100px]">
+              <div className="hidden min-w-[100px] text-right sm:block">
                 <p className="font-semibold">
                   {formatCurrency(crypto.currentPrice)}
                 </p>
@@ -484,7 +484,7 @@ function CryptoListItem({
 
               {/* 24h Change */}
               <div
-                className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs sm:text-sm font-medium min-w-[60px] sm:min-w-[80px] justify-center ${
+                className={`flex min-w-[60px] items-center justify-center gap-1 rounded-full px-2 py-1 text-xs font-medium sm:min-w-[80px] sm:text-sm ${
                   isPriceUp
                     ? "bg-green-500/10 text-green-600 dark:text-green-400"
                     : "bg-red-500/10 text-red-600 dark:text-red-400"

@@ -1,14 +1,14 @@
-import { useQuery } from "@tanstack/react-query";
+import { neptuApi } from "@/lib/api";
 import {
   usePrivy,
-  useWallets,
   type LinkedAccountWithMetadata,
   type WalletWithMetadata,
 } from "@privy-io/react-auth";
-import { neptuApi } from "@/lib/api";
+import { useWallets } from "@privy-io/react-auth/solana";
+import { useQuery } from "@tanstack/react-query";
 
 function isWalletAccount(
-  account: LinkedAccountWithMetadata,
+  account: LinkedAccountWithMetadata
 ): account is WalletWithMetadata {
   return account.type === "wallet";
 }
@@ -21,15 +21,13 @@ export function useUser() {
   const { user: privyUser, ready: privyReady } = usePrivy();
   const { wallets, ready: walletsReady } = useWallets();
 
-  // Get SOLANA wallet from useWallets (connected wallets have chainType)
-  const connectedWallet = wallets.find(
-    (w) => "chainType" in w && w.chainType === "solana",
-  );
+  // Get SOLANA wallet from useWallets (Solana-specific hook)
+  const connectedWallet = wallets[0] ?? null;
 
   // Get SOLANA wallet from user's linked accounts
   const linkedWallet = privyUser?.linkedAccounts?.find(
     (account): account is WalletWithMetadata =>
-      isWalletAccount(account) && isSolanaWallet(account),
+      isWalletAccount(account) && isSolanaWallet(account)
   );
 
   // Also check user.wallet (Privy's embedded wallet - should be Solana if configured)

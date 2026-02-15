@@ -16,38 +16,40 @@
  *   npx ts-node migrations/init-devnet.ts
  */
 
-import * as anchor from "@coral-xyz/anchor";
-import { Program, AnchorProvider, Wallet } from "@coral-xyz/anchor";
-import { NeptuToken } from "../target/types/neptu_token";
-import { NeptuEconomy } from "../target/types/neptu_economy";
-import { Keypair, PublicKey, Connection, clusterApiUrl } from "@solana/web3.js";
-import { getAssociatedTokenAddress } from "@solana/spl-token";
 import * as fs from "fs";
 import * as path from "path";
 
+import * as anchor from "@coral-xyz/anchor";
+import { Program, AnchorProvider, Wallet } from "@coral-xyz/anchor";
+import { getAssociatedTokenAddress } from "@solana/spl-token";
+import { Keypair, PublicKey, Connection, clusterApiUrl } from "@solana/web3.js";
+
+import { NeptuEconomy } from "../target/types/neptu_economy";
+import { NeptuToken } from "../target/types/neptu_token";
+
 // Program IDs (same across all networks)
 const TOKEN_PROGRAM_ID_NEPTU = new PublicKey(
-  "7JDw4pncZg6g7ezhQSNxKhj3ptT62okgttDjLL4TwqHW",
+  "7JDw4pncZg6g7ezhQSNxKhj3ptT62okgttDjLL4TwqHW"
 );
 const ECONOMY_PROGRAM_ID = new PublicKey(
-  "6Zxc4uCXKqWS6spnW7u9wA81PChgws6wbGAKJyi8PnvT",
+  "6Zxc4uCXKqWS6spnW7u9wA81PChgws6wbGAKJyi8PnvT"
 );
 const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
-  "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s",
+  "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
 );
 
 // Load IDLs
 const tokenIdl = JSON.parse(
   fs.readFileSync(
     path.join(__dirname, "../target/idl/neptu_token.json"),
-    "utf-8",
-  ),
+    "utf-8"
+  )
 );
 const economyIdl = JSON.parse(
   fs.readFileSync(
     path.join(__dirname, "../target/idl/neptu_economy.json"),
-    "utf-8",
-  ),
+    "utf-8"
+  )
 );
 
 async function main() {
@@ -73,13 +75,13 @@ async function main() {
   const tokenProgram = new Program(tokenIdl, provider) as Program<NeptuToken>;
   const economyProgram = new Program(
     economyIdl,
-    provider,
+    provider
   ) as Program<NeptuEconomy>;
 
   // Derive PDAs
   const [mintPda] = PublicKey.findProgramAddressSync(
     [Buffer.from("mint")],
-    TOKEN_PROGRAM_ID_NEPTU,
+    TOKEN_PROGRAM_ID_NEPTU
   );
 
   const [metadataPda] = PublicKey.findProgramAddressSync(
@@ -88,22 +90,22 @@ async function main() {
       TOKEN_METADATA_PROGRAM_ID.toBuffer(),
       mintPda.toBuffer(),
     ],
-    TOKEN_METADATA_PROGRAM_ID,
+    TOKEN_METADATA_PROGRAM_ID
   );
 
   const [economyAuthorityPda] = PublicKey.findProgramAddressSync(
     [Buffer.from("economy")],
-    ECONOMY_PROGRAM_ID,
+    ECONOMY_PROGRAM_ID
   );
 
   const [economyStatePda] = PublicKey.findProgramAddressSync(
     [Buffer.from("economy_state")],
-    ECONOMY_PROGRAM_ID,
+    ECONOMY_PROGRAM_ID
   );
 
   const [pricingConfigPda] = PublicKey.findProgramAddressSync(
     [Buffer.from("pricing_config")],
-    ECONOMY_PROGRAM_ID,
+    ECONOMY_PROGRAM_ID
   );
 
   console.log("\n=== PDAs ===");
@@ -123,16 +125,16 @@ async function main() {
   // Since all authorities are the same wallet on devnet, these will all be the same ATA
   const ecosystemPool = await getAssociatedTokenAddress(
     mintPda,
-    ecosystemAuthority,
+    ecosystemAuthority
   );
   const treasuryPool = await getAssociatedTokenAddress(
     mintPda,
-    treasuryAuthority,
+    treasuryAuthority
   );
   const teamPool = await getAssociatedTokenAddress(mintPda, teamAuthority);
   const reservePool = await getAssociatedTokenAddress(
     mintPda,
-    reserveAuthority,
+    reserveAuthority
   );
 
   console.log("\n=== Token Accounts ===");
@@ -144,7 +146,7 @@ async function main() {
   // Check deployer balance
   const balance = await connection.getBalance(keypair.publicKey);
   console.log(
-    `\nDeployer SOL balance: ${(balance / 1_000_000_000).toFixed(4)} SOL`,
+    `\nDeployer SOL balance: ${(balance / 1_000_000_000).toFixed(4)} SOL`
   );
   if (balance < 0.05 * 1_000_000_000) {
     console.error("ERROR: Insufficient SOL. Need at least 0.05 SOL.");
@@ -170,8 +172,11 @@ async function main() {
         })
         .rpc();
       console.log("✓ Token mint initialized:", tx);
-    } catch (err: any) {
-      console.error("✗ Failed to initialize mint:", err.message || err);
+    } catch (err: unknown) {
+      console.error(
+        "✗ Failed to initialize mint:",
+        err instanceof Error ? err.message : String(err)
+      );
       if (err.logs) console.error("Logs:", err.logs.join("\n"));
       process.exit(1);
     }
@@ -197,8 +202,11 @@ async function main() {
         })
         .rpc();
       console.log("✓ Initial supply minted:", tx);
-    } catch (err: any) {
-      console.error("✗ Failed to mint initial supply:", err.message || err);
+    } catch (err: unknown) {
+      console.error(
+        "✗ Failed to mint initial supply:",
+        err instanceof Error ? err.message : String(err)
+      );
       if (err.logs) console.error("Logs:", err.logs.join("\n"));
       process.exit(1);
     }
@@ -216,10 +224,13 @@ async function main() {
       })
       .rpc();
     console.log("✓ Mint authority transferred:", tx);
-  } catch (err: any) {
+  } catch (err: unknown) {
     // This might fail if authority was already transferred
+    const errMsg = err instanceof Error ? err.message : String(err);
+    const errLogs = (err as Record<string, unknown>)?.logs;
     const errStr =
-      JSON.stringify(err.message || err) + JSON.stringify(err.logs || []);
+      JSON.stringify(errMsg) +
+      JSON.stringify(Array.isArray(errLogs) ? errLogs : []);
     if (
       errStr.includes("owner does not match") ||
       errStr.includes("mint authority") ||
@@ -227,11 +238,11 @@ async function main() {
       errStr.includes("custom program error")
     ) {
       console.log(
-        "✓ Mint authority already transferred (or error expected), skipping",
+        "✓ Mint authority already transferred (or error expected), skipping"
       );
     } else {
-      console.error("✗ Failed to transfer mint authority:", err.message || err);
-      if (err.logs) console.error("Logs:", err.logs.join("\n"));
+      console.error("✗ Failed to transfer mint authority:", errMsg);
+      if (Array.isArray(errLogs)) console.error("Logs:", errLogs.join("\n"));
       process.exit(1);
     }
   }
@@ -250,8 +261,11 @@ async function main() {
         })
         .rpc();
       console.log("✓ Pricing config initialized:", tx);
-    } catch (err: any) {
-      console.error("✗ Failed to initialize pricing:", err.message || err);
+    } catch (err: unknown) {
+      console.error(
+        "✗ Failed to initialize pricing:",
+        err instanceof Error ? err.message : String(err)
+      );
       if (err.logs) console.error("Logs:", err.logs.join("\n"));
       process.exit(1);
     }
@@ -275,8 +289,11 @@ async function main() {
         })
         .rpc();
       console.log("✓ Economy state initialized:", tx);
-    } catch (err: any) {
-      console.error("✗ Failed to initialize economy:", err.message || err);
+    } catch (err: unknown) {
+      console.error(
+        "✗ Failed to initialize economy:",
+        err instanceof Error ? err.message : String(err)
+      );
       if (err.logs) console.error("Logs:", err.logs.join("\n"));
       process.exit(1);
     }

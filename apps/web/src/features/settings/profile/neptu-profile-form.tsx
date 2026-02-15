@@ -1,4 +1,18 @@
-import { useState } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { useTranslate } from "@/hooks/use-translate";
+import { useUser } from "@/hooks/use-user";
+import { neptuApi } from "@/lib/api";
+import { cn } from "@/lib/utils";
+import { USER_INTERESTS, type UserInterest } from "@neptu/shared";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, parseISO, subYears } from "date-fns";
 import {
@@ -9,22 +23,8 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
-import { USER_INTERESTS, type UserInterest } from "@neptu/shared";
-import { useUser } from "@/hooks/use-user";
-import { useTranslate } from "@/hooks/use-translate";
-import { neptuApi } from "@/lib/api";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const INTEREST_EMOJIS: Record<UserInterest, string> = {
   career: "💼",
@@ -59,7 +59,7 @@ export function NeptuProfileForm() {
         <p className="text-muted-foreground">
           {t(
             "settings.profile.connectWallet",
-            "Please connect your wallet to view profile settings.",
+            "Please connect your wallet to view profile settings."
           )}
         </p>
       </div>
@@ -78,7 +78,7 @@ export function NeptuProfileForm() {
   // Error loading user data
   if (isError) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center gap-4">
+      <div className="flex flex-col items-center justify-center gap-4 py-12 text-center">
         <p className="text-muted-foreground">
           {t("settings.profile.loadError", "Failed to load profile data.")}
         </p>
@@ -114,7 +114,7 @@ function ProfileFormInner({ user, walletAddress, t }: ProfileFormInnerProps) {
   const [displayName, setDisplayName] = useState(user?.displayName || "");
   const [interests, setInterests] = useState<string[]>(user?.interests || []);
   const [birthDate, setBirthDate] = useState<Date | undefined>(
-    user?.birthDate ? parseISO(user.birthDate) : undefined,
+    user?.birthDate ? parseISO(user.birthDate) : undefined
   );
 
   const hasBirthDate = !!user?.birthDate;
@@ -137,14 +137,14 @@ function ProfileFormInner({ user, walletAddress, t }: ProfileFormInnerProps) {
     onError: (
       error: Error & {
         response?: { data?: { error?: string }; status?: number };
-      },
+      }
     ) => {
       const message = error.response?.data?.error || t("toast.profileError");
       toast.error(message);
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
     // Require birth date if not already set
@@ -186,7 +186,7 @@ function ProfileFormInner({ user, walletAddress, t }: ProfileFormInnerProps) {
         ? prev.filter((i) => i !== interest)
         : prev.length < MAX_INTERESTS
           ? [...prev, interest]
-          : prev,
+          : prev
     );
   };
 
@@ -209,7 +209,7 @@ function ProfileFormInner({ user, walletAddress, t }: ProfileFormInnerProps) {
               <button
                 type="button"
                 onClick={() => setShowBirthDate(!showBirthDate)}
-                className="ml-auto text-muted-foreground hover:text-foreground transition-colors"
+                className="ml-auto text-muted-foreground transition-colors hover:text-foreground"
               >
                 {showBirthDate ? (
                   <EyeOff className="h-4 w-4" />
@@ -234,7 +234,7 @@ function ProfileFormInner({ user, walletAddress, t }: ProfileFormInnerProps) {
                   variant="outline"
                   className={cn(
                     "w-full justify-start text-left font-normal",
-                    !birthDate && "text-muted-foreground",
+                    !birthDate && "text-muted-foreground"
                   )}
                 >
                   <Calendar className="mr-2 h-4 w-4" />
@@ -285,10 +285,10 @@ function ProfileFormInner({ user, walletAddress, t }: ProfileFormInnerProps) {
       {/* Interests */}
       <div className="space-y-2">
         <Label>{t("settings.interests")}</Label>
-        <p className="text-xs text-muted-foreground mb-4">
+        <p className="mb-4 text-xs text-muted-foreground">
           {t("settings.interests.desc")} ({interests.length}/{MAX_INTERESTS})
         </p>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 auto-rows-fr">
+        <div className="grid auto-rows-fr grid-cols-2 gap-2 sm:grid-cols-3">
           {USER_INTERESTS.map((interest) => {
             const selected = interests.includes(interest);
             const disabled = !selected && interests.length >= MAX_INTERESTS;
@@ -299,10 +299,10 @@ function ProfileFormInner({ user, walletAddress, t }: ProfileFormInnerProps) {
                 onClick={() => toggleInterest(interest)}
                 disabled={disabled}
                 className={cn(
-                  "flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm transition-all text-left h-full",
+                  "flex h-full items-center gap-2 rounded-lg border px-3 py-2.5 text-left text-sm transition-all",
                   selected
-                    ? "border-purple-500 bg-purple-500/10 text-purple-600 dark:text-purple-400 ring-1 ring-purple-500/30"
-                    : "border-border bg-card text-muted-foreground hover:border-purple-400/40 hover:bg-accent disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-border disabled:hover:bg-card",
+                    ? "border-purple-500 bg-purple-500/10 text-purple-600 ring-1 ring-purple-500/30 dark:text-purple-400"
+                    : "border-border bg-card text-muted-foreground hover:border-purple-400/40 hover:bg-accent disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border disabled:hover:bg-card"
                 )}
               >
                 <span className="shrink-0 text-base">
@@ -320,7 +320,7 @@ function ProfileFormInner({ user, walletAddress, t }: ProfileFormInnerProps) {
       {/* Wallet Address - Read Only */}
       <div className="space-y-2">
         <Label className="text-sm font-medium">{t("settings.wallet")}</Label>
-        <div className="rounded-md border bg-muted/50 px-3 py-2 text-sm font-mono">
+        <div className="rounded-md border bg-muted/50 px-3 py-2 font-mono text-sm">
           {walletAddress ? (
             <span>
               {walletAddress.slice(0, 8)}...{walletAddress.slice(-8)}

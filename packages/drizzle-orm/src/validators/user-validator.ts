@@ -1,5 +1,5 @@
-import { z } from "zod";
 import { DATE_REGEX, USER_INTERESTS } from "@neptu/shared";
+import { z } from "zod";
 
 const interestSchema = z.enum(USER_INTERESTS);
 

@@ -1,11 +1,5 @@
-import { format } from "date-fns";
-import {
-  ArrowDownRight,
-  ArrowUpRight,
-  ExternalLink,
-  Flame,
-  Loader2,
-} from "lucide-react";
+import type { ReactNode } from "react";
+
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -14,8 +8,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import { useTranslate } from "@/hooks/use-translate";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  ExternalLink,
+  Flame,
+  Loader2,
+} from "lucide-react";
 
 const SOLANA_TX_EXPLORER = "https://explorer.solana.com/tx";
 const DEVNET_CLUSTER_PARAM = "?cluster=devnet";
@@ -46,7 +48,7 @@ const TX_TYPE_CONFIG: Record<
   {
     labelKey: string;
     labelDefault: string;
-    icon: React.ReactNode;
+    icon: ReactNode;
     colorClass: string;
   }
 > = {
@@ -118,9 +120,9 @@ export function TransactionHistory({
           <CardDescription>{t("wallet.transactionsDesc")}</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center py-8 text-center">
-          <ArrowUpRight className="h-12 w-12 text-muted-foreground mb-4" />
+          <ArrowUpRight className="mb-4 h-12 w-12 text-muted-foreground" />
           <p className="text-muted-foreground">{t("wallet.noTransactions")}</p>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="mt-1 text-sm text-muted-foreground">
             {t("wallet.noTransactionsDesc")}
           </p>
         </CardContent>
@@ -140,7 +142,7 @@ export function TransactionHistory({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2 max-h-[400px] overflow-y-auto">
+        <div className="max-h-[400px] space-y-2 overflow-y-auto">
           {transactions.map((tx) => {
             const typeConfig = TX_TYPE_CONFIG[tx.transactionType] || {
               labelKey: "",
@@ -152,13 +154,13 @@ export function TransactionHistory({
             return (
               <div
                 key={tx.id}
-                className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted/80 transition-colors"
+                className="flex items-center justify-between rounded-lg bg-muted/50 p-3 transition-colors hover:bg-muted/80"
               >
                 <div className="flex items-center gap-3">
                   <div
                     className={cn(
                       "flex h-8 w-8 items-center justify-center rounded-full bg-background",
-                      typeConfig.colorClass,
+                      typeConfig.colorClass
                     )}
                   >
                     {typeConfig.icon}
@@ -182,7 +184,7 @@ export function TransactionHistory({
                           href={getExplorerUrl(tx.txSignature)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-1 hover:text-foreground transition-colors font-mono"
+                          className="flex items-center gap-1 font-mono transition-colors hover:text-foreground"
                         >
                           {formatTxSignature(tx.txSignature)}
                           <ExternalLink className="h-3 w-3" />
@@ -218,7 +220,7 @@ export function TransactionHistory({
                   )}
                   <Badge
                     variant={STATUS_VARIANTS[tx.status] || "secondary"}
-                    className="text-xs mt-1"
+                    className="mt-1 text-xs"
                   >
                     {tx.status}
                   </Badge>

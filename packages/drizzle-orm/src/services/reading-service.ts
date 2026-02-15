@@ -1,10 +1,15 @@
 import type { Database } from "../client";
-import { ReadingRepository } from "../repositories/reading-repository";
+
 import {
   toReadingDTO,
   toReadingDTOList,
   type ReadingDTO,
 } from "../dto/reading-dto";
+import {
+  ReadingRepository,
+  type ListReadingsOptions,
+  type PaginatedResult,
+} from "../repositories/reading-repository";
 import {
   createReadingSchema,
   getReadingsByUserSchema,
@@ -41,7 +46,7 @@ export class ReadingService {
   }
 
   async getReadingsByUser(
-    input: GetReadingsByUserInput,
+    input: GetReadingsByUserInput
   ): Promise<ReadingDTO[]> {
     const validated = getReadingsByUserSchema.parse(input);
 
@@ -58,13 +63,34 @@ export class ReadingService {
   async checkExistingReading(
     userId: string,
     type: "potensi" | "peluang" | "compatibility",
-    targetDate: string,
+    targetDate: string
   ): Promise<ReadingDTO | null> {
     const reading = await this.repository.findByUserAndDate(
       userId,
       type,
-      targetDate,
+      targetDate
     );
     return reading ? toReadingDTO(reading) : null;
+  }
+
+  // Admin methods
+  async listReadings(
+    options: ListReadingsOptions
+  ): Promise<PaginatedResult<ReadingDTO>> {
+    const result = await this.repository.list(options);
+    return {
+      ...result,
+      data: result.data.map(toReadingDTO),
+    };
+  }
+
+  async getStats(): Promise<{
+    total: number;
+    potensi: number;
+    peluang: number;
+    compatibility: number;
+    todayNew: number;
+  }> {
+    return this.repository.getStats();
   }
 }

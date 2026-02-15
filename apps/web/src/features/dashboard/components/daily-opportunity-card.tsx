@@ -1,6 +1,6 @@
+import { useTranslate } from "@/hooks/use-translate";
 import { isToday, isPast, format } from "date-fns";
 import { Sparkles } from "lucide-react";
-import { useTranslate } from "@/hooks/use-translate";
 
 type DailyOpportunityCardProps = {
   selectedDate: Date;

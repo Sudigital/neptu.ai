@@ -1,3 +1,6 @@
+import type { ReactNode } from "react";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -6,10 +9,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Gift, Coins, Loader2, Flame, Calendar, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { type RewardType } from "@neptu/shared";
+import { Gift, Coins, Loader2, Flame, Calendar, Users } from "lucide-react";
 
 interface RewardItem {
   id: string;
@@ -29,7 +31,7 @@ interface UnclaimedRewardsProps {
   className?: string;
 }
 
-const REWARD_ICONS: Record<RewardType, React.ReactNode> = {
+const REWARD_ICONS: Record<RewardType, ReactNode> = {
   daily_check_in: <Calendar className="h-4 w-4 text-blue-500" />,
   streak_bonus: <Flame className="h-4 w-4 text-orange-500" />,
   first_reading: <Gift className="h-4 w-4 text-purple-500" />,
@@ -73,9 +75,9 @@ export function UnclaimedRewards({
     return (
       <Card className={cn("", className)}>
         <CardContent className="flex flex-col items-center justify-center py-8 text-center">
-          <Gift className="h-12 w-12 text-muted-foreground mb-4" />
+          <Gift className="mb-4 h-12 w-12 text-muted-foreground" />
           <p className="text-muted-foreground">No unclaimed rewards</p>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="mt-1 text-sm text-muted-foreground">
             Keep checking in daily to earn NEPTU!
           </p>
         </CardContent>
@@ -104,11 +106,11 @@ export function UnclaimedRewards({
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Rewards list */}
-        <div className="space-y-2 max-h-[200px] overflow-y-auto">
+        <div className="max-h-[200px] space-y-2 overflow-y-auto">
           {rewards.map((reward) => (
             <div
               key={reward.id}
-              className="flex items-center justify-between p-2 rounded-lg bg-muted/50"
+              className="flex items-center justify-between rounded-lg bg-muted/50 p-2"
             >
               <div className="flex items-center gap-2">
                 {REWARD_ICONS[reward.rewardType]}

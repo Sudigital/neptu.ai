@@ -1,21 +1,24 @@
+import { CommandMenu } from "@/components/command-menu";
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
-  useCallback,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
 } from "react";
-import { CommandMenu } from "@/components/command-menu";
 
 type SearchContextType = {
   open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpen: Dispatch<SetStateAction<boolean>>;
 };
 
 const SearchContext = createContext<SearchContextType | null>(null);
 
 type SearchProviderProps = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 export function SearchProvider({ children }: SearchProviderProps) {
@@ -43,9 +46,7 @@ export function SearchProvider({ children }: SearchProviderProps) {
 // eslint-disable-next-line react-refresh/only-export-components
 export const useSearch = () => {
   const searchContext = useContext(SearchContext);
-  const noop = useCallback<
-    React.Dispatch<React.SetStateAction<boolean>>
-  >(() => {}, []);
+  const noop = useCallback<Dispatch<SetStateAction<boolean>>>(() => {}, []);
 
   if (!searchContext) {
     return { open: false, setOpen: noop } as SearchContextType;

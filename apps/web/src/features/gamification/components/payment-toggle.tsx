@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Coins, Flame, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PRICING, type ReadingType, type PaymentType } from "@neptu/shared";
+import { Coins, Flame, Loader2 } from "lucide-react";
+import { useState } from "react";
 
 interface PaymentToggleProps {
   readingType: ReadingType;

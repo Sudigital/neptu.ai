@@ -17,7 +17,7 @@ export function toDailyReadingDTO(reading: DailyReading): DailyReadingDTO {
 }
 
 export function toDailyReadingDTOList(
-  readings: DailyReading[],
+  readings: DailyReading[]
 ): DailyReadingDTO[] {
   return readings.map(toDailyReadingDTO);
 }

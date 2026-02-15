@@ -1,4 +1,5 @@
 import { text, pgTable, index, numeric, timestamp } from "drizzle-orm/pg-core";
+
 import { users } from "./users";
 
 export const payments = pgTable(
@@ -28,7 +29,7 @@ export const payments = pgTable(
     index("payments_user_idx").on(table.userId),
     index("payments_tx_idx").on(table.txSignature),
     index("payments_status_idx").on(table.status),
-  ],
+  ]
 );
 
 export type Payment = typeof payments.$inferSelect;

@@ -1,0 +1,30 @@
+name = "neptu-api-production"
+main = "src/index.ts"
+compatibility_date = "2025-07-18"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+# D1 Database - Development (default)
+[[d1_databases]]
+binding = "DB"
+database_name = "neptu-dev"
+database_id = "7567d7ff-6845-4dad-bfdf-8b65cd4a2645"
+
+[vars]
+ENVIRONMENT = "development"
+
+# Production environment
+[env.production]
+name = "neptu-api-production"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = false
+routes = [{ pattern = "api.neptu.sudigital.com", custom_domain = true }]
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "neptu-prod"
+database_id = "accef3f0-658b-4765-b623-5f1768dce42c"
+migrations_dir = "../../packages/drizzle-orm/drizzle"
+
+[env.production.vars]
+ENVIRONMENT = "production"

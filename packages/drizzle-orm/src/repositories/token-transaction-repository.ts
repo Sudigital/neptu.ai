@@ -1,5 +1,7 @@
 import { eq, desc, and } from "drizzle-orm";
+
 import type { Database } from "../client";
+
 import {
   tokenTransactions,
   type NewTokenTransaction,
@@ -23,7 +25,7 @@ export class TokenTransactionRepository {
   constructor(private db: Database) {}
 
   async create(
-    data: Omit<NewTokenTransaction, "id">,
+    data: Omit<NewTokenTransaction, "id">
   ): Promise<TokenTransaction> {
     const id = crypto.randomUUID();
     const result = await this.db
@@ -43,7 +45,7 @@ export class TokenTransactionRepository {
   }
 
   async findByTxSignature(
-    txSignature: string,
+    txSignature: string
   ): Promise<TokenTransaction | null> {
     const result = await this.db
       .select()
@@ -54,7 +56,7 @@ export class TokenTransactionRepository {
   }
 
   async findByUser(
-    options: FindTokenTransactionsOptions,
+    options: FindTokenTransactionsOptions
   ): Promise<TokenTransaction[]> {
     const { userId, transactionType, status, limit = 50, offset = 0 } = options;
 
@@ -78,7 +80,7 @@ export class TokenTransactionRepository {
   async updateStatus(
     txSignature: string,
     status: "pending" | "confirmed" | "failed",
-    confirmedAt?: string,
+    confirmedAt?: string
   ): Promise<TokenTransaction | null> {
     const result = await this.db
       .update(tokenTransactions)
@@ -95,8 +97,8 @@ export class TokenTransactionRepository {
       .where(
         and(
           eq(tokenTransactions.userId, userId),
-          eq(tokenTransactions.status, "confirmed"),
-        ),
+          eq(tokenTransactions.status, "confirmed")
+        )
       );
 
     return result.reduce((sum, tx) => sum + Number(tx.neptuRewarded || 0), 0);
@@ -109,8 +111,8 @@ export class TokenTransactionRepository {
       .where(
         and(
           eq(tokenTransactions.userId, userId),
-          eq(tokenTransactions.status, "confirmed"),
-        ),
+          eq(tokenTransactions.status, "confirmed")
+        )
       );
 
     return result.reduce((sum, tx) => sum + Number(tx.neptuBurned || 0), 0);
@@ -124,8 +126,8 @@ export class TokenTransactionRepository {
         and(
           eq(tokenTransactions.userId, userId),
           eq(tokenTransactions.transactionType, "sol_payment"),
-          eq(tokenTransactions.status, "confirmed"),
-        ),
+          eq(tokenTransactions.status, "confirmed")
+        )
       );
 
     return result.reduce((sum, tx) => sum + Number(tx.solAmount || 0), 0);

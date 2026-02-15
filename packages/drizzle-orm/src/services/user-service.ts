@@ -1,6 +1,11 @@
 import type { Database } from "../client";
-import { UserRepository } from "../repositories/user-repository";
+
 import { toUserDTO, type UserDTO } from "../dto/user-dto";
+import {
+  UserRepository,
+  type ListUsersOptions,
+  type PaginatedResult,
+} from "../repositories/user-repository";
 import {
   createUserSchema,
   updateUserSchema,
@@ -47,7 +52,7 @@ export class UserService {
 
   async updateUser(
     id: string,
-    input: UpdateUserInput,
+    input: UpdateUserInput
   ): Promise<UserDTO | null> {
     const validated = updateUserSchema.parse(input);
     const updateData: Record<string, unknown> = {};
@@ -68,7 +73,7 @@ export class UserService {
 
   async onboardUser(
     id: string,
-    input: OnboardUserInput,
+    input: OnboardUserInput
   ): Promise<UserDTO | null> {
     const validated = onboardUserSchema.parse(input);
 
@@ -86,7 +91,7 @@ export class UserService {
 
   async getOrCreateUser(
     walletAddress: string,
-    email?: string,
+    email?: string
   ): Promise<UserDTO> {
     const user = await this.repository.findOrCreate(walletAddress, { email });
     return toUserDTO(user);
@@ -99,5 +104,25 @@ export class UserService {
 
   async setAdminStatus(id: string, isAdmin: boolean): Promise<void> {
     await this.repository.update(id, { isAdmin });
+  }
+
+  // Admin methods
+  async listUsers(
+    options: ListUsersOptions
+  ): Promise<PaginatedResult<UserDTO>> {
+    const result = await this.repository.list(options);
+    return {
+      ...result,
+      data: result.data.map(toUserDTO),
+    };
+  }
+
+  async getStats(): Promise<{
+    total: number;
+    onboarded: number;
+    admins: number;
+    todayNew: number;
+  }> {
+    return this.repository.getStats();
   }
 }

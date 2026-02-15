@@ -1,10 +1,11 @@
 import type { Database } from "../client";
-import { DailyReadingRepository } from "../repositories/daily-reading-repository";
+
 import {
   toDailyReadingDTO,
   toDailyReadingDTOList,
   type DailyReadingDTO,
 } from "../dto/daily-reading-dto";
+import { DailyReadingRepository } from "../repositories/daily-reading-repository";
 import {
   createDailyReadingSchema,
   getDailyReadingSchema,
@@ -20,7 +21,7 @@ export class DailyReadingService {
   }
 
   async createOrUpdateDailyReading(
-    input: CreateDailyReadingInput,
+    input: CreateDailyReadingInput
   ): Promise<DailyReadingDTO> {
     const validated = createDailyReadingSchema.parse(input);
 
@@ -34,13 +35,13 @@ export class DailyReadingService {
   }
 
   async getDailyReading(
-    input: GetDailyReadingInput,
+    input: GetDailyReadingInput
   ): Promise<DailyReadingDTO | null> {
     const validated = getDailyReadingSchema.parse(input);
 
     const reading = await this.repository.findByDateAndType(
       validated.date,
-      validated.type,
+      validated.type
     );
     return reading ? toDailyReadingDTO(reading) : null;
   }
@@ -48,12 +49,12 @@ export class DailyReadingService {
   async getReadingsInRange(
     startDate: string,
     endDate: string,
-    type: "peluang",
+    type: "peluang"
   ): Promise<DailyReadingDTO[]> {
     const readings = await this.repository.findByDateRange(
       startDate,
       endDate,
-      type,
+      type
     );
     return toDailyReadingDTOList(readings);
   }

@@ -1,6 +1,3 @@
-import { type ReactNode } from "react";
-import { Link, useLocation } from "@tanstack/react-router";
-import { ChevronRight } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -17,6 +14,10 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Link, useLocation } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
+import { type ReactNode } from "react";
+
 import { Badge } from "../ui/badge";
 import {
   DropdownMenu,
@@ -60,7 +61,7 @@ export function NavGroup({ title, items }: NavGroupProps) {
 
 function NavBadge({ children }: { children: ReactNode }) {
   return (
-    <Badge className="ml-auto rounded-full px-1.5 py-0 text-xs bg-muted text-muted-foreground hover:bg-muted">
+    <Badge className="ml-auto rounded-full bg-muted px-1.5 py-0 text-xs text-muted-foreground hover:bg-muted">
       {children}
     </Badge>
   );

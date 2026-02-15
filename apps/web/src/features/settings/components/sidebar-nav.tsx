@@ -1,7 +1,3 @@
-import { useState, type JSX } from "react";
-import { useLocation, useNavigate, Link } from "@tanstack/react-router";
-import { useTranslate } from "@/hooks/use-translate";
-import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -11,8 +7,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTranslate } from "@/hooks/use-translate";
+import { cn } from "@/lib/utils";
+import { useLocation, useNavigate, Link } from "@tanstack/react-router";
+import { useState, type JSX, type HTMLAttributes } from "react";
 
-type SidebarNavProps = React.HTMLAttributes<HTMLElement> & {
+type SidebarNavProps = HTMLAttributes<HTMLElement> & {
   items: {
     href: string;
     title: string;
@@ -56,12 +56,12 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
       <ScrollArea
         orientation="horizontal"
         type="always"
-        className="bg-background hidden w-full min-w-40 px-1 py-2 md:block"
+        className="hidden w-full min-w-40 bg-background px-1 py-2 md:block"
       >
         <nav
           className={cn(
             "flex space-x-2 py-1 lg:flex-col lg:space-y-1 lg:space-x-0",
-            className,
+            className
           )}
           {...props}
         >
@@ -74,7 +74,7 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
                 pathname === item.href
                   ? "bg-muted hover:bg-accent"
                   : "hover:bg-accent hover:underline",
-                "justify-start",
+                "justify-start"
               )}
             >
               <span className="me-2">{item.icon}</span>

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -5,10 +6,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Coins, Loader2, RefreshCw, ExternalLink } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useTranslate } from "@/hooks/use-translate";
+import { cn } from "@/lib/utils";
+import { Coins, Loader2, RefreshCw, ExternalLink } from "lucide-react";
 
 interface TokenBalanceProps {
   balance: number;
@@ -80,13 +80,13 @@ export function TokenBalance({
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Main balance display */}
-        <div className="text-center py-4">
+        <div className="py-4 text-center">
           <p className="text-4xl font-bold">{balance.toFixed(2)}</p>
           <p className="text-sm text-muted-foreground">
             {tokenSymbol} ({t("wallet.onChain", "on-chain")})
           </p>
           {pendingRewards > 0 && (
-            <p className="text-xs text-amber-500/70 mt-1">
+            <p className="mt-1 text-xs text-amber-500/70">
               + {pendingRewards.toFixed(2)}{" "}
               {t("wallet.pendingRewards", "pending rewards")}
             </p>
@@ -94,7 +94,7 @@ export function TokenBalance({
         </div>
 
         {/* Raw balance (for debugging/transparency) */}
-        <div className="flex items-center justify-between p-2 rounded-lg bg-muted/50 text-xs">
+        <div className="flex items-center justify-between rounded-lg bg-muted/50 p-2 text-xs">
           <span className="text-muted-foreground">
             {t("wallet.rawBalance", "Raw balance (base units)")}
           </span>

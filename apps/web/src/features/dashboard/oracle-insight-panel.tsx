@@ -1,5 +1,6 @@
-import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+
 import { InterestOracle } from "./interest-oracle";
 
 const interestMeta: Record<
@@ -129,7 +130,7 @@ export function OracleInsightPanel({
 }) {
   if (!interests || interests.length === 0) {
     return (
-      <Card className="py-8 px-4">
+      <Card className="px-4 py-8">
         <div className="text-center">
           <span className="text-4xl">🔮</span>
           <h3 className="mt-3 text-base font-semibold">
@@ -145,9 +146,9 @@ export function OracleInsightPanel({
   }
 
   return (
-    <div className="space-y-3 animate-in slide-in-from-left-4 fade-in duration-300">
+    <div className="animate-in space-y-3 duration-300 fade-in slide-in-from-left-4">
       {/* Interest Cards Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4">
         {interests.map((interest, index) => {
           const meta = interestMeta[interest] || {
             icon: "✨",
@@ -158,7 +159,7 @@ export function OracleInsightPanel({
           return (
             <div
               key={interest}
-              className="animate-in slide-in-from-left-4 fade-in duration-300"
+              className="animate-in duration-300 fade-in slide-in-from-left-4"
               style={{
                 animationDelay: `${index * 50}ms`,
                 animationFillMode: "backwards",
@@ -166,23 +167,23 @@ export function OracleInsightPanel({
             >
               <Card
                 className={cn(
-                  "py-3 px-3 gap-0 cursor-default transition-all hover:shadow-md hover:scale-[1.02]",
-                  "border",
+                  "cursor-default gap-0 px-3 py-3 transition-all hover:scale-[1.02] hover:shadow-md",
+                  "border"
                 )}
               >
-                <div className="flex flex-col items-center text-center gap-1">
+                <div className="flex flex-col items-center gap-1 text-center">
                   <div
                     className={cn(
                       "flex h-10 w-10 items-center justify-center rounded-xl",
-                      meta.bgColor,
+                      meta.bgColor
                     )}
                   >
                     <span className="text-xl">{meta.icon}</span>
                   </div>
-                  <p className="text-xs sm:text-sm font-semibold capitalize mt-1">
+                  <p className="mt-1 text-xs font-semibold capitalize sm:text-sm">
                     {meta.label}
                   </p>
-                  <p className="text-[10px] text-muted-foreground leading-tight">
+                  <p className="text-[10px] leading-tight text-muted-foreground">
                     {meta.tagline}
                   </p>
                 </div>
@@ -197,7 +198,7 @@ export function OracleInsightPanel({
         {interests.map((interest, index) => (
           <div
             key={`oracle-${interest}`}
-            className="animate-in slide-in-from-left-4 fade-in duration-300"
+            className="animate-in duration-300 fade-in slide-in-from-left-4"
             style={{
               animationDelay: `${(interests.length + index) * 50}ms`,
               animationFillMode: "backwards",

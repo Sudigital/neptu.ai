@@ -1,3 +1,13 @@
+import { ConfigDrawer } from "@/components/config-drawer";
+import { Header } from "@/components/layout/header";
+import { Main } from "@/components/layout/main";
+import { ProfileDropdown } from "@/components/profile-dropdown";
+import { Search } from "@/components/search";
+import { ThemeSwitch } from "@/components/theme-switch";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Separator } from "@/components/ui/separator";
+import { useTranslate } from "@/hooks/use-translate";
+import { useUser } from "@/hooks/use-user";
 import { Outlet } from "@tanstack/react-router";
 import {
   Monitor,
@@ -7,16 +17,7 @@ import {
   UserCog,
   AlertTriangle,
 } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { ConfigDrawer } from "@/components/config-drawer";
-import { Header } from "@/components/layout/header";
-import { Main } from "@/components/layout/main";
-import { ProfileDropdown } from "@/components/profile-dropdown";
-import { Search } from "@/components/search";
-import { ThemeSwitch } from "@/components/theme-switch";
-import { useTranslate } from "@/hooks/use-translate";
-import { useUser } from "@/hooks/use-user";
+
 import { SidebarNav } from "./components/sidebar-nav";
 
 export function Settings() {

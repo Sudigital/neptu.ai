@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 // Color styles for highlighting (using inline styles to override prose)
 const highlightColors: Record<string, { light: string; dark: string }> = {
   pink: {
@@ -27,8 +29,8 @@ export function HighlightedText({
 }) {
   const isDark = document.documentElement.classList.contains("dark");
 
-  const renderContent = (content: string): React.ReactNode[] => {
-    const result: React.ReactNode[] = [];
+  const renderContent = (content: string): ReactNode[] => {
+    const result: ReactNode[] = [];
     let keyIdx = 0;
     let colorIdx = 0;
 
@@ -40,7 +42,7 @@ export function HighlightedText({
     while ((match = quoteRegex.exec(content)) !== null) {
       if (match.index > lastIndex) {
         result.push(
-          <span key={keyIdx++}>{content.slice(lastIndex, match.index)}</span>,
+          <span key={keyIdx++}>{content.slice(lastIndex, match.index)}</span>
         );
       }
 
@@ -59,7 +61,7 @@ export function HighlightedText({
           }}
         >
           {match[1]}
-        </mark>,
+        </mark>
       );
 
       lastIndex = match.index + match[0].length;
@@ -79,7 +81,7 @@ export function HighlightedText({
   return (
     <div className="space-y-4">
       {paragraphs.map((paragraph, idx) => (
-        <p key={idx} className="text-foreground leading-relaxed">
+        <p key={idx} className="leading-relaxed text-foreground">
           {renderContent(paragraph)}
         </p>
       ))}

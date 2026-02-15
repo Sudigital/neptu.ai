@@ -20,7 +20,7 @@ export const dailyReadings = pgTable(
   (table) => [
     primaryKey({ columns: [table.date, table.type] }),
     index("daily_readings_date_idx").on(table.date),
-  ],
+  ]
 );
 
 export type DailyReading = typeof dailyReadings.$inferSelect;

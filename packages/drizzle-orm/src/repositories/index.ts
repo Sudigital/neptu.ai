@@ -22,3 +22,8 @@ export {
   type FindReferralsOptions,
 } from "./referral-repository";
 export { PricingPlanRepository } from "./pricing-plan-repository";
+export { ApiPricingPlanRepository } from "./api-pricing-plan-repository";
+export { ApiKeyRepository } from "./api-key-repository";
+export { ApiSubscriptionRepository } from "./api-subscription-repository";
+export { ApiUsageRepository } from "./api-usage-repository";
+export { ApiCreditPackRepository } from "./api-credit-pack-repository";

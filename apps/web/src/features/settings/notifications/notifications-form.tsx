@@ -1,8 +1,3 @@
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { showSubmittedData } from "@/lib/show-submitted-data";
-import { useTranslate } from "@/hooks/use-translate";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -16,6 +11,11 @@ import {
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
+import { useTranslate } from "@/hooks/use-translate";
+import { showSubmittedData } from "@/lib/show-submitted-data";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const notificationsFormSchema = z.object({
   type: z.enum(["all", "mentions", "none"], {
@@ -80,7 +80,7 @@ export function NotificationsForm() {
                     <FormLabel className="font-normal">
                       {t(
                         "settings.notif.directMessages",
-                        "Direct messages and mentions",
+                        "Direct messages and mentions"
                       )}
                     </FormLabel>
                   </FormItem>
@@ -112,13 +112,13 @@ export function NotificationsForm() {
                     <FormLabel className="text-base">
                       {t(
                         "settings.notif.communication",
-                        "Communication emails",
+                        "Communication emails"
                       )}
                     </FormLabel>
                     <FormDescription>
                       {t(
                         "settings.notif.communicationDesc",
-                        "Receive emails about your account activity.",
+                        "Receive emails about your account activity."
                       )}
                     </FormDescription>
                   </div>
@@ -143,7 +143,7 @@ export function NotificationsForm() {
                     <FormDescription>
                       {t(
                         "settings.notif.marketingDesc",
-                        "Receive emails about new products, features, and more.",
+                        "Receive emails about new products, features, and more."
                       )}
                     </FormDescription>
                   </div>
@@ -168,7 +168,7 @@ export function NotificationsForm() {
                     <FormDescription>
                       {t(
                         "settings.notif.socialDesc",
-                        "Receive emails for friend requests, follows, and more.",
+                        "Receive emails for friend requests, follows, and more."
                       )}
                     </FormDescription>
                   </div>
@@ -193,7 +193,7 @@ export function NotificationsForm() {
                     <FormDescription>
                       {t(
                         "settings.notif.securityDesc",
-                        "Receive emails about your account activity and security.",
+                        "Receive emails about your account activity and security."
                       )}
                     </FormDescription>
                   </div>
@@ -225,13 +225,13 @@ export function NotificationsForm() {
                 <FormLabel>
                   {t(
                     "settings.notif.mobileSettings",
-                    "Use different settings for my mobile devices",
+                    "Use different settings for my mobile devices"
                   )}
                 </FormLabel>
                 <FormDescription>
                   {t(
                     "settings.notif.mobileSettingsDesc",
-                    "You can manage your mobile notifications in the mobile settings page.",
+                    "You can manage your mobile notifications in the mobile settings page."
                   )}
                 </FormDescription>
               </div>

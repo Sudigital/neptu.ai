@@ -1,7 +1,3 @@
-import * as React from "react";
-import { CheckIcon, PlusCircledIcon } from "@radix-ui/react-icons";
-import { type Column } from "@tanstack/react-table";
-import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +15,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+import { CheckIcon, PlusCircledIcon } from "@radix-ui/react-icons";
+import { type Column } from "@tanstack/react-table";
+import * as React from "react";
 
 type DataTableFacetedFilterProps<TData, TValue> = {
   column?: Column<TData, TValue>;
@@ -98,22 +98,22 @@ export function DataTableFacetedFilter<TData, TValue>({
                       }
                       const filterValues = Array.from(selectedValues);
                       column?.setFilterValue(
-                        filterValues.length ? filterValues : undefined,
+                        filterValues.length ? filterValues : undefined
                       );
                     }}
                   >
                     <div
                       className={cn(
-                        "border-primary flex size-4 items-center justify-center rounded-sm border",
+                        "flex size-4 items-center justify-center rounded-sm border border-primary",
                         isSelected
                           ? "bg-primary text-primary-foreground"
-                          : "opacity-50 [&_svg]:invisible",
+                          : "opacity-50 [&_svg]:invisible"
                       )}
                     >
-                      <CheckIcon className={cn("text-background h-4 w-4")} />
+                      <CheckIcon className={cn("h-4 w-4 text-background")} />
                     </div>
                     {option.icon && (
-                      <option.icon className="text-muted-foreground size-4" />
+                      <option.icon className="size-4 text-muted-foreground" />
                     )}
                     <span>{option.label}</span>
                     {facets?.get(option.value) && (

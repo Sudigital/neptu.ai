@@ -3,8 +3,7 @@
   "ui": "tui",
   "globalEnv": [
     "SOLANA_NETWORK",
-    "TURSO_DATABASE_URL",
-    "TURSO_AUTH_TOKEN",
+    "DATABASE_URL",
     "VITE_PRIVY_APP_ID",
     "PRIVY_APP_SECRET",
     "API_URL"
@@ -18,15 +17,7 @@
       "cache": false,
       "persistent": true
     },
-    "lint": {
-      "dependsOn": ["^build"]
-    },
-    "lint:fix": {
-      "dependsOn": ["^build"]
-    },
-    "lint:build": {
-      "dependsOn": ["^build"]
-    },
+
     "test": {
       "dependsOn": ["^build"]
     },

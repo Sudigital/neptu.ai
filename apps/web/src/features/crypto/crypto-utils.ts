@@ -76,7 +76,7 @@ export function getAgeInDays(birthday: string): number {
   const now = new Date();
   const birthDate = new Date(birthday);
   return Math.floor(
-    (now.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24),
+    (now.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24)
   );
 }
 
@@ -118,7 +118,7 @@ export function getDaysUntilBirthday(birthday: string): number {
   const thisYearBirthday = new Date(
     now.getFullYear(),
     birthDate.getMonth(),
-    birthDate.getDate(),
+    birthDate.getDate()
   );
   if (thisYearBirthday < now) {
     thisYearBirthday.setFullYear(now.getFullYear() + 1);

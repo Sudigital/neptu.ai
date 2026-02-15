@@ -1,8 +1,3 @@
-import { useEffect } from "react";
-import { Check, Moon, Sun } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useTheme } from "@/context/theme-provider";
-import { useTranslate } from "@/hooks/use-translate";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,6 +5,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTheme } from "@/context/theme-provider";
+import { useTranslate } from "@/hooks/use-translate";
+import { cn } from "@/lib/utils";
+import { Check, Moon, Sun } from "lucide-react";
+import { useEffect } from "react";
 
 export function ThemeSwitch() {
   const { theme, setTheme } = useTheme();

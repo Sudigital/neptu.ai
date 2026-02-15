@@ -1,16 +1,17 @@
-import { StrictMode } from "react";
-import ReactDOM from "react-dom/client";
-import { AxiosError } from "axios";
+import { handleServerError } from "@/lib/handle-server-error";
+import { PrivyProvider } from "@privy-io/react-auth";
+import { toSolanaWalletConnectors } from "@privy-io/react-auth/solana";
 import {
   QueryCache,
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-import { PrivyProvider } from "@privy-io/react-auth";
-import { toSolanaWalletConnectors } from "@privy-io/react-auth/solana";
+import { AxiosError } from "axios";
+import { StrictMode } from "react";
+import ReactDOM from "react-dom/client";
 import { toast } from "sonner";
-import { handleServerError } from "@/lib/handle-server-error";
+
 import { DirectionProvider } from "./context/direction-provider";
 import { FontProvider } from "./context/font-provider";
 import { ThemeProvider } from "./context/theme-provider";
@@ -112,17 +113,13 @@ const privyConfig = {
     logo: "/neptu-logo.svg",
     landingHeader: "Connect to Neptu",
     showWalletLoginFirst: true,
-    // Only show Solana wallets
     walletChainType: "solana-only" as const,
   },
-  // Allow email and wallet login
   loginMethods: ["email", "wallet"] as const,
-  // Solana embedded wallet for users without wallets
   embeddedWallets: {
     solana: {
       createOnLogin: "users-without-wallets" as const,
     },
-    // Disable Ethereum embedded wallet
     ethereum: {
       createOnLogin: "off" as const,
     },
@@ -132,18 +129,8 @@ const privyConfig = {
       connectors: solanaConnectors,
     },
   },
-  // Disable WalletConnect (shows EVM wallets)
-  walletConnectCloudProjectId: undefined,
-  solanaClusters: [
-    {
-      name: "devnet",
-      rpcUrl:
-        import.meta.env.VITE_SOLANA_RPC_URL || "https://api.devnet.solana.com",
-    },
-  ],
-  // Keep session alive for 30 days
   session: {
-    maxAge: 60 * 60 * 24 * 30, // 30 days in seconds
+    maxAge: 60 * 60 * 24 * 30,
   },
 };
 
@@ -155,8 +142,7 @@ if (!rootElement.innerHTML) {
     <StrictMode>
       <PrivyProvider
         appId={import.meta.env.VITE_PRIVY_APP_ID || ""}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        config={privyConfig as any}
+        config={privyConfig}
       >
         <QueryClientProvider client={queryClient}>
           <ThemeProvider>
@@ -168,6 +154,6 @@ if (!rootElement.innerHTML) {
           </ThemeProvider>
         </QueryClientProvider>
       </PrivyProvider>
-    </StrictMode>,
+    </StrictMode>
   );
 }

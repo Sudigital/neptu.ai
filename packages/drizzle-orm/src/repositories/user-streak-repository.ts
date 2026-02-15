@@ -1,5 +1,7 @@
 import { eq } from "drizzle-orm";
+
 import type { Database } from "../client";
+
 import {
   userStreaks,
   type NewUserStreak,
@@ -40,7 +42,7 @@ export class UserStreakRepository {
     currentStreak: number,
     longestStreak: number,
     lastCheckIn: string,
-    totalCheckIns: number,
+    totalCheckIns: number
   ): Promise<UserStreak | null> {
     const now = new Date();
     const result = await this.db
@@ -73,7 +75,7 @@ export class UserStreakRepository {
   async incrementCheckIn(
     userId: string,
     newStreak: number,
-    checkInDate: string,
+    checkInDate: string
   ): Promise<UserStreak | null> {
     const existing = await this.findByUserId(userId);
     if (!existing) {

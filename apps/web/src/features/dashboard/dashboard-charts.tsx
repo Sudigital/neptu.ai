@@ -1,5 +1,14 @@
-import React from "react";
+import { Card } from "@/components/ui/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
+import { useTranslate } from "@/hooks/use-translate";
+import { cn } from "@/lib/utils";
 import { isToday, getHours } from "date-fns";
+import React from "react";
 import {
   CartesianGrid,
   Line,
@@ -14,15 +23,6 @@ import {
   PolarAngleAxis,
   PolarRadiusAxis,
 } from "recharts";
-import { cn } from "@/lib/utils";
-import { Card } from "@/components/ui/card";
-import { useTranslate } from "@/hooks/use-translate";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@/components/ui/chart";
 
 /* ── Shared types ────────────────────────────────────── */
 
@@ -42,7 +42,7 @@ export type ReadingLike =
 
 function getHourEnergy(
   hour: number,
-  totalUrip: number,
+  totalUrip: number
 ): "high" | "mid" | "low" {
   const seed = (totalUrip * 7 + hour * 13) % 24;
   if (seed < 8) return "high";
@@ -118,7 +118,7 @@ export function HourlyGrid({
     <div className="space-y-3">
       <ChartContainer
         config={energyChartConfig}
-        className="!aspect-auto h-[180px] sm:h-[220px] w-full min-w-0"
+        className="!aspect-auto h-[180px] w-full min-w-0 sm:h-[220px]"
       >
         <LineChart
           accessibilityLayer
@@ -224,10 +224,10 @@ export function HourlyGrid({
       </ChartContainer>
 
       {/* Current hour + Legend */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1.5">
+      <div className="flex flex-col items-start justify-between gap-1.5 sm:flex-row sm:items-center">
         {currentHour >= 0 && (
           <div className="flex items-center gap-2 text-xs sm:text-sm">
-            <span className="h-2 w-2 rounded-full bg-violet-500 animate-pulse" />
+            <span className="h-2 w-2 animate-pulse rounded-full bg-violet-500" />
             <span className="text-muted-foreground">{t("chart.now")}:</span>
             <span className="font-semibold tabular-nums">{nowLabel}</span>
             <span className="text-muted-foreground">—</span>
@@ -292,10 +292,10 @@ export function SoulRadarChart({
   }));
 
   return (
-    <div className="flex-1 flex flex-col space-y-2">
+    <div className="flex flex-1 flex-col space-y-2">
       <ChartContainer
         config={radarChartConfig}
-        className="!aspect-auto mx-auto h-[200px] sm:h-[240px] w-full min-w-0"
+        className="mx-auto !aspect-auto h-[200px] w-full min-w-0 sm:h-[240px]"
       >
         <RadarChart data={data} outerRadius="75%">
           <PolarGrid strokeDasharray="3 3" />
@@ -332,8 +332,8 @@ export function SoulRadarChart({
       </div>
 
       {/* Soul Summary Card */}
-      <Card className="flex-1 border-violet-200/50 dark:border-violet-800/50 bg-gradient-to-br from-violet-50/50 to-purple-50/50 dark:from-violet-950/20 dark:to-purple-950/20 p-3">
-        <p className="text-xs font-semibold text-violet-700 dark:text-violet-300 mb-2">
+      <Card className="flex-1 border-violet-200/50 bg-gradient-to-br from-violet-50/50 to-purple-50/50 p-3 dark:border-violet-800/50 dark:from-violet-950/20 dark:to-purple-950/20">
+        <p className="mb-2 text-xs font-semibold text-violet-700 dark:text-violet-300">
           {t("chart.soulProfile")}
         </p>
         <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-[11px]">
@@ -349,7 +349,7 @@ export function SoulRadarChart({
                     <span
                       className={cn(
                         "ml-1 text-[10px]",
-                        pVal > bVal ? "text-emerald-600" : "text-rose-500",
+                        pVal > bVal ? "text-emerald-600" : "text-rose-500"
                       )}
                     >
                       {pVal > bVal ? "↑" : "↓"}
@@ -367,7 +367,7 @@ export function SoulRadarChart({
             {peluang?.afirmasi?.name && (
               <>
                 <span className="text-muted-foreground">·</span>
-                <span className="text-muted-foreground truncate">
+                <span className="truncate text-muted-foreground">
                   {peluang.afirmasi.name}
                 </span>
               </>

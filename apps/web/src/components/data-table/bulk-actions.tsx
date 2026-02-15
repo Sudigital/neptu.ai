@@ -1,7 +1,3 @@
-import { useState, useEffect, useRef } from "react";
-import { type Table } from "@tanstack/react-table";
-import { X } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -10,11 +6,21 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { type Table } from "@tanstack/react-table";
+import { X } from "lucide-react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
 
 type DataTableBulkActionsProps<TData> = {
   table: Table<TData>;
   entityName: string;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 /**
@@ -24,14 +30,14 @@ type DataTableBulkActionsProps<TData> = {
  * @param {object} props The component props.
  * @param {Table<TData>} props.table The react-table instance.
  * @param {string} props.entityName The name of the entity being acted upon (e.g., "task", "user").
- * @param {React.ReactNode} props.children The action buttons to be rendered inside the toolbar.
- * @returns {React.ReactNode | null} The rendered component or null if no rows are selected.
+ * @param {ReactNode} props.children The action buttons to be rendered inside the toolbar.
+ * @returns {ReactNode | null} The rendered component or null if no rows are selected.
  */
 export function DataTableBulkActions<TData>({
   table,
   entityName,
   children,
-}: DataTableBulkActionsProps<TData>): React.ReactNode | null {
+}: DataTableBulkActionsProps<TData>): ReactNode | null {
   const selectedRows = table.getFilteredSelectedRowModel().rows;
   const selectedCount = selectedRows.length;
   const toolbarRef = useRef<HTMLDivElement>(null);
@@ -57,12 +63,12 @@ export function DataTableBulkActions<TData>({
     table.resetRowSelection();
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
+  const handleKeyDown = (event: KeyboardEvent) => {
     const buttons = toolbarRef.current?.querySelectorAll("button");
     if (!buttons) return;
 
     const currentIndex = Array.from(buttons).findIndex(
-      (button) => button === document.activeElement,
+      (button) => button === document.activeElement
     );
 
     switch (event.key) {
@@ -145,15 +151,15 @@ export function DataTableBulkActions<TData>({
         className={cn(
           "fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl",
           "transition-all delay-100 duration-300 ease-out hover:scale-105",
-          "focus-visible:ring-ring/50 focus-visible:ring-2 focus-visible:outline-none",
+          "focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
         )}
       >
         <div
           className={cn(
             "p-2 shadow-xl",
             "rounded-xl border",
-            "bg-background/95 supports-[backdrop-filter]:bg-background/60 backdrop-blur-lg",
-            "flex items-center gap-x-2",
+            "bg-background/95 backdrop-blur-lg supports-[backdrop-filter]:bg-background/60",
+            "flex items-center gap-x-2"
           )}
         >
           <Tooltip>

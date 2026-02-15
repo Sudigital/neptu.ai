@@ -1,5 +1,3 @@
-import { useRef, useState } from "react";
-import { cn } from "@/lib/utils";
 import {
   Popover,
   PopoverContent,
@@ -11,9 +9,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { useRef, useState, type ReactNode } from "react";
 
 type LongTextProps = {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
   contentClassName?: string;
 };

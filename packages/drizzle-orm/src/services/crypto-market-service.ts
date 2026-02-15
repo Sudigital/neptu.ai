@@ -1,5 +1,7 @@
 import { eq, desc, sql } from "drizzle-orm";
+
 import type { Database } from "../client";
+
 import {
   cryptoMarket,
   cryptoMarketHistory,
@@ -87,7 +89,7 @@ export class CryptoMarketService {
    * Bulk upsert market data from CoinGecko API response
    */
   async bulkUpsertFromCoinGecko(
-    marketData: CoinGeckoMarketData[],
+    marketData: CoinGeckoMarketData[]
   ): Promise<void> {
     for (const coin of marketData) {
       await this.upsertMarketData({
@@ -186,7 +188,7 @@ export class CryptoMarketService {
    */
   async getHistory(
     coinId: string,
-    limit: number = 24,
+    limit: number = 24
   ): Promise<
     {
       coinId: string;
@@ -215,7 +217,7 @@ export class CryptoMarketService {
     await this.db
       .delete(cryptoMarketHistory)
       .where(
-        sql`${cryptoMarketHistory.recordedAt} < now() - interval '7 days'`,
+        sql`${cryptoMarketHistory.recordedAt} < now() - interval '7 days'`
       );
   }
 

@@ -1,23 +1,25 @@
-import { useMemo } from "react";
+import { Logo } from "@/assets/logo";
+import { useTranslate } from "@/hooks/use-translate";
+import { useUser } from "@/hooks/use-user";
 import {
   LayoutDashboard,
-  Monitor,
-  Bell,
-  Palette,
   Settings,
-  Wrench,
-  UserCog,
   Users,
   Wallet,
   HelpCircle,
   BookOpen,
+  Shield,
+  Key,
+  Activity,
+  BarChart3,
 } from "lucide-react";
-import { Logo } from "@/assets/logo";
-import { useTranslate } from "@/hooks/use-translate";
+import { useMemo } from "react";
+
 import { type SidebarData } from "../types";
 
 export function useSidebarData(): SidebarData {
   const t = useTranslate();
+  const { user } = useUser();
 
   return useMemo(
     () => ({
@@ -59,39 +61,47 @@ export function useSidebarData(): SidebarData {
             },
           ],
         },
+        ...(user?.isAdmin
+          ? [
+              {
+                title: "Admin",
+                items: [
+                  {
+                    title: "Dashboard",
+                    url: "/admin",
+                    icon: Shield,
+                  },
+                  {
+                    title: "Users",
+                    url: "/admin/users",
+                    icon: Users,
+                  },
+                  {
+                    title: "Subscriptions",
+                    url: "/admin/subscriptions",
+                    icon: Key,
+                  },
+                  {
+                    title: "Analytics",
+                    url: "/admin/analytics",
+                    icon: BarChart3,
+                  },
+                  {
+                    title: "Settings",
+                    url: "/admin/settings",
+                    icon: Activity,
+                  },
+                ],
+              },
+            ]
+          : []),
         {
           title: t("sidebar.settings"),
           items: [
             {
               title: t("nav.settings"),
+              url: "/settings",
               icon: Settings,
-              items: [
-                {
-                  title: t("settings.profile"),
-                  url: "/settings",
-                  icon: UserCog,
-                },
-                {
-                  title: t("settings.account"),
-                  url: "/settings/account",
-                  icon: Wrench,
-                },
-                {
-                  title: t("settings.appearance"),
-                  url: "/settings/appearance",
-                  icon: Palette,
-                },
-                {
-                  title: t("settings.notifications"),
-                  url: "/settings/notifications",
-                  icon: Bell,
-                },
-                {
-                  title: t("settings.display"),
-                  url: "/settings/display",
-                  icon: Monitor,
-                },
-              ],
             },
             {
               title: t("nav.learn"),
@@ -109,6 +119,6 @@ export function useSidebarData(): SidebarData {
         },
       ],
     }),
-    [t],
+    [t, user?.isAdmin]
   );
 }

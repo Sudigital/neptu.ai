@@ -1,28 +1,30 @@
+import { createDatabase, DailyReadingService } from "@neptu/drizzle-orm";
+import { createLogger } from "@neptu/logger";
+import { CORS_ALLOWED_ORIGINS } from "@neptu/shared";
+import { NeptuCalculator } from "@neptu/wariga";
 /** Neptu Worker - Main entry point */
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { logger } from "hono/logger";
-import { createDatabase, DailyReadingService } from "@neptu/drizzle-orm";
-import { NeptuCalculator } from "@neptu/wariga";
-import { CORS_ALLOWED_ORIGINS } from "@neptu/shared";
-import { HeartbeatScheduler, fetchAndStoreCryptoMarketData } from "./colosseum";
-import { oracle } from "./routes/oracle";
-import { colosseum } from "./routes/colosseum";
-import { crypto } from "./routes/crypto";
+import { logger as honoLogger } from "hono/logger";
+
 import { redisCache } from "./cache";
 import { startCronJobs } from "./cron";
+import { fetchAndStoreCryptoMarketData } from "./crypto-market-fetcher";
+import { crypto } from "./routes/crypto";
+import { oracle } from "./routes/oracle";
 
+const log = createLogger({ name: "worker" });
 const db = createDatabase();
 const app = new Hono();
 
-app.use("*", logger());
+app.use("*", honoLogger());
 app.use(
   "*",
   cors({
     origin: [...CORS_ALLOWED_ORIGINS],
     allowMethods: ["GET", "POST", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
-  }),
+  })
 );
 
 // Health routes
@@ -71,15 +73,13 @@ app.get("/api/daily/:date", async (c) => {
 
 // Mount route groups
 app.route("/api/oracle", oracle);
-app.route("/api/colosseum", colosseum);
 app.route("/api/crypto", crypto);
 
 // Global error handler
 app.onError((err, c) => {
-  console.error(
-    `[Worker Error] ${c.req.method} ${c.req.path}:`,
-    err.message,
-    err.stack,
+  log.error(
+    { method: c.req.method, path: c.req.path, stack: err.stack },
+    err.message
   );
   return c.json(
     {
@@ -87,7 +87,7 @@ app.onError((err, c) => {
       error: "Internal Server Error",
       message: err.message,
     },
-    500,
+    500
   );
 });
 
@@ -114,62 +114,22 @@ async function generateDailyReadings(): Promise<void> {
   }
 }
 
-async function runColosseumHeartbeat(
-  phase:
-    | "reply_comments"
-    | "comment_others"
-    | "post_thread"
-    | "vote"
-    | "other_activity" = "reply_comments",
-): Promise<void> {
-  if (!process.env.COLOSSEUM_API_KEY) {
-    console.log("Colosseum API key not configured, skipping heartbeat");
-    return;
-  }
-
-  const heartbeat = new HeartbeatScheduler({
-    COLOSSEUM_API_KEY: process.env.COLOSSEUM_API_KEY,
-    COLOSSEUM_AGENT_ID: process.env.COLOSSEUM_AGENT_ID!,
-    COLOSSEUM_AGENT_NAME: process.env.COLOSSEUM_AGENT_NAME!,
-    CACHE: redisCache,
-  });
-
-  try {
-    const result = await heartbeat.runHeartbeat(phase);
-    console.log(
-      `Heartbeat [${phase}] completed:`,
-      JSON.stringify(result, null, 2),
-    );
-  } catch (error) {
-    console.error(`Heartbeat [${phase}] failed:`, error);
-  }
-}
-
 async function refreshCryptoMarketData(): Promise<void> {
-  console.log("Refreshing crypto market data from CoinGecko...");
+  log.info("Refreshing crypto market data from CoinGecko...");
   try {
     const result = await fetchAndStoreCryptoMarketData(db);
-    console.log("Crypto market data refresh:", result);
+    log.info({ result }, "Crypto market data refreshed");
   } catch (error) {
-    console.error("Failed to refresh crypto market data:", error);
+    log.error({ error }, "Failed to refresh crypto market data");
   }
 }
 
 // Start BullMQ cron jobs
 await startCronJobs({
-  runHeartbeat: (phase) =>
-    runColosseumHeartbeat(
-      phase as
-        | "reply_comments"
-        | "comment_others"
-        | "post_thread"
-        | "vote"
-        | "other_activity",
-    ),
   generateDailyReadings: () => generateDailyReadings(),
   refreshCryptoMarketData: () => refreshCryptoMarketData(),
 });
 
-const port = Number(process.env.PORT || 8080);
-console.log(`Neptu Worker running on port ${port}`);
+const port = Number(process.env.WORKER_PORT || process.env.PORT || 8787);
+log.info({ port }, "🚀 Neptu Worker started");
 Bun.serve({ fetch: app.fetch, port });

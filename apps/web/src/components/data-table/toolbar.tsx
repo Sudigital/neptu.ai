@@ -1,7 +1,10 @@
-import { Cross2Icon } from "@radix-ui/react-icons";
-import { type Table } from "@tanstack/react-table";
+import type { ComponentType } from "react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Cross2Icon } from "@radix-ui/react-icons";
+import { type Table } from "@tanstack/react-table";
+
 import { DataTableFacetedFilter } from "./faceted-filter";
 import { DataTableViewOptions } from "./view-options";
 
@@ -15,7 +18,7 @@ type DataTableToolbarProps<TData> = {
     options: {
       label: string;
       value: string;
-      icon?: React.ComponentType<{ className?: string }>;
+      icon?: ComponentType<{ className?: string }>;
     }[];
   }[];
 };

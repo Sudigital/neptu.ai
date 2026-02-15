@@ -1,13 +1,14 @@
-import { Moon, Sun } from "lucide-react";
-import { CartesianGrid, XAxis, YAxis, Bar, BarChart } from "recharts";
 import { Card } from "@/components/ui/card";
-import { useTranslate } from "@/hooks/use-translate";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
+import { useTranslate } from "@/hooks/use-translate";
+import { Moon, Sun } from "lucide-react";
+import { CartesianGrid, XAxis, YAxis, Bar, BarChart } from "recharts";
+
 import type { ReadingLike } from "./dashboard-charts";
 
 const barChartConfig = {
@@ -60,10 +61,10 @@ export function ComparisonBarChart({
   ];
 
   return (
-    <div className="flex-1 flex flex-col space-y-2">
+    <div className="flex flex-1 flex-col space-y-2">
       <ChartContainer
         config={barChartConfig}
-        className="!aspect-auto h-[200px] sm:h-[240px] w-full min-w-0"
+        className="!aspect-auto h-[200px] w-full min-w-0 sm:h-[240px]"
       >
         <BarChart
           accessibilityLayer
@@ -112,9 +113,9 @@ export function ComparisonBarChart({
       </div>
 
       {/* Comparison Summary Cards */}
-      <div className="grid grid-cols-2 gap-2 flex-1">
-        <Card className="flex flex-col border-sky-200/50 dark:border-sky-800/50 bg-gradient-to-br from-sky-50/50 to-blue-50/50 dark:from-sky-950/20 dark:to-blue-950/20 p-3">
-          <p className="text-[11px] font-semibold text-sky-700 dark:text-sky-300 flex items-center gap-1 mb-1.5">
+      <div className="grid flex-1 grid-cols-2 gap-2">
+        <Card className="flex flex-col border-sky-200/50 bg-gradient-to-br from-sky-50/50 to-blue-50/50 p-3 dark:border-sky-800/50 dark:from-sky-950/20 dark:to-blue-950/20">
+          <p className="mb-1.5 flex items-center gap-1 text-[11px] font-semibold text-sky-700 dark:text-sky-300">
             <Moon className="h-3 w-3" /> {t("chart.peluang")}
           </p>
           <div className="space-y-1 text-[11px]">
@@ -140,8 +141,8 @@ export function ComparisonBarChart({
             </div>
           </div>
         </Card>
-        <Card className="flex flex-col border-amber-200/50 dark:border-amber-800/50 bg-gradient-to-br from-amber-50/50 to-orange-50/50 dark:from-amber-950/20 dark:to-orange-950/20 p-3">
-          <p className="text-[11px] font-semibold text-amber-700 dark:text-amber-300 flex items-center gap-1 mb-1.5">
+        <Card className="flex flex-col border-amber-200/50 bg-gradient-to-br from-amber-50/50 to-orange-50/50 p-3 dark:border-amber-800/50 dark:from-amber-950/20 dark:to-orange-950/20">
+          <p className="mb-1.5 flex items-center gap-1 text-[11px] font-semibold text-amber-700 dark:text-amber-300">
             <Sun className="h-3 w-3" /> {t("chart.potensi")}
           </p>
           <div className="space-y-1 text-[11px]">

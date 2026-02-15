@@ -1,6 +1,7 @@
+import { NeptuCalculator } from "@neptu/wariga";
 /** Oracle API routes */
 import { Hono } from "hono";
-import { NeptuCalculator } from "@neptu/wariga";
+
 import { NeptuOracle } from "../ai/oracle";
 import { postProcessResponse } from "../ai/prompts";
 import { redisCache } from "../cache";
@@ -51,7 +52,7 @@ oracle.post("/", async (c) => {
       potensi,
       peluang,
       redisCache,
-      language,
+      language
     );
 
     return c.json({
@@ -66,7 +67,7 @@ oracle.post("/", async (c) => {
         error: "Failed to get oracle response",
         message: error instanceof Error ? error.message : "Unknown error",
       },
-      500,
+      500
     );
   }
 });
@@ -107,7 +108,7 @@ oracle.get("/daily/:birthDate", async (c) => {
       potensi,
       peluang,
       redisCache,
-      language,
+      language
     );
 
     return c.json({
@@ -123,7 +124,7 @@ oracle.get("/daily/:birthDate", async (c) => {
         error: "Failed to get daily interpretation",
         message: error instanceof Error ? error.message : "Unknown error",
       },
-      500,
+      500
     );
   }
 });
@@ -181,7 +182,7 @@ oracle.post("/interpret", async (c) => {
       peluang,
       targetDate,
       redisCache,
-      language,
+      language
     );
 
     // Cache for 6 hours (non-critical — don't fail if KV limit reached)
@@ -205,7 +206,7 @@ oracle.post("/interpret", async (c) => {
         error: "Failed to get interpretation",
         message: error instanceof Error ? error.message : "Unknown error",
       },
-      500,
+      500
     );
   }
 });
@@ -257,7 +258,7 @@ oracle.post("/compatibility", async (c) => {
     const response = await oracleAI.getCompatibilityInterpretation(
       result,
       redisCache,
-      language,
+      language
     );
 
     return c.json({
@@ -272,7 +273,7 @@ oracle.post("/compatibility", async (c) => {
         error: "Failed to get compatibility interpretation",
         message: error instanceof Error ? error.message : "Unknown error",
       },
-      500,
+      500
     );
   }
 });

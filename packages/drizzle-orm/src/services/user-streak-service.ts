@@ -1,12 +1,14 @@
 import { GAMIFICATION_REWARDS, STREAK_MILESTONES } from "@neptu/shared";
+
 import type { Database } from "../client";
-import { UserStreakRepository } from "../repositories/user-streak-repository";
-import { UserRewardService } from "./user-reward-service";
+
 import { toUserStreakDTO, type UserStreakDTO } from "../dto/user-streak-dto";
+import { UserStreakRepository } from "../repositories/user-streak-repository";
 import {
   checkInSchema,
   type CheckInInput,
 } from "../validators/user-streak-validator";
+import { UserRewardService } from "./user-reward-service";
 
 const STREAK_MILESTONE_VALUES = [
   STREAK_MILESTONES.WEEK,
@@ -74,7 +76,7 @@ export class UserStreakService {
 
     const newLongestStreak = Math.max(
       existingStreak.longestStreak,
-      newCurrentStreak,
+      newCurrentStreak
     );
     const newTotalCheckIns = existingStreak.totalCheckIns + 1;
     const nowIso = new Date().toISOString();
@@ -85,7 +87,7 @@ export class UserStreakService {
       newCurrentStreak,
       newLongestStreak,
       nowIso,
-      newTotalCheckIns,
+      newTotalCheckIns
     );
 
     if (!updatedStreak) {
@@ -101,12 +103,12 @@ export class UserStreakService {
 
     if (
       STREAK_MILESTONE_VALUES.includes(
-        newCurrentStreak as (typeof STREAK_MILESTONE_VALUES)[number],
+        newCurrentStreak as (typeof STREAK_MILESTONE_VALUES)[number]
       )
     ) {
       const bonusReward = await this.rewardService.grantStreakBonus(
         validated.userId,
-        newCurrentStreak,
+        newCurrentStreak
       );
       if (bonusReward) {
         streakBonusGranted = true;

@@ -1,20 +1,21 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
-import { NeptuToken } from "../target/types/neptu_token";
-import { NeptuEconomy } from "../target/types/neptu_economy";
-import {
-  Keypair,
-  PublicKey,
-  SystemProgram,
-  LAMPORTS_PER_SOL,
-} from "@solana/web3.js";
 import {
   TOKEN_PROGRAM_ID,
   ASSOCIATED_TOKEN_PROGRAM_ID,
   getAssociatedTokenAddress,
   getAccount,
 } from "@solana/spl-token";
+import {
+  Keypair,
+  PublicKey,
+  SystemProgram,
+  LAMPORTS_PER_SOL,
+} from "@solana/web3.js";
 import { assert } from "chai";
+
+import { NeptuEconomy } from "../target/types/neptu_economy";
+import { NeptuToken } from "../target/types/neptu_token";
 
 describe("NEPTU Token & Economy", () => {
   const provider = anchor.AnchorProvider.env();
@@ -25,10 +26,10 @@ describe("NEPTU Token & Economy", () => {
 
   // PDAs
   let mintPda: PublicKey;
-  let mintBump: number;
+  let _mintBump: number;
   let metadataPda: PublicKey;
   let economyAuthorityPda: PublicKey;
-  let economyAuthorityBump: number;
+  let _economyAuthorityBump: number;
   let economyStatePda: PublicKey;
   let pricingConfigPda: PublicKey;
 
@@ -49,14 +50,14 @@ describe("NEPTU Token & Economy", () => {
 
   // Metaplex Token Metadata Program
   const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
-    "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s",
+    "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
   );
 
   before(async () => {
     // Derive PDAs
-    [mintPda, mintBump] = PublicKey.findProgramAddressSync(
+    [mintPda, _mintBump] = PublicKey.findProgramAddressSync(
       [Buffer.from("mint")],
-      tokenProgram.programId,
+      tokenProgram.programId
     );
 
     [metadataPda] = PublicKey.findProgramAddressSync(
@@ -65,41 +66,41 @@ describe("NEPTU Token & Economy", () => {
         TOKEN_METADATA_PROGRAM_ID.toBuffer(),
         mintPda.toBuffer(),
       ],
-      TOKEN_METADATA_PROGRAM_ID,
+      TOKEN_METADATA_PROGRAM_ID
     );
 
-    [economyAuthorityPda, economyAuthorityBump] =
+    [economyAuthorityPda, _economyAuthorityBump] =
       PublicKey.findProgramAddressSync(
         [Buffer.from("economy")],
-        economyProgram.programId,
+        economyProgram.programId
       );
 
     [economyStatePda] = PublicKey.findProgramAddressSync(
       [Buffer.from("economy_state")],
-      economyProgram.programId,
+      economyProgram.programId
     );
 
     [pricingConfigPda] = PublicKey.findProgramAddressSync(
       [Buffer.from("pricing_config")],
-      economyProgram.programId,
+      economyProgram.programId
     );
 
     // Derive associated token accounts
     ecosystemPool = await getAssociatedTokenAddress(
       mintPda,
-      ecosystemAuthority.publicKey,
+      ecosystemAuthority.publicKey
     );
     treasury = await getAssociatedTokenAddress(
       mintPda,
-      treasuryAuthority.publicKey,
+      treasuryAuthority.publicKey
     );
     teamPool = await getAssociatedTokenAddress(
       mintPda,
-      teamAuthority.publicKey,
+      teamAuthority.publicKey
     );
     reservePool = await getAssociatedTokenAddress(
       mintPda,
-      reserveAuthority.publicKey,
+      reserveAuthority.publicKey
     );
 
     // Airdrop SOL to test accounts
@@ -108,11 +109,11 @@ describe("NEPTU Token & Economy", () => {
     await provider.connection.requestAirdrop(testUser.publicKey, airdropAmount);
     await provider.connection.requestAirdrop(
       ecosystemAuthority.publicKey,
-      airdropAmount,
+      airdropAmount
     );
     await provider.connection.requestAirdrop(
       treasuryAuthority.publicKey,
-      airdropAmount,
+      airdropAmount
     );
 
     // Wait for airdrops to confirm
@@ -172,7 +173,7 @@ describe("NEPTU Token & Economy", () => {
       // Verify balances
       const ecosystemAccount = await getAccount(
         provider.connection,
-        ecosystemPool,
+        ecosystemPool
       );
       const treasuryAccount = await getAccount(provider.connection, treasury);
       const teamAccount = await getAccount(provider.connection, teamPool);
@@ -192,22 +193,22 @@ describe("NEPTU Token & Economy", () => {
       assert.equal(
         ecosystemAccount.amount.toString(),
         expectedEcosystem.toString(),
-        "Ecosystem should have 55%",
+        "Ecosystem should have 55%"
       );
       assert.equal(
         treasuryAccount.amount.toString(),
         expectedTreasury.toString(),
-        "Treasury should have 25%",
+        "Treasury should have 25%"
       );
       assert.equal(
         teamAccount.amount.toString(),
         expectedTeam.toString(),
-        "Team should have 15%",
+        "Team should have 15%"
       );
       assert.equal(
         reserveAccount.amount.toString(),
         expectedReserve.toString(),
-        "Reserve should have 5%",
+        "Reserve should have 5%"
       );
     });
 
@@ -244,7 +245,7 @@ describe("NEPTU Token & Economy", () => {
         await economyProgram.account.pricingConfig.fetch(pricingConfigPda);
       assert.equal(
         config.authority.toBase58(),
-        provider.wallet.publicKey.toBase58(),
+        provider.wallet.publicKey.toBase58()
       );
       assert.equal(config.potensiSolPrice.toNumber(), 10_000_000); // 0.01 SOL
       assert.equal(config.potensiNeptuPrice.toNumber(), 10_000_000); // 10 NEPTU
@@ -270,7 +271,7 @@ describe("NEPTU Token & Economy", () => {
         await economyProgram.account.economyState.fetch(economyStatePda);
       assert.equal(
         state.authority.toBase58(),
-        provider.wallet.publicKey.toBase58(),
+        provider.wallet.publicKey.toBase58()
       );
       assert.equal(state.neptuMint.toBase58(), mintPda.toBase58());
     });
@@ -278,11 +279,11 @@ describe("NEPTU Token & Economy", () => {
     it("Pay with SOL - receive NEPTU reward", async () => {
       const userNeptuAccount = await getAssociatedTokenAddress(
         mintPda,
-        testUser.publicKey,
+        testUser.publicKey
       );
 
       const treasurySolBefore = await provider.connection.getBalance(
-        treasuryAuthority.publicKey,
+        treasuryAuthority.publicKey
       );
 
       const tx = await economyProgram.methods
@@ -305,30 +306,30 @@ describe("NEPTU Token & Economy", () => {
 
       // Verify SOL transferred to treasury
       const treasurySolAfter = await provider.connection.getBalance(
-        treasuryAuthority.publicKey,
+        treasuryAuthority.publicKey
       );
       assert.equal(
         treasurySolAfter - treasurySolBefore,
         10_000_000, // 0.01 SOL
-        "Treasury should receive 0.01 SOL",
+        "Treasury should receive 0.01 SOL"
       );
 
       // Verify NEPTU received
       const userAccount = await getAccount(
         provider.connection,
-        userNeptuAccount,
+        userNeptuAccount
       );
       assert.equal(
         userAccount.amount.toString(),
         "10000000", // 10 NEPTU
-        "User should receive 10 NEPTU",
+        "User should receive 10 NEPTU"
       );
     });
 
     it("Pay with NEPTU - 50% burn, 50% recycle", async () => {
       const userNeptuAccount = await getAssociatedTokenAddress(
         mintPda,
-        testUser.publicKey,
+        testUser.publicKey
       );
 
       const userBalanceBefore = (
@@ -370,7 +371,7 @@ describe("NEPTU Token & Economy", () => {
       assert.equal(
         ecosystemReceived.toString(),
         "500000",
-        "Ecosystem should receive 0.5 NEPTU (50% recycled)",
+        "Ecosystem should receive 0.5 NEPTU (50% recycled)"
       );
 
       // 50% was burned (verified by total supply reduction - can check mint supply)
@@ -387,7 +388,7 @@ describe("NEPTU Token & Economy", () => {
           new anchor.BN(15_000_000), // potensi_neptu: 15 NEPTU
           null, // peluang_neptu: unchanged
           null, // ai_chat_neptu: unchanged
-          null, // compatibility_neptu: unchanged
+          null // compatibility_neptu: unchanged
         )
         .accounts({
           authority: provider.wallet.publicKey,
@@ -408,11 +409,11 @@ describe("NEPTU Token & Economy", () => {
     it("Claim rewards", async () => {
       const userNeptuAccount = await getAssociatedTokenAddress(
         mintPda,
-        testUser.publicKey,
+        testUser.publicKey
       );
       const [claimRecordPda] = PublicKey.findProgramAddressSync(
         [Buffer.from("claim"), testUser.publicKey.toBuffer()],
-        economyProgram.programId,
+        economyProgram.programId
       );
 
       const balanceBefore = (
@@ -422,7 +423,7 @@ describe("NEPTU Token & Economy", () => {
       // Claim 5 NEPTU with nonce 1
       const claimAmount = new anchor.BN(5_000_000); // 5 NEPTU
       const nonce = new anchor.BN(1);
-      const signature = new Array(64).fill(0); // Dummy signature for hackathon
+      const signature = Array.from({ length: 64 }, () => 0); // Dummy signature for hackathon
 
       const tx = await economyProgram.methods
         .claimRewards(claimAmount, nonce, signature)
@@ -457,16 +458,16 @@ describe("NEPTU Token & Economy", () => {
     it("Reject replay attack (same nonce)", async () => {
       const userNeptuAccount = await getAssociatedTokenAddress(
         mintPda,
-        testUser.publicKey,
+        testUser.publicKey
       );
       const [claimRecordPda] = PublicKey.findProgramAddressSync(
         [Buffer.from("claim"), testUser.publicKey.toBuffer()],
-        economyProgram.programId,
+        economyProgram.programId
       );
 
       const claimAmount = new anchor.BN(5_000_000);
       const nonce = new anchor.BN(1); // Same nonce as before
-      const signature = new Array(64).fill(0);
+      const signature = Array.from({ length: 64 }, () => 0);
 
       try {
         await economyProgram.methods
@@ -501,7 +502,7 @@ describe("NEPTU Token & Economy", () => {
             null,
             null,
             null,
-            null,
+            null
           )
           .accounts({
             authority: testUser.publicKey, // Not the admin

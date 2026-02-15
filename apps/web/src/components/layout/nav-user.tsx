@@ -1,14 +1,3 @@
-import { Link } from "@tanstack/react-router";
-import { usePrivy } from "@privy-io/react-auth";
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  Copy,
-  LogOut,
-  Wallet,
-} from "lucide-react";
-import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -25,8 +14,19 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useUser } from "@/hooks/use-user";
 import { useTranslate } from "@/hooks/use-translate";
+import { useUser } from "@/hooks/use-user";
+import { usePrivy } from "@privy-io/react-auth";
+import { Link } from "@tanstack/react-router";
+import {
+  BadgeCheck,
+  Bell,
+  ChevronsUpDown,
+  Copy,
+  LogOut,
+  Wallet,
+} from "lucide-react";
+import { toast } from "sonner";
 
 export function NavUser() {
   const { isMobile } = useSidebar();

@@ -1,3 +1,5 @@
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -5,12 +7,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Flame, Loader2, Calendar, Gift, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GAMIFICATION_REWARDS, STREAK_MILESTONES } from "@neptu/shared";
+import { Flame, Loader2, Calendar, Gift, CheckCircle } from "lucide-react";
 
 interface StreakData {
   currentStreak: number;
@@ -139,11 +139,12 @@ export function StreakCounter({
             </div>
             <Progress value={progress} className="h-2" />
             {nextReward && (
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
+              <p className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Gift className="h-3 w-3" />
                 Earn <span className="font-medium">
                   {nextReward} NEPTU
-                </span> at {nextMilestone} days!
+                </span> at{" "}
+                {nextMilestone} days!
               </p>
             )}
           </div>
@@ -151,14 +152,14 @@ export function StreakCounter({
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50">
+          <div className="flex items-center gap-2 rounded-lg bg-muted/50 p-2">
             <Calendar className="h-4 w-4 text-muted-foreground" />
             <div>
               <p className="text-sm font-medium">{totalCheckIns}</p>
               <p className="text-xs text-muted-foreground">Total check-ins</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50">
+          <div className="flex items-center gap-2 rounded-lg bg-muted/50 p-2">
             <Flame className="h-4 w-4 text-orange-500" />
             <div>
               <p className="text-sm font-medium">{longestStreak}</p>
@@ -169,13 +170,13 @@ export function StreakCounter({
 
         {/* Last check-in date */}
         {lastCheckInFormatted && (
-          <p className="text-xs text-muted-foreground text-center">
+          <p className="text-center text-xs text-muted-foreground">
             Last check-in: {lastCheckInFormatted}
           </p>
         )}
 
         {/* Daily reward info */}
-        <div className="flex items-center justify-between p-2 rounded-lg bg-green-500/10 border border-green-500/20">
+        <div className="flex items-center justify-between rounded-lg border border-green-500/20 bg-green-500/10 p-2">
           <div className="flex items-center gap-2">
             <CheckCircle className="h-4 w-4 text-green-500" />
             <span className="text-sm">Daily check-in reward</span>

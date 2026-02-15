@@ -1,7 +1,3 @@
-import { useState } from "react";
-import { Bot, ExternalLink, MessageSquare, AtSign, Trophy } from "lucide-react";
-import { useTranslate } from "@/hooks/use-translate";
-import { useAgentStats } from "@/hooks/use-agent-stats";
 import {
   Dialog,
   DialogContent,
@@ -10,6 +6,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useAgentStats } from "@/hooks/use-agent-stats";
+import { useTranslate } from "@/hooks/use-translate";
+import { Bot, ExternalLink, MessageSquare, AtSign, Trophy } from "lucide-react";
+import { useState } from "react";
 
 export function AgentDialog() {
   const t = useTranslate();
@@ -22,11 +22,11 @@ export function AgentDialog() {
   return (
     <Dialog open={agentDialogOpen} onOpenChange={setAgentDialogOpen}>
       <DialogTrigger asChild>
-        <button className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5">
+        <button className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
           <Bot className="h-4 w-4" />
           <span className="hidden sm:inline">{t("nav.agent")}</span>
           {agentStats && (
-            <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-semibold">
+            <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-xs font-semibold text-primary">
               {voteCount} {voteText}
             </span>
           )}
@@ -43,12 +43,12 @@ export function AgentDialog() {
 
         {agentLoading ? (
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full" />
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
           </div>
         ) : agentStats ? (
           <div className="space-y-4">
             {/* Agent Rank */}
-            <div className="flex items-center justify-between p-3 rounded-lg bg-primary/5 border border-primary/20">
+            <div className="flex items-center justify-between rounded-lg border border-primary/20 bg-primary/5 p-3">
               <div className="flex items-center gap-2">
                 <Trophy className="h-5 w-5 text-yellow-500" />
                 <span className="font-medium">{t("agent.dialog.rank")}</span>
@@ -60,7 +60,7 @@ export function AgentDialog() {
 
             {/* Project Votes */}
             <div className="grid grid-cols-3 gap-3">
-              <div className="text-center p-3 rounded-lg bg-muted/50">
+              <div className="rounded-lg bg-muted/50 p-3 text-center">
                 <p className="text-2xl font-bold text-primary">
                   {agentStats.project.totalVotes}
                 </p>
@@ -68,7 +68,7 @@ export function AgentDialog() {
                   {t("agent.dialog.totalVotes")}
                 </p>
               </div>
-              <div className="text-center p-3 rounded-lg bg-muted/50">
+              <div className="rounded-lg bg-muted/50 p-3 text-center">
                 <p className="text-2xl font-bold text-green-600">
                   {agentStats.project.humanVotes}
                 </p>
@@ -76,7 +76,7 @@ export function AgentDialog() {
                   {t("agent.dialog.human")}
                 </p>
               </div>
-              <div className="text-center p-3 rounded-lg bg-muted/50">
+              <div className="rounded-lg bg-muted/50 p-3 text-center">
                 <p className="text-2xl font-bold text-blue-600">
                   {agentStats.project.agentVotes}
                 </p>
@@ -88,7 +88,7 @@ export function AgentDialog() {
 
             {/* Agent Activity */}
             <div className="grid grid-cols-3 gap-3">
-              <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/30">
+              <div className="flex items-center gap-2 rounded-lg bg-muted/30 p-2">
                 <MessageSquare className="h-4 w-4 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium">
@@ -99,7 +99,7 @@ export function AgentDialog() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/30">
+              <div className="flex items-center gap-2 rounded-lg bg-muted/30 p-2">
                 <MessageSquare className="h-4 w-4 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium">
@@ -110,7 +110,7 @@ export function AgentDialog() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/30">
+              <div className="flex items-center gap-2 rounded-lg bg-muted/30 p-2">
                 <AtSign className="h-4 w-4 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium">
@@ -129,7 +129,7 @@ export function AgentDialog() {
                 href={`https://x.com/${agentStats.agent.xUsername}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 p-2 rounded-lg border hover:bg-muted/50 transition-colors text-sm"
+                className="flex items-center justify-center gap-2 rounded-lg border p-2 text-sm transition-colors hover:bg-muted/50"
               >
                 <svg
                   className="h-4 w-4"
@@ -147,19 +147,19 @@ export function AgentDialog() {
               href={agentStats.projectUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full p-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-medium"
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary p-3 font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               {t("agent.stats.viewProject")}
               <ExternalLink className="h-4 w-4" />
             </a>
 
-            <p className="text-xs text-center text-muted-foreground">
+            <p className="text-center text-xs text-muted-foreground">
               {t("agent.dialog.lastUpdated")}:{" "}
               {new Date(agentStats.updatedAt).toLocaleString()}
             </p>
           </div>
         ) : (
-          <div className="text-center py-8 text-muted-foreground">
+          <div className="py-8 text-center text-muted-foreground">
             <p>{t("agent.dialog.loadError")}</p>
           </div>
         )}

@@ -1,23 +1,23 @@
-import React, { Suspense, useEffect, useRef, useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { usePrivy } from "@privy-io/react-auth";
+import { Logo } from "@/assets/logo";
+import { Navbar } from "@/components/navbar";
 import { Button } from "@/components/ui/button";
+import { useAgentStats } from "@/hooks/use-agent-stats";
+import { useTranslate } from "@/hooks/use-translate";
+import { useUser } from "@/hooks/use-user";
+import { useSettingsStore } from "@/stores/settings-store";
+import { usePrivy } from "@privy-io/react-auth";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Wallet, ArrowRight } from "lucide-react";
-import { useUser } from "@/hooks/use-user";
-import { useTranslate } from "@/hooks/use-translate";
-import { useSettingsStore } from "@/stores/settings-store";
-import { Logo } from "@/assets/logo";
-import { useAgentStats } from "@/hooks/use-agent-stats";
-import { Navbar } from "@/components/navbar";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 
 const LandingSections = React.lazy(
-  () => import("@/features/landing/landing-sections"),
+  () => import("@/features/landing/landing-sections")
 );
 const LazyAgentStatsDialog = React.lazy(() =>
   import("@/features/landing/landing-components").then((m) => ({
     default: m.AgentStatsDialog,
-  })),
+  }))
 );
 
 export const Route = createFileRoute("/")({
@@ -58,7 +58,7 @@ function LandingPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
-          <Logo className="mx-auto h-16 w-16 text-primary animate-spin" />
+          <Logo className="mx-auto h-16 w-16 animate-spin text-primary" />
         </div>
       </div>
     );
@@ -136,10 +136,10 @@ function LandingPage() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="mx-auto mb-4 sm:mb-8 flex max-w-fit items-center justify-center rounded-full border bg-background/50 px-3 sm:px-4 py-1 sm:py-1.5 backdrop-blur"
+              className="mx-auto mb-4 flex max-w-fit items-center justify-center rounded-full border bg-background/50 px-3 py-1 backdrop-blur sm:mb-8 sm:px-4 sm:py-1.5"
             >
-              <span className="flex h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-primary animate-pulse mr-1.5 sm:mr-2" />
-              <span className="text-xs sm:text-sm font-medium text-muted-foreground">
+              <span className="mr-1.5 flex h-1.5 w-1.5 animate-pulse rounded-full bg-primary sm:mr-2 sm:h-2 sm:w-2" />
+              <span className="text-xs font-medium text-muted-foreground sm:text-sm">
                 {t("landing.hackathonBadge", "Colosseum Agent Hackathon 2026")}
               </span>
             </motion.div>
@@ -148,7 +148,7 @@ function LandingPage() {
               variants={fadeInUp}
               initial="hidden"
               animate="visible"
-              className="mx-auto max-w-4xl text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight"
+              className="mx-auto max-w-4xl text-3xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
             >
               <span>{t("landing.heroTitle1")}</span> <br />
               <span className="bg-gradient-to-r from-[#9955FF] to-[#7C3AED] bg-clip-text text-transparent">
@@ -160,7 +160,7 @@ function LandingPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4, duration: 0.8 }}
-              className="mx-auto mt-3 sm:mt-6 max-w-2xl px-2 sm:px-4 text-sm sm:text-lg md:text-xl text-muted-foreground leading-relaxed"
+              className="mx-auto mt-3 max-w-2xl px-2 text-sm leading-relaxed text-muted-foreground sm:mt-6 sm:px-4 sm:text-lg md:text-xl"
             >
               {t("landing.heroDesc")}
             </motion.p>
@@ -169,12 +169,12 @@ function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="mt-6 sm:mt-10 flex flex-col items-center justify-center gap-2.5 sm:gap-4 px-4 sm:flex-row"
+              className="mt-6 flex flex-col items-center justify-center gap-2.5 px-4 sm:mt-10 sm:flex-row sm:gap-4"
             >
               <Button
                 size="lg"
                 onClick={login}
-                className="w-full sm:w-auto sm:min-w-[200px] h-11 sm:h-14 text-sm sm:text-lg px-4 sm:px-8 transition-transform hover:scale-105 active:scale-95"
+                className="h-11 w-full px-4 text-sm transition-transform hover:scale-105 active:scale-95 sm:h-14 sm:w-auto sm:min-w-[200px] sm:px-8 sm:text-lg"
               >
                 <Wallet className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                 {t("landing.startJourney")}
@@ -183,7 +183,7 @@ function LandingPage() {
                 size="lg"
                 variant="outline"
                 asChild
-                className="w-full sm:w-auto sm:min-w-[200px] h-11 sm:h-14 text-sm sm:text-lg px-4 sm:px-8 transition-transform hover:scale-105 active:scale-95"
+                className="h-11 w-full px-4 text-sm transition-transform hover:scale-105 active:scale-95 sm:h-14 sm:w-auto sm:min-w-[200px] sm:px-8 sm:text-lg"
               >
                 <a href="#features">
                   {t("landing.howItWorks")}{" "}
@@ -200,15 +200,15 @@ function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t py-6 sm:py-12 bg-background">
-        <div className="container mx-auto px-4 flex flex-col items-center justify-between gap-3 sm:gap-6 md:flex-row">
+      <footer className="border-t bg-background py-6 sm:py-12">
+        <div className="container mx-auto flex flex-col items-center justify-between gap-3 px-4 sm:gap-6 md:flex-row">
           <div className="flex items-center gap-2">
-            <Logo className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
-            <span className="text-xs sm:text-sm font-semibold text-muted-foreground">
+            <Logo className="h-5 w-5 text-muted-foreground sm:h-6 sm:w-6" />
+            <span className="text-xs font-semibold text-muted-foreground sm:text-sm">
               Neptu &copy; 2026
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-muted-foreground text-center">
+          <p className="text-center text-xs text-muted-foreground sm:text-sm">
             {t("landing.footer")}
           </p>
         </div>

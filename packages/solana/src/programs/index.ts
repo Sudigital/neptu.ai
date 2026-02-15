@@ -1,6 +1,8 @@
 // NEPTU Program SDK using @solana/kit
 // Pure @solana/kit implementation - no legacy @solana/web3.js
 
+import type { NetworkType, ReadingType } from "@neptu/shared";
+
 import {
   address,
   type Address,
@@ -16,8 +18,8 @@ import {
   type ReadonlyUint8Array,
   AccountRole as AccountRoleEnum,
 } from "@solana/kit";
+
 import type { SolanaRpc } from "../client";
-import type { NetworkType, ReadingType } from "@neptu/shared";
 
 // ============================================================================
 // PROGRAM IDS (update after deploy to devnet/mainnet)
@@ -44,16 +46,16 @@ export const PROGRAM_IDS = {
 
 export const SYSTEM_PROGRAM = address("11111111111111111111111111111111");
 export const TOKEN_PROGRAM = address(
-  "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+  "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
 );
 export const ASSOCIATED_TOKEN_PROGRAM = address(
-  "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL",
+  "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
 );
 export const TOKEN_METADATA_PROGRAM = address(
-  "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s",
+  "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
 );
 export const RENT_SYSVAR = address(
-  "SysvarRent111111111111111111111111111111111",
+  "SysvarRent111111111111111111111111111111111"
 );
 
 // ============================================================================
@@ -127,11 +129,11 @@ export interface EconomyState {
 
 async function derivePda(
   seeds: (string | Uint8Array)[],
-  programId: Address,
+  programId: Address
 ): Promise<Address> {
   const encoder = getUtf8Encoder();
   const seedBuffers = seeds.map((s) =>
-    typeof s === "string" ? encoder.encode(s) : s,
+    typeof s === "string" ? encoder.encode(s) : s
   );
 
   const [pda] = await getProgramDerivedAddress({
@@ -160,7 +162,7 @@ async function deriveMetadataPda(mint: Address): Promise<Address> {
 
 export async function deriveAssociatedTokenAddress(
   owner: Address,
-  mint: Address,
+  mint: Address
 ): Promise<Address> {
   const addressEncoder = getAddressEncoder();
 
@@ -178,7 +180,7 @@ export async function deriveAssociatedTokenAddress(
 
 export async function deriveClaimRecordPda(
   user: Address,
-  programId: Address,
+  programId: Address
 ): Promise<Address> {
   const encoder = getUtf8Encoder();
   const addressEncoder = getAddressEncoder();
@@ -196,7 +198,7 @@ export async function deriveClaimRecordPda(
 // ============================================================================
 
 export async function createNeptuPrograms(
-  network: NetworkType = "devnet",
+  network: NetworkType = "devnet"
 ): Promise<NeptuPrograms> {
   const programIds = PROGRAM_IDS[network];
 
@@ -205,17 +207,17 @@ export async function createNeptuPrograms(
   const economyAuthorityPda = await derivePda(["economy"], programIds.economy);
   const economyStatePda = await derivePda(
     ["economy_state"],
-    programIds.economy,
+    programIds.economy
   );
   const pricingConfigPda = await derivePda(
     ["pricing_config"],
-    programIds.economy,
+    programIds.economy
   );
 
   // Rewards pool is the ATA of the economy authority PDA for the NEPTU mint
   const rewardsPoolAta = await deriveAssociatedTokenAddress(
     economyAuthorityPda,
-    mintPda,
+    mintPda
   );
 
   return {
@@ -242,7 +244,7 @@ interface AccountMeta {
 
 function createAccountMeta(
   pubkey: Address,
-  options: { isSigner?: boolean; isWritable?: boolean } = {},
+  options: { isSigner?: boolean; isWritable?: boolean } = {}
 ): AccountMeta {
   const { isSigner = false, isWritable = false } = options;
   // Determine role based on signer and writable flags
@@ -268,7 +270,7 @@ export function buildPayWithSolInstruction(
   user: Address,
   treasury: Address,
   userNeptuAccount: Address,
-  readingType: ReadingType,
+  readingType: ReadingType
 ): Instruction {
   const data = new Uint8Array(9);
   data.set(DISCRIMINATORS.payWithSol, 0);
@@ -297,7 +299,7 @@ export function buildPayWithNeptuInstruction(
   user: Address,
   userNeptuAccount: Address,
   ecosystemPool: Address,
-  readingType: ReadingType,
+  readingType: ReadingType
 ): Instruction {
   const data = new Uint8Array(9);
   data.set(DISCRIMINATORS.payWithNeptu, 0);
@@ -324,7 +326,7 @@ export function buildClaimRewardsInstruction(
   claimRecordPda: Address,
   amount: bigint,
   nonce: bigint,
-  signature: Uint8Array = new Uint8Array(64),
+  signature: Uint8Array = new Uint8Array(64)
 ): Instruction {
   // Build instruction data: discriminator + amount(u64) + nonce(u64) + signature(64 bytes)
   const data = new Uint8Array(8 + 8 + 8 + 64);
@@ -358,7 +360,7 @@ export function buildClaimRewardsInstruction(
 
 export async function getPricingConfig(
   rpc: SolanaRpc,
-  programs: NeptuPrograms,
+  programs: NeptuPrograms
 ): Promise<PricingConfig | null> {
   try {
     const accountInfo = await rpc
@@ -374,7 +376,7 @@ export async function getPricingConfig(
         ? Buffer.from(accountInfo.value.data, "base64")
         : Buffer.from(
             (accountInfo.value.data as [string, string])[0],
-            "base64",
+            "base64"
           );
 
     // Skip 8-byte discriminator
@@ -399,7 +401,7 @@ export async function getPricingConfig(
 
 export async function getEconomyState(
   rpc: SolanaRpc,
-  programs: NeptuPrograms,
+  programs: NeptuPrograms
 ): Promise<EconomyState | null> {
   try {
     const accountInfo = await rpc
@@ -415,7 +417,7 @@ export async function getEconomyState(
         ? Buffer.from(accountInfo.value.data, "base64")
         : Buffer.from(
             (accountInfo.value.data as [string, string])[0],
-            "base64",
+            "base64"
           );
 
     // Skip 8-byte discriminator

@@ -1,86 +1,65 @@
 import { describe, test, expect, beforeAll, afterAll } from "bun:test";
+
+import { GAMIFICATION_REWARDS, STREAK_MILESTONES } from "@neptu/shared";
 import { sql } from "drizzle-orm";
+
 import { UserStreakService, UserService } from "../src";
 import { createTestDatabase, closeTestDatabase } from "./test-helper";
-import { GAMIFICATION_REWARDS, STREAK_MILESTONES } from "@neptu/shared";
+
+const TEST_PREFIX = `s${Date.now()}`;
 
 describe("UserStreakService", () => {
   let streakService: UserStreakService;
   let userService: UserService;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let db: any;
   let testUserId: string;
+  const createdUserIds: string[] = [];
 
   beforeAll(async () => {
-    const db = createTestDatabase();
-
-    // Create tables
-    await db.run(sql`
-      CREATE TABLE IF NOT EXISTS users (
-        id TEXT PRIMARY KEY,
-        wallet_address TEXT UNIQUE NOT NULL,
-        email TEXT,
-        display_name TEXT,
-        birth_date TEXT,
-        interests TEXT,
-        onboarded INTEGER DEFAULT 0,
-        is_admin INTEGER DEFAULT 0,
-        created_at TEXT NOT NULL DEFAULT (datetime('now')),
-        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-      )
-    `);
-
-    await db.run(sql`
-      CREATE TABLE IF NOT EXISTS user_streaks (
-        id TEXT PRIMARY KEY,
-        user_id TEXT UNIQUE NOT NULL REFERENCES users(id),
-        current_streak INTEGER NOT NULL DEFAULT 0,
-        longest_streak INTEGER NOT NULL DEFAULT 0,
-        last_check_in TEXT,
-        total_check_ins INTEGER NOT NULL DEFAULT 0,
-        created_at TEXT NOT NULL DEFAULT (datetime('now')),
-        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-      )
-    `);
-
-    await db.run(sql`
-      CREATE TABLE IF NOT EXISTS user_rewards (
-        id TEXT PRIMARY KEY,
-        user_id TEXT NOT NULL REFERENCES users(id),
-        reward_type TEXT NOT NULL,
-        neptu_amount REAL NOT NULL,
-        status TEXT NOT NULL DEFAULT 'pending',
-        description TEXT,
-        claim_tx_signature TEXT,
-        claimed_at TEXT,
-        expires_at TEXT,
-        created_at TEXT NOT NULL DEFAULT (datetime('now'))
-      )
-    `);
-
+    db = createTestDatabase();
     streakService = new UserStreakService(db);
     userService = new UserService(db);
 
-    // Create test user
     const user = await userService.createUser({
-      walletAddress: "9WzDXwBbmkg8ZTbNMqUxvQRAyrStreak",
+      walletAddress: `${TEST_PREFIX}MainStreakUsr123456789012`,
     });
     testUserId = user.id;
+    createdUserIds.push(user.id);
   });
 
-  afterAll(() => {
-    closeTestDatabase();
+  afterAll(async () => {
+    for (const id of createdUserIds) {
+      try {
+        await db.execute(sql`DELETE FROM user_rewards WHERE user_id = ${id}`);
+        await db.execute(sql`DELETE FROM user_streaks WHERE user_id = ${id}`);
+        await db.execute(sql`DELETE FROM users WHERE id = ${id}`);
+      } catch {
+        // Ignore cleanup errors
+      }
+    }
+    await closeTestDatabase();
   });
 
   test("should return null for user without streak", async () => {
     const newUser = await userService.createUser({
-      walletAddress: "7KQNqLgVr5xMfWdF9vTp6t6rNoStrkWXy",
+      walletAddress: `${TEST_PREFIX}NoStreakUsr1234567890123`,
     });
+    createdUserIds.push(newUser.id);
     const streak = await streakService.getStreak(newUser.id);
 
     expect(streak).toBeNull();
   });
 
   test("should create streak on first check-in", async () => {
-    const result = await streakService.recordCheckIn({ userId: testUserId });
+    const checkInUser = await userService.createUser({
+      walletAddress: `${TEST_PREFIX}CheckInUsr12345678901234`,
+    });
+    createdUserIds.push(checkInUser.id);
+
+    const result = await streakService.recordCheckIn({
+      userId: checkInUser.id,
+    });
 
     expect(result.streak).toBeDefined();
     expect(result.streak.currentStreak).toBe(1);
@@ -89,7 +68,13 @@ describe("UserStreakService", () => {
   });
 
   test("should not grant reward for duplicate check-in same day", async () => {
-    const result = await streakService.recordCheckIn({ userId: testUserId });
+    const dupUser = await userService.createUser({
+      walletAddress: `${TEST_PREFIX}DupCheckInUsr12345678901`,
+    });
+    createdUserIds.push(dupUser.id);
+
+    await streakService.recordCheckIn({ userId: dupUser.id });
+    const result = await streakService.recordCheckIn({ userId: dupUser.id });
 
     expect(result.dailyRewardGranted).toBe(false);
     expect(result.streak.totalCheckIns).toBe(1);
@@ -103,8 +88,8 @@ describe("UserStreakService", () => {
       longestStreak: 5,
       lastCheckIn: new Date().toISOString(),
       totalCheckIns: 5,
-      createdAt: "",
-      updatedAt: "",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     expect(streakService.isStreakActive(todayStreak)).toBe(true);
@@ -121,8 +106,8 @@ describe("UserStreakService", () => {
       longestStreak: 5,
       lastCheckIn: oldDate.toISOString(),
       totalCheckIns: 5,
-      createdAt: "",
-      updatedAt: "",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     expect(streakService.isStreakActive(oldStreak)).toBe(false);
@@ -137,19 +122,26 @@ describe("UserStreakService", () => {
 
   test("should get milestone rewards correctly", () => {
     expect(streakService.getMilestoneReward(STREAK_MILESTONES.WEEK)).toBe(
-      GAMIFICATION_REWARDS.STREAK_7_DAYS,
+      GAMIFICATION_REWARDS.STREAK_7_DAYS
     );
     expect(streakService.getMilestoneReward(STREAK_MILESTONES.MONTH)).toBe(
-      GAMIFICATION_REWARDS.STREAK_30_DAYS,
+      GAMIFICATION_REWARDS.STREAK_30_DAYS
     );
     expect(streakService.getMilestoneReward(STREAK_MILESTONES.CENTURY)).toBe(
-      GAMIFICATION_REWARDS.STREAK_100_DAYS,
+      GAMIFICATION_REWARDS.STREAK_100_DAYS
     );
     expect(streakService.getMilestoneReward(15)).toBe(0);
   });
 
   test("should reset streak", async () => {
-    const resetStreak = await streakService.resetStreak(testUserId);
+    const resetUser = await userService.createUser({
+      walletAddress: `${TEST_PREFIX}ResetStreakUser123456789012`,
+    });
+    createdUserIds.push(resetUser.id);
+
+    await streakService.recordCheckIn({ userId: resetUser.id });
+
+    const resetStreak = await streakService.resetStreak(resetUser.id);
 
     expect(resetStreak).toBeDefined();
     expect(resetStreak?.currentStreak).toBe(0);

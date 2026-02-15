@@ -1,4 +1,5 @@
 import type { UserInterest } from "@neptu/shared";
+
 import type { User } from "../schemas/users";
 
 export interface UserDTO {

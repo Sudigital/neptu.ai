@@ -1,5 +1,5 @@
-import { z } from "zod";
 import { DATE_REGEX } from "@neptu/shared";
+import { z } from "zod";
 
 const readingTypeEnum = z.enum(["potensi", "peluang", "compatibility"]);
 

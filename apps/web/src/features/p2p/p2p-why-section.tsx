@@ -1,6 +1,6 @@
+import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { Shield, Flame, Zap, Lock } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 
 const stagger = {
   hidden: { opacity: 0 },
@@ -24,9 +24,9 @@ export function P2PWhySection({ t }: P2PWhySectionProps) {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="text-center mb-10 sm:mb-16"
+          className="mb-10 text-center sm:mb-16"
         >
-          <h2 className="text-2xl sm:text-4xl font-bold tracking-tight">
+          <h2 className="text-2xl font-bold tracking-tight sm:text-4xl">
             {t("p2p.whyTitle")}
           </h2>
         </motion.div>
@@ -36,13 +36,13 @@ export function P2PWhySection({ t }: P2PWhySectionProps) {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4 max-w-5xl mx-auto"
+          className="mx-auto grid max-w-5xl gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4"
         >
           <motion.div variants={fadeUp}>
             <Card className="h-full text-center">
               <CardContent>
-                <Shield className="h-8 w-8 text-primary mx-auto mb-3" />
-                <h3 className="font-semibold mb-2">
+                <Shield className="mx-auto mb-3 h-8 w-8 text-primary" />
+                <h3 className="mb-2 font-semibold">
                   {t("p2p.why.noPool.title")}
                 </h3>
                 <p className="text-xs text-muted-foreground">
@@ -54,8 +54,8 @@ export function P2PWhySection({ t }: P2PWhySectionProps) {
           <motion.div variants={fadeUp}>
             <Card className="h-full text-center">
               <CardContent>
-                <Flame className="h-8 w-8 text-orange-500 mx-auto mb-3" />
-                <h3 className="font-semibold mb-2">
+                <Flame className="mx-auto mb-3 h-8 w-8 text-orange-500" />
+                <h3 className="mb-2 font-semibold">
                   {t("p2p.why.deflationary.title")}
                 </h3>
                 <p className="text-xs text-muted-foreground">
@@ -67,8 +67,8 @@ export function P2PWhySection({ t }: P2PWhySectionProps) {
           <motion.div variants={fadeUp}>
             <Card className="h-full text-center">
               <CardContent>
-                <Zap className="h-8 w-8 text-amber-500 mx-auto mb-3" />
-                <h3 className="font-semibold mb-2">
+                <Zap className="mx-auto mb-3 h-8 w-8 text-amber-500" />
+                <h3 className="mb-2 font-semibold">
                   {t("p2p.why.zeroCost.title")}
                 </h3>
                 <p className="text-xs text-muted-foreground">
@@ -80,8 +80,8 @@ export function P2PWhySection({ t }: P2PWhySectionProps) {
           <motion.div variants={fadeUp}>
             <Card className="h-full text-center">
               <CardContent>
-                <Lock className="h-8 w-8 text-green-500 mx-auto mb-3" />
-                <h3 className="font-semibold mb-2">
+                <Lock className="mx-auto mb-3 h-8 w-8 text-green-500" />
+                <h3 className="mb-2 font-semibold">
                   {t("p2p.why.fixedSupply.title")}
                 </h3>
                 <p className="text-xs text-muted-foreground">

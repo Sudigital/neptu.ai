@@ -1,4 +1,5 @@
 import { text, pgTable, index, numeric, timestamp } from "drizzle-orm/pg-core";
+
 import { users } from "./users";
 
 export const referrals = pgTable(
@@ -34,7 +35,7 @@ export const referrals = pgTable(
   (table) => [
     index("referrals_referrer_idx").on(table.referrerId),
     index("referrals_referee_idx").on(table.refereeId),
-  ],
+  ]
 );
 
 export type Referral = typeof referrals.$inferSelect;

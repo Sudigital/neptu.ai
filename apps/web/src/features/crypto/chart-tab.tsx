@@ -1,4 +1,6 @@
-import { useMemo, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { useTranslate } from "@/hooks/use-translate";
 import { useQuery } from "@tanstack/react-query";
 import {
   TrendingUp,
@@ -10,21 +12,20 @@ import {
   AlertCircle,
   Zap,
 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { useTranslate } from "@/hooks/use-translate";
-import {
-  type CryptoWithMarketData,
-  formatCurrency,
-  formatFullDate,
-} from "./crypto-utils";
-import { analyzeCrypto, getNextStrongest } from "./cosmic-prediction";
+import { useMemo, useState } from "react";
+
+import { PriceChart } from "./chart-components";
 import {
   type CoinGeckoChartData,
   formatPriceData,
   mergeWithPredictions,
 } from "./chart-utils";
-import { PriceChart } from "./chart-components";
+import { analyzeCrypto, getNextStrongest } from "./cosmic-prediction";
+import {
+  type CryptoWithMarketData,
+  formatCurrency,
+  formatFullDate,
+} from "./crypto-utils";
 
 // ---------------------------------------------------------------------------
 // Main Component
@@ -76,7 +77,7 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
             crypto.atl,
             crypto.athDate,
             crypto.atlDate,
-            crypto.currentPrice,
+            crypto.currentPrice
           )
         : [],
     [
@@ -86,13 +87,13 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
       crypto.athDate,
       crypto.atlDate,
       crypto.currentPrice,
-    ],
+    ]
   );
 
   const prediction = useMemo(() => analyzeCrypto(crypto), [crypto]);
   const nextStrongest = useMemo(
     () => (prediction ? getNextStrongest(prediction) : null),
-    [prediction],
+    [prediction]
   );
 
   // Merge history + prediction into one dataset when prediction is on
@@ -101,7 +102,7 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
     return mergeWithPredictions(
       historyData,
       prediction.events,
-      prediction.currentPrice,
+      prediction.currentPrice
     );
   }, [historyData, showPrediction, prediction]);
 
@@ -110,18 +111,18 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
       {/* Chart */}
       <Card>
         <CardContent>
-          <div className="flex items-center justify-between mb-4">
+          <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-primary" />
-              <h4 className="font-semibold text-lg">
+              <h4 className="text-lg font-semibold">
                 {t("crypto.chart.title")}
               </h4>
             </div>
             <button
               onClick={() => setShowPrediction((p) => !p)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
                 showPrediction
-                  ? "bg-amber-500/15 text-amber-600 border border-amber-500/30"
+                  ? "border border-amber-500/30 bg-amber-500/15 text-amber-600"
                   : "bg-muted text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -130,12 +131,12 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
             </button>
           </div>
 
-          <div className="flex gap-1 mb-4">
+          <div className="mb-4 flex gap-1">
             {DAY_OPTIONS.map((opt) => (
               <button
                 key={opt.value}
                 onClick={() => setDays(opt.value)}
-                className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+                className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
                   days === opt.value
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted text-muted-foreground hover:text-foreground"
@@ -147,7 +148,7 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
           </div>
 
           {/* Legend */}
-          <div className="flex items-center gap-4 mb-3 text-xs flex-wrap">
+          <div className="mb-3 flex flex-wrap items-center gap-4 text-xs">
             <div className="flex items-center gap-1.5">
               <span className="inline-block h-0.5 w-4 bg-[#7c3aed]" />
               <span className="text-muted-foreground">
@@ -183,13 +184,13 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
           </div>
 
           {isLoading ? (
-            <div className="flex items-center justify-center h-[300px] text-muted-foreground">
-              <Loader2 className="h-6 w-6 animate-spin mr-2" />
+            <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+              <Loader2 className="mr-2 h-6 w-6 animate-spin" />
               Loading chart data...
             </div>
           ) : error ? (
-            <div className="flex items-center justify-center h-[300px] text-muted-foreground">
-              <AlertCircle className="h-5 w-5 mr-2 text-red-500" />
+            <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+              <AlertCircle className="mr-2 h-5 w-5 text-red-500" />
               Failed to load chart data
             </div>
           ) : (
@@ -205,7 +206,7 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
       </Card>
 
       {/* ATL & ATH Summary with Cosmic Signatures */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Card>
           <CardContent className="relative">
             {crypto.atlCosmic && (
@@ -213,7 +214,7 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
                 {t("crypto.market.score")}: {crypto.atlCosmic.score}%
               </Badge>
             )}
-            <div className="flex items-center gap-2 mb-3">
+            <div className="mb-3 flex items-center gap-2">
               <TrendingDown className="h-5 w-5 text-red-500" />
               <h4 className="font-semibold">
                 {t("crypto.chart.historicalATL")}
@@ -226,7 +227,7 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
               {formatFullDate(crypto.atlDate)}
             </p>
             {prediction && (
-              <div className="mt-2 text-xs text-muted-foreground space-y-0.5">
+              <div className="mt-2 space-y-0.5 text-xs text-muted-foreground">
                 <p>
                   <span className="font-medium">Cosmic:</span>{" "}
                   {prediction.atlSignature.saptaWara} +{" "}
@@ -252,7 +253,7 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
                 {t("crypto.market.score")}: {crypto.athCosmic.score}%
               </Badge>
             )}
-            <div className="flex items-center gap-2 mb-3">
+            <div className="mb-3 flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-green-500" />
               <h4 className="font-semibold">
                 {t("crypto.chart.historicalATH")}
@@ -265,7 +266,7 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
               {formatFullDate(crypto.athDate)}
             </p>
             {prediction && (
-              <div className="mt-2 text-xs text-muted-foreground space-y-0.5">
+              <div className="mt-2 space-y-0.5 text-xs text-muted-foreground">
                 <p>
                   <span className="font-medium">Cosmic:</span>{" "}
                   {prediction.athSignature.saptaWara} +{" "}
@@ -290,9 +291,9 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
       {nextStrongest && (
         <Card className="border-primary/30">
           <CardContent>
-            <div className="flex items-center gap-2 mb-4">
+            <div className="mb-4 flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-primary" />
-              <h4 className="font-semibold text-lg">
+              <h4 className="text-lg font-semibold">
                 {t("crypto.chart.cosmicPrediction")}
               </h4>
               <Badge variant="outline" className="ml-auto text-xs">
@@ -301,13 +302,13 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
             </div>
 
             {prediction && (
-              <div className="mb-4 rounded-lg bg-muted/50 p-3 text-xs space-y-1">
-                <div className="flex items-center gap-1.5 font-medium text-sm mb-2">
+              <div className="mb-4 space-y-1 rounded-lg bg-muted/50 p-3 text-xs">
+                <div className="mb-2 flex items-center gap-1.5 text-sm font-medium">
                   <Zap className="h-3.5 w-3.5 text-primary" />
                   Cosmic Signature Analysis
                 </div>
                 <p>
-                  <span className="text-green-600 font-medium">
+                  <span className="font-medium text-green-600">
                     ATH Pattern:
                   </span>{" "}
                   {prediction.athSignature.saptaWara} +{" "}
@@ -318,7 +319,7 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
                   </span>
                 </p>
                 <p>
-                  <span className="text-red-600 font-medium">ATL Pattern:</span>{" "}
+                  <span className="font-medium text-red-600">ATL Pattern:</span>{" "}
                   {prediction.atlSignature.saptaWara} +{" "}
                   {prediction.atlSignature.pancaWara} in Wuku{" "}
                   {prediction.atlSignature.wuku} — Frekuensi:{" "}
@@ -333,9 +334,9 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
               </div>
             )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="rounded-lg bg-green-500/5 border border-green-500/20 p-4">
-                <div className="flex items-center gap-2 mb-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="rounded-lg border border-green-500/20 bg-green-500/5 p-4">
+                <div className="mb-3 flex items-center gap-2">
                   <Target className="h-4 w-4 text-green-500" />
                   <span className="text-sm font-medium text-green-600">
                     {t("crypto.chart.nextATH")}
@@ -345,7 +346,7 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
                       variant="outline"
                       className={`ml-auto text-[10px] ${
                         nextStrongest.nextATH.matchLevel === "full"
-                          ? "border-green-500 text-green-600 bg-green-500/10"
+                          ? "border-green-500 bg-green-500/10 text-green-600"
                           : "border-green-500/50 text-green-500"
                       }`}
                     >
@@ -360,18 +361,18 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
                     <p className="text-xl font-bold text-green-600">
                       {formatCurrency(nextStrongest.nextATH.predictedPrice)}
                     </p>
-                    <div className="flex items-center gap-1 mt-2 text-sm text-muted-foreground">
+                    <div className="mt-2 flex items-center gap-1 text-sm text-muted-foreground">
                       <Calendar className="h-3.5 w-3.5" />
                       <span>
                         {formatFullDate(
-                          nextStrongest.nextATH.date.toISOString(),
+                          nextStrongest.nextATH.date.toISOString()
                         )}
                       </span>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="mt-1 text-xs text-muted-foreground">
                       ~
                       {Math.round(
-                        (nextStrongest.nextATH.date.getTime() - now) / 86400000,
+                        (nextStrongest.nextATH.date.getTime() - now) / 86400000
                       )}{" "}
                       {t("crypto.chart.daysAway")} • Wuku:{" "}
                       {nextStrongest.nextATH.wuku} •{" "}
@@ -386,8 +387,8 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
                 )}
               </div>
 
-              <div className="rounded-lg bg-red-500/5 border border-red-500/20 p-4">
-                <div className="flex items-center gap-2 mb-3">
+              <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-4">
+                <div className="mb-3 flex items-center gap-2">
                   <Target className="h-4 w-4 text-red-500" />
                   <span className="text-sm font-medium text-red-600">
                     {t("crypto.chart.nextATL")}
@@ -397,7 +398,7 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
                       variant="outline"
                       className={`ml-auto text-[10px] ${
                         nextStrongest.nextATL.matchLevel === "full"
-                          ? "border-red-500 text-red-600 bg-red-500/10"
+                          ? "border-red-500 bg-red-500/10 text-red-600"
                           : "border-red-500/50 text-red-500"
                       }`}
                     >
@@ -412,18 +413,18 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
                     <p className="text-xl font-bold text-red-600">
                       {formatCurrency(nextStrongest.nextATL.predictedPrice)}
                     </p>
-                    <div className="flex items-center gap-1 mt-2 text-sm text-muted-foreground">
+                    <div className="mt-2 flex items-center gap-1 text-sm text-muted-foreground">
                       <Calendar className="h-3.5 w-3.5" />
                       <span>
                         {formatFullDate(
-                          nextStrongest.nextATL.date.toISOString(),
+                          nextStrongest.nextATL.date.toISOString()
                         )}
                       </span>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="mt-1 text-xs text-muted-foreground">
                       ~
                       {Math.round(
-                        (nextStrongest.nextATL.date.getTime() - now) / 86400000,
+                        (nextStrongest.nextATL.date.getTime() - now) / 86400000
                       )}{" "}
                       {t("crypto.chart.daysAway")} • Wuku:{" "}
                       {nextStrongest.nextATL.wuku} •{" "}
@@ -438,7 +439,7 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
                 )}
               </div>
             </div>
-            <p className="text-xs text-muted-foreground mt-4 italic text-center">
+            <p className="mt-4 text-center text-xs text-muted-foreground italic">
               {t("crypto.chart.disclaimer")}
             </p>
           </CardContent>

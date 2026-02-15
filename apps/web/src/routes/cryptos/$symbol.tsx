@@ -1,28 +1,10 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import {
-  Calendar,
-  TrendingUp,
-  TrendingDown,
-  Activity,
-  Coins,
-  ArrowLeft,
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Logo } from "@/assets/logo";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Navbar } from "@/components/navbar";
-import { useTranslate } from "@/hooks/use-translate";
-import { ShareMenu } from "@/features/crypto/share-menu";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ChartTab } from "@/features/crypto/chart-tab";
 import {
   type CryptoWithMarketData,
   formatCurrency,
@@ -31,13 +13,31 @@ import {
   getAge,
   isBirthdayToday,
 } from "@/features/crypto/crypto-utils";
-import { PredictionTab } from "@/features/crypto/prediction-tab";
 import {
   BirthdayTab,
   MarketTab,
   CosmicTab,
 } from "@/features/crypto/market-cosmic-tabs";
-import { ChartTab } from "@/features/crypto/chart-tab";
+import { PredictionTab } from "@/features/crypto/prediction-tab";
+import { ShareMenu } from "@/features/crypto/share-menu";
+import { useTranslate } from "@/hooks/use-translate";
+import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+  Calendar,
+  TrendingUp,
+  TrendingDown,
+  Activity,
+  Coins,
+  ArrowLeft,
+} from "lucide-react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 const WORKER_URL = import.meta.env.VITE_WORKER_URL || "http://localhost:8787";
 
@@ -57,7 +57,7 @@ function CryptoBirthdayDetailPage() {
     if (!sentinel) return;
     const observer = new IntersectionObserver(
       ([entry]) => setIsStuck(!entry.isIntersecting),
-      { threshold: 0 },
+      { threshold: 0 }
     );
     observer.observe(sentinel);
     return () => observer.disconnect();
@@ -81,7 +81,7 @@ function CryptoBirthdayDetailPage() {
   });
 
   const crypto = cryptos?.find(
-    (c) => c.symbol.toLowerCase() === symbol.toLowerCase(),
+    (c) => c.symbol.toLowerCase() === symbol.toLowerCase()
   );
 
   const getShareText = () =>
@@ -93,35 +93,35 @@ function CryptoBirthdayDetailPage() {
     window.open(
       `https://twitter.com/intent/tweet?text=${encodeURIComponent(getShareText())}&url=${encodeURIComponent(getShareUrl())}`,
       "_blank",
-      "noopener,noreferrer",
+      "noopener,noreferrer"
     );
   };
   const shareToFacebook = () => {
     window.open(
       `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getShareUrl())}`,
       "_blank",
-      "noopener,noreferrer",
+      "noopener,noreferrer"
     );
   };
   const shareToLinkedIn = () => {
     window.open(
       `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(getShareUrl())}`,
       "_blank",
-      "noopener,noreferrer",
+      "noopener,noreferrer"
     );
   };
   const shareToWhatsApp = () => {
     window.open(
       `https://wa.me/?text=${encodeURIComponent(getShareText() + " " + getShareUrl())}`,
       "_blank",
-      "noopener,noreferrer",
+      "noopener,noreferrer"
     );
   };
   const shareToTelegram = () => {
     window.open(
       `https://t.me/share/url?url=${encodeURIComponent(getShareUrl())}&text=${encodeURIComponent(getShareText())}`,
       "_blank",
-      "noopener,noreferrer",
+      "noopener,noreferrer"
     );
   };
   const handleNativeShare = async () => {
@@ -195,7 +195,7 @@ function CryptoBirthdayDetailPage() {
         <div className="mb-6">
           <Link
             to="/cryptos"
-            className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+            className="inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-primary"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>{t("crypto.backToCryptos")}</span>
@@ -230,7 +230,7 @@ function CryptoBirthdayDetailPage() {
               <p className="text-muted-foreground">
                 {t("crypto.notFound")}: "{symbol}"
               </p>
-              <p className="text-sm text-muted-foreground mt-2">
+              <p className="mt-2 text-sm text-muted-foreground">
                 {t("crypto.notFoundDesc")}
               </p>
               <Link to="/cryptos">
@@ -241,11 +241,11 @@ function CryptoBirthdayDetailPage() {
         )}
 
         {crypto && (
-          <div className="max-w-4xl mx-auto">
+          <div className="mx-auto max-w-4xl">
             {/* Header Card */}
             <Card className="mb-6">
               <CardHeader>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
                   <div className="flex items-center gap-4">
                     {crypto.image && (
                       <img
@@ -255,13 +255,13 @@ function CryptoBirthdayDetailPage() {
                       />
                     )}
                     <div>
-                      <CardTitle className="text-2xl sm:text-3xl flex items-center gap-2">
+                      <CardTitle className="flex items-center gap-2 text-2xl sm:text-3xl">
                         {crypto.name}
                         <span className="text-lg font-normal text-muted-foreground">
                           {crypto.symbol}
                         </span>
                       </CardTitle>
-                      <div className="flex items-center gap-2 mt-1 text-muted-foreground">
+                      <div className="mt-1 flex items-center gap-2 text-muted-foreground">
                         <Calendar className="h-4 w-4" />
                         <span>Born {formatFullDate(crypto.birthday)}</span>
                         <span>•</span>
@@ -284,9 +284,9 @@ function CryptoBirthdayDetailPage() {
                         }
                       >
                         {isPriceUp ? (
-                          <TrendingUp className="h-3 w-3 mr-1" />
+                          <TrendingUp className="mr-1 h-3 w-3" />
                         ) : (
-                          <TrendingDown className="h-3 w-3 mr-1" />
+                          <TrendingDown className="mr-1 h-3 w-3" />
                         )}
                         {formatPercentage(crypto.priceChangePercentage24h)}
                       </Badge>
@@ -315,7 +315,7 @@ function CryptoBirthdayDetailPage() {
               className="space-y-6"
             >
               <div
-                className={`sticky top-14 sm:top-16 z-40 bg-background py-2 overflow-x-auto scrollbar-none ${isStuck ? "w-screen -ml-[calc(50vw-50%)] px-[calc(50vw-50%)] border-b border-border/50 shadow-sm" : ""}`}
+                className={`scrollbar-none sticky top-14 z-40 overflow-x-auto bg-background py-2 sm:top-16 ${isStuck ? "-ml-[calc(50vw-50%)] w-screen border-b border-border/50 px-[calc(50vw-50%)] shadow-sm" : ""}`}
               >
                 <TabsList className="inline-flex w-auto min-w-full sm:grid sm:w-full sm:grid-cols-6">
                   <TabsTrigger value="overview" className="px-3 sm:px-4">
@@ -349,29 +349,29 @@ function CryptoBirthdayDetailPage() {
                     </CardContent>
                   </Card>
                 )}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <Card>
                     <CardContent>
-                      <div className="flex items-center gap-2 text-muted-foreground mb-2">
+                      <div className="mb-2 flex items-center gap-2 text-muted-foreground">
                         <Activity className="h-4 w-4" />
                         <span className="text-xs">
                           {t("crypto.overview.currentPrice")}
                         </span>
                       </div>
-                      <p className="text-2xl sm:text-3xl font-bold">
+                      <p className="text-2xl font-bold sm:text-3xl">
                         {formatCurrency(crypto.currentPrice)}
                       </p>
                     </CardContent>
                   </Card>
                   <Card>
                     <CardContent>
-                      <div className="flex items-center gap-2 text-muted-foreground mb-2">
+                      <div className="mb-2 flex items-center gap-2 text-muted-foreground">
                         <Coins className="h-4 w-4" />
                         <span className="text-xs">
                           {t("crypto.overview.marketCap")}
                         </span>
                       </div>
-                      <p className="text-2xl sm:text-3xl font-bold">
+                      <p className="text-2xl font-bold sm:text-3xl">
                         {formatCurrency(crypto.marketCap)}
                       </p>
                       {crypto.marketCapRank && (
@@ -384,31 +384,31 @@ function CryptoBirthdayDetailPage() {
                 </div>
                 <div className="grid grid-cols-3 gap-2 sm:gap-2 sm:gap-4">
                   <Card>
-                    <CardContent className="p-3 sm:px-6 text-center">
+                    <CardContent className="p-3 text-center sm:px-6">
                       <p className="text-xs text-muted-foreground">
                         {t("crypto.overview.24hHigh")}
                       </p>
-                      <p className="text-sm sm:text-xl font-semibold text-green-600">
+                      <p className="text-sm font-semibold text-green-600 sm:text-xl">
                         {formatCurrency(crypto.high24h)}
                       </p>
                     </CardContent>
                   </Card>
                   <Card>
-                    <CardContent className="p-3 sm:px-6 text-center">
+                    <CardContent className="p-3 text-center sm:px-6">
                       <p className="text-xs text-muted-foreground">
                         {t("crypto.overview.24hLow")}
                       </p>
-                      <p className="text-sm sm:text-xl font-semibold text-red-600">
+                      <p className="text-sm font-semibold text-red-600 sm:text-xl">
                         {formatCurrency(crypto.low24h)}
                       </p>
                     </CardContent>
                   </Card>
                   <Card>
-                    <CardContent className="p-3 sm:px-6 text-center">
+                    <CardContent className="p-3 text-center sm:px-6">
                       <p className="text-xs text-muted-foreground">
                         {t("crypto.overview.24hVolume")}
                       </p>
-                      <p className="text-sm sm:text-xl font-semibold">
+                      <p className="text-sm font-semibold sm:text-xl">
                         {formatCurrency(crypto.totalVolume)}
                       </p>
                     </CardContent>
