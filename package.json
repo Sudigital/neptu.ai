@@ -32,7 +32,6 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@privy-io/react-auth": "^3.13.1",
     "recharts": "^3.7.0",
     "wrangler": "4.64.0"
   },
