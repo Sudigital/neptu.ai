@@ -10,6 +10,8 @@ COPY apps/mobile/package.json apps/mobile/
 COPY apps/cli/package.json apps/cli/
 COPY docs/package.json docs/
 COPY packages/drizzle-orm/package.json packages/drizzle-orm/
+COPY packages/logger/package.json packages/logger/
+COPY packages/queues/package.json packages/queues/
 COPY packages/shared/package.json packages/shared/
 COPY packages/solana/package.json packages/solana/
 COPY packages/wariga/package.json packages/wariga/

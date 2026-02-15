@@ -32,7 +32,6 @@ export function PlansProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const usePlans = () => {
   const plansContext = useContext(PlansContext);
 
