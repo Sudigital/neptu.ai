@@ -35,10 +35,10 @@ export function PlansMultiCancelDialog<TData>({
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const subs = selectedRows.map((row) => row.original as Plan);
+      const plans = selectedRows.map((row) => row.original as Plan);
       await Promise.all(
-        subs.map((sub) =>
-          adminApi.updatePlan(walletAddress!, sub.id, { status: "cancelled" })
+        plans.map((plan) =>
+          adminApi.updatePlan(walletAddress!, plan.id, { isActive: false })
         )
       );
     },

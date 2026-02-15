@@ -5,6 +5,7 @@ on:
     branches: [main, dev]
     paths:
       - "apps/worker/**"
+      - "apps/api/**"
       - "packages/**"
       - ".github/workflows/deploy-azure.yml"
   workflow_dispatch:
@@ -12,6 +13,7 @@ on:
 env:
   REGISTRY: ${{ secrets.ACR_LOGIN_SERVER }}
   WORKER_IMAGE: neptu-worker
+  API_IMAGE: neptu-api
 
 jobs:
   build-and-deploy:
@@ -56,17 +58,7 @@ jobs:
           export const formatPotensi = (..._a: unknown[]): string => "";
           EOF
 
-          # API stub (private - not in repo, depends on wariga)
-          mkdir -p apps/api/src
-          cat > apps/api/package.json << 'EOF'
-          {"name":"@neptu/api","version":"0.1.0","type":"module"}
-          EOF
-          echo 'export {};' > apps/api/src/index.ts
-          cat > apps/api/tsconfig.json << 'EOF'
-          {"compilerOptions":{"skipLibCheck":true}}
-          EOF
-
-          # CLI stub
+          # CLI stub (not needed for API/Worker builds)
           mkdir -p apps/cli/src
           cat > apps/cli/package.json << 'EOF'
           {"name":"@neptu/cli","version":"0.1.0","type":"module"}
@@ -85,6 +77,18 @@ jobs:
           cache-from: type=gha,scope=worker-${{ env.TAG_ENV }}
           cache-to: type=gha,mode=max,scope=worker-${{ env.TAG_ENV }}
 
+      - name: Build and push API image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/api/Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.API_IMAGE }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ env.API_IMAGE }}:${{ env.TAG_ENV }}
+          cache-from: type=gha,scope=api-${{ env.TAG_ENV }}
+          cache-to: type=gha,mode=max,scope=api-${{ env.TAG_ENV }}
+
       - name: Log in to Azure
         uses: azure/login@v2
         with:
@@ -96,3 +100,10 @@ jobs:
           containerAppName: neptu-worker${{ env.SUFFIX }}
           resourceGroup: ${{ secrets.AZURE_RESOURCE_GROUP }}
           imageToDeploy: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE }}:${{ github.sha }}
+
+      - name: Deploy API to Container Apps
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          containerAppName: neptu-api${{ env.SUFFIX }}
+          resourceGroup: ${{ secrets.AZURE_RESOURCE_GROUP }}
+          imageToDeploy: ${{ env.REGISTRY }}/${{ env.API_IMAGE }}:${{ github.sha }}

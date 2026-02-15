@@ -4,8 +4,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { type ColumnDef } from "@tanstack/react-table";
 
-import { statusStyles } from "../data/data";
-import { type Plan, type PlanStatus } from "../data/schema";
+import { activeStyles } from "../data/data";
+import { type Plan } from "../data/schema";
 import { DataTableRowActions } from "./data-table-row-actions";
 
 function truncateId(id: string) {
@@ -65,16 +65,38 @@ export const plansColumns: ColumnDef<Plan>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "status",
+    accessorKey: "name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Name" />
+    ),
+    cell: ({ row }) => (
+      <span className="font-medium">{row.getValue("name")}</span>
+    ),
+    enableHiding: false,
+  },
+  {
+    accessorKey: "tier",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Tier" />
+    ),
+    cell: ({ row }) => (
+      <Badge variant="outline" className="capitalize">
+        {row.getValue("tier")}
+      </Badge>
+    ),
+    enableSorting: false,
+  },
+  {
+    accessorKey: "isActive",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Status" />
     ),
     cell: ({ row }) => {
-      const status = row.getValue("status") as PlanStatus;
-      const badgeColor = statusStyles.get(status);
+      const isActive = row.getValue("isActive") as boolean;
+      const badgeColor = activeStyles.get(isActive);
       return (
-        <Badge variant="outline" className={cn("capitalize", badgeColor)}>
-          {status.replace("_", " ")}
+        <Badge variant="outline" className={cn(badgeColor)}>
+          {isActive ? "Active" : "Inactive"}
         </Badge>
       );
     },
@@ -82,36 +104,24 @@ export const plansColumns: ColumnDef<Plan>[] = [
     enableSorting: false,
   },
   {
-    accessorKey: "creditsRemaining",
+    accessorKey: "priceUsd",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Credits" />
+      <DataTableColumnHeader column={column} title="Price (USD)" />
     ),
     cell: ({ row }) => (
       <span className="font-mono text-sm">
-        {(row.getValue("creditsRemaining") as number).toLocaleString()}
+        ${(row.getValue("priceUsd") as number).toFixed(2)}
       </span>
     ),
   },
   {
-    accessorKey: "aiCreditsRemaining",
+    accessorKey: "billingPeriod",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="AI Credits" />
+      <DataTableColumnHeader column={column} title="Billing Period" />
     ),
     cell: ({ row }) => (
-      <span className="font-mono text-sm">
-        {(row.getValue("aiCreditsRemaining") as number).toLocaleString()}
-      </span>
-    ),
-  },
-  {
-    id: "billingCycle",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Billing Cycle" />
-    ),
-    cell: ({ row }) => (
-      <span className="text-sm text-nowrap">
-        {formatDate(row.original.billingCycleStart)} –{" "}
-        {formatDate(row.original.billingCycleEnd)}
+      <span className="text-sm capitalize">
+        {row.getValue("billingPeriod")}
       </span>
     ),
     enableSorting: false,

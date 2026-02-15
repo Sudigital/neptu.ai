@@ -115,7 +115,7 @@ const privyConfig = {
     showWalletLoginFirst: true,
     walletChainType: "solana-only" as const,
   },
-  loginMethods: ["email", "wallet"] as const,
+  loginMethods: ["email", "wallet"],
   embeddedWallets: {
     solana: {
       createOnLogin: "users-without-wallets" as const,
@@ -129,9 +129,14 @@ const privyConfig = {
       connectors: solanaConnectors,
     },
   },
-  session: {
-    maxAge: 60 * 60 * 24 * 30,
-  },
+  walletConnectCloudProjectId: undefined,
+  solanaClusters: [
+    {
+      name: "devnet",
+      rpcUrl:
+        import.meta.env.VITE_SOLANA_RPC_URL || "https://api.devnet.solana.com",
+    },
+  ],
 };
 
 // Render the app
@@ -142,7 +147,11 @@ if (!rootElement.innerHTML) {
     <StrictMode>
       <PrivyProvider
         appId={import.meta.env.VITE_PRIVY_APP_ID || ""}
-        config={privyConfig}
+        config={
+          privyConfig as unknown as Parameters<
+            typeof PrivyProvider
+          >[0]["config"]
+        }
       >
         <QueryClientProvider client={queryClient}>
           <ThemeProvider>

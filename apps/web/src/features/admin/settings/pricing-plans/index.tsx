@@ -27,15 +27,11 @@ export function SettingsPricingPlans() {
       search.pageSize,
       searchQuery,
     ],
-    queryFn: () =>
-      adminApi.listPlans(walletAddress!, {
-        page: search.page ?? 1,
-        limit: search.pageSize ?? 10,
-      }),
+    queryFn: () => adminApi.listPlans(walletAddress!),
     enabled: !!walletAddress,
   });
 
-  const plans = data?.data ?? [];
+  const plans = data?.plans ?? [];
 
   return (
     <PlansProvider>
@@ -46,7 +42,7 @@ export function SettingsPricingPlans() {
       >
         <PlansTable
           data={plans}
-          pageCount={data?.totalPages ?? 0}
+          pageCount={Math.ceil(plans.length / (search.pageSize ?? 10))}
           search={search}
           navigate={navigate}
           isLoading={isLoading}

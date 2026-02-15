@@ -44,7 +44,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
               <Pencil size={16} />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
-          {row.original.status === "active" && (
+          {row.original.isActive && (
             <>
               <DropdownMenuSeparator />
               <DropdownMenuItem

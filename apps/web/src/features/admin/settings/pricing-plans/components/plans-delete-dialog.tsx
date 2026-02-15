@@ -33,11 +33,11 @@ export function PlansCancelDialog({
   const mutation = useMutation({
     mutationFn: () =>
       adminApi.updatePlan(walletAddress!, currentRow.id, {
-        status: "cancelled",
+        isActive: false,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "plans"] });
-      toast.success("Plan has been cancelled");
+      toast.success("Plan has been deactivated");
       onOpenChange(false);
     },
     onError: () => {
