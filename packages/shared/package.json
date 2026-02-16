@@ -11,6 +11,7 @@
     }
   },
   "scripts": {
+    "build": "rolldown -c",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

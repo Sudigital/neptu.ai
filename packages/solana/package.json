@@ -19,6 +19,7 @@
     }
   },
   "scripts": {
+    "build": "rolldown -c",
     "typecheck": "tsc --noEmit",
     "lint:build": "tsc --noEmit",
     "test": "bun test"

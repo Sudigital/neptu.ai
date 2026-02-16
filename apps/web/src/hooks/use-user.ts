@@ -1,52 +1,23 @@
 import { neptuApi } from "@/lib/api";
 import {
-  usePrivy,
-  type LinkedAccountWithMetadata,
-  type WalletWithMetadata,
-} from "@privy-io/react-auth";
-import { useWallets } from "@privy-io/react-auth/solana";
+  useDynamicContext,
+  useIsLoggedIn,
+  useAuthenticateConnectedUser,
+} from "@dynamic-labs/sdk-react-core";
 import { useQuery } from "@tanstack/react-query";
 
-function isWalletAccount(
-  account: LinkedAccountWithMetadata
-): account is WalletWithMetadata {
-  return account.type === "wallet";
-}
-
-function isSolanaWallet(account: WalletWithMetadata): boolean {
-  return account.chainType === "solana";
-}
-
 export function useUser() {
-  const { user: privyUser, ready: privyReady } = usePrivy();
-  const { wallets, ready: walletsReady } = useWallets();
+  const { primaryWallet, sdkHasLoaded } = useDynamicContext();
+  const isLoggedIn = useIsLoggedIn();
+  const { authenticateUser, isAuthenticating } = useAuthenticateConnectedUser();
 
-  // Get SOLANA wallet from useWallets (Solana-specific hook)
-  const connectedWallet = wallets[0] ?? null;
+  const walletAddress = primaryWallet?.address ?? "";
+  const ready = sdkHasLoaded;
+  const isSolana = primaryWallet?.chain === "SOL";
+  const hasWallet = !!walletAddress && isSolana;
+  const isConnected = !!primaryWallet;
 
-  // Get SOLANA wallet from user's linked accounts
-  const linkedWallet = privyUser?.linkedAccounts?.find(
-    (account): account is WalletWithMetadata =>
-      isWalletAccount(account) && isSolanaWallet(account)
-  );
-
-  // Also check user.wallet (Privy's embedded wallet - should be Solana if configured)
-  const privyWallet = privyUser?.wallet;
-  const isSolanaPrivyWallet =
-    privyWallet && !privyWallet.address?.startsWith("0x");
-
-  // Priority: connected Solana wallet > linked Solana wallet > privy wallet (if Solana)
-  const walletAddress =
-    connectedWallet?.address ||
-    linkedWallet?.address ||
-    (isSolanaPrivyWallet ? privyWallet?.address : "") ||
-    "";
-
-  const ready = privyReady && walletsReady;
-  const hasWallet = !!walletAddress && !walletAddress.startsWith("0x");
-  const wallet = connectedWallet || linkedWallet || null;
-
-  // Fetch user from DB
+  // Fetch user from DB only when fully authenticated
   const {
     data,
     isPending: isLoading,
@@ -55,8 +26,8 @@ export function useUser() {
     refetch,
   } = useQuery({
     queryKey: ["user", walletAddress],
-    queryFn: () => neptuApi.getOrCreateUser(walletAddress!),
-    enabled: !!walletAddress,
+    queryFn: () => neptuApi.getOrCreateUser(walletAddress),
+    enabled: !!walletAddress && isLoggedIn,
     retry: 2,
     staleTime: 1000 * 60 * 5,
   });
@@ -67,7 +38,7 @@ export function useUser() {
   return {
     user: data?.user,
     walletAddress,
-    wallet,
+    wallet: primaryWallet ?? null,
     hasWallet,
     ready,
     isOnboarded,
@@ -76,5 +47,9 @@ export function useUser() {
     isError,
     error,
     refetch,
+    isLoggedIn,
+    isConnected,
+    isAuthenticating,
+    authenticateUser,
   };
 }

@@ -147,8 +147,8 @@ Each cycle day has a spiritual energy number (URIP). Combined URIPs determine:
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                    FRONTEND                             │
-│  Vite + React 18 + TypeScript + TailwindCSS             │
-│  @solana/web3.js + @solana/wallet-adapter               │
+│  Vite + React 19 + TypeScript + TailwindCSS             │
+│  @solana/kit + Privy (Wallet Standard)                  │
 │  @solana/spl-token (Token payments)                     │
 └─────────────────────────────────────────────────────────┘
                            │
@@ -381,23 +381,25 @@ pub struct PaymentEvent {
 ### Frontend Payment Component
 
 ```typescript
-// components/PaymentButton.tsx
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { PublicKey, Transaction } from "@solana/web3.js";
+// features/wallet/components/payment-button.tsx
+import { useWallets, useSignAndSendTransaction } from "@privy-io/react-auth/solana";
 import {
-  createBurnInstruction,
-  createTransferInstruction,
-  getAssociatedTokenAddress
-} from "@solana/spl-token";
+  address,
+  createTransactionMessage,
+  setTransactionMessageFeePayer,
+  setTransactionMessageLifetimeUsingBlockhash,
+  appendTransactionMessageInstruction,
+  pipe,
+} from "@solana/kit";
 
-const NEPTU_MINT = new PublicKey("NEPTU_MINT_ADDRESS");
-const TREASURY = new PublicKey("TREASURY_ADDRESS");
+const NEPTU_MINT = address("NEPTU_MINT_ADDRESS");
+const TREASURY = address("TREASURY_ADDRESS");
 
 const PRICES = {
-  potensi: 10 * 10**9,      // 10 NEPTU
-  peluang: 1 * 10**9,       // 1 NEPTU
-  chat: 2 * 10**9,          // 2 NEPTU
-  compatibility: 5 * 10**9, // 5 NEPTU
+  potensi: 10n * 1_000_000_000n,      // 10 NEPTU
+  peluang: 1n * 1_000_000_000n,       // 1 NEPTU
+  chat: 2n * 1_000_000_000n,          // 2 NEPTU
+  compatibility: 5n * 1_000_000_000n, // 5 NEPTU
 };
 
 export function PaymentButton({
@@ -407,36 +409,26 @@ export function PaymentButton({
   action: keyof typeof PRICES;
   onSuccess: (txSignature: string) => void;
 }) {
-  const { connection } = useConnection();
-  const { publicKey, sendTransaction } = useWallet();
+  const { wallets } = useWallets();
+  const { signAndSendTransaction } = useSignAndSendTransaction();
+  const wallet = wallets[0];
 
   const handlePayment = async () => {
-    if (!publicKey) return;
+    if (!wallet) return;
 
     const amount = PRICES[action];
-    const burnAmount = amount / 2;
+    const burnAmount = amount / 2n;
     const treasuryAmount = amount - burnAmount;
 
-    const userATA = await getAssociatedTokenAddress(NEPTU_MINT, publicKey);
-    const treasuryATA = await getAssociatedTokenAddress(NEPTU_MINT, TREASURY);
-
-    const tx = new Transaction();
-
-    // Burn 50%
-    tx.add(createBurnInstruction(userATA, NEPTU_MINT, publicKey, burnAmount));
-
-    // Transfer 50% to treasury
-    tx.add(createTransferInstruction(userATA, treasuryATA, publicKey, treasuryAmount));
-
-    const signature = await sendTransaction(tx, connection);
-    await connection.confirmTransaction(signature);
-
+    // Build transaction using @solana/kit transaction message API
+    // + @solana-program/token for burn/transfer instructions
+    const signature = await signAndSendTransaction(/* transaction */);
     onSuccess(signature);
   };
 
   return (
     <button onClick={handlePayment}>
-      Pay {PRICES[action] / 10**9} NEPTU
+      Pay {Number(PRICES[action] / 1_000_000_000n)} NEPTU
     </button>
   );
 }

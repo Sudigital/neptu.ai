@@ -1,5 +1,4 @@
 import { Logo } from "@/assets/logo";
-import { AgentDialog } from "@/components/agent-dialog";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { ProfileDropdown } from "@/components/profile-dropdown";
 import { ThemeSwitch } from "@/components/theme-switch";
@@ -23,7 +22,7 @@ import {
 } from "@/components/ui/sheet";
 import { useTranslate } from "@/hooks/use-translate";
 import { useUser } from "@/hooks/use-user";
-import { usePrivy } from "@privy-io/react-auth";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
@@ -50,8 +49,10 @@ interface CryptoItem {
 }
 
 export function Navbar() {
-  const { login, authenticated } = usePrivy();
-  const { hasWallet } = useUser();
+  const { primaryWallet, setShowAuthFlow } = useDynamicContext();
+  const authenticated = !!primaryWallet;
+  const { hasWallet, isLoggedIn, isAuthenticating, authenticateUser } =
+    useUser();
   const t = useTranslate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -334,7 +335,6 @@ export function Navbar() {
             <FileText className="h-4 w-4" />
             {t("nav.docs")}
           </a>
-          <AgentDialog />
           <div className="hidden md:block">
             <LanguageSwitcher />
           </div>
@@ -343,16 +343,24 @@ export function Navbar() {
           </div>
           {authenticated && hasWallet ? (
             <ProfileDropdown />
+          ) : authenticated && !isLoggedIn ? (
+            <Button
+              onClick={() => authenticateUser()}
+              disabled={isAuthenticating}
+              className="h-9 bg-amber-600 px-2.5 text-xs text-white hover:bg-amber-600/90 sm:px-4 sm:text-sm"
+            >
+              <Wallet className="mr-2 h-4 w-4" />
+              {isAuthenticating
+                ? t("landing.verifying") || "Verifying..."
+                : t("landing.verifyWallet") || "Verify Wallet"}
+            </Button>
           ) : (
             <Button
-              onClick={login}
-              size="sm"
-              className="bg-[#7C3AED] px-2.5 text-xs text-white hover:bg-[#7C3AED]/90 sm:px-4 sm:text-sm"
+              onClick={() => setShowAuthFlow(true)}
+              className="h-9 bg-[#7C3AED] px-2.5 text-xs text-white hover:bg-[#7C3AED]/90 sm:px-4 sm:text-sm"
             >
-              <Wallet className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">
-                {t("landing.connectWallet")}
-              </span>
+              <Wallet className="mr-2 h-4 w-4" />
+              {t("landing.connectWallet")}
             </Button>
           )}
         </div>

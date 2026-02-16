@@ -2,8 +2,8 @@ import path from "path";
 
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
-import react from "@vitejs/plugin-react-swc";
-import { defineConfig } from "rolldown-vite";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 import { VitePWA } from "vite-plugin-pwa";
 
@@ -32,7 +32,7 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["images/logo.svg", "apple-touch-icon.png"],
       workbox: {
-        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3 MB
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
       },
       manifest: {
         name: "Neptu — Balinese Astrology AI",
@@ -71,13 +71,28 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
-    dedupe: ["react", "react-dom"],
+    dedupe: [
+      "react",
+      "react-dom",
+      "@wallet-standard/app",
+      "@wallet-standard/base",
+      "@wallet-standard/features",
+      "@wallet-standard/wallet",
+      "@solana/wallet-standard-features",
+    ],
   },
   optimizeDeps: {
-    include: ["@solana-program/memo", "@privy-io/react-auth"],
+    include: [
+      "@solana-program/memo",
+      "@wallet-standard/app",
+      "@wallet-standard/base",
+      "@wallet-standard/features",
+      "@wallet-standard/wallet",
+      "@solana/wallet-standard-features",
+    ],
   },
+  esbuild: false,
   build: {
     chunkSizeWarningLimit: CHUNK_SIZE_WARNING_LIMIT,
-    // Let Vite/Rolldown handle chunking automatically
   },
 });

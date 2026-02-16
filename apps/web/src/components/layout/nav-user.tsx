@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useTranslate } from "@/hooks/use-translate";
 import { useUser } from "@/hooks/use-user";
-import { usePrivy } from "@privy-io/react-auth";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { Link } from "@tanstack/react-router";
 import {
   BadgeCheck,
@@ -30,7 +30,7 @@ import { toast } from "sonner";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const { user, logout } = usePrivy();
+  const { handleLogOut } = useDynamicContext();
   const { walletAddress, hasWallet } = useUser();
   const t = useTranslate();
 
@@ -38,7 +38,7 @@ export function NavUser() {
     ? `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`
     : t("user.noWallet");
 
-  const displayName = user?.email?.address || shortAddress;
+  const displayName = shortAddress;
   const displayEmail = hasWallet ? shortAddress : t("user.connectWallet");
 
   const copyAddress = () => {
@@ -49,7 +49,7 @@ export function NavUser() {
   };
 
   const handleLogout = async () => {
-    await logout();
+    await handleLogOut();
     window.location.href = "/";
   };
 

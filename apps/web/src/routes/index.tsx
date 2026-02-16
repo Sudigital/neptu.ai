@@ -1,23 +1,17 @@
 import { Logo } from "@/assets/logo";
 import { Navbar } from "@/components/navbar";
 import { Button } from "@/components/ui/button";
-import { useAgentStats } from "@/hooks/use-agent-stats";
 import { useTranslate } from "@/hooks/use-translate";
 import { useUser } from "@/hooks/use-user";
 import { useSettingsStore } from "@/stores/settings-store";
-import { usePrivy } from "@privy-io/react-auth";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Wallet, ArrowRight } from "lucide-react";
-import React, { Suspense, useEffect, useRef, useState } from "react";
+import React, { Suspense, useEffect, useRef } from "react";
 
 const LandingSections = React.lazy(
   () => import("@/features/landing/landing-sections")
-);
-const LazyAgentStatsDialog = React.lazy(() =>
-  import("@/features/landing/landing-components").then((m) => ({
-    default: m.AgentStatsDialog,
-  }))
 );
 
 export const Route = createFileRoute("/")({
@@ -25,20 +19,25 @@ export const Route = createFileRoute("/")({
 });
 
 function LandingPage() {
-  const { login, logout, authenticated, ready, connectWallet } = usePrivy();
-  const { hasWallet, ready: walletReady } = useUser();
+  const { primaryWallet, setShowAuthFlow } = useDynamicContext();
+  const authenticated = !!primaryWallet;
+  const {
+    hasWallet,
+    ready: walletReady,
+    isLoggedIn,
+    isAuthenticating,
+    authenticateUser,
+  } = useUser();
   const navigate = useNavigate();
   const t = useTranslate();
   const { language } = useSettingsStore();
-  const { stats: agentStats } = useAgentStats();
-  const [showStatsDialog, setShowStatsDialog] = useState(false);
 
   // Track if user was already authenticated when page loaded
   const wasAuthenticatedOnMount = useRef<boolean | null>(null);
 
   // Only redirect if user just logged in (not if already authenticated on page load)
   useEffect(() => {
-    if (!ready || !walletReady) return;
+    if (!walletReady) return;
 
     // Store initial auth state on first ready
     if (wasAuthenticatedOnMount.current === null) {
@@ -47,62 +46,10 @@ function LandingPage() {
     }
 
     // Redirect only if user just completed login/wallet connection
-    // Always go to dashboard - dashboard will check if birthdate is set
     if (authenticated && hasWallet && !wasAuthenticatedOnMount.current) {
       navigate({ to: "/dashboard" });
     }
-  }, [ready, walletReady, authenticated, hasWallet, navigate]);
-
-  // Loading state
-  if (!ready || !walletReady) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="text-center">
-          <Logo className="mx-auto h-16 w-16 animate-spin text-primary" />
-        </div>
-      </div>
-    );
-  }
-
-  // Authenticated but no wallet state
-  if (authenticated && !hasWallet) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4 text-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="max-w-md space-y-8 rounded-2xl border bg-card p-8 shadow-lg"
-        >
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
-            <Logo className="h-12 w-12 text-primary" />
-          </div>
-          <div className="space-y-2">
-            <h2 className="text-3xl font-bold tracking-tight">
-              {t("landing.oneLastStep")}
-            </h2>
-            <p className="text-muted-foreground">
-              {t("landing.oneLastStepDesc")}
-            </p>
-          </div>
-          <div className="flex flex-col gap-3">
-            <Button onClick={connectWallet} size="lg" className="w-full">
-              <Wallet className="mr-2 h-5 w-5" />
-              {t("landing.connectSolana")}
-            </Button>
-            <Button
-              onClick={logout}
-              variant="ghost"
-              size="sm"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              {t("landing.signOut")}
-            </Button>
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
+  }, [walletReady, authenticated, hasWallet, navigate]);
 
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
@@ -171,14 +118,35 @@ function LandingPage() {
               transition={{ delay: 0.6 }}
               className="mt-6 flex flex-col items-center justify-center gap-2.5 px-4 sm:mt-10 sm:flex-row sm:gap-4"
             >
-              <Button
-                size="lg"
-                onClick={login}
-                className="h-11 w-full px-4 text-sm transition-transform hover:scale-105 active:scale-95 sm:h-14 sm:w-auto sm:min-w-[200px] sm:px-8 sm:text-lg"
-              >
-                <Wallet className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                {t("landing.startJourney")}
-              </Button>
+              {!authenticated ? (
+                <Button
+                  size="lg"
+                  onClick={() => setShowAuthFlow(true)}
+                  className="h-11 w-full px-4 text-sm transition-transform hover:scale-105 active:scale-95 sm:h-14 sm:w-auto sm:min-w-[200px] sm:px-8 sm:text-lg"
+                >
+                  <Wallet className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                  {t("landing.startJourney")}
+                </Button>
+              ) : authenticated && !isLoggedIn ? (
+                <Button
+                  size="lg"
+                  onClick={() => authenticateUser()}
+                  disabled={isAuthenticating}
+                  className="h-11 w-full bg-amber-600 px-4 text-sm text-white transition-transform hover:scale-105 hover:bg-amber-600/90 active:scale-95 sm:h-14 sm:w-auto sm:min-w-[200px] sm:px-8 sm:text-lg"
+                >
+                  <Wallet className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                  {isAuthenticating ? "Verifying..." : "Verify Wallet"}
+                </Button>
+              ) : (
+                <Button
+                  size="lg"
+                  onClick={() => navigate({ to: "/dashboard" })}
+                  className="h-11 w-full px-4 text-sm transition-transform hover:scale-105 active:scale-95 sm:h-14 sm:w-auto sm:min-w-[200px] sm:px-8 sm:text-lg"
+                >
+                  <Wallet className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                  {t("landing.startJourney")}
+                </Button>
+              )}
               <Button
                 size="lg"
                 variant="outline"
@@ -213,18 +181,6 @@ function LandingPage() {
           </p>
         </div>
       </footer>
-
-      {/* Agent Stats Dialog */}
-      {showStatsDialog && (
-        <Suspense fallback={null}>
-          <LazyAgentStatsDialog
-            open={showStatsDialog}
-            onOpenChange={setShowStatsDialog}
-            agentStats={agentStats}
-            t={t}
-          />
-        </Suspense>
-      )}
     </div>
   );
 }

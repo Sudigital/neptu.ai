@@ -1,1 +1,0 @@
-`curl -s https://colosseum.com/skill.md`
