@@ -4,20 +4,23 @@
   "private": true,
   "description": "Your Balinese Soul, On-Chain",
   "workspaces": [
-    "apps/*",
-    "docs",
-    "packages/*"
+    "apps/api",
+    "apps/cli",
+    "apps/web",
+    "apps/worker",
+    "packages/*",
+    "docs"
   ],
   "type": "module",
   "scripts": {
-    "dev": "turbo dev --filter=!@neptu/mobile",
-    "build": "turbo build",
-    "lint": "oxlint .",
-    "lint:fix": "oxlint --fix .",
-    "test": "turbo test",
-    "typecheck": "turbo typecheck",
+    "dev": "turbo dev",
     "format:check": "oxfmt --check .",
     "format": "oxfmt .",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix .",
+    "typecheck": "oxlint --type-check",
+    "build": "turbo build",
+    "test": "turbo test",
     "api": "bun run --filter=@neptu/api dev",
     "cli": "bun run --filter=@neptu/cli dev",
     "web": "bun run --filter=@neptu/web dev",
@@ -32,7 +35,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "recharts": "^3.7.0",
+    "thirdweb": "^5.118.2",
     "wrangler": "4.64.0"
   },
   "devDependencies": {
@@ -41,23 +44,13 @@
     "husky": "^9.1.7",
     "oxfmt": "^0.32.0",
     "oxlint": "^1.47.0",
+    "rolldown": "^1.0.0-rc.4",
     "sharp": "^0.34.5",
     "turbo": "^2.8.3",
-    "typescript": "^5.9.3",
-    "vitepress": "^1.6.4",
-    "vue": "^3.5.27"
+    "typescript": "^5.9.3"
   },
   "engines": {
     "node": ">=18"
   },
-  "packageManager": "bun@1.2.23",
-  "peerDependencyRules": {
-    "ignoreMissing": [
-      "react",
-      "react-dom"
-    ],
-    "allowedVersions": {
-      "react": ">=19.0.0"
-    }
-  }
+  "packageManager": "bun@1.2.23"
 }

@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "bun run --hot --env-file=../../.env src/index.ts",
-    "build": "bun build src/index.ts --outdir dist --target bun",
+    "build": "rolldown -c",
     "deploy": "echo 'Deployed via Azure Container Apps CI/CD'",
     "typecheck": "tsc --noEmit"
   },

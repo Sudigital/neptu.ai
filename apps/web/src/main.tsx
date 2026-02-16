@@ -1,7 +1,11 @@
 import { handleServerError } from "@/lib/handle-server-error";
-import { PrivyProvider } from "@privy-io/react-auth";
-import { toSolanaWalletConnectors } from "@privy-io/react-auth/solana";
-import { createSolanaRpc, createSolanaRpcSubscriptions } from "@solana/kit";
+import {
+  DynamicContextProvider,
+  useAuthenticateConnectedUser,
+  useDynamicContext,
+  useIsLoggedIn,
+} from "@dynamic-labs/sdk-react-core";
+import { SolanaWalletConnectors } from "@dynamic-labs/solana";
 import {
   QueryCache,
   QueryClient,
@@ -9,7 +13,7 @@ import {
 } from "@tanstack/react-query";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { AxiosError } from "axios";
-import { StrictMode } from "react";
+import { StrictMode, useEffect, useRef } from "react";
 import ReactDOM from "react-dom/client";
 import { toast } from "sonner";
 
@@ -21,19 +25,15 @@ import { routeTree } from "./routeTree.gen";
 // Styles
 import "./styles/index.css";
 
-// Suppress Privy's internal key warning (it's a library bug in their Me component)
-if (import.meta.env.DEV) {
-  const originalConsoleError = console.error;
-  console.error = (...args) => {
-    if (
-      typeof args[0] === "string" &&
-      args[0].includes("Each child in a list should have a unique") &&
-      args.some((arg) => typeof arg === "string" && arg.includes("Me"))
-    ) {
-      return; // Suppress Privy's internal key warning
-    }
-    originalConsoleError.apply(console, args);
-  };
+const SOLANA_NETWORK = import.meta.env.VITE_SOLANA_NETWORK || "devnet";
+const SOLANA_RPC_URL =
+  import.meta.env.VITE_SOLANA_RPC_URL ||
+  `https://api.${SOLANA_NETWORK}.solana.com`;
+
+const DYNAMIC_ENVIRONMENT_ID =
+  import.meta.env.VITE_DYNAMIC_ENVIRONMENT_ID || "";
+if (!DYNAMIC_ENVIRONMENT_ID) {
+  throw new Error("VITE_DYNAMIC_ENVIRONMENT_ID is required");
 }
 
 const queryClient = new QueryClient({
@@ -100,51 +100,40 @@ declare module "@tanstack/react-router" {
   }
 }
 
-// Privy configuration
-const solanaConnectors = toSolanaWalletConnectors();
+/**
+ * Auto-triggers wallet authentication (sign message) after wallet connects.
+ * Uses connect-only mode so the wallet connects without signing,
+ * then triggers signing separately so Phantom's popup isn't covered by Dynamic's modal.
+ */
+function WalletAuthenticator({ children }: { children: React.ReactNode }) {
+  const { primaryWallet } = useDynamicContext();
+  const isLoggedIn = useIsLoggedIn();
+  const { authenticateUser, isAuthenticating } = useAuthenticateConnectedUser();
+  const hasTriggered = useRef(false);
 
-const SOLANA_DEVNET_RPC =
-  import.meta.env.VITE_SOLANA_RPC_URL || "https://api.devnet.solana.com";
-const SOLANA_DEVNET_WSS = SOLANA_DEVNET_RPC.replace("https://", "wss://");
-const SOLANA_MAINNET_RPC = "https://api.mainnet-beta.solana.com";
-const SOLANA_MAINNET_WSS = "wss://api.mainnet-beta.solana.com";
+  useEffect(() => {
+    // Trigger authentication when wallet connects but user isn't signed in yet
+    if (
+      primaryWallet &&
+      !isLoggedIn &&
+      !isAuthenticating &&
+      !hasTriggered.current
+    ) {
+      hasTriggered.current = true;
+      authenticateUser().catch(() => {
+        // Reset so user can retry
+        hasTriggered.current = false;
+      });
+    }
 
-const privyConfig = {
-  appearance: {
-    theme: "dark" as const,
-    accentColor: "#22c55e" as `#${string}`,
-    logo: "/neptu-logo.svg",
-    landingHeader: "Connect to Neptu",
-    showWalletLoginFirst: true,
-    walletChainType: "solana-only" as const,
-  },
-  loginMethods: ["wallet", "email"] as ("wallet" | "email")[],
-  embeddedWallets: {
-    solana: {
-      createOnLogin: "all-users" as const,
-    },
-    ethereum: {
-      createOnLogin: "off" as const,
-    },
-  },
-  externalWallets: {
-    solana: {
-      connectors: solanaConnectors,
-    },
-  },
-  solana: {
-    rpcs: {
-      "solana:mainnet": {
-        rpc: createSolanaRpc(SOLANA_MAINNET_RPC),
-        rpcSubscriptions: createSolanaRpcSubscriptions(SOLANA_MAINNET_WSS),
-      },
-      "solana:devnet": {
-        rpc: createSolanaRpc(SOLANA_DEVNET_RPC),
-        rpcSubscriptions: createSolanaRpcSubscriptions(SOLANA_DEVNET_WSS),
-      },
-    },
-  },
-};
+    // Reset when wallet disconnects
+    if (!primaryWallet) {
+      hasTriggered.current = false;
+    }
+  }, [primaryWallet, isLoggedIn, isAuthenticating, authenticateUser]);
+
+  return <>{children}</>;
+}
 
 // Render the app
 const rootElement = document.getElementById("root")!;
@@ -152,38 +141,47 @@ if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <PrivyProvider
-        appId={import.meta.env.VITE_PRIVY_APP_ID || ""}
-        config={privyConfig}
-        events={{
-          login: {
-            onComplete: (params) => {
-              console.info(
-                "[Privy] Login success:",
-                params.loginMethod,
-                params.isNewUser ? "(new user)" : "(existing)"
-              );
-            },
-            onError: (error) => {
-              console.error("[Privy] Login error:", error);
-              console.error(
-                "[Privy] Error details:",
-                JSON.stringify(error, null, 2)
-              );
-            },
+      <DynamicContextProvider
+        settings={{
+          environmentId: DYNAMIC_ENVIRONMENT_ID,
+          walletConnectors: [SolanaWalletConnectors],
+          initialAuthenticationMode: "connect-only",
+          overrides: {
+            solNetworks: [
+              {
+                chainId: "devnet",
+                networkId: "devnet",
+                name: "Solana Devnet",
+                iconUrls: [
+                  "https://app.dynamic.xyz/assets/networks/solana.svg",
+                ],
+                nativeCurrency: {
+                  name: "Solana",
+                  symbol: "SOL",
+                  decimals: 9,
+                },
+                rpcUrls: [SOLANA_RPC_URL],
+                blockExplorerUrls: [
+                  `https://explorer.solana.com/?cluster=${SOLANA_NETWORK}`,
+                ],
+                isTestnet: SOLANA_NETWORK !== "mainnet-beta",
+              },
+            ],
           },
         }}
       >
-        <QueryClientProvider client={queryClient}>
-          <ThemeProvider>
-            <FontProvider>
-              <DirectionProvider>
-                <RouterProvider router={router} />
-              </DirectionProvider>
-            </FontProvider>
-          </ThemeProvider>
-        </QueryClientProvider>
-      </PrivyProvider>
+        <WalletAuthenticator>
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider>
+              <FontProvider>
+                <DirectionProvider>
+                  <RouterProvider router={router} />
+                </DirectionProvider>
+              </FontProvider>
+            </ThemeProvider>
+          </QueryClientProvider>
+        </WalletAuthenticator>
+      </DynamicContextProvider>
     </StrictMode>
   );
 }

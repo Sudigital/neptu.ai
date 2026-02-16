@@ -1,10 +1,11 @@
 import { createDatabase } from "@neptu/drizzle-orm";
+import { createLogger } from "@neptu/logger";
 import { CORS_ALLOWED_ORIGINS } from "@neptu/shared";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 
+import { requestLogger } from "./middleware/request-logger";
 import { adminRoutes } from "./routes/admin";
 import { apiPricingRoutes } from "./routes/api-pricing";
 import { apiSubscriptionPaymentRoutes } from "./routes/api-subscription-payment";
@@ -43,7 +44,7 @@ app.use(
 );
 
 // Middleware
-app.use("*", logger());
+app.use("*", requestLogger);
 app.use("*", prettyJSON());
 
 // Inject database into context
@@ -74,15 +75,19 @@ app.notFound((c) => {
 });
 
 // Error handler
+const log = createLogger({ name: "api" });
 app.onError((err, c) => {
-  console.error(
-    `[API Error] ${c.req.method} ${c.req.path}:`,
-    err.message,
-    err.stack
+  log.error(
+    {
+      method: c.req.method,
+      path: c.req.path,
+      err: { message: err.message, stack: err.stack },
+    },
+    "unhandled error"
   );
   return c.json({ error: "Internal Server Error", message: err.message }, 500);
 });
 
 const port = Number(process.env.PORT || 3000);
-console.log(`Neptu API running on port ${port}`);
+log.info({ port }, "Neptu API started");
 Bun.serve({ fetch: app.fetch, port });

@@ -1,3 +1,5 @@
+import type { SolanaSignAndSendTransactionFeature } from "@solana/wallet-standard-features";
+
 import { ConfigDrawer } from "@/components/config-drawer";
 import { Header } from "@/components/layout/header";
 import { Main } from "@/components/layout/main";
@@ -21,11 +23,8 @@ import { useTranslate } from "@/hooks/use-translate";
 import { useUser } from "@/hooks/use-user";
 import { useWalletBalance } from "@/hooks/use-wallet-balance";
 import { neptuApi } from "@/lib/api";
-import {
-  useSignAndSendTransaction,
-  useWallets as useSolanaWallets,
-} from "@privy-io/react-auth/solana";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getWallets } from "@wallet-standard/app";
 import { Wallet as WalletIcon, ArrowRight } from "lucide-react";
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
@@ -51,15 +50,42 @@ function toBase58(bytes: Uint8Array): string {
   return str;
 }
 
+const SOLANA_CHAIN = `solana:${import.meta.env.VITE_SOLANA_NETWORK || "devnet"}`;
+
+/** Sign and send a serialized Solana transaction via Wallet Standard */
+async function signAndSendSolanaTransaction(
+  walletAddress: string,
+  transactionBytes: Uint8Array
+): Promise<{ signature: Uint8Array }> {
+  const registeredWallets = getWallets().get();
+
+  for (const wallet of registeredWallets) {
+    const feature = wallet.features["solana:signAndSendTransaction"] as
+      | SolanaSignAndSendTransactionFeature["solana:signAndSendTransaction"]
+      | undefined;
+    if (!feature) continue;
+
+    const account = wallet.accounts.find((a) => a.address === walletAddress);
+    if (!account) continue;
+
+    const [result] = await feature.signAndSendTransaction({
+      account,
+      transaction: transactionBytes,
+      chain: SOLANA_CHAIN,
+    });
+
+    return { signature: result.signature };
+  }
+
+  throw new Error("No compatible Solana wallet found for signing");
+}
+
 export function Wallet() {
   const { walletAddress } = useUser();
   const queryClient = useQueryClient();
   const [isClaimingRewards, setIsClaimingRewards] = useState(false);
   const t = useTranslate();
   const { sudigitalBalance } = useWalletBalance();
-  const { signAndSendTransaction } = useSignAndSendTransaction();
-  const { wallets: solanaWallets } = useSolanaWallets();
-  const solanaWallet = solanaWallets.find((w) => w.address === walletAddress);
 
   const topNav = [
     { title: t("nav.overview"), href: "/dashboard", isActive: false },
@@ -152,8 +178,7 @@ export function Wallet() {
   });
 
   const handleClaimRewards = useCallback(async () => {
-    if (!rewardsData?.rewards?.length || !walletAddress || !solanaWallet)
-      return;
+    if (!rewardsData?.rewards?.length || !walletAddress) return;
 
     setIsClaimingRewards(true);
     const loadingToast = toast.loading(t("wallet.claimingRewards"));
@@ -194,12 +219,12 @@ export function Wallet() {
         throw new Error("Failed to build claim transaction");
       }
 
-      // 2. Sign and send the transaction on-chain via Privy
+      // 2. Sign and send the transaction on-chain via Wallet Standard
       const txBytes = new Uint8Array(buildResult.serializedTransaction);
-      const { signature } = await signAndSendTransaction({
-        transaction: txBytes,
-        wallet: solanaWallet,
-      });
+      const { signature } = await signAndSendSolanaTransaction(
+        walletAddress,
+        txBytes
+      );
 
       // Convert signature bytes to base58 string
       const txSignature = toBase58(signature);
@@ -247,14 +272,7 @@ export function Wallet() {
     } finally {
       setIsClaimingRewards(false);
     }
-  }, [
-    rewardsData,
-    walletAddress,
-    solanaWallet,
-    signAndSendTransaction,
-    queryClient,
-    t,
-  ]);
+  }, [rewardsData, walletAddress, queryClient, t]);
 
   const handleRefreshBalance = () => {
     refetchBalance();

@@ -4,14 +4,13 @@
   "globalEnv": [
     "SOLANA_NETWORK",
     "DATABASE_URL",
-    "VITE_PRIVY_APP_ID",
-    "PRIVY_APP_SECRET",
+    "VITE_DYNAMIC_ENVIRONMENT_ID",
     "API_URL"
   ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "outputs": ["dist/**", ".next/**"]
     },
     "dev": {
       "cache": false,

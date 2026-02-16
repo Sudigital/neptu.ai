@@ -228,7 +228,7 @@ const speechToText = async (audioBuffer: ArrayBuffer, env: Env) => {
 │  ┌─────────────────────────────────────────────────────────────┐   │
 │  │                      SOLANA NETWORK                          │   │
 │  │  • Devnet (for hackathon demo)                               │   │
-│  │  • @solana/web3.js                                           │   │
+│  │  • @solana/kit                                               │   │
 │  │  • AgentWallet for signing                                   │   │
 │  └─────────────────────────────────────────────────────────────┘   │
 │                                                                     │
@@ -315,7 +315,7 @@ NL-Fi: "⚠️ You only have 5.2 SOL in your wallet.
 | **Hosting**     | Cloudflare Pages                       |
 | **Wallet**      | Solana Wallet Adapter                  |
 | **DeFi**        | Jupiter API, Pyth (prices)             |
-| **Blockchain**  | @solana/web3.js, Devnet                |
+| **Blockchain**  | @solana/kit, Devnet                    |
 | **Signing**     | AgentWallet (for hackathon)            |
 
 ### Azure Services Required

@@ -222,7 +222,7 @@ AI agent that helps create, optimize, and manage gamified missions on Solana - b
 │        ▼                                                        │
 │   ┌─────────────────────────────────────┐                      │
 │   │         Solana Integration          │                      │
-│   │  @solana/web3.js + Anchor Client    │                      │
+│   │  @solana/kit + Anchor Client        │                      │
 │   └─────────────────────────────────────┘                      │
 │        │                                                        │
 │        ▼                                                        │

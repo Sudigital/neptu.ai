@@ -9,8 +9,8 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { useTranslate } from "@/hooks/use-translate";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { SUBSCRIPTION_PLANS } from "@neptu/shared";
-import { usePrivy } from "@privy-io/react-auth";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
@@ -102,7 +102,8 @@ function FeatureRow({ icon, label, values }: FeatureRowProps) {
 }
 
 export function PricingPage() {
-  const { login, authenticated } = usePrivy();
+  const { primaryWallet, setShowAuthFlow } = useDynamicContext();
+  const authenticated = !!primaryWallet;
   const t = useTranslate();
 
   return (
@@ -321,24 +322,30 @@ export function PricingPage() {
                       </CardContent>
 
                       <CardFooter>
-                        <Button
-                          className="w-full"
-                          variant={
-                            isPopular
-                              ? "default"
-                              : isFree
-                                ? "secondary"
-                                : "outline"
-                          }
-                          onClick={() => !authenticated && login()}
-                        >
-                          {isFree
-                            ? t("pricing.getStarted")
-                            : authenticated
-                              ? t("pricing.subscribe")
-                              : t("pricing.connectWallet")}
-                          <ArrowRight className="ml-1 h-4 w-4" />
-                        </Button>
+                        {!authenticated && !isFree ? (
+                          <Button
+                            className="w-full"
+                            onClick={() => setShowAuthFlow(true)}
+                          >
+                            {t("pricing.connectWallet")}
+                          </Button>
+                        ) : (
+                          <Button
+                            className="w-full"
+                            variant={
+                              isPopular
+                                ? "default"
+                                : isFree
+                                  ? "secondary"
+                                  : "outline"
+                            }
+                          >
+                            {isFree
+                              ? t("pricing.getStarted")
+                              : t("pricing.subscribe")}
+                            <ArrowRight className="ml-1 h-4 w-4" />
+                          </Button>
+                        )}
                       </CardFooter>
                     </Card>
                   </motion.div>

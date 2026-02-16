@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTranslate } from "@/hooks/use-translate";
-import { usePrivy } from "@privy-io/react-auth";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { motion } from "framer-motion";
 import {
   ArrowLeftRight,
@@ -32,7 +32,8 @@ const fadeUp = {
 };
 
 export function P2PPage() {
-  const { login, authenticated } = usePrivy();
+  const { primaryWallet, setShowAuthFlow } = useDynamicContext();
+  const authenticated = !!primaryWallet;
   const t = useTranslate();
 
   return (
@@ -91,7 +92,7 @@ export function P2PPage() {
               {!authenticated ? (
                 <Button
                   size="lg"
-                  onClick={login}
+                  onClick={() => setShowAuthFlow(true)}
                   className="h-12 w-full px-8 text-base sm:w-auto"
                 >
                   <Wallet className="mr-2 h-5 w-5" />
@@ -101,7 +102,7 @@ export function P2PPage() {
                 <Button
                   size="lg"
                   disabled
-                  className="h-12 w-full px-8 text-base opacity-70 sm:w-auto"
+                  className="h-12 w-full px-8 text-base sm:w-auto"
                 >
                   <Clock className="mr-2 h-5 w-5" />
                   {t("p2p.comingSoon")}
@@ -419,14 +420,14 @@ export function P2PPage() {
               {!authenticated ? (
                 <Button
                   size="lg"
-                  onClick={login}
+                  onClick={() => setShowAuthFlow(true)}
                   className="h-12 px-8 text-base"
                 >
                   <Wallet className="mr-2 h-5 w-5" />
                   {t("p2p.ctaButton")}
                 </Button>
               ) : (
-                <p className="text-sm font-medium text-primary">
+                <p className="text-sm font-medium text-green-500">
                   ✓ {t("p2p.ctaConnected")}
                 </p>
               )}
