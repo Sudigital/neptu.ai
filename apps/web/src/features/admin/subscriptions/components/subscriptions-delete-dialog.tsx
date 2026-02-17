@@ -5,7 +5,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { adminApi } from "@/features/admin/admin-api";
-import { useUser } from "@/hooks/use-user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle } from "lucide-react";
 import { useState } from "react";
@@ -25,14 +24,13 @@ export function SubscriptionsCancelDialog({
   currentRow,
 }: SubscriptionCancelDialogProps) {
   const [value, setValue] = useState("");
-  const { walletAddress } = useUser();
   const queryClient = useQueryClient();
 
   const confirmText = currentRow.id.slice(0, 8);
 
   const mutation = useMutation({
     mutationFn: () =>
-      adminApi.updateSubscription(walletAddress!, currentRow.id, {
+      adminApi.updateSubscription(currentRow.id, {
         status: "cancelled",
       }),
     onSuccess: () => {

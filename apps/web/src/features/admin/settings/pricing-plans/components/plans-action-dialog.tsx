@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { adminApi } from "@/features/admin/admin-api";
-import { useUser } from "@/hooks/use-user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -47,7 +46,6 @@ export function PlansActionDialog({
   open,
   onOpenChange,
 }: PlanActionDialogProps) {
-  const { walletAddress } = useUser();
   const queryClient = useQueryClient();
 
   const form = useForm<PlanEditForm>({
@@ -62,7 +60,7 @@ export function PlansActionDialog({
 
   const mutation = useMutation({
     mutationFn: (values: PlanEditForm) =>
-      adminApi.updatePlan(walletAddress!, currentRow.id, {
+      adminApi.updatePlan(currentRow.id, {
         name: values.name,
         priceUsd: values.priceUsd,
         discountPercent: values.discountPercent,

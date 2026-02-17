@@ -24,7 +24,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useUser } from "@/hooks/use-user";
 import { useQuery } from "@tanstack/react-query";
 import { Activity, TrendingUp, Clock, Zap } from "lucide-react";
 import { useState } from "react";
@@ -32,7 +31,6 @@ import { useState } from "react";
 import { adminApi } from "./admin-api";
 
 export function AdminAnalytics() {
-  const { walletAddress } = useUser();
   const [period, setPeriod] = useState("7d");
 
   const getDateRange = () => {
@@ -60,20 +58,18 @@ export function AdminAnalytics() {
   const { startDate, endDate } = getDateRange();
 
   const { data: analytics, isLoading: analyticsLoading } = useQuery({
-    queryKey: ["admin", "analytics", walletAddress, period, startDate, endDate],
+    queryKey: ["admin", "analytics", period, startDate, endDate],
     queryFn: () =>
-      adminApi.getUsageAnalytics(walletAddress!, {
+      adminApi.getUsageAnalytics({
         startDate,
         endDate,
         groupBy: period === "90d" ? "week" : "day",
       }),
-    enabled: !!walletAddress,
   });
 
   const { data: endpoints, isLoading: endpointsLoading } = useQuery({
-    queryKey: ["admin", "endpoints", walletAddress],
-    queryFn: () => adminApi.getTopEndpoints(walletAddress!),
-    enabled: !!walletAddress,
+    queryKey: ["admin", "endpoints"],
+    queryFn: () => adminApi.getTopEndpoints(),
   });
 
   const totalCalls =

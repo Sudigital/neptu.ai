@@ -16,39 +16,22 @@ import {
 import { Hono } from "hono";
 import { z } from "zod";
 
-type Env = {
-  Variables: {
+import {
+  pasetoAuth,
+  requireAdmin,
+  type AuthEnv,
+} from "../middleware/paseto-auth";
+
+type Env = AuthEnv & {
+  Variables: AuthEnv["Variables"] & {
     db: Database;
-    adminWalletAddress: string | undefined;
   };
 };
 
 export const adminRoutes = new Hono<Env>();
 
-// Admin middleware - check if user is admin
-adminRoutes.use("/*", async (c, next) => {
-  const walletAddress = c.req.header("x-wallet-address");
-  const adminWalletAddress = c.get("adminWalletAddress");
-
-  if (!walletAddress) {
-    return c.json({ success: false, error: "Unauthorized" }, 401);
-  }
-
-  // Check if wallet is admin (either env-based or db-based)
-  const isEnvAdmin = adminWalletAddress && walletAddress === adminWalletAddress;
-
-  if (!isEnvAdmin) {
-    const db = c.get("db");
-    const userService = new UserService(db);
-    const user = await userService.getUserByWallet(walletAddress);
-
-    if (!user?.isAdmin) {
-      return c.json({ success: false, error: "Admin access required" }, 403);
-    }
-  }
-
-  await next();
-});
+// Admin middleware — PASETO auth + admin check
+adminRoutes.use("/*", pasetoAuth, requireAdmin);
 
 // ============ DASHBOARD STATS ============
 

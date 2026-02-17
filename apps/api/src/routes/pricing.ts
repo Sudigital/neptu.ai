@@ -1,14 +1,17 @@
 import { zValidator } from "@hono/zod-validator";
-import {
-  PricingPlanService,
-  UserService,
-  type Database,
-} from "@neptu/drizzle-orm";
+import { PricingPlanService, type Database } from "@neptu/drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 
-type Env = {
-  Variables: { db: Database; adminWalletAddress: string | undefined };
+import {
+  requireAdmin as pasetoRequireAdmin,
+  type AuthEnv,
+} from "../middleware/paseto-auth";
+
+type Env = AuthEnv & {
+  Variables: AuthEnv["Variables"] & {
+    db: Database;
+  };
 };
 
 export const pricingRoutes = new Hono<Env>();
@@ -41,40 +44,6 @@ const createPlanSchema = z.object({
 });
 
 const updatePlanSchema = createPlanSchema.partial();
-
-// Admin check middleware
-const requireAdmin = async (
-  c: {
-    get: (key: string) => Database | string | undefined;
-    req: { header: (name: string) => string | undefined };
-    json: (data: unknown, status?: number) => Response;
-  },
-  next: () => Promise<void>
-) => {
-  const db = c.get("db") as Database;
-  const adminWalletAddress = c.get("adminWalletAddress") as string | undefined;
-  const walletAddress = c.req.header("X-Wallet-Address");
-
-  if (!walletAddress) {
-    return c.json({ success: false, error: "Wallet address required" }, 401);
-  }
-
-  const userService = new UserService(db);
-  const user = await userService.getUserByWallet(walletAddress);
-
-  if (!user) {
-    return c.json({ success: false, error: "User not found" }, 404);
-  }
-
-  // Check if user is admin (either by isAdmin flag or by matching admin wallet address)
-  const isAdmin = user.isAdmin || walletAddress === adminWalletAddress;
-
-  if (!isAdmin) {
-    return c.json({ success: false, error: "Admin access required" }, 403);
-  }
-
-  await next();
-};
 
 /**
  * GET /api/pricing
@@ -111,7 +80,7 @@ pricingRoutes.get("/:slug", async (c) => {
  * POST /api/pricing/seed
  * Seed default pricing plans (admin only)
  */
-pricingRoutes.post("/seed", requireAdmin, async (c) => {
+pricingRoutes.post("/seed", pasetoRequireAdmin, async (c) => {
   const db = c.get("db");
   const pricingService = new PricingPlanService(db);
 
@@ -128,7 +97,7 @@ pricingRoutes.post("/seed", requireAdmin, async (c) => {
  * GET /api/pricing/admin/all
  * Get all pricing plans including inactive (admin only)
  */
-pricingRoutes.get("/admin/all", requireAdmin, async (c) => {
+pricingRoutes.get("/admin/all", pasetoRequireAdmin, async (c) => {
   const db = c.get("db");
   const pricingService = new PricingPlanService(db);
 
@@ -143,7 +112,7 @@ pricingRoutes.get("/admin/all", requireAdmin, async (c) => {
  */
 pricingRoutes.post(
   "/admin",
-  requireAdmin,
+  pasetoRequireAdmin,
   zValidator("json", createPlanSchema),
   async (c) => {
     const body = c.req.valid("json");
@@ -171,7 +140,7 @@ pricingRoutes.post(
  */
 pricingRoutes.put(
   "/admin/:id",
-  requireAdmin,
+  pasetoRequireAdmin,
   zValidator("json", updatePlanSchema),
   async (c) => {
     const id = c.req.param("id");
@@ -206,7 +175,7 @@ pricingRoutes.put(
  * DELETE /api/pricing/admin/:id
  * Delete a pricing plan (admin only)
  */
-pricingRoutes.delete("/admin/:id", requireAdmin, async (c) => {
+pricingRoutes.delete("/admin/:id", pasetoRequireAdmin, async (c) => {
   const id = c.req.param("id");
   const db = c.get("db");
   const pricingService = new PricingPlanService(db);

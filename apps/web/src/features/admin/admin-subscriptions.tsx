@@ -24,7 +24,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useUser } from "@/hooks/use-user";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Key,
@@ -38,25 +37,23 @@ import { useState } from "react";
 import { adminApi } from "./admin-api";
 
 export function AdminSubscriptions() {
-  const { walletAddress } = useUser();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
   const { data, isLoading } = useQuery({
-    queryKey: ["admin", "subscriptions", walletAddress, page, statusFilter],
+    queryKey: ["admin", "subscriptions", page, statusFilter],
     queryFn: () =>
-      adminApi.listSubscriptions(walletAddress!, {
+      adminApi.listSubscriptions({
         page,
         limit: 20,
         status: statusFilter === "all" ? undefined : statusFilter,
       }),
-    enabled: !!walletAddress,
   });
 
   const cancelMutation = useMutation({
     mutationFn: (id: string) =>
-      adminApi.updateSubscription(walletAddress!, id, { status: "cancelled" }),
+      adminApi.updateSubscription(id, { status: "cancelled" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "subscriptions"] });
     },

@@ -2,50 +2,23 @@ import { zValidator } from "@hono/zod-validator";
 import {
   ApiKeyService,
   ApiSubscriptionService,
-  UserService,
   type Database,
 } from "@neptu/drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 
-type Env = {
-  Variables: {
+import { pasetoAuth, type AuthEnv } from "../middleware/paseto-auth";
+
+type Env = AuthEnv & {
+  Variables: AuthEnv["Variables"] & {
     db: Database;
-    adminWalletAddress: string | undefined;
-    userId: string;
-    walletAddress: string;
   };
 };
 
 export const developerRoutes = new Hono<Env>();
 
-const requireAuth = async (
-  c: {
-    get: (key: string) => Database | string | undefined;
-    req: { header: (name: string) => string | undefined };
-    json: (data: unknown, status?: number) => Response;
-    set: (key: string, value: unknown) => void;
-  },
-  next: () => Promise<void>
-) => {
-  const db = c.get("db") as Database;
-  const walletAddress = c.req.header("X-Wallet-Address");
-
-  if (!walletAddress) {
-    return c.json({ success: false, error: "Wallet address required" }, 401);
-  }
-
-  const userService = new UserService(db);
-  const user = await userService.getUserByWallet(walletAddress);
-
-  if (!user) {
-    return c.json({ success: false, error: "User not found" }, 404);
-  }
-
-  c.set("userId", user.id);
-  c.set("walletAddress", walletAddress);
-  await next();
-};
+// Protect all developer routes with PASETO auth
+developerRoutes.use("/*", pasetoAuth);
 
 const createApiKeySchema = z.object({
   name: z.string().min(1).max(100),
@@ -61,7 +34,7 @@ const updateApiKeySchema = z.object({
   isActive: z.boolean().optional(),
 });
 
-developerRoutes.get("/keys", requireAuth, async (c) => {
+developerRoutes.get("/keys", async (c) => {
   const db = c.get("db") as Database;
   const userId = c.get("userId") as string;
   const apiKeyService = new ApiKeyService(db);
@@ -72,7 +45,7 @@ developerRoutes.get("/keys", requireAuth, async (c) => {
 
 developerRoutes.post(
   "/keys",
-  requireAuth,
+
   zValidator("json", createApiKeySchema),
   async (c) => {
     const db = c.get("db") as Database;
@@ -107,7 +80,7 @@ developerRoutes.post(
 
 developerRoutes.put(
   "/keys/:keyId",
-  requireAuth,
+
   zValidator("json", updateApiKeySchema),
   async (c) => {
     const db = c.get("db") as Database;
@@ -126,7 +99,7 @@ developerRoutes.put(
   }
 );
 
-developerRoutes.delete("/keys/:keyId", requireAuth, async (c) => {
+developerRoutes.delete("/keys/:keyId", async (c) => {
   const db = c.get("db") as Database;
   const userId = c.get("userId") as string;
   const keyId = c.req.param("keyId");
@@ -141,7 +114,7 @@ developerRoutes.delete("/keys/:keyId", requireAuth, async (c) => {
   return c.json({ success: true, message: "API key revoked" });
 });
 
-developerRoutes.get("/subscription", requireAuth, async (c) => {
+developerRoutes.get("/subscription", async (c) => {
   const db = c.get("db") as Database;
   const userId = c.get("userId") as string;
 
@@ -156,7 +129,7 @@ developerRoutes.get("/subscription", requireAuth, async (c) => {
   return c.json({ success: true, subscription });
 });
 
-developerRoutes.get("/subscriptions", requireAuth, async (c) => {
+developerRoutes.get("/subscriptions", async (c) => {
   const db = c.get("db") as Database;
   const userId = c.get("userId") as string;
 
@@ -167,7 +140,7 @@ developerRoutes.get("/subscriptions", requireAuth, async (c) => {
   return c.json({ success: true, subscriptions });
 });
 
-developerRoutes.post("/subscription/cancel", requireAuth, async (c) => {
+developerRoutes.post("/subscription/cancel", async (c) => {
   const db = c.get("db") as Database;
   const userId = c.get("userId") as string;
 

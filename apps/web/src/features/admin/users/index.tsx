@@ -6,7 +6,6 @@ import { Search } from "@/components/search";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { adminApi } from "@/features/admin/admin-api";
 import { useDebounce } from "@/hooks/use-debounce";
-import { useUser } from "@/hooks/use-user";
 import { useQuery } from "@tanstack/react-query";
 import { getRouteApi } from "@tanstack/react-router";
 
@@ -19,26 +18,17 @@ const route = getRouteApi("/_authenticated/admin/users");
 export function Users() {
   const search = route.useSearch();
   const navigate = route.useNavigate();
-  const { walletAddress } = useUser();
   const debouncedSearch = useDebounce(search.search ?? "", 300);
   const searchQuery = debouncedSearch.length >= 3 ? debouncedSearch : undefined;
 
   const { data, isLoading } = useQuery({
-    queryKey: [
-      "admin",
-      "users",
-      walletAddress,
-      search.page,
-      search.pageSize,
-      searchQuery,
-    ],
+    queryKey: ["admin", "users", search.page, search.pageSize, searchQuery],
     queryFn: () =>
-      adminApi.listUsers(walletAddress!, {
+      adminApi.listUsers({
         page: search.page ?? 1,
         limit: search.pageSize ?? 10,
         search: searchQuery,
       }),
-    enabled: !!walletAddress,
   });
 
   const users = data?.data ?? [];

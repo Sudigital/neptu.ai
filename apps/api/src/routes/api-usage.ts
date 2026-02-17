@@ -1,49 +1,21 @@
 import {
   ApiUsageService,
   ApiKeyService,
-  UserService,
   type Database,
 } from "@neptu/drizzle-orm";
 import { Hono } from "hono";
 
-type Env = {
-  Variables: {
+import { type AuthEnv } from "../middleware/paseto-auth";
+
+type Env = AuthEnv & {
+  Variables: AuthEnv["Variables"] & {
     db: Database;
-    adminWalletAddress: string | undefined;
-    userId: string;
   };
 };
 
 export const apiUsageRoutes = new Hono<Env>();
 
-const requireAuth = async (
-  c: {
-    get: (key: string) => Database | string | undefined;
-    req: { header: (name: string) => string | undefined };
-    json: (data: unknown, status?: number) => Response;
-    set: (key: string, value: unknown) => void;
-  },
-  next: () => Promise<void>
-) => {
-  const db = c.get("db") as Database;
-  const walletAddress = c.req.header("X-Wallet-Address");
-
-  if (!walletAddress) {
-    return c.json({ success: false, error: "Wallet address required" }, 401);
-  }
-
-  const userService = new UserService(db);
-  const user = await userService.getUserByWallet(walletAddress);
-
-  if (!user) {
-    return c.json({ success: false, error: "User not found" }, 404);
-  }
-
-  c.set("userId", user.id);
-  await next();
-};
-
-apiUsageRoutes.get("/keys/:keyId/usage", requireAuth, async (c) => {
+apiUsageRoutes.get("/keys/:keyId/usage", async (c) => {
   const db = c.get("db") as Database;
   const userId = c.get("userId") as string;
   const keyId = c.req.param("keyId");
@@ -62,7 +34,7 @@ apiUsageRoutes.get("/keys/:keyId/usage", requireAuth, async (c) => {
   return c.json({ success: true, usage });
 });
 
-apiUsageRoutes.get("/keys/:keyId/summary", requireAuth, async (c) => {
+apiUsageRoutes.get("/keys/:keyId/summary", async (c) => {
   const db = c.get("db") as Database;
   const userId = c.get("userId") as string;
   const keyId = c.req.param("keyId");
@@ -80,7 +52,7 @@ apiUsageRoutes.get("/keys/:keyId/summary", requireAuth, async (c) => {
   return c.json({ success: true, summary });
 });
 
-apiUsageRoutes.get("/keys/:keyId/usage/range", requireAuth, async (c) => {
+apiUsageRoutes.get("/keys/:keyId/usage/range", async (c) => {
   const db = c.get("db") as Database;
   const userId = c.get("userId") as string;
   const keyId = c.req.param("keyId");

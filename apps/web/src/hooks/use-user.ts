@@ -13,8 +13,9 @@ export function useUser() {
     displayEmail,
     dynamicUser,
     showLogin,
-    requestSignature,
+    signIn,
     logout,
+    user: pasetoUser,
   } = useAuth();
 
   const hasWallet = !!walletAddress;
@@ -22,19 +23,18 @@ export function useUser() {
   const isLoggedIn = isAuthenticated;
 
   // Fetch user from DB when we have a wallet address and user is authenticated
-  const {
-    data,
-    isPending: isLoading,
-    isError,
-    error,
-    refetch,
-  } = useQuery({
+  const queryEnabled = !!walletAddress && isLoggedIn;
+  const { data, isPending, isFetching, isError, error, refetch } = useQuery({
     queryKey: ["user", walletAddress],
     queryFn: () => neptuApi.getOrCreateUser(walletAddress),
-    enabled: !!walletAddress && isLoggedIn,
+    enabled: queryEnabled,
     retry: 2,
     staleTime: 1000 * 60 * 5,
   });
+
+  // isPending is true when enabled=false (no data yet), so only show
+  // loading when we're actually fetching
+  const isLoading = queryEnabled && isPending && isFetching;
 
   const isOnboarded = !!data?.user?.onboarded;
   const hasBirthDate = !!data?.user?.birthDate;
@@ -59,7 +59,8 @@ export function useUser() {
     displayEmail,
     dynamicUser,
     showLogin,
-    requestSignature,
+    signIn,
     logout,
+    pasetoUser,
   };
 }

@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { adminApi } from "@/features/admin/admin-api";
-import { useUser } from "@/hooks/use-user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -44,7 +43,6 @@ export function SubscriptionsActionDialog({
   open,
   onOpenChange,
 }: SubscriptionActionDialogProps) {
-  const { walletAddress } = useUser();
   const queryClient = useQueryClient();
 
   const form = useForm<SubscriptionEditForm>({
@@ -56,7 +54,7 @@ export function SubscriptionsActionDialog({
 
   const mutation = useMutation({
     mutationFn: (values: SubscriptionEditForm) =>
-      adminApi.updateSubscription(walletAddress!, currentRow.id, {
+      adminApi.updateSubscription(currentRow.id, {
         creditsRemaining: values.creditsRemaining,
       }),
     onSuccess: () => {

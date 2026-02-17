@@ -6,7 +6,6 @@ import { Search } from "@/components/search";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { adminApi } from "@/features/admin/admin-api";
 import { useDebounce } from "@/hooks/use-debounce";
-import { useUser } from "@/hooks/use-user";
 import { useQuery } from "@tanstack/react-query";
 import { getRouteApi } from "@tanstack/react-router";
 
@@ -19,7 +18,6 @@ const route = getRouteApi("/_authenticated/admin/subscriptions");
 export function Subscriptions() {
   const search = route.useSearch();
   const navigate = route.useNavigate();
-  const { walletAddress } = useUser();
   const debouncedSearch = useDebounce(search.search ?? "", 300);
   const searchQuery = debouncedSearch.length >= 3 ? debouncedSearch : undefined;
 
@@ -27,17 +25,15 @@ export function Subscriptions() {
     queryKey: [
       "admin",
       "subscriptions",
-      walletAddress,
       search.page,
       search.pageSize,
       searchQuery,
     ],
     queryFn: () =>
-      adminApi.listSubscriptions(walletAddress!, {
+      adminApi.listSubscriptions({
         page: search.page ?? 1,
         limit: search.pageSize ?? 10,
       }),
-    enabled: !!walletAddress,
   });
 
   const subscriptions = data?.data ?? [];

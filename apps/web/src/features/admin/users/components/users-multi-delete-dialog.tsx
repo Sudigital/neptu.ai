@@ -5,7 +5,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { adminApi } from "@/features/admin/admin-api";
-import { useUser } from "@/hooks/use-user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { type Table } from "@tanstack/react-table";
 import { AlertTriangle } from "lucide-react";
@@ -28,7 +27,6 @@ export function UsersMultiDeleteDialog<TData>({
   table,
 }: UserMultiDeleteDialogProps<TData>) {
   const [value, setValue] = useState("");
-  const { walletAddress } = useUser();
   const queryClient = useQueryClient();
 
   const selectedRows = table.getFilteredSelectedRowModel().rows;
@@ -37,9 +35,7 @@ export function UsersMultiDeleteDialog<TData>({
     mutationFn: async () => {
       const users = selectedRows.map((row) => row.original as User);
       await Promise.all(
-        users.map((user) =>
-          adminApi.updateUser(walletAddress!, user.id, { isAdmin: false })
-        )
+        users.map((user) => adminApi.updateUser(user.id, { isAdmin: false }))
       );
     },
     onSuccess: () => {

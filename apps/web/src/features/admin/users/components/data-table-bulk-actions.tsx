@@ -6,7 +6,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { adminApi } from "@/features/admin/admin-api";
-import { useUser } from "@/hooks/use-user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { type Table } from "@tanstack/react-table";
 import { Trash2, Shield, ShieldOff } from "lucide-react";
@@ -25,16 +24,13 @@ export function DataTableBulkActions<TData>({
 }: DataTableBulkActionsProps<TData>) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const selectedRows = table.getFilteredSelectedRowModel().rows;
-  const { walletAddress } = useUser();
   const queryClient = useQueryClient();
 
   const bulkAdminMutation = useMutation({
     mutationFn: async (isAdmin: boolean) => {
       const users = selectedRows.map((row) => row.original as User);
       await Promise.all(
-        users.map((user) =>
-          adminApi.updateUser(walletAddress!, user.id, { isAdmin })
-        )
+        users.map((user) => adminApi.updateUser(user.id, { isAdmin }))
       );
     },
     onSuccess: (_data, isAdmin) => {

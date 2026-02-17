@@ -31,17 +31,15 @@ function LandingPage() {
   // Track if user was already authenticated when page loaded
   const wasAuthenticatedOnMount = useRef<boolean | null>(null);
 
-  // Only redirect if user just logged in (not if already authenticated on page load)
+  // Redirect to dashboard only after PASETO signing completes
   useEffect(() => {
     if (!walletReady) return;
 
-    // Store initial auth state on first ready
     if (wasAuthenticatedOnMount.current === null) {
       wasAuthenticatedOnMount.current = isAuthenticated;
       return;
     }
 
-    // Redirect only if user just completed login/wallet connection
     if (isAuthenticated && !wasAuthenticatedOnMount.current) {
       navigate({ to: "/dashboard" });
     }

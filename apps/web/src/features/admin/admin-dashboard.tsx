@@ -10,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useUser } from "@/hooks/use-user";
 import { useQuery } from "@tanstack/react-query";
 import {
   Users,
@@ -61,12 +60,9 @@ function StatCard({
 }
 
 export function AdminDashboard() {
-  const { walletAddress } = useUser();
-
   const { data: stats, isLoading } = useQuery({
-    queryKey: ["admin", "stats", walletAddress],
-    queryFn: () => adminApi.getStats(walletAddress!),
-    enabled: !!walletAddress,
+    queryKey: ["admin", "stats"],
+    queryFn: () => adminApi.getStats(),
     refetchInterval: 30000,
   });
 
