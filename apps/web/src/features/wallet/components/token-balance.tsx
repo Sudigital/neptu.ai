@@ -24,7 +24,7 @@ interface TokenBalanceProps {
   iconClassName?: string;
 }
 
-const SOLANA_EXPLORER_BASE = "https://explorer.solana.com/address";
+const SOLSCAN_ACCOUNT_BASE = "https://solscan.io/account";
 
 export function TokenBalance({
   balance,
@@ -40,7 +40,7 @@ export function TokenBalance({
   iconClassName,
 }: TokenBalanceProps) {
   const t = useTranslate();
-  const explorerUrl = `${SOLANA_EXPLORER_BASE}/${walletAddress}?cluster=devnet`;
+  const explorerUrl = `${SOLSCAN_ACCOUNT_BASE}/${walletAddress}?cluster=devnet`;
 
   if (isLoading) {
     return (

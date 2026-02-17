@@ -223,13 +223,13 @@ export const SOLANA_NETWORKS: Record<NetworkType, ChainNetwork> = {
     name: "Devnet",
     rpcUrl: "https://api.devnet.solana.com",
     wsUrl: "wss://api.devnet.solana.com",
-    explorerUrl: "https://explorer.solana.com/?cluster=devnet",
+    explorerUrl: "https://solscan.io?cluster=devnet",
   },
   mainnet: {
     name: "Mainnet",
     rpcUrl: "https://api.mainnet-beta.solana.com",
     wsUrl: "wss://api.mainnet-beta.solana.com",
-    explorerUrl: "https://explorer.solana.com",
+    explorerUrl: "https://solscan.io",
   },
 } as const;
 

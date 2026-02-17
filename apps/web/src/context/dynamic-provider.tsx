@@ -47,7 +47,9 @@ export function DynamicAuthProvider({ children }: DynamicAuthProviderProps) {
               },
               rpcUrls: [SOLANA_RPC_URL],
               blockExplorerUrls: [
-                `https://explorer.solana.com/?cluster=${SOLANA_NETWORK}`,
+                SOLANA_NETWORK === "mainnet-beta"
+                  ? "https://solscan.io"
+                  : `https://solscan.io?cluster=${SOLANA_NETWORK}`,
               ],
               isTestnet: SOLANA_NETWORK !== "mainnet-beta",
             },

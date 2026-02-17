@@ -19,7 +19,7 @@ import {
   Loader2,
 } from "lucide-react";
 
-const SOLANA_TX_EXPLORER = "https://explorer.solana.com/tx";
+const SOLSCAN_TX_BASE = "https://solscan.io/tx";
 const DEVNET_CLUSTER_PARAM = "?cluster=devnet";
 
 interface Transaction {
@@ -92,7 +92,7 @@ function formatTxSignature(sig: string | null): string {
 }
 
 function getExplorerUrl(txSignature: string): string {
-  return `${SOLANA_TX_EXPLORER}/${txSignature}${DEVNET_CLUSTER_PARAM}`;
+  return `${SOLSCAN_TX_BASE}/${txSignature}${DEVNET_CLUSTER_PARAM}`;
 }
 
 export function TransactionHistory({
