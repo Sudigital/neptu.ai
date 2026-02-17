@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTranslate } from "@/hooks/use-translate";
-import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import { useUser } from "@/hooks/use-user";
 import { motion } from "framer-motion";
 import {
   ArrowLeftRight,
@@ -32,8 +32,7 @@ const fadeUp = {
 };
 
 export function P2PPage() {
-  const { primaryWallet, setShowAuthFlow } = useDynamicContext();
-  const authenticated = !!primaryWallet;
+  const { isAuthenticated, isAuthenticating, showLogin } = useUser();
   const t = useTranslate();
 
   return (
@@ -89,14 +88,17 @@ export function P2PPage() {
               transition={{ delay: 0.5 }}
               className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row"
             >
-              {!authenticated ? (
+              {!isAuthenticated ? (
                 <Button
                   size="lg"
-                  onClick={() => setShowAuthFlow(true)}
+                  onClick={showLogin}
+                  disabled={isAuthenticating}
                   className="h-12 w-full px-8 text-base sm:w-auto"
                 >
                   <Wallet className="mr-2 h-5 w-5" />
-                  {t("p2p.connectToTrade")}
+                  {isAuthenticating
+                    ? t("landing.connecting")
+                    : t("p2p.connectToTrade")}
                 </Button>
               ) : (
                 <Button
@@ -417,14 +419,17 @@ export function P2PPage() {
               <p className="text-sm text-muted-foreground sm:text-base">
                 {t("p2p.ctaDesc")}
               </p>
-              {!authenticated ? (
+              {!isAuthenticated ? (
                 <Button
                   size="lg"
-                  onClick={() => setShowAuthFlow(true)}
+                  onClick={showLogin}
+                  disabled={isAuthenticating}
                   className="h-12 px-8 text-base"
                 >
                   <Wallet className="mr-2 h-5 w-5" />
-                  {t("p2p.ctaButton")}
+                  {isAuthenticating
+                    ? t("landing.connecting")
+                    : t("p2p.ctaButton")}
                 </Button>
               ) : (
                 <p className="text-sm font-medium text-green-500">

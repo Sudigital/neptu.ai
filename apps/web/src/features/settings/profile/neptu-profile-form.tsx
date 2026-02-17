@@ -48,12 +48,19 @@ const INTEREST_EMOJIS: Record<UserInterest, string> = {
 };
 
 export function NeptuProfileForm() {
-  const { user, walletAddress, hasWallet, isLoading, isError, refetch } =
-    useUser();
+  const {
+    user,
+    walletAddress,
+    hasWallet,
+    isLoading,
+    isError,
+    refetch,
+    isAuthenticated,
+  } = useUser();
   const t = useTranslate();
 
-  // No wallet connected
-  if (!hasWallet || !walletAddress) {
+  // No wallet connected and not authenticated via email/social
+  if (!hasWallet && !walletAddress && !isAuthenticated) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
         <p className="text-muted-foreground">

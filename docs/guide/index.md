@@ -1,8 +1,3 @@
----
-title: Introduction to Wuku
-description: Learn about the ancient Balinese Wuku calendar system and how Neptu brings it to Web3.
----
-
 # Introduction
 
 Welcome to **Neptu** — where ancient Balinese wisdom meets modern blockchain technology.
@@ -89,5 +84,5 @@ AI Oracle responses automatically use your selected language.
 
 ## Next Steps
 
-- [View Tokenomics →](/docs/tokenomics)
+- [View Tokenomics →](/tokenomics)
 - [Launch the App →](https://neptu.sudigital.com)

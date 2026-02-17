@@ -15,7 +15,6 @@ import {
 import { useTranslate } from "@/hooks/use-translate";
 import { useUser } from "@/hooks/use-user";
 import { useWalletBalance } from "@/hooks/use-wallet-balance";
-import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { NEPTU_TOKEN, SOL_TOKEN, SUDIGITAL_TOKEN } from "@neptu/shared";
 import { Link, useLocation } from "@tanstack/react-router";
 import { Loader2, ExternalLink, Copy, Check } from "lucide-react";
@@ -23,8 +22,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 export function ProfileDropdown() {
-  const { handleLogOut } = useDynamicContext();
-  const { walletAddress } = useUser();
+  const { walletAddress, displayEmail, logout } = useUser();
   const { pathname } = useLocation();
   const {
     solBalance,
@@ -41,23 +39,27 @@ export function ProfileDropdown() {
 
   const shortAddress = walletAddress
     ? `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`
-    : "No wallet";
+    : displayEmail || "Connected";
 
   const handleCopyAddress = () => {
-    if (!walletAddress) return;
-    navigator.clipboard.writeText(walletAddress);
-    toast.success(t("user.walletCopied"));
+    const textToCopy = walletAddress || displayEmail;
+    if (!textToCopy) return;
+    navigator.clipboard.writeText(textToCopy);
+    toast.success(walletAddress ? t("user.walletCopied") : "Email copied!");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleSignOut = async () => {
-    await handleLogOut();
-    window.location.href = "/";
+    await logout();
   };
 
   const displayName = shortAddress;
-  const chainInfo = `solana · ${network}`;
+  const chainInfo = walletAddress
+    ? `solana · ${network}`
+    : displayEmail
+      ? "email"
+      : "connected";
 
   return (
     <DropdownMenu modal={false}>
@@ -84,16 +86,18 @@ export function ProfileDropdown() {
                 {chainInfo}
               </p>
             </div>
-            {walletAddress && (
+            {(walletAddress || displayEmail) && (
               <div className="flex items-center gap-1">
-                <a
-                  href={`https://explorer.solana.com/address/${walletAddress}?cluster=${network}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-0.5 text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  <ExternalLink className="h-3.5 w-3.5" />
-                </a>
+                {walletAddress && (
+                  <a
+                    href={`https://explorer.solana.com/address/${walletAddress}?cluster=${network}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-0.5 text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                )}
                 <button
                   type="button"
                   onClick={handleCopyAddress}
@@ -110,49 +114,58 @@ export function ProfileDropdown() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuLabel className="pb-1 text-xs font-normal text-muted-foreground">
-          {t("user.balance", "Balance")}
-        </DropdownMenuLabel>
-        {balanceLoading ? (
-          <div className="flex items-center justify-center py-2">
-            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-          </div>
-        ) : (
-          <div className="space-y-0 px-1 pb-1">
-            <div className="flex items-center justify-between rounded-md px-1 py-0.5 text-xs">
-              <span className="flex items-center gap-1.5 text-muted-foreground">
-                <IconSolana className="h-3 w-3" />
-                {SOL_TOKEN.SYMBOL}
-              </span>
-              <span className="font-mono font-medium">
-                {solBalance.toFixed(4)}
-              </span>
-            </div>
-            <div className="flex items-center justify-between rounded-md px-1 py-0.5 text-xs">
-              <span className="flex items-center gap-1.5 text-muted-foreground">
-                <IconSudigital className="h-3 w-3" />
-                {SUDIGITAL_TOKEN.SYMBOL}
-              </span>
-              <span className="font-mono font-medium">
-                {sudigitalBalance.toFixed(2)}
-              </span>
-            </div>
-            <div className="flex items-center justify-between rounded-md px-1 py-0.5 text-xs">
-              <span className="flex items-center gap-1.5 text-muted-foreground">
-                <Logo className="h-3 w-3" />
-                {NEPTU_TOKEN.SYMBOL}
-              </span>
-              <span className="font-mono font-medium">
-                {neptuBalance.toFixed(2)}
-              </span>
-            </div>
-            {pendingRewards > 0 && (
-              <div className="flex items-center justify-between rounded-md px-1 py-0.5 text-[10px]">
-                <span className="ml-4.5 text-muted-foreground/70">
-                  + {pendingRewards.toFixed(2)} {t("user.pending", "pending")}
-                </span>
+        {walletAddress ? (
+          <>
+            <DropdownMenuLabel className="pb-1 text-xs font-normal text-muted-foreground">
+              {t("user.balance", "Balance")}
+            </DropdownMenuLabel>
+            {balanceLoading ? (
+              <div className="flex items-center justify-center py-2">
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              </div>
+            ) : (
+              <div className="space-y-0 px-1 pb-1">
+                <div className="flex items-center justify-between rounded-md px-1 py-0.5 text-xs">
+                  <span className="flex items-center gap-1.5 text-muted-foreground">
+                    <IconSolana className="h-3 w-3" />
+                    {SOL_TOKEN.SYMBOL}
+                  </span>
+                  <span className="font-mono font-medium">
+                    {solBalance.toFixed(4)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between rounded-md px-1 py-0.5 text-xs">
+                  <span className="flex items-center gap-1.5 text-muted-foreground">
+                    <IconSudigital className="h-3 w-3" />
+                    {SUDIGITAL_TOKEN.SYMBOL}
+                  </span>
+                  <span className="font-mono font-medium">
+                    {sudigitalBalance.toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between rounded-md px-1 py-0.5 text-xs">
+                  <span className="flex items-center gap-1.5 text-muted-foreground">
+                    <Logo className="h-3 w-3" />
+                    {NEPTU_TOKEN.SYMBOL}
+                  </span>
+                  <span className="font-mono font-medium">
+                    {neptuBalance.toFixed(2)}
+                  </span>
+                </div>
+                {pendingRewards > 0 && (
+                  <div className="flex items-center justify-between rounded-md px-1 py-0.5 text-[10px]">
+                    <span className="ml-4.5 text-muted-foreground/70">
+                      + {pendingRewards.toFixed(2)}{" "}
+                      {t("user.pending", "pending")}
+                    </span>
+                  </div>
+                )}
               </div>
             )}
+          </>
+        ) : (
+          <div className="px-2 py-2 text-xs text-muted-foreground">
+            {t("user.noWalletYet", "Wallet will be created automatically")}
           </div>
         )}
         <DropdownMenuSeparator />

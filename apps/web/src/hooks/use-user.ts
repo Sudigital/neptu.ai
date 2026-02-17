@@ -1,23 +1,27 @@
+import { useAuth } from "@/hooks/use-auth";
 import { neptuApi } from "@/lib/api";
-import {
-  useDynamicContext,
-  useIsLoggedIn,
-  useAuthenticateConnectedUser,
-} from "@dynamic-labs/sdk-react-core";
 import { useQuery } from "@tanstack/react-query";
 
 export function useUser() {
-  const { primaryWallet, sdkHasLoaded } = useDynamicContext();
-  const isLoggedIn = useIsLoggedIn();
-  const { authenticateUser, isAuthenticating } = useAuthenticateConnectedUser();
+  const {
+    walletAddress,
+    wallet,
+    ready,
+    isAuthenticated,
+    isFullyAuthenticated,
+    isAuthenticating,
+    displayEmail,
+    dynamicUser,
+    showLogin,
+    requestSignature,
+    logout,
+  } = useAuth();
 
-  const walletAddress = primaryWallet?.address ?? "";
-  const ready = sdkHasLoaded;
-  const isSolana = primaryWallet?.chain === "SOL";
-  const hasWallet = !!walletAddress && isSolana;
-  const isConnected = !!primaryWallet;
+  const hasWallet = !!walletAddress;
+  const isConnected = !!wallet;
+  const isLoggedIn = isAuthenticated;
 
-  // Fetch user from DB only when fully authenticated
+  // Fetch user from DB when we have a wallet address and user is authenticated
   const {
     data,
     isPending: isLoading,
@@ -38,7 +42,7 @@ export function useUser() {
   return {
     user: data?.user,
     walletAddress,
-    wallet: primaryWallet ?? null,
+    wallet,
     hasWallet,
     ready,
     isOnboarded,
@@ -49,7 +53,13 @@ export function useUser() {
     refetch,
     isLoggedIn,
     isConnected,
+    isAuthenticated,
+    isFullyAuthenticated,
     isAuthenticating,
-    authenticateUser,
+    displayEmail,
+    dynamicUser,
+    showLogin,
+    requestSignature,
+    logout,
   };
 }

@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { useTranslate } from "@/hooks/use-translate";
 import { useUser } from "@/hooks/use-user";
 import { useSettingsStore } from "@/stores/settings-store";
-import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Wallet, ArrowRight } from "lucide-react";
@@ -19,14 +18,11 @@ export const Route = createFileRoute("/")({
 });
 
 function LandingPage() {
-  const { primaryWallet, setShowAuthFlow } = useDynamicContext();
-  const authenticated = !!primaryWallet;
   const {
-    hasWallet,
     ready: walletReady,
-    isLoggedIn,
+    isAuthenticated,
     isAuthenticating,
-    authenticateUser,
+    showLogin,
   } = useUser();
   const navigate = useNavigate();
   const t = useTranslate();
@@ -41,15 +37,15 @@ function LandingPage() {
 
     // Store initial auth state on first ready
     if (wasAuthenticatedOnMount.current === null) {
-      wasAuthenticatedOnMount.current = authenticated && hasWallet;
+      wasAuthenticatedOnMount.current = isAuthenticated;
       return;
     }
 
     // Redirect only if user just completed login/wallet connection
-    if (authenticated && hasWallet && !wasAuthenticatedOnMount.current) {
+    if (isAuthenticated && !wasAuthenticatedOnMount.current) {
       navigate({ to: "/dashboard" });
     }
-  }, [walletReady, authenticated, hasWallet, navigate]);
+  }, [walletReady, isAuthenticated, navigate]);
 
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
@@ -118,29 +114,46 @@ function LandingPage() {
               transition={{ delay: 0.6 }}
               className="mt-6 flex flex-col items-center justify-center gap-2.5 px-4 sm:mt-10 sm:flex-row sm:gap-4"
             >
-              {!authenticated ? (
+              {isAuthenticated ? (
                 <Button
                   size="lg"
-                  onClick={() => setShowAuthFlow(true)}
+                  onClick={() => navigate({ to: "/dashboard" })}
                   className="h-11 w-full px-4 text-sm transition-transform hover:scale-105 active:scale-95 sm:h-14 sm:w-auto sm:min-w-[200px] sm:px-8 sm:text-lg"
                 >
                   <Wallet className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                   {t("landing.startJourney")}
                 </Button>
-              ) : authenticated && !isLoggedIn ? (
+              ) : isAuthenticating ? (
                 <Button
                   size="lg"
-                  onClick={() => authenticateUser()}
-                  disabled={isAuthenticating}
-                  className="h-11 w-full bg-amber-600 px-4 text-sm text-white transition-transform hover:scale-105 hover:bg-amber-600/90 active:scale-95 sm:h-14 sm:w-auto sm:min-w-[200px] sm:px-8 sm:text-lg"
+                  disabled
+                  className="h-11 w-full px-4 text-sm sm:h-14 sm:w-auto sm:min-w-[200px] sm:px-8 sm:text-lg"
                 >
-                  <Wallet className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                  {isAuthenticating ? "Verifying..." : "Verify Wallet"}
+                  <svg
+                    className="mr-2 h-4 w-4 animate-spin sm:h-5 sm:w-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                    />
+                  </svg>
+                  {t("landing.connecting")}
                 </Button>
               ) : (
                 <Button
                   size="lg"
-                  onClick={() => navigate({ to: "/dashboard" })}
+                  onClick={showLogin}
                   className="h-11 w-full px-4 text-sm transition-transform hover:scale-105 active:scale-95 sm:h-14 sm:w-auto sm:min-w-[200px] sm:px-8 sm:text-lg"
                 >
                   <Wallet className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />

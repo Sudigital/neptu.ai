@@ -9,7 +9,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { useTranslate } from "@/hooks/use-translate";
-import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import { useUser } from "@/hooks/use-user";
 import { SUBSCRIPTION_PLANS } from "@neptu/shared";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
@@ -102,8 +102,7 @@ function FeatureRow({ icon, label, values }: FeatureRowProps) {
 }
 
 export function PricingPage() {
-  const { primaryWallet, setShowAuthFlow } = useDynamicContext();
-  const authenticated = !!primaryWallet;
+  const { isAuthenticated, isAuthenticating, showLogin } = useUser();
   const t = useTranslate();
 
   return (
@@ -322,12 +321,15 @@ export function PricingPage() {
                       </CardContent>
 
                       <CardFooter>
-                        {!authenticated && !isFree ? (
+                        {!isAuthenticated && !isFree ? (
                           <Button
                             className="w-full"
-                            onClick={() => setShowAuthFlow(true)}
+                            onClick={showLogin}
+                            disabled={isAuthenticating}
                           >
-                            {t("pricing.connectWallet")}
+                            {isAuthenticating
+                              ? t("landing.connecting")
+                              : t("pricing.connectWallet")}
                           </Button>
                         ) : (
                           <Button

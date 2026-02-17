@@ -1,5 +1,6 @@
-.next
-.source
-out
 node_modules
 .turbo
+dist
+out
+.vitepress/cache
+.vitepress/dist
