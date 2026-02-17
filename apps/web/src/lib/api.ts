@@ -4,6 +4,7 @@ import type {
   RewardType,
 } from "@neptu/shared";
 
+import { getAuthToken } from "@dynamic-labs/sdk-react-core";
 import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -14,6 +15,15 @@ export const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+});
+
+// Attach Dynamic JWT to every API request
+api.interceptors.request.use((config) => {
+  const token = getAuthToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 const workerApi = axios.create({

@@ -1,29 +1,15 @@
 {
   "name": "@neptu/docs",
-  "version": "0.1.0",
+  "type": "module",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack -p 3003",
-    "build": "next build --turbopack",
-    "preview": "next start -p 3003",
-    "lint": "echo 'No linting configured for docs'",
-    "postinstall": "fumadocs-mdx"
-  },
-  "dependencies": {
-    "fumadocs-core": "^16.6.2",
-    "fumadocs-mdx": "^14.2.7",
-    "fumadocs-ui": "^16.6.2",
-    "lucide-react": "^0.564.0",
-    "next": "^16.1.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview",
+    "deploy": "vitepress build && wrangler pages deploy .vitepress/dist --project-name=neptu-docs --branch=main --commit-dirty=true"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.0",
-    "@types/mdx": "^2.0.13",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "tailwindcss": "^4.1.0",
-    "typescript": "^5.8.0"
+    "vitepress": "^1.6.4",
+    "wrangler": "^3.114.17"
   }
 }

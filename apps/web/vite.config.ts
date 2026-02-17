@@ -32,7 +32,7 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["images/logo.svg", "apple-touch-icon.png"],
       workbox: {
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
+        maximumFileSizeToCacheInBytes: 8 * 1024 * 1024, // 8 MB
       },
       manifest: {
         name: "Neptu — Balinese Astrology AI",

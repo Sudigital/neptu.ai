@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/sidebar";
 import { useTranslate } from "@/hooks/use-translate";
 import { useUser } from "@/hooks/use-user";
-import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { Link } from "@tanstack/react-router";
 import {
   BadgeCheck,
@@ -30,16 +29,17 @@ import { toast } from "sonner";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const { handleLogOut } = useDynamicContext();
-  const { walletAddress, hasWallet } = useUser();
+  const { walletAddress, displayEmail: userEmail, logout } = useUser();
   const t = useTranslate();
 
   const shortAddress = walletAddress
     ? `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`
-    : t("user.noWallet");
+    : userEmail || t("user.noWallet");
 
   const displayName = shortAddress;
-  const displayEmail = hasWallet ? shortAddress : t("user.connectWallet");
+  const displayEmail = walletAddress
+    ? shortAddress
+    : userEmail || t("user.connectWallet");
 
   const copyAddress = () => {
     if (walletAddress) {
@@ -49,8 +49,7 @@ export function NavUser() {
   };
 
   const handleLogout = async () => {
-    await handleLogOut();
-    window.location.href = "/";
+    await logout();
   };
 
   return (

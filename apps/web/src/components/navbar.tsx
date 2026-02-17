@@ -22,7 +22,6 @@ import {
 } from "@/components/ui/sheet";
 import { useTranslate } from "@/hooks/use-translate";
 import { useUser } from "@/hooks/use-user";
-import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
@@ -49,10 +48,7 @@ interface CryptoItem {
 }
 
 export function Navbar() {
-  const { primaryWallet, setShowAuthFlow } = useDynamicContext();
-  const authenticated = !!primaryWallet;
-  const { hasWallet, isLoggedIn, isAuthenticating, authenticateUser } =
-    useUser();
+  const { isAuthenticated, isAuthenticating, showLogin } = useUser();
   const t = useTranslate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -341,22 +337,37 @@ export function Navbar() {
           <div className="hidden md:block">
             <ThemeSwitch />
           </div>
-          {authenticated && hasWallet ? (
+          {isAuthenticated ? (
             <ProfileDropdown />
-          ) : authenticated && !isLoggedIn ? (
+          ) : isAuthenticating ? (
             <Button
-              onClick={() => authenticateUser()}
-              disabled={isAuthenticating}
-              className="h-9 bg-amber-600 px-2.5 text-xs text-white hover:bg-amber-600/90 sm:px-4 sm:text-sm"
+              disabled
+              className="h-9 bg-[#7C3AED] px-2.5 text-xs text-white hover:bg-[#7C3AED]/90 sm:px-4 sm:text-sm"
             >
-              <Wallet className="mr-2 h-4 w-4" />
-              {isAuthenticating
-                ? t("landing.verifying") || "Verifying..."
-                : t("landing.verifyWallet") || "Verify Wallet"}
+              <svg
+                className="mr-2 h-4 w-4 animate-spin"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
+              </svg>
+              {t("landing.connecting")}
             </Button>
           ) : (
             <Button
-              onClick={() => setShowAuthFlow(true)}
+              onClick={showLogin}
               className="h-9 bg-[#7C3AED] px-2.5 text-xs text-white hover:bg-[#7C3AED]/90 sm:px-4 sm:text-sm"
             >
               <Wallet className="mr-2 h-4 w-4" />

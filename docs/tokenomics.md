@@ -1,8 +1,3 @@
----
-title: $NEPTU Tokenomics
-description: NEPTU token distribution, hybrid payment model, and deflationary mechanics on Solana.
----
-
 # $NEPTU Tokenomics
 
 > **"Pay with SOL → Earn NEPTU → Use NEPTU"**
@@ -97,9 +92,9 @@ Every NEPTU payment has **50% burned**:
 
 ## Contract Addresses
 
-> [!WARNING]
-> **Devnet Only**
-> Neptu is currently on Solana Devnet. Mainnet launch after hackathon!
+::: warning Devnet Only
+Neptu is currently on Solana Devnet. Mainnet launch after hackathon!
+:::
 
 | Contract          | Network | Address                                        | Explorer                                                                                                |
 | ----------------- | ------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
@@ -138,6 +133,6 @@ solana program show 6Zxc4uCXKqWS6spnW7u9wA81PChgws6wbGAKJyi8PnvT
 
 ---
 
-> [!TIP]
-> **Support Neptu!**
-> Vote for us in the Colosseum Agent Hackathon: [Vote Now](https://colosseum.com/agent-hackathon/projects/neptu)
+::: tip Support Neptu!
+Vote for us in the Colosseum Agent Hackathon: [Vote Now](https://colosseum.com/agent-hackathon/projects/neptu)
+:::
