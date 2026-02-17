@@ -115,10 +115,10 @@ export function Dashboard() {
   });
 
   useEffect(() => {
-    if (hasWallet && !hasBirthDate && !userLoading) {
+    if ((hasWallet || walletAddress) && !hasBirthDate && !userLoading) {
       navigate({ to: "/settings" });
     }
-  }, [hasWallet, hasBirthDate, userLoading, navigate]);
+  }, [hasWallet, walletAddress, hasBirthDate, userLoading, navigate]);
 
   if (userLoading) {
     return (
@@ -128,7 +128,7 @@ export function Dashboard() {
     );
   }
 
-  if (hasWallet && !hasBirthDate) {
+  if ((hasWallet || walletAddress) && !hasBirthDate) {
     return null;
   }
 
@@ -180,7 +180,7 @@ export function Dashboard() {
   const readingSummary = getReadingSummary();
   const reading = readingData?.reading;
 
-  if (!hasWallet) {
+  if (!hasWallet && !walletAddress) {
     return (
       <>
         <DashboardHeader topNav={topNav} t={t} />

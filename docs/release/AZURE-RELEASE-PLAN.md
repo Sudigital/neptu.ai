@@ -265,7 +265,7 @@ export interface CacheStore {
   put(
     key: string,
     value: string,
-    options?: { expirationTtl?: number },
+    options?: { expirationTtl?: number }
   ): Promise<void>;
   delete(key: string): Promise<void>;
 }
@@ -293,7 +293,7 @@ export const redisCache: CacheStore = {
   async put(
     key: string,
     value: string,
-    options?: { expirationTtl?: number },
+    options?: { expirationTtl?: number }
   ): Promise<void> {
     const ttl = options?.expirationTtl ?? 3600;
     await cacheConn.set(key, value, "EX", ttl);
@@ -392,7 +392,7 @@ export async function startCronJobs(deps: CronDeps): Promise<void> {
       repeat: { pattern: "*/3 * * * *" },
       removeOnComplete: 100,
       removeOnFail: 50,
-    },
+    }
   );
 
   // Every 5 min: Comment on others + vote
@@ -403,7 +403,7 @@ export async function startCronJobs(deps: CronDeps): Promise<void> {
       repeat: { pattern: "*/5 * * * *" },
       removeOnComplete: 100,
       removeOnFail: 50,
-    },
+    }
   );
 
   // Every 10 min: Post new thread + other activity + market refresh
@@ -414,7 +414,7 @@ export async function startCronJobs(deps: CronDeps): Promise<void> {
       repeat: { pattern: "*/10 * * * *" },
       removeOnComplete: 100,
       removeOnFail: 50,
-    },
+    }
   );
 
   // Daily midnight: Generate readings + refresh market data
@@ -425,7 +425,7 @@ export async function startCronJobs(deps: CronDeps): Promise<void> {
       repeat: { pattern: "0 0 * * *" },
       removeOnComplete: 100,
       removeOnFail: 50,
-    },
+    }
   );
 
   // Process jobs (single concurrency to avoid duplicate heartbeat runs)
@@ -455,7 +455,7 @@ export async function startCronJobs(deps: CronDeps): Promise<void> {
           break;
       }
     },
-    { connection: workerConn, concurrency: 1 },
+    { connection: workerConn, concurrency: 1 }
   );
 
   console.log("[BullMQ] Cron jobs registered (4 repeatable schedules)");
