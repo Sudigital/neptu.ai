@@ -15,11 +15,7 @@ import {
 import { useMemo, useState } from "react";
 
 import { PriceChart } from "./chart-components";
-import {
-  type CoinGeckoChartData,
-  formatPriceData,
-  mergeWithPredictions,
-} from "./chart-utils";
+import { type CoinGeckoChartData, formatPriceData } from "./chart-utils";
 import { analyzeCrypto, getNextStrongest } from "./cosmic-prediction";
 import {
   type CryptoWithMarketData,
@@ -42,7 +38,6 @@ const DAY_OPTIONS = [
 
 export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
   const t = useTranslate();
-  const [showPrediction, setShowPrediction] = useState(false);
   const [days, setDays] = useState("365");
 
   const coingeckoId = crypto.coingeckoId;
@@ -96,16 +91,6 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
     [prediction]
   );
 
-  // Merge history + prediction into one dataset when prediction is on
-  const chartData = useMemo(() => {
-    if (!showPrediction || !prediction) return historyData;
-    return mergeWithPredictions(
-      historyData,
-      prediction.events,
-      prediction.currentPrice
-    );
-  }, [historyData, showPrediction, prediction]);
-
   return (
     <>
       {/* Chart */}
@@ -118,17 +103,6 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
                 {t("crypto.chart.title")}
               </h4>
             </div>
-            <button
-              onClick={() => setShowPrediction((p) => !p)}
-              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-                showPrediction
-                  ? "border border-amber-500/30 bg-amber-500/15 text-amber-600"
-                  : "bg-muted text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <Sparkles className="h-3.5 w-3.5" />
-              {t("crypto.chart.prediction")}
-            </button>
           </div>
 
           <div className="mb-4 flex gap-1">
@@ -163,24 +137,6 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
               <span className="inline-block h-0.5 w-4 border-t border-dashed border-red-500" />
               <span className="text-muted-foreground">ATL</span>
             </div>
-            {showPrediction && prediction && (
-              <>
-                <div className="flex items-center gap-1.5">
-                  <span className="inline-block h-0.5 w-4 border-t-2 border-dashed border-amber-500" />
-                  <span className="text-muted-foreground">
-                    {t("crypto.chart.prediction")}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="inline-block h-3 w-3 rounded-full bg-green-500" />
-                  <span className="text-muted-foreground">ATH Match</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="inline-block h-3 w-3 rounded-full bg-red-500" />
-                  <span className="text-muted-foreground">ATL Match</span>
-                </div>
-              </>
-            )}
           </div>
 
           {isLoading ? (
@@ -194,13 +150,7 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
               Failed to load chart data
             </div>
           ) : (
-            <PriceChart
-              data={chartData}
-              showPrediction={showPrediction}
-              ath={crypto.ath}
-              atl={crypto.atl}
-              currentPrice={prediction?.currentPrice}
-            />
+            <PriceChart data={historyData} ath={crypto.ath} atl={crypto.atl} />
           )}
         </CardContent>
       </Card>

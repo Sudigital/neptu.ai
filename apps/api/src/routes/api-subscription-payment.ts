@@ -3,7 +3,6 @@ import {
   ApiSubscriptionService,
   ApiPricingPlanService,
   ApiCreditPackService,
-  UserService,
   type Database,
 } from "@neptu/drizzle-orm";
 import { DEFAULT_NETWORK } from "@neptu/shared";
@@ -21,12 +20,11 @@ import {
 import { Hono } from "hono";
 import { z } from "zod";
 
-type Env = {
-  Variables: {
+import { type AuthEnv } from "../middleware/paseto-auth";
+
+type Env = AuthEnv & {
+  Variables: AuthEnv["Variables"] & {
     db: Database;
-    adminWalletAddress: string | undefined;
-    userId: string;
-    walletAddress: string;
   };
   Bindings: {
     SOLANA_NETWORK?: string;
@@ -56,34 +54,6 @@ async function getPrograms(
   return programsCache.get(network)!;
 }
 
-const requireAuth = async (
-  c: {
-    get: (key: string) => Database | string | undefined;
-    req: { header: (name: string) => string | undefined };
-    json: (data: unknown, status?: number) => Response;
-    set: (key: string, value: unknown) => void;
-  },
-  next: () => Promise<void>
-) => {
-  const db = c.get("db") as Database;
-  const walletAddress = c.req.header("X-Wallet-Address");
-
-  if (!walletAddress) {
-    return c.json({ success: false, error: "Wallet address required" }, 401);
-  }
-
-  const userService = new UserService(db);
-  const user = await userService.getUserByWallet(walletAddress);
-
-  if (!user) {
-    return c.json({ success: false, error: "User not found" }, 404);
-  }
-
-  c.set("userId", user.id);
-  c.set("walletAddress", walletAddress);
-  await next();
-};
-
 const subscribeSchema = z.object({
   planSlug: z.string().min(1),
   paymentMethod: z.enum(["sol", "neptu", "sudigital"]),
@@ -112,7 +82,6 @@ const verifyCreditsSchema = z.object({
 
 apiSubscriptionPaymentRoutes.post(
   "/subscribe/build",
-  requireAuth,
   zValidator("json", subscribeSchema),
   async (c) => {
     const db = c.get("db") as Database;
@@ -242,7 +211,6 @@ apiSubscriptionPaymentRoutes.post(
 
 apiSubscriptionPaymentRoutes.post(
   "/subscribe/verify",
-  requireAuth,
   zValidator("json", verifySubscriptionSchema),
   async (c) => {
     const db = c.get("db") as Database;
@@ -296,7 +264,6 @@ apiSubscriptionPaymentRoutes.post(
 
 apiSubscriptionPaymentRoutes.post(
   "/credits/build",
-  requireAuth,
   zValidator("json", purchaseCreditsSchema),
   async (c) => {
     const db = c.get("db") as Database;
@@ -430,7 +397,6 @@ apiSubscriptionPaymentRoutes.post(
 
 apiSubscriptionPaymentRoutes.post(
   "/credits/verify",
-  requireAuth,
   zValidator("json", verifyCreditsSchema),
   async (c) => {
     const db = c.get("db") as Database;

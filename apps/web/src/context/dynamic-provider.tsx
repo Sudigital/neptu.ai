@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 
-import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import { DynamicContextProvider } from "@dynamic-labs/sdk-react-core";
 import { SolanaWalletConnectors } from "@dynamic-labs/solana";
 
@@ -25,7 +24,7 @@ export function DynamicAuthProvider({ children }: DynamicAuthProviderProps) {
     <DynamicContextProvider
       settings={{
         environmentId: DYNAMIC_ENVIRONMENT_ID,
-        walletConnectors: [EthereumWalletConnectors, SolanaWalletConnectors],
+        walletConnectors: [SolanaWalletConnectors],
         initialAuthenticationMode: "connect-only",
         embeddedWallets: {
           createOnLogin: "all-users",
@@ -48,7 +47,9 @@ export function DynamicAuthProvider({ children }: DynamicAuthProviderProps) {
               },
               rpcUrls: [SOLANA_RPC_URL],
               blockExplorerUrls: [
-                `https://explorer.solana.com/?cluster=${SOLANA_NETWORK}`,
+                SOLANA_NETWORK === "mainnet-beta"
+                  ? "https://solscan.io"
+                  : `https://solscan.io?cluster=${SOLANA_NETWORK}`,
               ],
               isTestnet: SOLANA_NETWORK !== "mainnet-beta",
             },

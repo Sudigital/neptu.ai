@@ -6,18 +6,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useUser } from "@/hooks/use-user";
 import { useQuery } from "@tanstack/react-query";
 
 import { adminApi } from "../../admin-api";
 
 export function CreditPacksCard() {
-  const { walletAddress } = useUser();
-
   const { data: packs } = useQuery({
-    queryKey: ["admin", "credit-packs", walletAddress],
-    queryFn: () => adminApi.listCreditPacks(walletAddress!),
-    enabled: !!walletAddress,
+    queryKey: ["admin", "credit-packs"],
+    queryFn: () => adminApi.listCreditPacks(),
   });
 
   return (

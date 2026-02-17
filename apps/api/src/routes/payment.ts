@@ -39,8 +39,10 @@ import {
 import { Hono } from "hono";
 import { z } from "zod";
 
+import { type AuthEnv } from "../middleware/paseto-auth";
+
 type Env = {
-  Variables: { db: Database };
+  Variables: { db: Database } & AuthEnv["Variables"];
   Bindings: {
     SOLANA_NETWORK?: string;
     SOLANA_RPC_URL?: string;

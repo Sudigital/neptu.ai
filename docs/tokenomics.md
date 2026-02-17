@@ -96,11 +96,11 @@ Every NEPTU payment has **50% burned**:
 Neptu is currently on Solana Devnet. Mainnet launch after hackathon!
 :::
 
-| Contract          | Network | Address                                        | Explorer                                                                                                |
-| ----------------- | ------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| **Token Program** | Devnet  | `7JDw4pncZg6g7ezhQSNxKhj3ptT62okgttDjLL4TwqHW` | [View](https://explorer.solana.com/address/7JDw4pncZg6g7ezhQSNxKhj3ptT62okgttDjLL4TwqHW?cluster=devnet) |
-| **Economy**       | Devnet  | `6Zxc4uCXKqWS6spnW7u9wA81PChgws6wbGAKJyi8PnvT` | [View](https://explorer.solana.com/address/6Zxc4uCXKqWS6spnW7u9wA81PChgws6wbGAKJyi8PnvT?cluster=devnet) |
-| **Token Mint**    | Devnet  | PDA derived from Token Program (seed: `mint`)  | Derived at runtime                                                                                      |
+| Contract          | Network | Address                                        | Explorer                                                                                       |
+| ----------------- | ------- | ---------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Token Program** | Devnet  | `7JDw4pncZg6g7ezhQSNxKhj3ptT62okgttDjLL4TwqHW` | [View](https://solscan.io/account/7JDw4pncZg6g7ezhQSNxKhj3ptT62okgttDjLL4TwqHW?cluster=devnet) |
+| **Economy**       | Devnet  | `6Zxc4uCXKqWS6spnW7u9wA81PChgws6wbGAKJyi8PnvT` | [View](https://solscan.io/account/6Zxc4uCXKqWS6spnW7u9wA81PChgws6wbGAKJyi8PnvT?cluster=devnet) |
+| **Token Mint**    | Devnet  | PDA derived from Token Program (seed: `mint`)  | Derived at runtime                                                                             |
 
 ### Program Details
 

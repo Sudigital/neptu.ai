@@ -20,7 +20,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { adminApi } from "@/features/admin/admin-api";
-import { useUser } from "@/hooks/use-user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -47,7 +46,6 @@ export function UsersActionDialog({
   open,
   onOpenChange,
 }: UserActionDialogProps) {
-  const { walletAddress } = useUser();
   const queryClient = useQueryClient();
 
   const form = useForm<UserEditForm>({
@@ -61,7 +59,7 @@ export function UsersActionDialog({
 
   const mutation = useMutation({
     mutationFn: (values: UserEditForm) =>
-      adminApi.updateUser(walletAddress!, currentRow.id, {
+      adminApi.updateUser(currentRow.id, {
         displayName: values.displayName || undefined,
         email: values.email || undefined,
         isAdmin: values.isAdmin,

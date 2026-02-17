@@ -90,7 +90,7 @@ export function ProfileDropdown() {
               <div className="flex items-center gap-1">
                 {walletAddress && (
                   <a
-                    href={`https://explorer.solana.com/address/${walletAddress}?cluster=${network}`}
+                    href={`https://solscan.io/account/${walletAddress}${network === "mainnet" ? "" : `?cluster=${network}`}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="p-0.5 text-muted-foreground transition-colors hover:text-foreground"

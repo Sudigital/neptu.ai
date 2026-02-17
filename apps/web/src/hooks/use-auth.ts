@@ -1,8 +1,5 @@
-import {
-  useAuthenticateConnectedUser,
-  useDynamicContext,
-  useIsLoggedIn,
-} from "@dynamic-labs/sdk-react-core";
+import { usePasetoAuthStore } from "@/stores/paseto-auth-store";
+import { useDynamicContext, useIsLoggedIn } from "@dynamic-labs/sdk-react-core";
 import { useCallback } from "react";
 
 export function useAuth() {
@@ -13,33 +10,25 @@ export function useAuth() {
     setShowAuthFlow,
     handleLogOut,
   } = useDynamicContext();
-  const isLoggedIn = useIsLoggedIn();
-  const { authenticateUser, isAuthenticating } = useAuthenticateConnectedUser();
+  const isDynamicLoggedIn = useIsLoggedIn();
+  const pasetoAuth = usePasetoAuthStore();
 
   const walletAddress = primaryWallet?.address ?? "";
-  // Fully verified: user signed and JWT was issued
-  const isFullyAuthenticated = isLoggedIn && !!dynamicUser;
-  // Connected: wallet is connected (may or may not have signed)
-  const isAuthenticated = isFullyAuthenticated || !!primaryWallet;
+
+  const isFullyAuthenticated = pasetoAuth.isAuthenticated;
+  const isAuthenticated = isDynamicLoggedIn;
+  const isAuthenticating = false;
   const ready = sdkHasLoaded;
 
   const showLogin = useCallback(() => {
-    if (!primaryWallet) {
-      // No wallet connected — open the auth modal
-      setShowAuthFlow(true);
-    }
-  }, [primaryWallet, setShowAuthFlow]);
+    setShowAuthFlow(true);
+  }, [setShowAuthFlow]);
 
-  const requestSignature = useCallback(() => {
-    if (primaryWallet && !isFullyAuthenticated) {
-      authenticateUser();
-    }
-  }, [primaryWallet, isFullyAuthenticated, authenticateUser]);
-
-  const logout = async () => {
+  const logout = useCallback(async () => {
+    pasetoAuth.clearSession();
     await handleLogOut();
     window.location.href = "/";
-  };
+  }, [pasetoAuth, handleLogOut]);
 
   return {
     walletAddress,
@@ -50,8 +39,9 @@ export function useAuth() {
     ready,
     displayEmail: dynamicUser?.email ?? "",
     dynamicUser,
+    user: pasetoAuth.user,
     showLogin,
-    requestSignature,
+    signIn: showLogin,
     logout,
   };
 }

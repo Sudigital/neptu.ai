@@ -1,6 +1,5 @@
 import { adminApi } from "@/features/admin/admin-api";
 import { useDebounce } from "@/hooks/use-debounce";
-import { useUser } from "@/hooks/use-user";
 import { useQuery } from "@tanstack/react-query";
 import { getRouteApi } from "@tanstack/react-router";
 
@@ -14,21 +13,12 @@ const route = getRouteApi("/_authenticated/admin/settings/pricing-plans");
 export function SettingsPricingPlans() {
   const search = route.useSearch();
   const navigate = route.useNavigate();
-  const { walletAddress } = useUser();
   const debouncedSearch = useDebounce(search.search ?? "", 300);
   const searchQuery = debouncedSearch.length >= 3 ? debouncedSearch : undefined;
 
   const { data, isLoading } = useQuery({
-    queryKey: [
-      "admin",
-      "plans",
-      walletAddress,
-      search.page,
-      search.pageSize,
-      searchQuery,
-    ],
-    queryFn: () => adminApi.listPlans(walletAddress!),
-    enabled: !!walletAddress,
+    queryKey: ["admin", "plans", search.page, search.pageSize, searchQuery],
+    queryFn: () => adminApi.listPlans(),
   });
 
   const plans = data?.plans ?? [];

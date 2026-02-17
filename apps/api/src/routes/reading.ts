@@ -9,7 +9,12 @@ import { NeptuCalculator } from "@neptu/wariga";
 import { Hono } from "hono";
 import { z } from "zod";
 
+import { pasetoAuth } from "../middleware/paseto-auth";
+
 export const readingRoutes = new Hono();
+
+// All reading routes require authentication
+readingRoutes.use("/*", pasetoAuth);
 
 const calculator = new NeptuCalculator();
 

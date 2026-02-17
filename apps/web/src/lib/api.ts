@@ -4,8 +4,10 @@ import type {
   RewardType,
 } from "@neptu/shared";
 
-import { getAuthToken } from "@dynamic-labs/sdk-react-core";
+import { usePasetoAuthStore } from "@/stores/paseto-auth-store";
 import axios from "axios";
+
+import { refreshTokens } from "./auth-api";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 const WORKER_URL = import.meta.env.VITE_WORKER_URL || "http://localhost:8787";
@@ -17,9 +19,25 @@ export const api = axios.create({
   },
 });
 
-// Attach Dynamic JWT to every API request
-api.interceptors.request.use((config) => {
-  const token = getAuthToken();
+// Attach PASETO access token to every API request, with auto-refresh
+api.interceptors.request.use(async (config) => {
+  const store = usePasetoAuthStore.getState();
+  let token = store.getAccessToken();
+
+  // Auto-refresh if token is expired but refresh token is still valid
+  if (!token && store.needsRefresh()) {
+    try {
+      const { refreshToken } = store.tokens;
+      if (refreshToken) {
+        const result = await refreshTokens(refreshToken);
+        store.setTokens(result.accessToken, result.refreshToken);
+        token = result.accessToken;
+      }
+    } catch {
+      store.clearSession();
+    }
+  }
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

@@ -6,7 +6,7 @@ import {
 import { Hono } from "hono";
 
 type Env = {
-  Variables: { db: Database; adminWalletAddress: string | undefined };
+  Variables: { db: Database };
 };
 
 export const apiPricingRoutes = new Hono<Env>();

@@ -19,7 +19,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useDebounce } from "@/hooks/use-debounce";
-import { useUser } from "@/hooks/use-user";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Search,
@@ -34,26 +33,24 @@ import { useState } from "react";
 import { adminApi } from "./admin-api";
 
 export function AdminUsers() {
-  const { walletAddress } = useUser();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 300);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["admin", "users", walletAddress, page, debouncedSearch],
+    queryKey: ["admin", "users", page, debouncedSearch],
     queryFn: () =>
-      adminApi.listUsers(walletAddress!, {
+      adminApi.listUsers({
         page,
         limit: 20,
         search: debouncedSearch || undefined,
       }),
-    enabled: !!walletAddress,
   });
 
   const toggleAdminMutation = useMutation({
     mutationFn: ({ userId, isAdmin }: { userId: string; isAdmin: boolean }) =>
-      adminApi.updateUser(walletAddress!, userId, { isAdmin }),
+      adminApi.updateUser(userId, { isAdmin }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
     },

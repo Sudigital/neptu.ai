@@ -18,7 +18,6 @@ import {
   MarketTab,
   CosmicTab,
 } from "@/features/crypto/market-cosmic-tabs";
-import { PredictionTab } from "@/features/crypto/prediction-tab";
 import { ShareMenu } from "@/features/crypto/share-menu";
 import { useTranslate } from "@/hooks/use-translate";
 import { useQuery } from "@tanstack/react-query";
@@ -147,14 +146,7 @@ function CryptoBirthdayDetailPage() {
     }
   };
 
-  const validTabs = [
-    "overview",
-    "birthday",
-    "market",
-    "chart",
-    "prediction",
-    "cosmic",
-  ];
+  const validTabs = ["overview", "birthday", "market", "chart", "cosmic"];
   const hashTab =
     typeof window !== "undefined" ? window.location.hash.slice(1) : "";
   const initialTab = validTabs.includes(hashTab) ? hashTab : "overview";
@@ -178,8 +170,6 @@ function CryptoBirthdayDetailPage() {
         return <MarketTab crypto={crypto} />;
       case "chart":
         return <ChartTab crypto={crypto} />;
-      case "prediction":
-        return <PredictionTab crypto={crypto} />;
       case "cosmic":
         return <CosmicTab crypto={crypto} />;
       default:
@@ -317,7 +307,7 @@ function CryptoBirthdayDetailPage() {
               <div
                 className={`scrollbar-none sticky top-14 z-40 overflow-x-auto bg-background py-2 sm:top-16 ${isStuck ? "-ml-[calc(50vw-50%)] w-screen border-b border-border/50 px-[calc(50vw-50%)] shadow-sm" : ""}`}
               >
-                <TabsList className="inline-flex w-auto min-w-full sm:grid sm:w-full sm:grid-cols-6">
+                <TabsList className="inline-flex w-auto min-w-full sm:grid sm:w-full sm:grid-cols-5">
                   <TabsTrigger value="overview" className="px-3 sm:px-4">
                     {t("crypto.tabs.overview")}
                   </TabsTrigger>
@@ -329,9 +319,6 @@ function CryptoBirthdayDetailPage() {
                   </TabsTrigger>
                   <TabsTrigger value="chart" className="px-3 sm:px-4">
                     {t("crypto.tabs.chart")}
-                  </TabsTrigger>
-                  <TabsTrigger value="prediction" className="px-3 sm:px-4">
-                    {t("crypto.tabs.prediction")}
                   </TabsTrigger>
                   <TabsTrigger value="cosmic" className="px-3 sm:px-4">
                     {t("crypto.tabs.cosmic")}
@@ -426,10 +413,6 @@ function CryptoBirthdayDetailPage() {
 
               <TabsContent value="chart" className="space-y-4">
                 {activeTab === "chart" && tabContent}
-              </TabsContent>
-
-              <TabsContent value="prediction" className="space-y-4">
-                {activeTab === "prediction" && tabContent}
               </TabsContent>
 
               <TabsContent value="cosmic" className="space-y-4">

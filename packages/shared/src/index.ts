@@ -223,13 +223,13 @@ export const SOLANA_NETWORKS: Record<NetworkType, ChainNetwork> = {
     name: "Devnet",
     rpcUrl: "https://api.devnet.solana.com",
     wsUrl: "wss://api.devnet.solana.com",
-    explorerUrl: "https://explorer.solana.com/?cluster=devnet",
+    explorerUrl: "https://solscan.io?cluster=devnet",
   },
   mainnet: {
     name: "Mainnet",
     rpcUrl: "https://api.mainnet-beta.solana.com",
     wsUrl: "wss://api.mainnet-beta.solana.com",
-    explorerUrl: "https://explorer.solana.com",
+    explorerUrl: "https://solscan.io",
   },
 } as const;
 
@@ -838,3 +838,23 @@ export const API_OVERAGE_RATES = {
   AI_CALL_NEPTU: 1,
   AI_CALL_SOL: 0.001,
 } as const;
+
+// ============================================================================
+// Authentication
+// ============================================================================
+
+/** Access token TTL in seconds (15 minutes) */
+export const AUTH_ACCESS_TOKEN_TTL = 900 as const;
+
+/** Refresh token TTL in seconds (7 days) */
+export const AUTH_REFRESH_TOKEN_TTL = 604800 as const;
+
+/** Nonce TTL in seconds (5 minutes) */
+export const AUTH_NONCE_TTL = 300 as const;
+
+/** Authorization header name */
+export const AUTH_HEADER = "Authorization" as const;
+
+/** Nonce message template — {nonce} is replaced with the generated nonce */
+export const AUTH_NONCE_MESSAGE =
+  "Sign this message to verify your wallet ownership for Neptu.\n\nNonce: {nonce}" as const;

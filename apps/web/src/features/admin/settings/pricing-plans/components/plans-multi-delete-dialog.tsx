@@ -5,7 +5,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { adminApi } from "@/features/admin/admin-api";
-import { useUser } from "@/hooks/use-user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { type Table } from "@tanstack/react-table";
 import { AlertTriangle } from "lucide-react";
@@ -28,7 +27,6 @@ export function PlansMultiCancelDialog<TData>({
   table,
 }: PlansMultiCancelDialogProps<TData>) {
   const [value, setValue] = useState("");
-  const { walletAddress } = useUser();
   const queryClient = useQueryClient();
 
   const selectedRows = table.getFilteredSelectedRowModel().rows;
@@ -37,9 +35,7 @@ export function PlansMultiCancelDialog<TData>({
     mutationFn: async () => {
       const plans = selectedRows.map((row) => row.original as Plan);
       await Promise.all(
-        plans.map((plan) =>
-          adminApi.updatePlan(walletAddress!, plan.id, { isActive: false })
-        )
+        plans.map((plan) => adminApi.updatePlan(plan.id, { isActive: false }))
       );
     },
     onSuccess: () => {

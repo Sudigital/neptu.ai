@@ -10,6 +10,7 @@ import { adminRoutes } from "./routes/admin";
 import { apiPricingRoutes } from "./routes/api-pricing";
 import { apiSubscriptionPaymentRoutes } from "./routes/api-subscription-payment";
 import { apiUsageRoutes } from "./routes/api-usage";
+import { authRoutes } from "./routes/auth";
 import { developerRoutes } from "./routes/developer";
 import { healthRoutes } from "./routes/health";
 import { paymentRoutes } from "./routes/payment";
@@ -38,7 +39,7 @@ app.use(
       "https://neptu.pages.dev",
     ],
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowHeaders: ["Content-Type", "Authorization", "X-Wallet-Address"],
+    allowHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
@@ -57,6 +58,7 @@ app.use("*", async (c, next) => {
 
 // Routes
 app.route("/", healthRoutes);
+app.route("/api/auth", authRoutes);
 app.route("/api/reading", readingRoutes);
 app.route("/api/users", userRoutes);
 app.route("/api/token", tokenRoutes);
