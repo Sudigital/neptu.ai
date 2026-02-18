@@ -65,6 +65,7 @@ export class UserService {
     }
     if (validated.birthDate !== undefined) {
       updateData.birthDate = validated.birthDate;
+      updateData.onboarded = true;
     }
 
     const user = await this.repository.update(id, updateData);

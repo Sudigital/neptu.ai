@@ -13,25 +13,34 @@ import {
   createApiCreditPackSchema,
   updateApiCreditPackSchema,
 } from "@neptu/drizzle-orm";
+import { WALLET_HEADER } from "@neptu/shared";
 import { Hono } from "hono";
 import { z } from "zod";
 
-import {
-  pasetoAuth,
-  requireAdmin,
-  type AuthEnv,
-} from "../middleware/paseto-auth";
-
-type Env = AuthEnv & {
-  Variables: AuthEnv["Variables"] & {
+type Env = {
+  Variables: {
     db: Database;
+    adminWalletAddress: string | undefined;
   };
 };
 
 export const adminRoutes = new Hono<Env>();
 
-// Admin middleware — PASETO auth + admin check
-adminRoutes.use("/*", pasetoAuth, requireAdmin);
+// Admin middleware — compare wallet address header with ADMIN_WALLET_ADDRESS
+adminRoutes.use("/*", async (c, next) => {
+  const walletAddress = c.req.header(WALLET_HEADER);
+  const adminWalletAddress = c.get("adminWalletAddress");
+
+  if (!walletAddress || !adminWalletAddress) {
+    return c.json({ success: false, error: "Admin access required" }, 403);
+  }
+
+  if (walletAddress !== adminWalletAddress) {
+    return c.json({ success: false, error: "Admin access required" }, 403);
+  }
+
+  await next();
+});
 
 // ============ DASHBOARD STATS ============
 

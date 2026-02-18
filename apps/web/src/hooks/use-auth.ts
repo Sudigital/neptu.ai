@@ -25,9 +25,10 @@ export function useAuth() {
   }, [setShowAuthFlow]);
 
   const logout = useCallback(async () => {
-    pasetoAuth.clearSession();
-    await handleLogOut();
+    // Redirect first to avoid flash of disconnected state
     window.location.href = "/";
+    pasetoAuth.clearSession();
+    handleLogOut();
   }, [pasetoAuth, handleLogOut]);
 
   return {

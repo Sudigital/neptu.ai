@@ -5,6 +5,7 @@ import type {
 } from "@neptu/shared";
 
 import { usePasetoAuthStore } from "@/stores/paseto-auth-store";
+import { WALLET_HEADER } from "@neptu/shared";
 import axios from "axios";
 
 import { refreshTokens } from "./auth-api";
@@ -18,6 +19,10 @@ export const api = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+export function setWalletHeader(walletAddress: string) {
+  api.defaults.headers.common[WALLET_HEADER] = walletAddress;
+}
 
 // Attach PASETO access token to every API request, with auto-refresh
 api.interceptors.request.use(async (config) => {
@@ -171,10 +176,10 @@ interface UserReadingResponse {
 
 export const neptuApi = {
   // Get or create user
-  async getOrCreateUser(walletAddress: string, birthDate?: string) {
+  async getOrCreateUser(walletAddress: string, email?: string) {
     const { data } = await api.post<{ success: boolean; user: User }>(
       "/api/users",
-      { walletAddress, birthDate }
+      { walletAddress, ...(email ? { email } : {}) }
     );
     return data;
   },
@@ -202,7 +207,12 @@ export const neptuApi = {
   // Update user profile (displayName, interests, birthDate)
   async updateProfile(
     walletAddress: string,
-    payload: { displayName?: string; interests?: string[]; birthDate?: string }
+    payload: {
+      displayName?: string;
+      email?: string;
+      interests?: string[];
+      birthDate?: string;
+    }
   ) {
     const { data } = await api.put<{ success: boolean; user: User }>(
       `/api/users/${walletAddress}`,

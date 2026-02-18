@@ -1,43 +1,9 @@
 networks:
   default:
     name: local_default
-
-volumes:
-  postgres_data:
-    name: local_postgres_data
-    driver: local
-  redis_data:
-    name: local_redis_data
-    driver: local
+    external: true
 
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: local_postgres
-    restart: always
-    ports:
-      - 5432:5432
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: neptu
-      POSTGRES_PASSWORD: neptu
-      POSTGRES_DB: neptu
-    networks:
-      - default
-
-  redis:
-    image: redis:7-alpine
-    container_name: local_redis
-    restart: always
-    ports:
-      - 6379:6379
-    volumes:
-      - redis_data:/data
-    command: redis-server --appendonly yes
-    networks:
-      - default
-
   api:
     build:
       context: .
@@ -47,12 +13,9 @@ services:
     ports:
       - 3000:3000
     environment:
-      DATABASE_URL: postgresql://neptu:neptu@postgres:5432/neptu
-      REDIS_URL: redis://redis:6379
+      DATABASE_URL: postgresql://postgres:postgres@local_postgres:5432/neptu
+      REDIS_URL: redis://local_redis:6379
       ADMIN_WALLET_ADDRESS: ${ADMIN_WALLET_ADDRESS:-}
-    depends_on:
-      - postgres
-      - redis
     networks:
       - default
 
@@ -65,8 +28,8 @@ services:
     ports:
       - 8080:8080
     environment:
-      DATABASE_URL: postgresql://neptu:neptu@postgres:5432/neptu
-      REDIS_URL: redis://redis:6379
+      DATABASE_URL: postgresql://postgres:postgres@local_postgres:5432/neptu
+      REDIS_URL: redis://local_redis:6379
       AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY:-}
       AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT:-}
       AZURE_OPENAI_DEPLOYMENT: ${AZURE_OPENAI_DEPLOYMENT:-}
@@ -75,8 +38,5 @@ services:
       COLOSSEUM_AGENT_ID: ${COLOSSEUM_AGENT_ID:-}
       COLOSSEUM_AGENT_NAME: ${COLOSSEUM_AGENT_NAME:-}
       COINGECKO_API_KEY: ${COINGECKO_API_KEY:-}
-    depends_on:
-      - postgres
-      - redis
     networks:
       - default

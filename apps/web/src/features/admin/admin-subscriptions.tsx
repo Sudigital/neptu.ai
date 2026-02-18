@@ -84,7 +84,7 @@ export function AdminSubscriptions() {
 
   return (
     <Main>
-      <Header>
+      <Header fixed>
         <PageHeader
           title="API Subscriptions"
           description="Manage developer API subscriptions"

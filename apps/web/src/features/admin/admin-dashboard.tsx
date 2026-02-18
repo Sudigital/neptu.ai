@@ -68,7 +68,7 @@ export function AdminDashboard() {
 
   return (
     <Main>
-      <Header>
+      <Header fixed>
         <PageHeader
           title="Admin Dashboard"
           description="Monitor and manage Neptu platform"

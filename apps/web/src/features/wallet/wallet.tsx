@@ -92,13 +92,6 @@ export function Wallet() {
     { title: t("nav.wallet"), href: "/wallet", isActive: true },
   ];
 
-  // Get user data - needed for Oracle sheet context
-  useQuery({
-    queryKey: ["user", walletAddress],
-    queryFn: () => neptuApi.getOrCreateUser(walletAddress),
-    enabled: !!walletAddress,
-  });
-
   // Get token balance
   const {
     data: balanceData,
@@ -282,9 +275,9 @@ export function Wallet() {
 
   return (
     <>
-      <Header>
+      <Header fixed>
         <TopNav links={topNav} />
-        <div className="ms-auto flex items-center space-x-4">
+        <div className="ms-auto flex items-center gap-3 sm:gap-4">
           <OracleSheet />
           <ThemeSwitch />
           <ConfigDrawer />

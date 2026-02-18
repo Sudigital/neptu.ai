@@ -39,7 +39,7 @@ app.use(
       "https://neptu.pages.dev",
     ],
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowHeaders: ["Content-Type", "Authorization"],
+    allowHeaders: ["Content-Type", "Authorization", "X-Wallet-Address"],
     credentials: true,
   })
 );

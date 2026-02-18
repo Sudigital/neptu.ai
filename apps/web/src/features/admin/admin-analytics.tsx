@@ -82,7 +82,7 @@ export function AdminAnalytics() {
 
   return (
     <Main>
-      <Header>
+      <Header fixed>
         <PageHeader
           title="API Analytics"
           description="Monitor API usage and performance"

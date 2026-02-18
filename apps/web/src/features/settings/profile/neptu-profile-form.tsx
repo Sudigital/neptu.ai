@@ -8,12 +8,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
 import { useTranslate } from "@/hooks/use-translate";
 import { useUser } from "@/hooks/use-user";
 import { neptuApi } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { USER_INTERESTS, type UserInterest } from "@neptu/shared";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { format, parseISO, subYears } from "date-fns";
 import {
   Loader2,
@@ -51,6 +53,7 @@ export function NeptuProfileForm() {
   const {
     user,
     walletAddress,
+    displayEmail,
     hasWallet,
     isLoading,
     isError,
@@ -97,13 +100,14 @@ export function NeptuProfileForm() {
   }
 
   // Use key to reset form state when user data changes
-  const formKey = `${user?.id}-${user?.displayName}-${user?.interests?.join(",")}`;
+  const formKey = `${user?.id}-${user?.displayName}-${user?.email}-${user?.interests?.join(",")}`;
 
   return (
     <ProfileFormInner
       key={formKey}
       user={user}
       walletAddress={walletAddress}
+      displayEmail={displayEmail}
       t={t}
     />
   );
@@ -112,17 +116,29 @@ export function NeptuProfileForm() {
 interface ProfileFormInnerProps {
   user: ReturnType<typeof useUser>["user"];
   walletAddress: string;
+  displayEmail: string;
   t: ReturnType<typeof useTranslate>;
 }
 
-function ProfileFormInner({ user, walletAddress, t }: ProfileFormInnerProps) {
+function ProfileFormInner({
+  user,
+  walletAddress,
+  displayEmail,
+  t,
+}: ProfileFormInnerProps) {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const [displayName, setDisplayName] = useState(user?.displayName || "");
+  const [email, setEmail] = useState(user?.email || "");
   const [interests, setInterests] = useState<string[]>(user?.interests || []);
   const [birthDate, setBirthDate] = useState<Date | undefined>(
     user?.birthDate ? parseISO(user.birthDate) : undefined
   );
+
+  // Email from Dynamic SDK means user logged in via email/social — already verified
+  const isEmailFromDynamic = !!displayEmail;
+  const isEmailReadonly = isEmailFromDynamic || !!user?.email;
 
   const hasBirthDate = !!user?.birthDate;
   const [showBirthDate, setShowBirthDate] = useState(false);
@@ -137,9 +153,13 @@ function ProfileFormInner({ user, walletAddress, t }: ProfileFormInnerProps) {
     }) => {
       return neptuApi.updateProfile(walletAddress, data);
     },
-    onSuccess: () => {
+    onSuccess: (_result, variables) => {
       queryClient.invalidateQueries({ queryKey: ["user", walletAddress] });
       toast.success(t("toast.profileUpdated"));
+      // Redirect to dashboard when birthday was just set (first-time onboarding)
+      if (variables.birthDate && !hasBirthDate) {
+        navigate({ to: "/dashboard" });
+      }
     },
     onError: (
       error: Error & {
@@ -163,6 +183,7 @@ function ProfileFormInner({ user, walletAddress, t }: ProfileFormInnerProps) {
     // Build update payload - only include fields with values
     const payload: {
       displayName?: string;
+      email?: string;
       interests?: string[];
       birthDate?: string;
     } = {};
@@ -170,6 +191,11 @@ function ProfileFormInner({ user, walletAddress, t }: ProfileFormInnerProps) {
     // Only include displayName if not empty
     if (displayName && displayName.trim()) {
       payload.displayName = displayName.trim();
+    }
+
+    // Include email if editable and has value
+    if (!isEmailReadonly && email && email.trim()) {
+      payload.email = email.trim();
     }
 
     // Only include interests if array has items
@@ -274,6 +300,35 @@ function ProfileFormInner({ user, walletAddress, t }: ProfileFormInnerProps) {
         )}
       </div>
 
+      {/* Email */}
+      <div className="space-y-2">
+        <Label htmlFor="email">{t("settings.email", "Email")}</Label>
+        <div className="relative">
+          <Input
+            id="email"
+            type="email"
+            placeholder={t("settings.email.placeholder", "Enter your email")}
+            value={isEmailFromDynamic ? displayEmail : email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={isEmailReadonly}
+            className={cn(isEmailReadonly && "bg-muted/50")}
+          />
+          {isEmailReadonly && (
+            <Lock className="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          )}
+        </div>
+        <p className="text-xs text-muted-foreground">
+          {isEmailFromDynamic
+            ? t("settings.email.dynamic", "Verified via login provider")
+            : isEmailReadonly
+              ? t("settings.email.saved", "Email saved to your profile")
+              : t(
+                  "settings.email.desc",
+                  "Add your email to receive notifications"
+                )}
+        </p>
+      </div>
+
       {/* Display Name */}
       <div className="space-y-2">
         <Label htmlFor="displayName">{t("settings.displayName")}</Label>
@@ -290,11 +345,20 @@ function ProfileFormInner({ user, walletAddress, t }: ProfileFormInnerProps) {
       </div>
 
       {/* Interests */}
-      <div className="space-y-2">
-        <Label>{t("settings.interests")}</Label>
-        <p className="mb-4 text-xs text-muted-foreground">
-          {t("settings.interests.desc")} ({interests.length}/{MAX_INTERESTS})
-        </p>
+      <div className="space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-100 dark:bg-purple-900/30">
+            <span className="text-lg">✨</span>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold">{t("settings.interests")}</h3>
+            <p className="text-[11px] text-muted-foreground">
+              {t("settings.interests.desc")} ({interests.length}/{MAX_INTERESTS}
+              )
+            </p>
+          </div>
+        </div>
+        <Separator />
         <div className="grid auto-rows-fr grid-cols-2 gap-2 sm:grid-cols-3">
           {USER_INTERESTS.map((interest) => {
             const selected = interests.includes(interest);
