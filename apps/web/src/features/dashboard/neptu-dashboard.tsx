@@ -35,7 +35,7 @@ import { useState, useEffect, useMemo } from "react";
 import { ComparisonBarChart } from "./comparison-bar-chart";
 import { HourlyGrid, SoulRadarChart } from "./dashboard-charts";
 import { DashboardHeader } from "./dashboard-header";
-import { InterestOracle } from "./interest-oracle";
+import { InterestCarousel } from "./interest-carousel";
 import { OracleTabPanel } from "./oracle-tab-panel";
 import { ReadingDetailCard } from "./reading-detail-card";
 import { ScrollableTabsList } from "./scrollable-tabs";
@@ -355,22 +355,18 @@ export function Dashboard() {
           interpretation={aiInterpretation?.interpretation}
         />
       </TabsContent>
-      {interests.map((interest: string) => (
-        <TabsContent
-          key={`content-${interest}`}
-          value={`interest-${interest}`}
-          className="mt-2"
-        >
+      {interests.length > 0 && (
+        <TabsContent value="interests" className="mt-2">
           {user?.birthDate && (
-            <InterestOracle
-              interest={interest}
+            <InterestCarousel
+              interests={interests}
               birthDate={user.birthDate}
               targetDate={targetDateStr}
               language={language}
             />
           )}
         </TabsContent>
-      ))}
+      )}
     </>
   );
 
