@@ -3,9 +3,7 @@ import { Header } from "@/components/layout/header";
 import { TopNav } from "@/components/layout/top-nav";
 import { ProfileDropdown } from "@/components/profile-dropdown";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { Button } from "@/components/ui/button";
 import { OracleSheet } from "@/features/oracle";
-import { Vote, ExternalLink } from "lucide-react";
 
 interface TopNavLink {
   title: string;
@@ -17,40 +15,13 @@ interface TopNavLink {
 
 interface DashboardHeaderProps {
   topNav: TopNavLink[];
-  showVoteButton?: boolean;
-  t: (key: string) => string;
 }
 
-export function DashboardHeader({
-  topNav,
-  showVoteButton = false,
-  t,
-}: DashboardHeaderProps) {
+export function DashboardHeader({ topNav }: DashboardHeaderProps) {
   return (
     <Header fixed>
       <TopNav links={topNav} />
-      <div className="ms-auto flex items-center gap-2 sm:gap-4">
-        {showVoteButton && (
-          <Button
-            asChild
-            size="sm"
-            className="hidden animate-pulse bg-gradient-to-r from-amber-500 to-orange-500 font-semibold text-white shadow-lg hover:animate-none hover:from-amber-600 hover:to-orange-600 sm:flex"
-          >
-            <a
-              href="https://colosseum.com/agent-hackathon/projects/neptu"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2"
-            >
-              <Vote className="h-4 w-4" />
-              <span className="hidden md:inline">
-                {t("common.voteForNeptu")}
-              </span>
-              <span className="md:hidden">Vote</span>
-              <ExternalLink className="h-3 w-3" />
-            </a>
-          </Button>
-        )}
+      <div className="ms-auto flex items-center gap-3 sm:gap-4">
         <OracleSheet />
         <ThemeSwitch />
         <div className="hidden sm:block">

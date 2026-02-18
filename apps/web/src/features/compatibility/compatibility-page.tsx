@@ -6,7 +6,6 @@ import { Main } from "@/components/layout/main";
 import { TopNav } from "@/components/layout/top-nav";
 import { ProfileDropdown } from "@/components/profile-dropdown";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -23,13 +22,11 @@ import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import {
   Calendar as CalendarIcon,
-  ExternalLink,
   Heart,
   Loader2,
   Moon,
   Sun,
   Users,
-  Vote,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
@@ -123,28 +120,9 @@ export function CompatibilityPage() {
 
   return (
     <>
-      <Header>
+      <Header fixed>
         <TopNav links={topNav} />
-        <div className="ms-auto flex items-center gap-2 sm:gap-4">
-          <Button
-            asChild
-            size="sm"
-            className="hidden animate-pulse bg-gradient-to-r from-amber-500 to-orange-500 font-semibold text-white shadow-lg hover:animate-none hover:from-amber-600 hover:to-orange-600 sm:flex"
-          >
-            <a
-              href="https://colosseum.com/agent-hackathon/projects/neptu"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2"
-            >
-              <Vote className="h-4 w-4" />
-              <span className="hidden md:inline">
-                {t("common.voteForNeptu")}
-              </span>
-              <span className="md:hidden">Vote</span>
-              <ExternalLink className="h-3 w-3" />
-            </a>
-          </Button>
+        <div className="ms-auto flex items-center gap-3 sm:gap-4">
           <OracleSheet />
           <ThemeSwitch />
           <div className="hidden sm:block">

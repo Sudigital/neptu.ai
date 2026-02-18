@@ -1,7 +1,7 @@
 import { zValidator } from "@hono/zod-validator";
 import { UserService, type Database } from "@neptu/drizzle-orm";
 import { AUTH_NONCE_TTL, AUTH_NONCE_MESSAGE } from "@neptu/shared";
-import { getAddressEncoder, address } from "@solana/kit";
+import { getAddressEncoder, getBase58Decoder, address } from "@solana/kit";
 import { Hono } from "hono";
 import { z } from "zod";
 
@@ -130,10 +130,10 @@ authRoutes.post("/verify", zValidator("json", verifySchema), async (c) => {
   const addressEncoder = getAddressEncoder();
   const publicKeyBytes = addressEncoder.encode(address(walletAddress));
 
-  // Decode hex signature → Uint8Array
+  // Decode signature (supports both hex and base58 encoding)
   let signatureBytes: Uint8Array;
   try {
-    signatureBytes = hexToBytes(signature);
+    signatureBytes = decodeSignature(signature);
   } catch {
     return c.json({ success: false, error: "Invalid signature format" }, 400);
   }
@@ -238,6 +238,13 @@ authRoutes.post("/refresh", zValidator("json", refreshSchema), async (c) => {
 // Helpers
 // ============================================================================
 
+const HEX_PATTERN = /^(0x)?[0-9a-fA-F]+$/;
+const ED25519_SIGNATURE_LENGTH = 64;
+
+function isHex(value: string): boolean {
+  return HEX_PATTERN.test(value);
+}
+
 function hexToBytes(hex: string): Uint8Array {
   const clean = hex.startsWith("0x") ? hex.slice(2) : hex;
   if (clean.length % 2 !== 0) {
@@ -247,5 +254,24 @@ function hexToBytes(hex: string): Uint8Array {
   for (let i = 0; i < clean.length; i += 2) {
     bytes[i / 2] = parseInt(clean.substring(i, i + 2), 16);
   }
+  return bytes;
+}
+
+function decodeSignature(signature: string): Uint8Array {
+  // Try hex first (128 hex chars = 64 bytes Ed25519 signature)
+  if (isHex(signature)) {
+    return hexToBytes(signature);
+  }
+
+  // Otherwise treat as base58 (Solana wallet adapters encode signatures as base58)
+  const decoder = getBase58Decoder();
+  const bytes = decoder.decode(signature);
+
+  if (bytes.length !== ED25519_SIGNATURE_LENGTH) {
+    throw new Error(
+      `Expected ${ED25519_SIGNATURE_LENGTH}-byte signature, got ${bytes.length}`
+    );
+  }
+
   return bytes;
 }

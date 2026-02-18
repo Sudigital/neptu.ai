@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sparkles, Sun } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 
 const icons: Record<string, string> = {
@@ -146,9 +146,13 @@ export function ScrollableTabs({
 export function ScrollableTabsList({
   interests,
   t,
+  showPotensiTab = false,
+  className,
 }: {
   interests: string[];
   t: (key: string, fallback?: string) => string;
+  showPotensiTab?: boolean;
+  className?: string;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -188,7 +192,7 @@ export function ScrollableTabsList({
   const showArrows = canScrollLeft || canScrollRight;
 
   return (
-    <div className="flex items-center gap-1">
+    <div className={cn("flex items-center gap-1", className)}>
       {showArrows && (
         <Button
           type="button"
@@ -206,6 +210,12 @@ export function ScrollableTabsList({
       )}
       <div ref={scrollRef} className="flex-1 overflow-x-hidden">
         <TabsList className="w-max">
+          {showPotensiTab && (
+            <TabsTrigger value="potensi-peluang" className="gap-1">
+              <Sun className="h-3.5 w-3.5" />
+              {t("dashboard.potensiPeluang", "Potensi & Peluang")}
+            </TabsTrigger>
+          )}
           <TabsTrigger value="24h" className="gap-1">
             <span>🕐</span>
             {t("chart.energyCharts", "Energy & Charts")}

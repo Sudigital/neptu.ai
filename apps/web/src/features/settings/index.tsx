@@ -55,9 +55,9 @@ export function Settings() {
   return (
     <>
       {/* ===== Top Heading ===== */}
-      <Header>
+      <Header fixed>
         <Search />
-        <div className="ms-auto flex items-center space-x-4">
+        <div className="ms-auto flex items-center gap-3 sm:gap-4">
           <ThemeSwitch />
           <ConfigDrawer />
           <ProfileDropdown />

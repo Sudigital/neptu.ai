@@ -855,6 +855,9 @@ export const AUTH_NONCE_TTL = 300 as const;
 /** Authorization header name */
 export const AUTH_HEADER = "Authorization" as const;
 
+/** Wallet address header name */
+export const WALLET_HEADER = "X-Wallet-Address" as const;
+
 /** Nonce message template — {nonce} is replaced with the generated nonce */
 export const AUTH_NONCE_MESSAGE =
   "Sign this message to verify your wallet ownership for Neptu.\n\nNonce: {nonce}" as const;

@@ -70,7 +70,7 @@ export function AdminUsers() {
 
   return (
     <Main>
-      <Header>
+      <Header fixed>
         <PageHeader
           title="User Management"
           description="Manage platform users"

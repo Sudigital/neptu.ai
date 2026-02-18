@@ -79,6 +79,15 @@ export class UserRepository {
   ): Promise<User> {
     const existing = await this.findByWalletAddress(walletAddress);
     if (existing) {
+      // Update existing user with any new info (email, etc.)
+      const updates: Partial<Omit<NewUser, "id">> = {};
+      if (data?.email && data.email !== existing.email) {
+        updates.email = data.email;
+      }
+      if (Object.keys(updates).length > 0) {
+        const updated = await this.update(existing.id, updates);
+        return updated ?? existing;
+      }
       return existing;
     }
 

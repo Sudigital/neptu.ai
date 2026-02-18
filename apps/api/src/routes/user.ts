@@ -20,6 +20,7 @@ const calculator = new NeptuCalculator();
 
 const createUserSchema = z.object({
   walletAddress: z.string().min(32).max(64),
+  email: z.string().email().optional(),
   birthDate: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/)
@@ -81,12 +82,12 @@ userRoutes.get("/:walletAddress", async (c) => {
  * Create or get existing user
  */
 userRoutes.post("/", zValidator("json", createUserSchema), async (c) => {
-  const { walletAddress } = c.req.valid("json");
+  const { walletAddress, email } = c.req.valid("json");
   const db = c.get("db");
   const adminWalletAddress = c.get("adminWalletAddress");
   const userService = new UserService(db);
 
-  const user = await userService.getOrCreateUser(walletAddress);
+  const user = await userService.getOrCreateUser(walletAddress, email);
 
   // Check if this wallet should be admin (handled gracefully if column doesn't exist)
   const shouldBeAdmin =

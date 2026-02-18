@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { useTranslate } from "@/hooks/use-translate";
 import { neptuApi } from "@/lib/api";
 import { cn } from "@/lib/utils";
@@ -204,41 +205,42 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
   };
 
   return (
-    <Card className="gap-0 px-3 py-2 sm:px-4">
-      <div className="flex items-center gap-2">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div
-            className={cn(
-              "flex h-8 w-8 items-center justify-center rounded-full sm:h-10 sm:w-10",
-              config.bgColor
-            )}
-          >
-            <span className="text-base sm:text-xl">{config.icon}</span>
-          </div>
-          <div>
-            <h3 className="text-base font-semibold tracking-tight capitalize sm:text-lg">
-              {interestName} {t("oracle.insight")}
-            </h3>
-            <p className="text-[10px] text-muted-foreground sm:text-xs">
-              {t("oracle.guidanceFor")}{" "}
-              {format(new Date(targetDate), "MMM d, yyyy")}
-            </p>
-          </div>
+    <Card className="gap-0 px-5 py-5">
+      <div className="mb-4 flex items-center gap-3">
+        <div
+          className={cn(
+            "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
+            config.bgColor
+          )}
+        >
+          <span className="text-xl">{config.icon}</span>
+        </div>
+        <div>
+          <h3 className="text-sm font-semibold tracking-tight capitalize">
+            {interestName} {t("oracle.insight")}
+          </h3>
+          <p className="text-[11px] text-muted-foreground">
+            {t("oracle.guidanceFor")}{" "}
+            {format(new Date(targetDate), "MMM d, yyyy")}
+          </p>
         </div>
       </div>
+      <Separator className="mb-4" />
       <div className="space-y-1.5">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-4 text-center sm:py-6">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground sm:h-8 sm:w-8" />
-            <p className="mt-2 text-xs text-muted-foreground sm:text-sm">
+          <div className="flex flex-col items-center justify-center py-6 text-center">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <p className="mt-3 text-sm text-muted-foreground">
               {t("oracle.analyzing")} {interestName}...
             </p>
           </div>
         ) : insights.mainText ? (
-          <HighlightedText text={insights.mainText} />
+          <div className="prose prose-sm dark:prose-invert max-w-none">
+            <HighlightedText text={insights.mainText} />
+          </div>
         ) : (
-          <div className="py-4 text-center sm:py-6">
-            <p className="text-sm text-muted-foreground sm:text-base">
+          <div className="py-6 text-center">
+            <p className="text-sm text-muted-foreground">
               {t("oracle.noInsight")}
             </p>
           </div>

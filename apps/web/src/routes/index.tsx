@@ -22,6 +22,8 @@ function LandingPage() {
     ready: walletReady,
     isAuthenticated,
     isAuthenticating,
+    hasBirthDate,
+    isLoading: userLoading,
     showLogin,
   } = useUser();
   const navigate = useNavigate();
@@ -31,7 +33,7 @@ function LandingPage() {
   // Track if user was already authenticated when page loaded
   const wasAuthenticatedOnMount = useRef<boolean | null>(null);
 
-  // Redirect to dashboard only after PASETO signing completes
+  // Redirect after login based on whether user has birthday set
   useEffect(() => {
     if (!walletReady) return;
 
@@ -40,10 +42,13 @@ function LandingPage() {
       return;
     }
 
-    if (isAuthenticated && !wasAuthenticatedOnMount.current) {
-      navigate({ to: "/dashboard" });
-    }
-  }, [walletReady, isAuthenticated, navigate]);
+    // Only redirect on fresh login (isAuthenticated flipped from false to true)
+    if (!isAuthenticated || wasAuthenticatedOnMount.current) return;
+    // Wait for user data to load before deciding redirect
+    if (userLoading) return;
+
+    navigate({ to: hasBirthDate ? "/dashboard" : "/settings" });
+  }, [walletReady, isAuthenticated, userLoading, hasBirthDate, navigate]);
 
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
