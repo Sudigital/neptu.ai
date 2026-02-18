@@ -1,5 +1,4 @@
 import { ConfirmDialog } from "@/components/confirm-dialog";
-import { usePasetoAuthStore } from "@/stores/paseto-auth-store";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 
 interface SignOutDialogProps {
@@ -8,11 +7,9 @@ interface SignOutDialogProps {
 }
 
 export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
-  const { clearSession } = usePasetoAuthStore();
   const { handleLogOut } = useDynamicContext();
 
   const handleSignOut = () => {
-    clearSession();
     handleLogOut();
     window.location.href = "/";
   };
