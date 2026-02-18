@@ -16,10 +16,9 @@ export function useUser() {
     showLogin,
     signIn,
     logout,
-    user: pasetoUser,
   } = useAuth();
 
-  // Set wallet header for admin API calls
+  // Set wallet header for API calls (Dynamic SDK session auth)
   useEffect(() => {
     if (walletAddress) {
       setWalletHeader(walletAddress);
@@ -70,6 +69,5 @@ export function useUser() {
     showLogin,
     signIn,
     logout,
-    pasetoUser,
   };
 }

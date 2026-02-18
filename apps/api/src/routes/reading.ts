@@ -9,12 +9,12 @@ import { NeptuCalculator } from "@neptu/wariga";
 import { Hono } from "hono";
 import { z } from "zod";
 
-import { pasetoAuth } from "../middleware/paseto-auth";
+import { walletAuth } from "../middleware/wallet-auth";
 
 export const readingRoutes = new Hono();
 
-// All reading routes require authentication
-readingRoutes.use("/*", pasetoAuth);
+// All reading routes require wallet authentication (Dynamic SDK session)
+readingRoutes.use("/*", walletAuth);
 
 const calculator = new NeptuCalculator();
 

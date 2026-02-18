@@ -4,11 +4,8 @@ import type {
   RewardType,
 } from "@neptu/shared";
 
-import { usePasetoAuthStore } from "@/stores/paseto-auth-store";
 import { WALLET_HEADER } from "@neptu/shared";
 import axios from "axios";
-
-import { refreshTokens } from "./auth-api";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 const WORKER_URL = import.meta.env.VITE_WORKER_URL || "http://localhost:8787";
@@ -24,51 +21,8 @@ export function setWalletHeader(walletAddress: string) {
   api.defaults.headers.common[WALLET_HEADER] = walletAddress;
 }
 
-// Attach PASETO access token to every API request, with auto-refresh
-api.interceptors.request.use(async (config) => {
-  const store = usePasetoAuthStore.getState();
-  let token = store.getAccessToken();
-
-  // Auto-refresh if token is expired but refresh token is still valid
-  if (!token && store.needsRefresh()) {
-    try {
-      const { refreshToken } = store.tokens;
-      if (refreshToken) {
-        const result = await refreshTokens(refreshToken);
-        store.setTokens(result.accessToken, result.refreshToken);
-        token = result.accessToken;
-      }
-    } catch {
-      store.clearSession();
-    }
-  }
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-// Response interceptor: retry once on 401 by refreshing tokens
-api.interceptors.response.use(undefined, async (error) => {
-  const original = error.config;
-  if (error.response?.status === 401 && !original._retried) {
-    original._retried = true;
-    const store = usePasetoAuthStore.getState();
-    const { refreshToken } = store.tokens;
-    if (refreshToken && store.needsRefresh()) {
-      try {
-        const result = await refreshTokens(refreshToken);
-        store.setTokens(result.accessToken, result.refreshToken);
-        original.headers.Authorization = `Bearer ${result.accessToken}`;
-        return api(original);
-      } catch {
-        store.clearSession();
-      }
-    }
-  }
-  return Promise.reject(error);
-});
+// Web app uses Dynamic SDK session — wallet address header is the auth.
+// PASETO is reserved for developer/external API access only.
 
 const workerApi = axios.create({
   baseURL: WORKER_URL,
