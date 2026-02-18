@@ -25,8 +25,10 @@ import { Route as errors404RouteImport } from './routes/(errors)/404'
 import { Route as errors403RouteImport } from './routes/(errors)/403'
 import { Route as errors401RouteImport } from './routes/(errors)/401'
 import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authenticated/settings/route'
+import { Route as AuthenticatedDeveloperRouteRouteImport } from './routes/_authenticated/developer/route'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
+import { Route as AuthenticatedDeveloperIndexRouteImport } from './routes/_authenticated/developer/index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedSettingsNotificationsRouteImport } from './routes/_authenticated/settings/notifications'
 import { Route as AuthenticatedSettingsDisplayRouteImport } from './routes/_authenticated/settings/display'
@@ -124,6 +126,12 @@ const AuthenticatedSettingsRouteRoute =
     path: '/settings',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedDeveloperRouteRoute =
+  AuthenticatedDeveloperRouteRouteImport.update({
+    id: '/developer',
+    path: '/developer',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -134,6 +142,12 @@ const AuthenticatedSettingsIndexRoute =
     id: '/',
     path: '/',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
+  } as any)
+const AuthenticatedDeveloperIndexRoute =
+  AuthenticatedDeveloperIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedDeveloperRouteRoute,
   } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
@@ -229,6 +243,7 @@ export interface FileRoutesByFullPath {
   '/p2p': typeof P2pRoute
   '/pricing': typeof PricingRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/developer': typeof AuthenticatedDeveloperRouteRouteWithChildren
   '/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
   '/401': typeof errors401Route
   '/403': typeof errors403Route
@@ -251,6 +266,7 @@ export interface FileRoutesByFullPath {
   '/settings/display': typeof AuthenticatedSettingsDisplayRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/developer/': typeof AuthenticatedDeveloperIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/admin/settings/account': typeof AuthenticatedAdminSettingsAccountRoute
   '/admin/settings/credit-packs': typeof AuthenticatedAdminSettingsCreditPacksRoute
@@ -282,6 +298,7 @@ export interface FileRoutesByTo {
   '/settings/display': typeof AuthenticatedSettingsDisplayRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/developer': typeof AuthenticatedDeveloperIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/admin/settings/account': typeof AuthenticatedAdminSettingsAccountRoute
   '/admin/settings/credit-packs': typeof AuthenticatedAdminSettingsCreditPacksRoute
@@ -296,6 +313,7 @@ export interface FileRoutesById {
   '/p2p': typeof P2pRoute
   '/pricing': typeof PricingRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/_authenticated/developer': typeof AuthenticatedDeveloperRouteRouteWithChildren
   '/_authenticated/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
   '/(errors)/401': typeof errors401Route
   '/(errors)/403': typeof errors403Route
@@ -318,6 +336,7 @@ export interface FileRoutesById {
   '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayRoute
   '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/developer/': typeof AuthenticatedDeveloperIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/admin/settings/account': typeof AuthenticatedAdminSettingsAccountRoute
   '/_authenticated/admin/settings/credit-packs': typeof AuthenticatedAdminSettingsCreditPacksRoute
@@ -332,6 +351,7 @@ export interface FileRouteTypes {
     | '/p2p'
     | '/pricing'
     | '/admin'
+    | '/developer'
     | '/settings'
     | '/401'
     | '/403'
@@ -354,6 +374,7 @@ export interface FileRouteTypes {
     | '/settings/display'
     | '/settings/notifications'
     | '/admin/'
+    | '/developer/'
     | '/settings/'
     | '/admin/settings/account'
     | '/admin/settings/credit-packs'
@@ -385,6 +406,7 @@ export interface FileRouteTypes {
     | '/settings/display'
     | '/settings/notifications'
     | '/admin'
+    | '/developer'
     | '/settings'
     | '/admin/settings/account'
     | '/admin/settings/credit-packs'
@@ -398,6 +420,7 @@ export interface FileRouteTypes {
     | '/p2p'
     | '/pricing'
     | '/_authenticated/admin'
+    | '/_authenticated/developer'
     | '/_authenticated/settings'
     | '/(errors)/401'
     | '/(errors)/403'
@@ -420,6 +443,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/display'
     | '/_authenticated/settings/notifications'
     | '/_authenticated/admin/'
+    | '/_authenticated/developer/'
     | '/_authenticated/settings/'
     | '/_authenticated/admin/settings/account'
     | '/_authenticated/admin/settings/credit-packs'
@@ -556,6 +580,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/developer': {
+      id: '/_authenticated/developer'
+      path: '/developer'
+      fullPath: '/developer'
+      preLoaderRoute: typeof AuthenticatedDeveloperRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -569,6 +600,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/settings/'
       preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
       parentRoute: typeof AuthenticatedSettingsRouteRoute
+    }
+    '/_authenticated/developer/': {
+      id: '/_authenticated/developer/'
+      path: '/'
+      fullPath: '/developer/'
+      preLoaderRoute: typeof AuthenticatedDeveloperIndexRouteImport
+      parentRoute: typeof AuthenticatedDeveloperRouteRoute
     }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
@@ -727,6 +765,20 @@ const AuthenticatedAdminRouteRouteWithChildren =
     AuthenticatedAdminRouteRouteChildren,
   )
 
+interface AuthenticatedDeveloperRouteRouteChildren {
+  AuthenticatedDeveloperIndexRoute: typeof AuthenticatedDeveloperIndexRoute
+}
+
+const AuthenticatedDeveloperRouteRouteChildren: AuthenticatedDeveloperRouteRouteChildren =
+  {
+    AuthenticatedDeveloperIndexRoute: AuthenticatedDeveloperIndexRoute,
+  }
+
+const AuthenticatedDeveloperRouteRouteWithChildren =
+  AuthenticatedDeveloperRouteRoute._addFileChildren(
+    AuthenticatedDeveloperRouteRouteChildren,
+  )
+
 interface AuthenticatedSettingsRouteRouteChildren {
   AuthenticatedSettingsAccountRoute: typeof AuthenticatedSettingsAccountRoute
   AuthenticatedSettingsAppearanceRoute: typeof AuthenticatedSettingsAppearanceRoute
@@ -752,6 +804,7 @@ const AuthenticatedSettingsRouteRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
+  AuthenticatedDeveloperRouteRoute: typeof AuthenticatedDeveloperRouteRouteWithChildren
   AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
   AuthenticatedComingSoonRoute: typeof AuthenticatedComingSoonRoute
   AuthenticatedCompatibilityRoute: typeof AuthenticatedCompatibilityRoute
@@ -762,6 +815,8 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
+  AuthenticatedDeveloperRouteRoute:
+    AuthenticatedDeveloperRouteRouteWithChildren,
   AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
   AuthenticatedComingSoonRoute: AuthenticatedComingSoonRoute,
   AuthenticatedCompatibilityRoute: AuthenticatedCompatibilityRoute,

@@ -1,3 +1,4 @@
+import { DEFAULT_USER_ROLE, type UserRole } from "@neptu/shared";
 import {
   text,
   pgTable,
@@ -17,7 +18,7 @@ export const users = pgTable(
     birthDate: text("birth_date"), // Stored securely, never exposed in public APIs
     interests: jsonb("interests"), // JSON array: ["career", "love", "health", ...]
     onboarded: boolean("onboarded").default(false),
-    isAdmin: boolean("is_admin").default(false),
+    role: text("role").$type<UserRole>().default(DEFAULT_USER_ROLE).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),

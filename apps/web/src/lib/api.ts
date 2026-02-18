@@ -38,7 +38,7 @@ interface User {
   displayName: string | null;
   interests: string[] | null;
   onboarded: boolean;
-  isAdmin: boolean;
+  role: string;
   email: string | null;
   createdAt: string;
 }

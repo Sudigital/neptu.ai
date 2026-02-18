@@ -1,4 +1,4 @@
-import { Shield, User } from "lucide-react";
+import { Code2, Shield, User } from "lucide-react";
 
 import { type UserStatus } from "./schema";
 
@@ -12,6 +12,11 @@ export const roles = [
     label: "Admin",
     value: "admin",
     icon: Shield,
+  },
+  {
+    label: "Developer",
+    value: "developer",
+    icon: Code2,
   },
   {
     label: "User",

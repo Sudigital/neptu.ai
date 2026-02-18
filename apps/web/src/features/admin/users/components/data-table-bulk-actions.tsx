@@ -26,19 +26,18 @@ export function DataTableBulkActions<TData>({
   const selectedRows = table.getFilteredSelectedRowModel().rows;
   const queryClient = useQueryClient();
 
-  const bulkAdminMutation = useMutation({
-    mutationFn: async (isAdmin: boolean) => {
+  const bulkRoleMutation = useMutation({
+    mutationFn: async (role: string) => {
       const users = selectedRows.map((row) => row.original as User);
       await Promise.all(
-        users.map((user) => adminApi.updateUser(user.id, { isAdmin }))
+        users.map((user) => adminApi.updateUser(user.id, { role }))
       );
     },
-    onSuccess: (_data, isAdmin) => {
+    onSuccess: (_data, role) => {
       queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
       table.resetRowSelection();
-      const action = isAdmin ? "Promoted" : "Demoted";
       toast.success(
-        `${action} ${selectedRows.length} user${selectedRows.length > 1 ? "s" : ""}`
+        `Set ${selectedRows.length} user${selectedRows.length > 1 ? "s" : ""} to ${role}`
       );
     },
     onError: () => {
@@ -54,11 +53,11 @@ export function DataTableBulkActions<TData>({
             <Button
               variant="outline"
               size="icon"
-              onClick={() => bulkAdminMutation.mutate(true)}
+              onClick={() => bulkRoleMutation.mutate("admin")}
               className="size-8"
               aria-label="Make selected users admin"
               title="Make selected users admin"
-              disabled={bulkAdminMutation.isPending}
+              disabled={bulkRoleMutation.isPending}
             >
               <Shield />
               <span className="sr-only">Make admin</span>
@@ -74,11 +73,11 @@ export function DataTableBulkActions<TData>({
             <Button
               variant="outline"
               size="icon"
-              onClick={() => bulkAdminMutation.mutate(false)}
+              onClick={() => bulkRoleMutation.mutate("user")}
               className="size-8"
               aria-label="Remove admin from selected users"
               title="Remove admin from selected users"
-              disabled={bulkAdminMutation.isPending}
+              disabled={bulkRoleMutation.isPending}
             >
               <ShieldOff />
               <span className="sr-only">Remove admin</span>

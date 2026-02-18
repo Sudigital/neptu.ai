@@ -358,6 +358,24 @@ function CompatibilityResultView({
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1fr_1fr]">
         {/* Left Column — Person 1 */}
         <div className="space-y-4">
+          <ReadingDetailCard
+            label={t("compatibility.person1")}
+            subtitle={reading.person1.date}
+            reading={reading.person1}
+            icon={
+              <Sun className="h-3 w-3 text-amber-600 sm:h-3.5 sm:w-3.5 dark:text-amber-400" />
+            }
+            totalUrip={reading.person1.total_urip}
+            borderClass="border-amber-200/50 dark:border-amber-800/50"
+            bgClass="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30"
+            labelColorClass="text-amber-700 dark:text-amber-300"
+            subtitleColorClass="text-amber-600/70 dark:text-amber-400/70"
+            uripColorClass="text-amber-600 dark:text-amber-400"
+            iconBgClass="bg-amber-500/20"
+            dividerClass="border-amber-200/50 dark:border-amber-800/50"
+            t={t}
+            warigaPrefix="wariga.lahirUntuk"
+          />
           <FrekuensiCard
             label={t("compatibility.person1")}
             name={reading.mitraSatru.person1Frekuensi.name}
@@ -378,14 +396,23 @@ function CompatibilityResultView({
               />
             </CardContent>
           </Card>
+        </div>
+
+        {/* Center Column — AI Summary (full height) */}
+        <div className="lg:row-span-full">
+          <AiSummaryCard reading={reading} t={t} />
+        </div>
+
+        {/* Right Column — Person 2 */}
+        <div className="space-y-4">
           <ReadingDetailCard
-            label={t("compatibility.person1")}
-            subtitle={reading.person1.date}
-            reading={reading.person1}
+            label={t("compatibility.person2")}
+            subtitle={reading.person2.date}
+            reading={reading.person2}
             icon={
               <Sun className="h-3 w-3 text-amber-600 sm:h-3.5 sm:w-3.5 dark:text-amber-400" />
             }
-            totalUrip={reading.person1.total_urip}
+            totalUrip={reading.person2.total_urip}
             borderClass="border-amber-200/50 dark:border-amber-800/50"
             bgClass="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30"
             labelColorClass="text-amber-700 dark:text-amber-300"
@@ -396,15 +423,6 @@ function CompatibilityResultView({
             t={t}
             warigaPrefix="wariga.lahirUntuk"
           />
-        </div>
-
-        {/* Center Column — AI Summary (full height) */}
-        <div className="lg:row-span-full">
-          <AiSummaryCard reading={reading} t={t} />
-        </div>
-
-        {/* Right Column — Person 2 */}
-        <div className="space-y-4">
           <FrekuensiCard
             label={t("compatibility.person2")}
             name={reading.mitraSatru.person2Frekuensi.name}
@@ -421,24 +439,6 @@ function CompatibilityResultView({
               <DimensionComparisonList dimensions={reading.dimensions} t={t} />
             </CardContent>
           </Card>
-          <ReadingDetailCard
-            label={t("compatibility.person2")}
-            subtitle={reading.person2.date}
-            reading={reading.person2}
-            icon={
-              <Moon className="h-3 w-3 text-sky-600 sm:h-3.5 sm:w-3.5 dark:text-sky-400" />
-            }
-            totalUrip={reading.person2.total_urip}
-            borderClass="border-sky-200/50 dark:border-sky-800/50"
-            bgClass="bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-950/30 dark:to-blue-950/30"
-            labelColorClass="text-sky-700 dark:text-sky-300"
-            subtitleColorClass="text-sky-600/70 dark:text-sky-400/70"
-            uripColorClass="text-sky-600 dark:text-sky-400"
-            iconBgClass="bg-sky-500/20"
-            dividerClass="border-sky-200/50 dark:border-sky-800/50"
-            t={t}
-            warigaPrefix="wariga.lahirUntuk"
-          />
         </div>
       </div>
     </div>

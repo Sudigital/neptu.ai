@@ -1,14 +1,14 @@
 import { Main } from "@/components/layout/main";
 import { useUser } from "@/hooks/use-user";
-import { isAdmin } from "@neptu/shared";
+import { isDeveloperOrAbove } from "@neptu/shared";
 import { createFileRoute, Navigate, Outlet } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/admin")({
-  component: AdminLayout,
+export const Route = createFileRoute("/_authenticated/developer")({
+  component: DeveloperLayout,
 });
 
-function AdminLayout() {
+function DeveloperLayout() {
   const { user, isLoading } = useUser();
 
   if (isLoading) {
@@ -21,7 +21,7 @@ function AdminLayout() {
     );
   }
 
-  if (!user?.role || !isAdmin(user.role)) {
+  if (!user?.role || !isDeveloperOrAbove(user.role)) {
     return <Navigate to="/dashboard" />;
   }
 

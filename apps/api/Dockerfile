@@ -25,6 +25,8 @@ COPY apps/api/src apps/api/src
 COPY apps/api/tsconfig.json apps/api/
 COPY packages/drizzle-orm/src packages/drizzle-orm/src
 COPY packages/drizzle-orm/tsconfig.json packages/drizzle-orm/
+COPY packages/logger/src packages/logger/src
+COPY packages/logger/tsconfig.json packages/logger/
 COPY packages/shared/src packages/shared/src
 COPY packages/solana/src packages/solana/src
 COPY packages/wariga/src packages/wariga/src

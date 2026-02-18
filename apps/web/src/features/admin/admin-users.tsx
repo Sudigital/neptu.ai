@@ -32,6 +32,12 @@ import { useState } from "react";
 
 import { adminApi } from "./admin-api";
 
+function getRoleBadgeVariant(role: string) {
+  if (role === "admin") return "default" as const;
+  if (role === "developer") return "secondary" as const;
+  return "outline" as const;
+}
+
 export function AdminUsers() {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
@@ -49,8 +55,8 @@ export function AdminUsers() {
   });
 
   const toggleAdminMutation = useMutation({
-    mutationFn: ({ userId, isAdmin }: { userId: string; isAdmin: boolean }) =>
-      adminApi.updateUser(userId, { isAdmin }),
+    mutationFn: ({ userId, role }: { userId: string; role: string }) =>
+      adminApi.updateUser(userId, { role }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
     },
@@ -145,7 +151,9 @@ export function AdminUsers() {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-1">
-                      {user.isAdmin && <Badge variant="default">Admin</Badge>}
+                      <Badge variant={getRoleBadgeVariant(user.role)}>
+                        {user.role}
+                      </Badge>
                       {user.onboarded ? (
                         <Badge variant="secondary">Onboarded</Badge>
                       ) : (
@@ -166,11 +174,11 @@ export function AdminUsers() {
                           onClick={() =>
                             toggleAdminMutation.mutate({
                               userId: user.id,
-                              isAdmin: !user.isAdmin,
+                              role: user.role === "admin" ? "user" : "admin",
                             })
                           }
                         >
-                          {user.isAdmin ? (
+                          {user.role === "admin" ? (
                             <>
                               <ShieldOff className="mr-2 h-4 w-4" />
                               Remove Admin

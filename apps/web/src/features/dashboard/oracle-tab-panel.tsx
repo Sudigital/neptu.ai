@@ -1,7 +1,9 @@
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useTranslate } from "@/hooks/use-translate";
-import { Sparkles, Loader2, Bot } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Sparkles, Loader2, Bot, ALargeSmall } from "lucide-react";
+import { useState } from "react";
 
 import { HighlightedText } from "./highlighted-text";
 
@@ -15,6 +17,7 @@ export function OracleTabPanel({
   interpretation,
 }: OracleTabPanelProps) {
   const t = useTranslate();
+  const [isLargeFont, setIsLargeFont] = useState(false);
 
   return (
     <Card className="gap-0 px-5 py-5">
@@ -22,14 +25,32 @@ export function OracleTabPanel({
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-900/30">
           <Bot className="h-5 w-5 text-violet-600 dark:text-violet-400" />
         </div>
-        <div>
-          <h3 className="text-sm font-semibold">
+        <div className="min-w-0 flex-1">
+          <h3 className="text-xs font-semibold sm:text-sm">
             {t("dashboard.oracleInsight", "Today's Oracle")}
           </h3>
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-[10px] text-muted-foreground">
             {t("oracle.subtitle", "Your personal Balinese astrology guide")}
           </p>
         </div>
+        <span
+          role="button"
+          tabIndex={0}
+          className={cn(
+            "flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors hover:bg-muted",
+            isLargeFont && "bg-muted text-foreground"
+          )}
+          onClick={() => setIsLargeFont((prev) => !prev)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setIsLargeFont((prev) => !prev);
+            }
+          }}
+          title={isLargeFont ? "Smaller text" : "Larger text"}
+        >
+          <ALargeSmall className="h-4 w-4" />
+        </span>
       </div>
       <Separator className="mb-4" />
       {(() => {
@@ -45,7 +66,12 @@ export function OracleTabPanel({
         }
         if (interpretation) {
           return (
-            <div className="prose prose-sm dark:prose-invert max-w-none">
+            <div
+              className={cn(
+                "prose dark:prose-invert max-w-none leading-relaxed",
+                isLargeFont ? "prose-sm" : "prose-xs text-xs"
+              )}
+            >
               <HighlightedText text={interpretation} />
             </div>
           );

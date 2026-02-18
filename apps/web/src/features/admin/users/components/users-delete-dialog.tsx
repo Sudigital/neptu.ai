@@ -31,7 +31,7 @@ export function UsersDeleteDialog({
   const mutation = useMutation({
     mutationFn: () =>
       adminApi.updateUser(currentRow.id, {
-        isAdmin: false,
+        role: "user",
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "users"] });

@@ -1,7 +1,9 @@
 import type { CompatibilityResult } from "@neptu/shared";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { HighlightedText } from "@/features/dashboard/highlighted-text";
 import { neptuApi } from "@/lib/api";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useMutation } from "@tanstack/react-query";
@@ -33,18 +35,27 @@ export function AiSummaryCard({
   const message = aiResult?.message;
 
   return (
-    <Card className="h-full border-violet-200/50 dark:border-violet-800/50">
-      <CardHeader className="px-4 pt-4 pb-3">
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-violet-500" />
-          <CardTitle className="text-sm">
-            {t("compatibility.aiSummary")}
-          </CardTitle>
+    <Card className="h-full gap-0 border-violet-200/50 px-5 py-5 dark:border-violet-800/50">
+      {/* Header — same pattern as InterestOracle */}
+      <div className="mb-4 flex items-center gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-900/30">
+          <Sparkles className="h-5 w-5 text-violet-600 dark:text-violet-400" />
         </div>
-      </CardHeader>
-      <CardContent className="flex flex-1 flex-col px-4 pb-4">
+        <div>
+          <h3 className="text-sm font-semibold tracking-tight">
+            {t("compatibility.aiSummary")}
+          </h3>
+          <p className="text-[11px] text-muted-foreground">
+            {t("compatibility.aiSummarySubtitle", "Balinese wisdom analysis")}
+          </p>
+        </div>
+      </div>
+      <Separator className="mb-4" />
+
+      {/* Content */}
+      <div className="space-y-1.5">
         {!message && !isPending && !error && (
-          <div className="flex flex-1 flex-col items-center justify-center gap-3 py-8 text-center">
+          <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
             <div className="rounded-full bg-violet-100 p-3 dark:bg-violet-900/30">
               <Sparkles className="h-6 w-6 text-violet-500 dark:text-violet-400" />
             </div>
@@ -64,16 +75,16 @@ export function AiSummaryCard({
         )}
 
         {isPending && (
-          <div className="flex flex-1 flex-col items-center justify-center gap-3 py-8 text-center">
-            <Loader2 className="h-6 w-6 animate-spin text-violet-500" />
-            <p className="text-xs text-muted-foreground">
+          <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <p className="mt-3 text-sm text-muted-foreground">
               {t("compatibility.aiLoading")}
             </p>
           </div>
         )}
 
         {error && (
-          <div className="flex flex-1 flex-col items-center justify-center gap-3 py-8 text-center">
+          <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
             <p className="text-xs text-destructive">
               {t("compatibility.aiError")}
             </p>
@@ -84,13 +95,11 @@ export function AiSummaryCard({
         )}
 
         {message && (
-          <div className="space-y-2 text-sm leading-relaxed text-muted-foreground">
-            {message.split("\n\n").map((paragraph, i) => (
-              <p key={i}>{paragraph}</p>
-            ))}
+          <div className="prose prose-xs dark:prose-invert max-w-none text-xs leading-relaxed">
+            <HighlightedText text={message} />
           </div>
         )}
-      </CardContent>
+      </div>
     </Card>
   );
 }

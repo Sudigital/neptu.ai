@@ -1448,7 +1448,177 @@ Day 6     ┃ Go Live
 
 ---
 
-## 12. Next Steps
+## 12. Manual Deploy (Docker Build, Push & Update)
+
+> **Why manual?** The `packages/wariga` package (Balinese calendar engine) is proprietary IP and not committed to the Git repository. CI/CD workflows use stubs for typecheck/lint/test, but production containers must be built locally where the real source exists.
+
+### Prerequisites
+
+- Docker installed and running
+- Azure CLI authenticated (`az login`)
+- Access to `sudigitalacr` container registry
+
+### 12.1 API Deployment
+
+```bash
+# 1. Login to Azure Container Registry
+az acr login --name sudigitalacr
+
+# 2. Build the API image (from monorepo root)
+cd /path/to/neptu.ai
+docker build -f apps/api/Dockerfile -t sudigitalacr.azurecr.io/neptu-api:v$(date +%Y%m%d%H%M%S) .
+
+# 3. Verify the build locally (optional)
+docker run --rm sudigitalacr.azurecr.io/neptu-api:v<TAG> cat /app/packages/drizzle-orm/src/schemas/users.ts
+
+# 4. Push to ACR
+docker push sudigitalacr.azurecr.io/neptu-api:v<TAG>
+
+# 5. Update the Container App (creates a new revision)
+az containerapp update \
+  --name neptu-api \
+  --resource-group sudigital-rg \
+  --image sudigitalacr.azurecr.io/neptu-api:v<TAG>
+
+# 6. Verify the new revision is healthy
+az containerapp revision list \
+  --name neptu-api \
+  --resource-group sudigital-rg \
+  --output table
+
+# 7. Test the health endpoint
+curl -s https://api.neptu.sudigital.com/health
+```
+
+### 12.2 Worker Deployment
+
+```bash
+# 1. Build the Worker image
+docker build -f apps/worker/Dockerfile -t sudigitalacr.azurecr.io/neptu-worker:v$(date +%Y%m%d%H%M%S) .
+
+# 2. Push to ACR
+docker push sudigitalacr.azurecr.io/neptu-worker:v<TAG>
+
+# 3. Update the Container App
+az containerapp update \
+  --name neptu-worker \
+  --resource-group sudigital-rg \
+  --image sudigitalacr.azurecr.io/neptu-worker:v<TAG>
+
+# 4. Verify
+az containerapp revision list \
+  --name neptu-worker \
+  --resource-group sudigital-rg \
+  --output table
+```
+
+### 12.3 Web Deployment (Cloudflare Pages)
+
+```bash
+# Web is deployed to Cloudflare Pages — no Docker needed
+cd apps/web
+bun run deploy
+```
+
+### 12.4 Revision Management
+
+```bash
+# List all revisions
+az containerapp revision list \
+  --name neptu-api \
+  --resource-group sudigital-rg \
+  --output table
+
+# Restart a revision (forces image re-pull for same tag)
+az containerapp revision restart \
+  --name neptu-api \
+  --resource-group sudigital-rg \
+  --revision <REVISION_NAME>
+
+# Deactivate an old/unhealthy revision
+az containerapp revision deactivate \
+  --name neptu-api \
+  --resource-group sudigital-rg \
+  --revision <REVISION_NAME>
+
+# View container logs
+az containerapp logs show \
+  --name neptu-api \
+  --resource-group sudigital-rg \
+  --revision <REVISION_NAME> \
+  --tail 50
+```
+
+### 12.5 Database Migrations (Production)
+
+```bash
+# Connect to production PostgreSQL
+PGPASSWORD='<PASSWORD>' psql \
+  -h sudigital-db.postgres.database.azure.com \
+  -U sudigital \
+  -d neptu
+
+# Run migration SQL files from packages/drizzle-orm/drizzle/
+# Example: applying a new migration
+PGPASSWORD='<PASSWORD>' psql \
+  -h sudigital-db.postgres.database.azure.com \
+  -U sudigital \
+  -d neptu \
+  -f packages/drizzle-orm/drizzle/<MIGRATION_FILE>.sql
+```
+
+### 12.6 Important Notes
+
+| Topic               | Detail                                                                                                          |
+| ------------------- | --------------------------------------------------------------------------------------------------------------- |
+| **Image tags**      | Always use unique tags (e.g., `v20260218210744`) — using `latest` may serve cached images                       |
+| **Wariga IP**       | Real `packages/wariga` source only exists locally — CI/CD uses stubs that return empty data                     |
+| **Dockerfile deps** | Ensure all workspace packages are copied in Dockerfiles (`logger`, `shared`, `drizzle-orm`, `solana`, `wariga`) |
+| **Health check**    | API health: `https://api.neptu.sudigital.com/health` — returns `{"status":"ok"}`                                |
+| **Rollback**        | To rollback, redeploy the previous image tag — old revisions can be reactivated                                 |
+
+### 12.7 Quick Deploy Script
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Usage: ./deploy-api.sh
+TAG="v$(date +%Y%m%d%H%M%S)"
+IMAGE="sudigitalacr.azurecr.io/neptu-api:${TAG}"
+
+echo "🔑 Logging in to ACR..."
+az acr login --name sudigitalacr
+
+echo "🏗️  Building API image: ${IMAGE}"
+docker build -f apps/api/Dockerfile -t "${IMAGE}" .
+
+echo "📤 Pushing to ACR..."
+docker push "${IMAGE}"
+
+echo "🚀 Deploying to Container Apps..."
+az containerapp update \
+  --name neptu-api \
+  --resource-group sudigital-rg \
+  --image "${IMAGE}"
+
+echo "⏳ Waiting for revision..."
+sleep 15
+
+echo "✅ Revision status:"
+az containerapp revision list \
+  --name neptu-api \
+  --resource-group sudigital-rg \
+  --output table
+
+echo "🏥 Health check:"
+curl -s https://api.neptu.sudigital.com/health
+echo ""
+```
+
+---
+
+## 13. Next Steps
 
 1. **Start Phase 1** — provision Azure resources with the CLI commands above
 2. **Start Phase 2** — begin schema migration (`pgTable` conversion)

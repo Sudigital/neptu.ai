@@ -5,7 +5,8 @@ import { neptuApi } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { Loader2 } from "lucide-react";
+import { ALargeSmall, Loader2 } from "lucide-react";
+import { useState } from "react";
 
 import { HighlightedText } from "./highlighted-text";
 
@@ -175,6 +176,7 @@ export function InterestOracle({
 }) {
   const t = useTranslate();
   const interestName = t(`interest.${interest}`, interest);
+  const [isLargeFont, setIsLargeFont] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["oracle-interest", interest, birthDate, targetDate, language],
@@ -215,15 +217,33 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
         >
           <span className="text-xl">{config.icon}</span>
         </div>
-        <div>
-          <h3 className="text-sm font-semibold tracking-tight capitalize">
+        <div className="min-w-0 flex-1">
+          <h3 className="text-xs font-semibold tracking-tight capitalize sm:text-sm">
             {interestName} {t("oracle.insight")}
           </h3>
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-[10px] text-muted-foreground">
             {t("oracle.guidanceFor")}{" "}
             {format(new Date(targetDate), "MMM d, yyyy")}
           </p>
         </div>
+        <span
+          role="button"
+          tabIndex={0}
+          className={cn(
+            "flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors hover:bg-muted",
+            isLargeFont && "bg-muted text-foreground"
+          )}
+          onClick={() => setIsLargeFont((prev) => !prev)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setIsLargeFont((prev) => !prev);
+            }
+          }}
+          title={isLargeFont ? "Smaller text" : "Larger text"}
+        >
+          <ALargeSmall className="h-4 w-4" />
+        </span>
       </div>
       <Separator className="mb-4" />
       <div className="space-y-1.5">
@@ -240,7 +260,12 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
           }
           if (insights.mainText) {
             return (
-              <div className="prose prose-sm dark:prose-invert max-w-none">
+              <div
+                className={cn(
+                  "prose dark:prose-invert max-w-none leading-relaxed",
+                  isLargeFont ? "prose-sm" : "prose-xs text-xs"
+                )}
+              >
                 <HighlightedText text={insights.mainText} />
               </div>
             );

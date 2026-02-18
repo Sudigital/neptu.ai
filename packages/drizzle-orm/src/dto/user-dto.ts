@@ -1,4 +1,4 @@
-import type { UserInterest } from "@neptu/shared";
+import type { UserInterest, UserRole } from "@neptu/shared";
 
 import type { User } from "../schemas/users";
 
@@ -10,7 +10,7 @@ export interface UserDTO {
   birthDate: string | null;
   interests: UserInterest[];
   onboarded: boolean;
-  isAdmin: boolean;
+  role: UserRole;
   createdAt: string;
   updatedAt: string;
 }
@@ -33,7 +33,7 @@ export function toUserDTO(user: User): UserDTO {
     birthDate: user.birthDate,
     interests: (user.interests ?? []) as UserInterest[],
     onboarded: user.onboarded ?? false,
-    isAdmin: user.isAdmin ?? false,
+    role: user.role,
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
   };

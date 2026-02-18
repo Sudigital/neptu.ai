@@ -184,28 +184,55 @@ export function Dashboard() {
   const reading = readingData?.reading;
 
   const dateNavigation = (
-    <div className="flex items-center gap-1.5 sm:gap-2">
-      <Button
-        type="button"
-        variant="outline"
-        size="icon"
-        onClick={goToPreviousDay}
-        className="h-9 w-9 shrink-0 sm:h-10 sm:w-10"
-      >
-        <ChevronLeft className="h-4 w-4" />
-      </Button>
+    <div className="flex items-center">
       <Popover>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             className={cn(
-              "h-9 flex-1 justify-center text-sm font-medium sm:h-10",
+              "h-9 flex-1 justify-between gap-0 px-1 text-sm font-medium sm:h-10 sm:px-2",
               !isToday(selectedDate) &&
                 "border-violet-500 bg-violet-50 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300"
             )}
           >
-            <CalendarIcon className="mr-1.5 h-4 w-4 sm:mr-2" />
-            {format(selectedDate, "MMM d, yyyy")}
+            <span
+              role="button"
+              tabIndex={0}
+              className="inline-flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-md transition-colors hover:bg-accent/60"
+              onClick={(e) => {
+                e.stopPropagation();
+                goToPreviousDay();
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.stopPropagation();
+                  goToPreviousDay();
+                }
+              }}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </span>
+            <span className="flex items-center gap-1.5 px-3 sm:px-4">
+              <CalendarIcon className="h-4 w-4" />
+              {format(selectedDate, "MMM d, yyyy")}
+            </span>
+            <span
+              role="button"
+              tabIndex={0}
+              className="inline-flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-md transition-colors hover:bg-accent/60"
+              onClick={(e) => {
+                e.stopPropagation();
+                goToNextDay();
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.stopPropagation();
+                  goToNextDay();
+                }
+              }}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </span>
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="center">
@@ -217,15 +244,6 @@ export function Dashboard() {
           />
         </PopoverContent>
       </Popover>
-      <Button
-        type="button"
-        variant="outline"
-        size="icon"
-        onClick={goToNextDay}
-        className="h-9 w-9 shrink-0 sm:h-10 sm:w-10"
-      >
-        <ChevronRight className="h-4 w-4" />
-      </Button>
     </div>
   );
 

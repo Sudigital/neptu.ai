@@ -112,7 +112,7 @@ adminRoutes.get("/users/:id", async (c) => {
 });
 
 const updateUserAdminSchema = z.object({
-  isAdmin: z.boolean().optional(),
+  role: z.enum(["admin", "developer", "user"]).optional(),
   displayName: z.string().min(1).max(50).optional(),
   email: z.string().email().optional(),
 });
@@ -126,8 +126,8 @@ adminRoutes.put(
     const db = c.get("db");
     const userService = new UserService(db);
 
-    if (body.isAdmin !== undefined) {
-      await userService.setAdminStatus(id, body.isAdmin);
+    if (body.role !== undefined) {
+      await userService.setRole(id, body.role);
     }
 
     const user = await userService.updateUser(id, {

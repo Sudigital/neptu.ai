@@ -1,6 +1,7 @@
 import { Logo } from "@/assets/logo";
 import { useTranslate } from "@/hooks/use-translate";
 import { useUser } from "@/hooks/use-user";
+import { isAdmin, isDeveloperOrAbove } from "@neptu/shared";
 import {
   LayoutDashboard,
   Settings,
@@ -12,6 +13,7 @@ import {
   Key,
   Activity,
   BarChart3,
+  Code2,
 } from "lucide-react";
 import { useMemo } from "react";
 
@@ -61,7 +63,26 @@ export function useSidebarData(): SidebarData {
             },
           ],
         },
-        ...(user?.isAdmin
+        ...(user?.role && isDeveloperOrAbove(user.role)
+          ? [
+              {
+                title: "Developer",
+                items: [
+                  {
+                    title: "Portal",
+                    url: "/developer",
+                    icon: Code2,
+                  },
+                  {
+                    title: "API Keys",
+                    url: "/developer",
+                    icon: Key,
+                  },
+                ],
+              },
+            ]
+          : []),
+        ...(user?.role && isAdmin(user.role)
           ? [
               {
                 title: "Admin",
@@ -119,6 +140,6 @@ export function useSidebarData(): SidebarData {
         },
       ],
     }),
-    [t, user?.isAdmin]
+    [t, user?.role]
   );
 }

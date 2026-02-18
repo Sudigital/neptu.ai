@@ -1,6 +1,11 @@
 import type { Context, Next } from "hono";
 
-import { AUTH_HEADER } from "@neptu/shared";
+import {
+  AUTH_HEADER,
+  isAdmin as checkIsAdmin,
+  isDeveloperOrAbove,
+  type UserRole,
+} from "@neptu/shared";
 
 import { verifyAccessToken } from "../lib/paseto";
 
@@ -12,7 +17,7 @@ export interface AuthEnv {
   Variables: {
     userId: string;
     walletAddress: string;
-    isAdmin: boolean;
+    role: UserRole;
   };
 }
 
@@ -23,7 +28,7 @@ export interface AuthEnv {
 /**
  * PASETO v4.local authentication middleware.
  * Verifies Bearer token from Authorization header, sets userId,
- * walletAddress, and isAdmin on the Hono context.
+ * walletAddress, and role on the Hono context.
  */
 export async function pasetoAuth(
   c: Context<AuthEnv>,
@@ -53,7 +58,7 @@ export async function pasetoAuth(
 
     c.set("userId", payload.sub);
     c.set("walletAddress", payload.wal);
-    c.set("isAdmin", payload.adm);
+    c.set("role", payload.role);
 
     await next();
   } catch {
@@ -69,10 +74,27 @@ export async function requireAdmin(
   c: Context<AuthEnv>,
   next: Next
 ): Promise<Response | void> {
-  const isAdmin = c.get("isAdmin");
+  const role = c.get("role");
 
-  if (!isAdmin) {
+  if (!checkIsAdmin(role)) {
     return c.json({ success: false, error: "Admin access required" }, 403);
+  }
+
+  await next();
+}
+
+/**
+ * Require the authenticated user to be at least a developer.
+ * Must be used AFTER pasetoAuth. Allows admin and developer roles.
+ */
+export async function requireDeveloper(
+  c: Context<AuthEnv>,
+  next: Next
+): Promise<Response | void> {
+  const role = c.get("role");
+
+  if (!isDeveloperOrAbove(role)) {
+    return c.json({ success: false, error: "Developer access required" }, 403);
   }
 
   await next();
