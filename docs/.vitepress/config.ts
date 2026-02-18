@@ -2,8 +2,7 @@ import { defineConfig } from "vitepress";
 
 export default defineConfig({
   title: "Neptu",
-  description:
-    "Ancient Balinese Wuku Calendar meets Web3 - Colosseum Agent Hackathon 2026",
+  description: "Ancient Balinese Wuku Calendar meets Web3 on Solana",
 
   head: [
     ["link", { rel: "icon", type: "image/svg+xml", href: "/logo.svg" }],
@@ -49,10 +48,6 @@ export default defineConfig({
       { text: "Agent", link: "/agent/skill" },
       { text: "Tokenomics", link: "/tokenomics" },
       { text: "App", link: "https://neptu.sudigital.com" },
-      {
-        text: "Vote 🗳️",
-        link: "https://colosseum.com/agent-hackathon/projects/neptu",
-      },
     ],
 
     sidebar: {
@@ -83,7 +78,7 @@ export default defineConfig({
     ],
 
     footer: {
-      message: "🌴 Built for Colosseum Agent Hackathon 2026 | $100k Prize",
+      message: "🌴 Ancient Balinese Wisdom meets Web3 on Solana",
       copyright:
         "Copyright © 2026 Neptu - Ancient Balinese Wisdom meets Web3 | <a href='https://neptu.sudigital.com'>Launch App</a>",
     },

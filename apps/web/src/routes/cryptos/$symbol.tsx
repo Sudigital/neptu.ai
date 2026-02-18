@@ -111,7 +111,7 @@ function CryptoBirthdayDetailPage() {
   };
   const shareToWhatsApp = () => {
     window.open(
-      `https://wa.me/?text=${encodeURIComponent(getShareText() + " " + getShareUrl())}`,
+      `https://wa.me/?text=${encodeURIComponent(`${getShareText()} ${getShareUrl()}`)}`,
       "_blank",
       "noopener,noreferrer"
     );

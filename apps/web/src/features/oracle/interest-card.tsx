@@ -292,14 +292,15 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
             <p className="mt-0.5 text-[11px] text-muted-foreground">
               {config.tagline}
             </p>
-            {isLoading ? (
+            {isLoading && (
               <div className="mt-2 flex items-center gap-1.5">
                 <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
                 <span className="text-[11px] text-muted-foreground">
                   Consulting oracle...
                 </span>
               </div>
-            ) : insights.affirmation ? (
+            )}
+            {!isLoading && insights.affirmation && (
               <div className="mt-2 space-y-1">
                 <p className="truncate text-xs font-medium text-foreground/80">
                   ✨ {insights.affirmation}
@@ -308,7 +309,7 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
                   → {insights.action}
                 </p>
               </div>
-            ) : null}
+            )}
           </div>
         </div>
       </Card>
@@ -352,18 +353,20 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
             </div>
 
             {/* Full Oracle Text */}
-            {isLoading ? (
+            {isLoading && (
               <div className="flex flex-col items-center justify-center py-6 text-center">
                 <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                 <p className="mt-3 text-sm text-muted-foreground">
                   Analyzing {config.label}...
                 </p>
               </div>
-            ) : insights.mainText ? (
+            )}
+            {!isLoading && insights.mainText && (
               <div className="prose prose-sm dark:prose-invert max-w-none">
                 <HighlightedText text={insights.mainText} />
               </div>
-            ) : (
+            )}
+            {!isLoading && !insights.mainText && (
               <div className="py-6 text-center">
                 <p className="text-sm text-muted-foreground">
                   No specific insight available at this time.

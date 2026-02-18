@@ -51,8 +51,33 @@ function getHourEnergy(
 }
 
 function getEnergyPercent(level: "high" | "mid" | "low"): number {
-  return level === "high" ? 100 : level === "mid" ? 66 : 33;
+  if (level === "high") return 100;
+  if (level === "mid") return 66;
+  return 33;
 }
+
+type EnergyLevel = "high" | "mid" | "low";
+
+const ENERGY_STYLES: Record<
+  EnergyLevel,
+  { labelKey: string; textColor: string; fillColor: string }
+> = {
+  high: {
+    labelKey: "chart.good",
+    textColor: "text-emerald-600 dark:text-emerald-400",
+    fillColor: "oklch(0.765 0.177 163)",
+  },
+  mid: {
+    labelKey: "chart.neutral",
+    textColor: "text-sky-600 dark:text-sky-400",
+    fillColor: "oklch(0.685 0.169 237)",
+  },
+  low: {
+    labelKey: "chart.caution",
+    textColor: "text-rose-600 dark:text-rose-400",
+    fillColor: "oklch(0.712 0.194 13)",
+  },
+};
 
 /* ── 24h Energy Step Chart ───────────────────────────── */
 
@@ -95,24 +120,10 @@ export function HourlyGrid({
 
   const currentEnergy =
     currentHour >= 0 ? getHourEnergy(currentHour, totalUrip) : null;
-  const energyLabel =
-    currentEnergy === "high"
-      ? t("chart.good")
-      : currentEnergy === "mid"
-        ? t("chart.neutral")
-        : t("chart.caution");
-  const energyTextColor =
-    currentEnergy === "high"
-      ? "text-emerald-600 dark:text-emerald-400"
-      : currentEnergy === "mid"
-        ? "text-sky-600 dark:text-sky-400"
-        : "text-rose-600 dark:text-rose-400";
-  const energyFillColor =
-    currentEnergy === "high"
-      ? "oklch(0.765 0.177 163)"
-      : currentEnergy === "mid"
-        ? "oklch(0.685 0.169 237)"
-        : "oklch(0.712 0.194 13)";
+  const energyStyle = ENERGY_STYLES[currentEnergy ?? "low"];
+  const energyLabel = t(energyStyle.labelKey);
+  const energyTextColor = energyStyle.textColor;
+  const energyFillColor = energyStyle.fillColor;
 
   return (
     <div className="space-y-3">
@@ -165,13 +176,7 @@ export function HourlyGrid({
           {currentHour >= 0 && currentEnergy && (
             <ReferenceDot
               x={String(currentHour + 1).padStart(2, "0")}
-              y={
-                currentEnergy === "high"
-                  ? 100
-                  : currentEnergy === "mid"
-                    ? 66
-                    : 33
-              }
+              y={getEnergyPercent(currentEnergy!)}
               r={5}
               fill={energyFillColor}
               stroke="var(--background)"
@@ -186,12 +191,7 @@ export function HourlyGrid({
                 hideLabel
                 formatter={(value, _name, props) => {
                   const lvl = props.payload.level as string;
-                  const label =
-                    lvl === "high"
-                      ? t("chart.good")
-                      : lvl === "mid"
-                        ? t("chart.neutral")
-                        : t("chart.caution");
+                  const label = t(ENERGY_STYLES[lvl as EnergyLevel].labelKey);
                   return (
                     <div className="flex items-center gap-2">
                       <span className="font-medium">

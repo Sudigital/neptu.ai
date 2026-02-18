@@ -196,17 +196,19 @@ export function StreakCounter({
           className="w-full"
           size="lg"
         >
-          {isCheckingIn ? (
+          {isCheckingIn && (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Checking in...
             </>
-          ) : hasCheckedInToday ? (
+          )}
+          {!isCheckingIn && hasCheckedInToday && (
             <>
               <CheckCircle className="mr-2 h-4 w-4" />
               Already checked in today!
             </>
-          ) : (
+          )}
+          {!isCheckingIn && !hasCheckedInToday && (
             <>
               <Flame className="mr-2 h-4 w-4" />
               Check in for +{GAMIFICATION_REWARDS.DAILY_CHECK_IN} NEPTU

@@ -93,7 +93,7 @@ Every NEPTU payment has **50% burned**:
 ## Contract Addresses
 
 ::: warning Devnet Only
-Neptu is currently on Solana Devnet. Mainnet launch after hackathon!
+Neptu is currently on Solana Devnet. Mainnet launch coming soon!
 :::
 
 | Contract          | Network | Address                                        | Explorer                                                                                       |
@@ -120,19 +120,12 @@ solana program show 6Zxc4uCXKqWS6spnW7u9wA81PChgws6wbGAKJyi8PnvT
 
 ## Roadmap
 
-| Phase | Milestone              | Status            |
-| ----- | ---------------------- | ----------------- |
-| 1     | Hackathon MVP          | ✅ Complete       |
-| 2     | AI Oracle Integration  | ✅ Complete       |
-| 3     | Token on Devnet        | ✅ Complete       |
-| 4     | Multi-language (EN/ID) | ✅ Complete       |
-| 5     | Colosseum Submission   | ✅ Complete       |
-| 6     | Mainnet Launch         | 🔜 Post-Hackathon |
-| 7     | DEX Listing            | 🔜 Coming         |
-| 8     | Governance             | 🔮 Future         |
-
----
-
-::: tip Support Neptu!
-Vote for us in the Colosseum Agent Hackathon: [Vote Now](https://colosseum.com/agent-hackathon/projects/neptu)
-:::
+| Phase | Milestone              | Status      |
+| ----- | ---------------------- | ----------- |
+| 1     | Core MVP               | ✅ Complete |
+| 2     | AI Oracle Integration  | ✅ Complete |
+| 3     | Token on Devnet        | ✅ Complete |
+| 4     | Multi-language (EN/ID) | ✅ Complete |
+| 5     | Mainnet Launch         | 🔜 Coming   |
+| 6     | DEX Listing            | 🔜 Coming   |
+| 7     | Governance             | 🔮 Future   |

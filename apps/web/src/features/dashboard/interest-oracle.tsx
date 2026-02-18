@@ -227,24 +227,32 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`,
       </div>
       <Separator className="mb-4" />
       <div className="space-y-1.5">
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-6 text-center">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            <p className="mt-3 text-sm text-muted-foreground">
-              {t("oracle.analyzing")} {interestName}...
-            </p>
-          </div>
-        ) : insights.mainText ? (
-          <div className="prose prose-sm dark:prose-invert max-w-none">
-            <HighlightedText text={insights.mainText} />
-          </div>
-        ) : (
-          <div className="py-6 text-center">
-            <p className="text-sm text-muted-foreground">
-              {t("oracle.noInsight")}
-            </p>
-          </div>
-        )}
+        {(() => {
+          if (isLoading) {
+            return (
+              <div className="flex flex-col items-center justify-center py-6 text-center">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                <p className="mt-3 text-sm text-muted-foreground">
+                  {t("oracle.analyzing")} {interestName}...
+                </p>
+              </div>
+            );
+          }
+          if (insights.mainText) {
+            return (
+              <div className="prose prose-sm dark:prose-invert max-w-none">
+                <HighlightedText text={insights.mainText} />
+              </div>
+            );
+          }
+          return (
+            <div className="py-6 text-center">
+              <p className="text-sm text-muted-foreground">
+                {t("oracle.noInsight")}
+              </p>
+            </div>
+          );
+        })()}
       </div>
     </Card>
   );

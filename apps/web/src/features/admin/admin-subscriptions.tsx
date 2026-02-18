@@ -128,20 +128,26 @@ export function AdminSubscriptions() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center">
-                  Loading...
-                </TableCell>
-              </TableRow>
-            ) : data?.data.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center">
-                  No subscriptions found
-                </TableCell>
-              </TableRow>
-            ) : (
-              data?.data.map((sub) => (
+            {(() => {
+              if (isLoading) {
+                return (
+                  <TableRow>
+                    <TableCell colSpan={6} className="h-24 text-center">
+                      Loading...
+                    </TableCell>
+                  </TableRow>
+                );
+              }
+              if (data?.data.length === 0) {
+                return (
+                  <TableRow>
+                    <TableCell colSpan={6} className="h-24 text-center">
+                      No subscriptions found
+                    </TableCell>
+                  </TableRow>
+                );
+              }
+              return data?.data.map((sub) => (
                 <TableRow key={sub.id}>
                   <TableCell>
                     <div className="flex items-center gap-2">
@@ -187,8 +193,8 @@ export function AdminSubscriptions() {
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
-              ))
-            )}
+              ));
+            })()}
           </TableBody>
         </Table>
       </div>

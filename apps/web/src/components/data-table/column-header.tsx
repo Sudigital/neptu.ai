@@ -42,13 +42,14 @@ export function DataTableColumnHeader<TData, TValue>({
             className="h-8 data-[state=open]:bg-accent"
           >
             <span>{title}</span>
-            {column.getIsSorted() === "desc" ? (
-              <ArrowDownIcon className="ms-2 h-4 w-4" />
-            ) : column.getIsSorted() === "asc" ? (
-              <ArrowUpIcon className="ms-2 h-4 w-4" />
-            ) : (
-              <CaretSortIcon className="ms-2 h-4 w-4" />
-            )}
+            {(() => {
+              const sortDir = column.getIsSorted();
+              if (sortDir === "desc")
+                return <ArrowDownIcon className="ms-2 h-4 w-4" />;
+              if (sortDir === "asc")
+                return <ArrowUpIcon className="ms-2 h-4 w-4" />;
+              return <CaretSortIcon className="ms-2 h-4 w-4" />;
+            })()}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">

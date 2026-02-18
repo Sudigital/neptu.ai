@@ -61,11 +61,12 @@ export function ProfileDropdown() {
   };
 
   const displayName = shortAddress;
-  const chainInfo = walletAddress
-    ? `solana · ${network}`
-    : displayEmail
-      ? "email"
-      : "connected";
+  let chainInfo = "connected";
+  if (walletAddress) {
+    chainInfo = `solana · ${network}`;
+  } else if (displayEmail) {
+    chainInfo = "email";
+  }
 
   return (
     <DropdownMenu modal={false}>

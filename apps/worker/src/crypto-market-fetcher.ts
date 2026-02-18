@@ -9,9 +9,12 @@ import {
   type CoinGeckoMarketData,
   type Database,
 } from "@neptu/drizzle-orm";
+import { createLogger } from "@neptu/logger";
 import { COINGECKO_IDS, COINGECKO_API } from "@neptu/shared";
 
 import { TOP_CRYPTO_COINS, type CryptoCoin } from "./crypto-birthdays";
+
+const log = createLogger({ name: "crypto-fetcher" });
 
 export function getCoinGeckoIds(): string[] {
   return TOP_CRYPTO_COINS.map((coin) => COINGECKO_IDS[coin.symbol]).filter(
@@ -91,7 +94,7 @@ export async function fetchAndStoreCryptoMarketData(
       coinsUpdated: marketData.length,
     };
   } catch (error) {
-    console.error("Failed to fetch crypto market data:", error);
+    log.error("Failed to fetch crypto market data: %o", error);
     return {
       success: false,
       coinsUpdated: 0,

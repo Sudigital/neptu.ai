@@ -32,30 +32,38 @@ export function OracleTabPanel({
         </div>
       </div>
       <Separator className="mb-4" />
-      {aiLoading ? (
-        <div className="flex flex-col items-center justify-center py-8 text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-violet-600" />
-          <p className="mt-3 text-sm text-muted-foreground">
-            {t("dashboard.consultingOracle", "Consulting the Oracle...")}
-          </p>
-        </div>
-      ) : interpretation ? (
-        <div className="prose prose-sm dark:prose-invert max-w-none">
-          <HighlightedText text={interpretation} />
-        </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center py-8 text-center">
-          <div className="rounded-full bg-violet-100 p-4 dark:bg-violet-900/30">
-            <Sparkles className="h-8 w-8 text-violet-600 dark:text-violet-400" />
+      {(() => {
+        if (aiLoading) {
+          return (
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <Loader2 className="h-8 w-8 animate-spin text-violet-600" />
+              <p className="mt-3 text-sm text-muted-foreground">
+                {t("dashboard.consultingOracle", "Consulting the Oracle...")}
+              </p>
+            </div>
+          );
+        }
+        if (interpretation) {
+          return (
+            <div className="prose prose-sm dark:prose-invert max-w-none">
+              <HighlightedText text={interpretation} />
+            </div>
+          );
+        }
+        return (
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <div className="rounded-full bg-violet-100 p-4 dark:bg-violet-900/30">
+              <Sparkles className="h-8 w-8 text-violet-600 dark:text-violet-400" />
+            </div>
+            <p className="mt-3 max-w-sm text-sm text-muted-foreground">
+              {t(
+                "dashboard.selectDatePrompt",
+                "Select a date to receive personalized guidance based on Balinese astrology and your birth chart."
+              )}
+            </p>
           </div>
-          <p className="mt-3 max-w-sm text-sm text-muted-foreground">
-            {t(
-              "dashboard.selectDatePrompt",
-              "Select a date to receive personalized guidance based on Balinese astrology and your birth chart."
-            )}
-          </p>
-        </div>
-      )}
+        );
+      })()}
     </Card>
   );
 }

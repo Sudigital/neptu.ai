@@ -12,10 +12,9 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
   const { handleLogOut } = useDynamicContext();
 
   const handleSignOut = () => {
-    // Redirect first to avoid flash of disconnected state
-    window.location.href = "/";
     clearSession();
     handleLogOut();
+    window.location.href = "/";
   };
 
   return (

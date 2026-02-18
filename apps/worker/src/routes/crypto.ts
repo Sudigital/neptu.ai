@@ -1,4 +1,5 @@
 import { createDatabase, type Database } from "@neptu/drizzle-orm";
+import { createLogger } from "@neptu/logger";
 import {
   COSMIC_MESSAGES,
   COSMIC_DEFAULT_MESSAGE,
@@ -13,6 +14,8 @@ import { NeptuCalculator } from "@neptu/wariga";
 import { Hono } from "hono";
 
 import { redisCache } from "../cache";
+
+const log = createLogger({ name: "crypto" });
 import {
   fetchAndStoreCryptoMarketData,
   getCryptoWithMarketData,
@@ -194,7 +197,7 @@ crypto.get("/chart/:id", async (c) => {
 
   if (!res.ok) {
     const body = await res.text();
-    console.error(`CoinGecko chart error: ${res.status}`, body);
+    log.error("CoinGecko chart error: %d %s", res.status, body);
     return c.json(
       { error: `CoinGecko returned ${res.status}` },
       res.status === 429 ? 429 : 502

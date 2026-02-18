@@ -86,6 +86,4 @@ bun run --filter @neptu/api dev
 
 ---
 
-Built for **Colosseum Agent Hackathon 2026** 🏛️
-
 _Om Swastiastu_ 🙏

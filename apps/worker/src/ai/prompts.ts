@@ -241,11 +241,12 @@ export function generateDateInterpretationPrompt(
 ): string {
   const isToday = new Date().toDateString() === targetDate.toDateString();
   const isPast = targetDate < new Date();
-  const dateLabel = isToday
-    ? "today"
-    : isPast
-      ? "that past date"
-      : "that future date";
+  let dateLabel = "that future date";
+  if (isToday) {
+    dateLabel = "today";
+  } else if (isPast) {
+    dateLabel = "that past date";
+  }
   const langNote =
     language !== "en"
       ? `\n\nIMPORTANT: Write all content in ${LANGUAGE_LABELS[language] || "English"}.`

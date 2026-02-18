@@ -214,13 +214,15 @@ function ProfileFormInner({
   const MAX_INTERESTS = 3;
 
   const toggleInterest = (interest: string) => {
-    setInterests((prev) =>
-      prev.includes(interest)
-        ? prev.filter((i) => i !== interest)
-        : prev.length < MAX_INTERESTS
-          ? [...prev, interest]
-          : prev
-    );
+    setInterests((prev) => {
+      if (prev.includes(interest)) {
+        return prev.filter((i) => i !== interest);
+      }
+      if (prev.length < MAX_INTERESTS) {
+        return [...prev, interest];
+      }
+      return prev;
+    });
   };
 
   return (
@@ -318,14 +320,16 @@ function ProfileFormInner({
           )}
         </div>
         <p className="text-xs text-muted-foreground">
-          {isEmailFromDynamic
-            ? t("settings.email.dynamic", "Verified via login provider")
-            : isEmailReadonly
-              ? t("settings.email.saved", "Email saved to your profile")
-              : t(
-                  "settings.email.desc",
-                  "Add your email to receive notifications"
-                )}
+          {(() => {
+            if (isEmailFromDynamic)
+              return t("settings.email.dynamic", "Verified via login provider");
+            if (isEmailReadonly)
+              return t("settings.email.saved", "Email saved to your profile");
+            return t(
+              "settings.email.desc",
+              "Add your email to receive notifications"
+            );
+          })()}
         </p>
       </div>
 

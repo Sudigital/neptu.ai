@@ -14,14 +14,14 @@ const categoryColors: Record<MitraSatruCategory, string> = {
   satru: "bg-red-500",
 };
 
+function getScoreColor(score: number): string {
+  if (score >= 70) return "bg-emerald-500";
+  if (score >= 40) return "bg-amber-500";
+  return "bg-red-500";
+}
+
 function ScoreBar({ label, score, category }: ScoreBarProps) {
-  const barColor = category
-    ? categoryColors[category]
-    : score >= 70
-      ? "bg-emerald-500"
-      : score >= 40
-        ? "bg-amber-500"
-        : "bg-red-500";
+  const barColor = category ? categoryColors[category] : getScoreColor(score);
 
   return (
     <div className="space-y-1">

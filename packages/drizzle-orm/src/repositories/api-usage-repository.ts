@@ -184,12 +184,14 @@ export class ApiUsageRepository {
     const start = new Date(startDate);
     const end = new Date(endDate);
 
-    const dateFormat =
-      groupBy === "day"
-        ? sql`TO_CHAR(${apiUsage.createdAt}, 'YYYY-MM-DD')`
-        : groupBy === "week"
-          ? sql`TO_CHAR(DATE_TRUNC('week', ${apiUsage.createdAt}), 'YYYY-MM-DD')`
-          : sql`TO_CHAR(DATE_TRUNC('month', ${apiUsage.createdAt}), 'YYYY-MM')`;
+    let dateFormat;
+    if (groupBy === "day") {
+      dateFormat = sql`TO_CHAR(${apiUsage.createdAt}, 'YYYY-MM-DD')`;
+    } else if (groupBy === "week") {
+      dateFormat = sql`TO_CHAR(DATE_TRUNC('week', ${apiUsage.createdAt}), 'YYYY-MM-DD')`;
+    } else {
+      dateFormat = sql`TO_CHAR(DATE_TRUNC('month', ${apiUsage.createdAt}), 'YYYY-MM')`;
+    }
 
     const result = await this.db
       .select({
