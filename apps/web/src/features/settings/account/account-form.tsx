@@ -96,9 +96,8 @@ export function AccountForm() {
                             {field.value}
                           </span>
                           {
-                            languages.find(
-                              (language) => language.value === field.value
-                            )?.label
+                            languages.find((lang) => lang.value === field.value)
+                              ?.label
                           }
                         </>
                       ) : (
@@ -121,27 +120,27 @@ export function AccountForm() {
                     </CommandEmpty>
                     <CommandGroup>
                       <CommandList>
-                        {languages.map((language) => (
+                        {languages.map((lang) => (
                           <CommandItem
-                            value={language.label}
-                            key={language.value}
+                            value={lang.label}
+                            key={lang.value}
                             onSelect={() => {
-                              form.setValue("language", language.value);
+                              form.setValue("language", lang.value);
                               setOpen(false);
                             }}
                           >
                             <CheckIcon
                               className={cn(
                                 "size-4",
-                                language.value === field.value
+                                lang.value === field.value
                                   ? "opacity-100"
                                   : "opacity-0"
                               )}
                             />
                             <span className="mr-2 font-medium uppercase">
-                              {language.value}
+                              {lang.value}
                             </span>
-                            {language.label}
+                            {lang.label}
                           </CommandItem>
                         ))}
                       </CommandList>

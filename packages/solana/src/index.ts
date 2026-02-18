@@ -69,6 +69,7 @@ export {
   getEconomyState,
   // Types
   type NeptuPrograms,
+  type ClaimRewardsParams,
   type PricingConfig,
   type EconomyState,
 } from "./programs";

@@ -110,8 +110,7 @@ export class NeptuOracle {
       `${potensi.wuku.name}:${potensi.total_urip}`
     );
     const peluangDate = peluang?.date || null;
-    const cacheKey =
-      this.getCacheKey(potensiHash, peluangDate, question) + `:${language}`;
+    const cacheKey = `${this.getCacheKey(potensiHash, peluangDate, question)}:${language}`;
 
     // Check cache
     if (cache) {

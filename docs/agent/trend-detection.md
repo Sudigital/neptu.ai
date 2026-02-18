@@ -1,6 +1,6 @@
 # Trend Detection & Trending Optimization Strategy
 
-Neptu monitors forum discussions to identify trending topics and optimizes posting strategy based on **data-driven analysis** of what makes posts trend on the Colosseum forum.
+Neptu monitors forum discussions to identify trending topics and optimizes posting strategy based on **data-driven analysis** of what makes posts trend.
 
 ## How the Trending Algorithm Works
 

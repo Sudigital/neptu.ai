@@ -337,9 +337,8 @@ export function Navbar() {
           <div className="hidden md:block">
             <ThemeSwitch />
           </div>
-          {isAuthenticated ? (
-            <ProfileDropdown />
-          ) : isAuthenticating ? (
+          {isAuthenticated && <ProfileDropdown />}
+          {!isAuthenticated && isAuthenticating && (
             <Button
               disabled
               className="h-9 bg-[#7C3AED] px-2.5 text-xs text-white hover:bg-[#7C3AED]/90 sm:px-4 sm:text-sm"
@@ -365,7 +364,8 @@ export function Navbar() {
               </svg>
               {t("landing.connecting")}
             </Button>
-          ) : (
+          )}
+          {!isAuthenticated && !isAuthenticating && (
             <Button
               onClick={showLogin}
               className="h-9 bg-[#7C3AED] px-2.5 text-xs text-white hover:bg-[#7C3AED]/90 sm:px-4 sm:text-sm"

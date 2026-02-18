@@ -118,10 +118,22 @@ function emptyTokens(): TokenState {
 
 const persisted = loadPersistedAuth();
 
+// Session is valid if access token exists OR refresh token is still valid
+function isSessionValid(tokens: TokenState): boolean {
+  if (tokens.accessToken) return true;
+  if (
+    tokens.refreshToken &&
+    tokens.refreshTokenExpiresAt &&
+    Date.now() < tokens.refreshTokenExpiresAt
+  )
+    return true;
+  return false;
+}
+
 export const usePasetoAuthStore = create<PasetoAuthState>()((set, get) => ({
   user: persisted.user,
   tokens: persisted.tokens,
-  isAuthenticated: !!persisted.tokens.accessToken,
+  isAuthenticated: isSessionValid(persisted.tokens),
   isSigningIn: false,
 
   setSession: (user: AuthUser, accessToken: string, refreshToken: string) => {

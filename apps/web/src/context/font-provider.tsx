@@ -28,20 +28,20 @@ export function FontProvider({ children }: { children: ReactNode }) {
   });
 
   useEffect(() => {
-    const applyFont = (font: string) => {
+    const applyFont = (fontName: string) => {
       const root = document.documentElement;
       root.classList.forEach((cls) => {
         if (cls.startsWith("font-")) root.classList.remove(cls);
       });
-      root.classList.add(`font-${font}`);
+      root.classList.add(`font-${fontName}`);
     };
 
     applyFont(font);
   }, [font]);
 
-  const setFont = (font: Font) => {
-    setCookie(FONT_COOKIE_NAME, font, FONT_COOKIE_MAX_AGE);
-    _setFont(font);
+  const setFont = (newFont: Font) => {
+    setCookie(FONT_COOKIE_NAME, newFont, FONT_COOKIE_MAX_AGE);
+    _setFont(newFont);
   };
 
   const resetFont = () => {

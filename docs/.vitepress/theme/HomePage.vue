@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const APP_URL = "https://neptu.sudigital.com";
-const VOTE_URL = "https://colosseum.com/agent-hackathon/projects/neptu";
 
 const features = [
   {
@@ -122,7 +121,6 @@ const techStack = [
         <div class="hero-actions">
           <a :href="APP_URL" class="btn-primary"> 📖 Launch App → </a>
           <a href="/guide/" class="btn-secondary">Read Docs →</a>
-          <a :href="VOTE_URL" class="btn-secondary">Vote for Neptu 🗳️ →</a>
         </div>
       </div>
     </section>

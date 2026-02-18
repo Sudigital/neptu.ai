@@ -176,7 +176,9 @@ apiSubscriptionPaymentRoutes.post(
     }
 
     const { blockhash, lastValidBlockHeight } =
-      clientBlockhash && clientBlockHeight != null
+      clientBlockhash &&
+      clientBlockHeight !== null &&
+      clientBlockHeight !== undefined
         ? {
             blockhash: clientBlockhash,
             lastValidBlockHeight: BigInt(clientBlockHeight),
@@ -361,7 +363,9 @@ apiSubscriptionPaymentRoutes.post(
     }
 
     const { blockhash, lastValidBlockHeight } =
-      clientBlockhash && clientBlockHeight != null
+      clientBlockhash &&
+      clientBlockHeight !== null &&
+      clientBlockHeight !== undefined
         ? {
             blockhash: clientBlockhash,
             lastValidBlockHeight: BigInt(clientBlockHeight),

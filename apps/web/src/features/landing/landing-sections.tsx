@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import {
   Sparkles,
@@ -118,44 +117,6 @@ export default function LandingSections({ t }: { t: (key: string) => string }) {
               title={t("landing.step3.title")}
               desc={t("landing.step3.desc")}
             />
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Vote CTA Section */}
-      <section
-        id="vote"
-        className="bg-gradient-to-r from-[#9955FF]/10 to-[#7C3AED]/10 py-10 sm:py-16"
-      >
-        <div className="container mx-auto px-4 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mx-auto max-w-2xl space-y-3 sm:space-y-6"
-          >
-            <h2 className="text-xl font-bold tracking-tight sm:text-3xl">
-              {t("landing.voteTitle")}
-            </h2>
-            <p className="text-sm text-muted-foreground sm:text-lg">
-              {t("landing.voteDesc")}
-            </p>
-            <p className="text-xs font-medium text-[#7C3AED] sm:text-sm">
-              🎁 {t("landing.voteReward")}
-            </p>
-            <Button
-              size="lg"
-              className="h-11 w-full bg-[#7C3AED] px-6 text-sm text-white hover:bg-[#7C3AED]/90 sm:h-14 sm:w-auto sm:px-8 sm:text-lg"
-              asChild
-            >
-              <a
-                href="https://colosseum.com/agent-hackathon/projects/neptu"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {t("landing.voteButton")} 🗳️
-              </a>
-            </Button>
           </motion.div>
         </div>
       </section>

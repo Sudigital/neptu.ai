@@ -33,9 +33,9 @@ export function DirectionProvider({ children }: { children: ReactNode }) {
     htmlElement.setAttribute("dir", dir);
   }, [dir]);
 
-  const setDir = (dir: Direction) => {
-    _setDir(dir);
-    setCookie(DIRECTION_COOKIE_NAME, dir, DIRECTION_COOKIE_MAX_AGE);
+  const setDir = (newDir: Direction) => {
+    _setDir(newDir);
+    setCookie(DIRECTION_COOKIE_NAME, newDir, DIRECTION_COOKIE_MAX_AGE);
   };
 
   const resetDir = () => {

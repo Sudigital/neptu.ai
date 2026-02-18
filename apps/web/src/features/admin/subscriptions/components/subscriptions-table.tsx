@@ -123,7 +123,7 @@ export function SubscriptionsTable({
             ))}
           </TableHeader>
           <TableBody>
-            {isLoading ? (
+            {isLoading && (
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
@@ -132,7 +132,9 @@ export function SubscriptionsTable({
                   Loading...
                 </TableCell>
               </TableRow>
-            ) : table.getRowModel().rows?.length ? (
+            )}
+            {!isLoading &&
+              table.getRowModel().rows?.length > 0 &&
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -155,8 +157,8 @@ export function SubscriptionsTable({
                     </TableCell>
                   ))}
                 </TableRow>
-              ))
-            ) : (
+              ))}
+            {!isLoading && !table.getRowModel().rows?.length && (
               <TableRow>
                 <TableCell
                   colSpan={columns.length}

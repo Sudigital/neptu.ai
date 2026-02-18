@@ -1,9 +1,5 @@
 import { zValidator } from "@hono/zod-validator";
-import {
-  TokenTransactionService,
-  UserService,
-  type Database,
-} from "@neptu/drizzle-orm";
+import { type Database } from "@neptu/drizzle-orm";
 import {
   DEFAULT_NETWORK,
   PRICING,
@@ -14,28 +10,15 @@ import {
   createSolanaClient,
   createNeptuPrograms,
   deriveAssociatedTokenAddress,
-  deriveClaimRecordPda,
   buildPayWithSolInstruction,
   buildPayWithNeptuInstruction,
-  buildClaimRewardsInstruction,
   getLatestBlockhash,
-  verifyTransaction,
   calculateSolPaymentReward,
   calculateNeptuPaymentBurn,
   calculateSudigitalPayment,
   address,
   type NeptuPrograms,
 } from "@neptu/solana";
-import {
-  pipe,
-  createTransactionMessage,
-  setTransactionMessageFeePayer,
-  setTransactionMessageLifetimeUsingBlockhash,
-  appendTransactionMessageInstruction,
-  compileTransaction,
-  getTransactionEncoder,
-  blockhash as toBlockhash,
-} from "@solana/kit";
 import { Hono } from "hono";
 import { z } from "zod";
 
@@ -95,21 +78,6 @@ const buildPaySchema = z.object({
   lastValidBlockHeight: z.number().optional(),
 });
 
-const verifyPaymentSchema = z.object({
-  txSignature: z.string().min(64).max(128),
-  walletAddress: z.string().min(32).max(64),
-  readingType: readingTypeEnum,
-  paymentType: z.enum(["sol", "neptu", "sudigital"]),
-});
-
-const buildClaimSchema = z.object({
-  walletAddress: z.string().min(32).max(64),
-  amount: z.number().positive(),
-  nonce: z.number().int().nonnegative(),
-  blockhash: z.string().optional(),
-  lastValidBlockHeight: z.number().optional(),
-});
-
 // GET /pay/sol/build - Get instruction data for SOL payment
 paymentRoutes.post(
   "/sol/build",
@@ -153,7 +121,9 @@ paymentRoutes.post(
 
       // Use client-provided blockhash if available, otherwise fetch from RPC
       const { blockhash, lastValidBlockHeight } =
-        clientBlockhash && clientBlockHeight != null
+        clientBlockhash &&
+        clientBlockHeight !== null &&
+        clientBlockHeight !== undefined
           ? {
               blockhash: clientBlockhash,
               lastValidBlockHeight: BigInt(clientBlockHeight),
@@ -237,7 +207,9 @@ paymentRoutes.post(
 
       // Use client-provided blockhash if available, otherwise fetch from RPC
       const { blockhash, lastValidBlockHeight } =
-        clientBlockhash && clientBlockHeight != null
+        clientBlockhash &&
+        clientBlockHeight !== null &&
+        clientBlockHeight !== undefined
           ? {
               blockhash: clientBlockhash,
               lastValidBlockHeight: BigInt(clientBlockHeight),
@@ -307,7 +279,9 @@ paymentRoutes.post(
       }
 
       const { blockhash, lastValidBlockHeight } =
-        clientBlockhash && clientBlockHeight != null
+        clientBlockhash &&
+        clientBlockHeight !== null &&
+        clientBlockHeight !== undefined
           ? {
               blockhash: clientBlockhash,
               lastValidBlockHeight: BigInt(clientBlockHeight),
@@ -351,230 +325,15 @@ paymentRoutes.post(
   }
 );
 
-// POST /pay/verify - Verify payment and record in database
-paymentRoutes.post(
-  "/verify",
-  zValidator("json", verifyPaymentSchema),
-  async (c) => {
-    const { txSignature, walletAddress, readingType, paymentType } =
-      c.req.valid("json");
-    const db = c.get("db");
-    const userService = new UserService(db);
-    const tokenService = new TokenTransactionService(db);
-    const network =
-      (c.env?.SOLANA_NETWORK as "devnet" | "mainnet") || DEFAULT_NETWORK;
-    const solanaClient = getSolanaClient(c.env);
+// POST /pay/verify - Extracted to payment-verify.ts
+import { paymentVerifyRoutes } from "./payment-verify";
 
-    try {
-      // Check if already recorded
-      const existingTx =
-        await tokenService.getTransactionBySignature(txSignature);
-      if (existingTx) {
-        return c.json({
-          success: true,
-          transaction: existingTx,
-          message: "Transaction already recorded",
-        });
-      }
+paymentRoutes.route("/verify", paymentVerifyRoutes);
 
-      // Get or create user
-      const user = await userService.getOrCreateUser(walletAddress);
+// POST /claim - Extracted to payment-claim.ts
+import { paymentClaimRoutes } from "./payment-claim";
 
-      // Verify on-chain
-      const verification = await verifyTransaction(
-        solanaClient.rpc,
-        txSignature,
-        network
-      );
-
-      if (!verification.isValid) {
-        return c.json(
-          {
-            success: false,
-            error: verification.error || "Invalid transaction",
-          },
-          400
-        );
-      }
-
-      // Calculate amounts based on payment type
-      let transactionType:
-        | "sol_payment"
-        | "neptu_payment"
-        | "sudigital_payment";
-      let neptuRewarded: number | undefined;
-      let neptuBurned: number | undefined;
-      let solAmount: number | undefined;
-      let neptuAmount: number | undefined;
-      let sudigitalAmount: number | undefined;
-
-      const pricing = PRICING[readingType as keyof typeof PRICING];
-
-      if (paymentType === "sol") {
-        transactionType = "sol_payment";
-        const reward = calculateSolPaymentReward(readingType as ReadingType);
-        solAmount = pricing.SOL;
-        neptuRewarded = reward.neptuRewardFormatted;
-      } else if (paymentType === "sudigital") {
-        transactionType = "sudigital_payment";
-        const payment = calculateSudigitalPayment(readingType as ReadingType);
-        sudigitalAmount = payment.sudigitalAmountFormatted;
-        neptuRewarded = payment.neptuRewardFormatted;
-      } else {
-        transactionType = "neptu_payment";
-        const burn = calculateNeptuPaymentBurn(readingType as ReadingType);
-        neptuAmount = pricing.NEPTU;
-        neptuBurned = burn.burnAmountFormatted;
-      }
-
-      // Store in database
-      const _transaction = await tokenService.createTransaction({
-        userId: user.id,
-        txSignature,
-        transactionType,
-        readingType: readingType as ReadingType,
-        solAmount,
-        neptuAmount,
-        sudigitalAmount,
-        neptuBurned,
-        neptuRewarded,
-      });
-
-      // Confirm transaction
-      const confirmedTx = await tokenService.confirmTransaction({
-        txSignature,
-        status: "confirmed",
-        confirmedAt: new Date().toISOString(),
-      });
-
-      return c.json({
-        success: true,
-        transaction: confirmedTx,
-        reward: neptuRewarded
-          ? { neptuRewarded, message: `Earned ${neptuRewarded} NEPTU` }
-          : undefined,
-        burn: neptuBurned
-          ? { neptuBurned, message: `Burned ${neptuBurned} NEPTU` }
-          : undefined,
-        sudigital: sudigitalAmount
-          ? {
-              sudigitalAmount,
-              neptuRewarded: neptuRewarded,
-              message: `Paid ${sudigitalAmount} SUDIGITAL, earned ${neptuRewarded} NEPTU`,
-            }
-          : undefined,
-      });
-    } catch (error) {
-      return c.json(
-        {
-          success: false,
-          error:
-            error instanceof Error ? error.message : "Failed to verify payment",
-        },
-        500
-      );
-    }
-  }
-);
-
-// POST /claim/build - Build claim rewards transaction
-paymentRoutes.post(
-  "/claim/build",
-  zValidator("json", buildClaimSchema),
-  async (c) => {
-    const {
-      walletAddress,
-      amount,
-      nonce,
-      blockhash: clientBlockhash,
-      lastValidBlockHeight: clientBlockHeight,
-    } = c.req.valid("json");
-    const network =
-      (c.env?.SOLANA_NETWORK as "devnet" | "mainnet") || DEFAULT_NETWORK;
-    const solanaClient = getSolanaClient(c.env);
-
-    try {
-      const programs = await getPrograms(network);
-      const userAddress = address(walletAddress);
-
-      const userNeptuAccount = await deriveAssociatedTokenAddress(
-        userAddress,
-        programs.mintPda
-      );
-
-      const claimRecordPda = await deriveClaimRecordPda(
-        userAddress,
-        programs.economyProgramId
-      );
-
-      // TODO: Generate backend signature for claim authorization
-      // For now, return empty signature (will be implemented with Ed25519 signing)
-      const authSignature = new Uint8Array(64);
-
-      const instruction = buildClaimRewardsInstruction(
-        programs,
-        userAddress,
-        userNeptuAccount,
-        claimRecordPda,
-        BigInt(Math.round(amount * 1_000_000)), // Convert to raw amount (6 decimals)
-        BigInt(nonce),
-        authSignature
-      );
-
-      // Use client-provided blockhash if available, otherwise fetch from RPC
-      const { blockhash, lastValidBlockHeight } =
-        clientBlockhash && clientBlockHeight != null
-          ? {
-              blockhash: clientBlockhash,
-              lastValidBlockHeight: BigInt(clientBlockHeight),
-            }
-          : await getLatestBlockhash(solanaClient.rpc, network);
-
-      // Build a full unsigned transaction the client can sign
-      const txMessage = pipe(
-        createTransactionMessage({ version: 0 }),
-        (msg) => setTransactionMessageFeePayer(userAddress, msg),
-        (msg) =>
-          setTransactionMessageLifetimeUsingBlockhash(
-            {
-              blockhash: toBlockhash(blockhash),
-              lastValidBlockHeight,
-            },
-            msg
-          ),
-        (msg) => appendTransactionMessageInstruction(instruction, msg)
-      );
-
-      const compiledTx = compileTransaction(txMessage);
-      const txEncoder = getTransactionEncoder();
-      const serializedTx = txEncoder.encode(compiledTx);
-
-      return c.json({
-        success: true,
-        serializedTransaction: Array.from(serializedTx),
-        transaction: {
-          blockhash,
-          lastValidBlockHeight: Number(lastValidBlockHeight),
-        },
-        claim: {
-          amount,
-          nonce,
-        },
-      });
-    } catch (error) {
-      return c.json(
-        {
-          success: false,
-          error:
-            error instanceof Error
-              ? error.message
-              : "Failed to build claim instruction",
-        },
-        500
-      );
-    }
-  }
-);
+paymentRoutes.route("/claim", paymentClaimRoutes);
 
 // Pricing routes (extracted to payment-pricing.ts)
 import { paymentPricingRoutes } from "./payment-pricing";

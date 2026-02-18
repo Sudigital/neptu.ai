@@ -1,9 +1,12 @@
 import { zValidator } from "@hono/zod-validator";
 import { UserService, ReadingService, type Database } from "@neptu/drizzle-orm";
+import { createLogger } from "@neptu/logger";
 import { USER_INTERESTS } from "@neptu/shared";
 import { NeptuCalculator } from "@neptu/wariga";
 import { Hono } from "hono";
 import { z } from "zod";
+
+const log = createLogger({ name: "user" });
 
 import { type AuthEnv } from "../middleware/paseto-auth";
 
@@ -70,7 +73,7 @@ userRoutes.get("/:walletAddress", async (c) => {
       user.isAdmin = shouldBeAdmin;
     } catch (e) {
       // Column may not exist in older databases - ignore
-      console.warn("Could not set admin status:", e);
+      log.warn("Could not set admin status: %o", e);
     }
   }
 
@@ -98,7 +101,7 @@ userRoutes.post("/", zValidator("json", createUserSchema), async (c) => {
       user.isAdmin = true;
     } catch (e) {
       // Column may not exist in older databases - ignore
-      console.warn("Could not set admin status:", e);
+      log.warn("Could not set admin status: %o", e);
     }
   }
 
@@ -157,7 +160,7 @@ userRoutes.put(
       const updatedUser = await userService.getUserByWallet(walletAddress);
       return c.json({ success: true, user: updatedUser });
     } catch (error) {
-      console.error("Update user error:", error);
+      log.error("Update user error: %o", error);
       return c.json({ success: false, error: String(error) }, 500);
     }
   }

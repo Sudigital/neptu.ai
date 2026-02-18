@@ -104,12 +104,14 @@ export class UserRepository {
     const offset = (page - 1) * limit;
 
     const orderFn = sortOrder === "asc" ? asc : desc;
-    const orderColumn =
-      sortBy === "walletAddress"
-        ? users.walletAddress
-        : sortBy === "displayName"
-          ? users.displayName
-          : users.createdAt;
+    let orderColumn;
+    if (sortBy === "walletAddress") {
+      orderColumn = users.walletAddress;
+    } else if (sortBy === "displayName") {
+      orderColumn = users.displayName;
+    } else {
+      orderColumn = users.createdAt;
+    }
 
     let query = this.db.select().from(users).$dynamic();
     let countQuery = this.db.select({ count: count() }).from(users).$dynamic();

@@ -120,7 +120,7 @@ export function verifyAccessToken(token: string): AccessTokenPayload {
   const payload = verifyToken<AccessTokenPayload>(token);
 
   if (payload.typ !== "access") {
-    throw new Error("Expected access token, received " + payload.typ);
+    throw new Error(`Expected access token, received ${payload.typ}`);
   }
 
   return payload;
@@ -134,7 +134,7 @@ export function verifyRefreshToken(token: string): RefreshTokenPayload {
   const payload = verifyToken<RefreshTokenPayload>(token);
 
   if (payload.typ !== "refresh") {
-    throw new Error("Expected refresh token, received " + payload.typ);
+    throw new Error(`Expected refresh token, received ${payload.typ}`);
   }
 
   return payload;

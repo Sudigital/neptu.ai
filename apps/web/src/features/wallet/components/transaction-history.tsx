@@ -203,21 +203,27 @@ export function TransactionHistory({
                 </div>
 
                 <div className="text-right">
-                  {tx.solAmount != null && tx.solAmount > 0 && (
-                    <p className="text-sm font-medium text-red-500">
-                      -{tx.solAmount} SOL
-                    </p>
-                  )}
-                  {tx.neptuRewarded != null && tx.neptuRewarded > 0 && (
-                    <p className="text-sm font-medium text-green-500">
-                      +{tx.neptuRewarded} NEPTU
-                    </p>
-                  )}
-                  {tx.neptuBurned != null && tx.neptuBurned > 0 && (
-                    <p className="text-xs text-amber-500">
-                      {tx.neptuBurned} {t("wallet.tx.burned", "burned")}
-                    </p>
-                  )}
+                  {tx.solAmount !== null &&
+                    tx.solAmount !== undefined &&
+                    tx.solAmount > 0 && (
+                      <p className="text-sm font-medium text-red-500">
+                        -{tx.solAmount} SOL
+                      </p>
+                    )}
+                  {tx.neptuRewarded !== null &&
+                    tx.neptuRewarded !== undefined &&
+                    tx.neptuRewarded > 0 && (
+                      <p className="text-sm font-medium text-green-500">
+                        +{tx.neptuRewarded} NEPTU
+                      </p>
+                    )}
+                  {tx.neptuBurned !== null &&
+                    tx.neptuBurned !== undefined &&
+                    tx.neptuBurned > 0 && (
+                      <p className="text-xs text-amber-500">
+                        {tx.neptuBurned} {t("wallet.tx.burned", "burned")}
+                      </p>
+                    )}
                   <Badge
                     variant={STATUS_VARIANTS[tx.status] || "secondary"}
                     className="mt-1 text-xs"

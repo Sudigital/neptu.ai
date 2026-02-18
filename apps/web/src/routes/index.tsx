@@ -78,18 +78,6 @@ function LandingPage() {
           />
 
           <div className="container mx-auto px-4 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="mx-auto mb-4 flex max-w-fit items-center justify-center rounded-full border bg-background/50 px-3 py-1 backdrop-blur sm:mb-8 sm:px-4 sm:py-1.5"
-            >
-              <span className="mr-1.5 flex h-1.5 w-1.5 animate-pulse rounded-full bg-primary sm:mr-2 sm:h-2 sm:w-2" />
-              <span className="text-xs font-medium text-muted-foreground sm:text-sm">
-                {t("landing.hackathonBadge", "Colosseum Agent Hackathon 2026")}
-              </span>
-            </motion.div>
-
             <motion.h1
               variants={fadeInUp}
               initial="hidden"
@@ -117,52 +105,60 @@ function LandingPage() {
               transition={{ delay: 0.6 }}
               className="mt-6 flex flex-col items-center justify-center gap-2.5 px-4 sm:mt-10 sm:flex-row sm:gap-4"
             >
-              {isAuthenticated ? (
-                <Button
-                  size="lg"
-                  onClick={() => navigate({ to: "/dashboard" })}
-                  className="h-11 w-full px-4 text-sm transition-transform hover:scale-105 active:scale-95 sm:h-14 sm:w-auto sm:min-w-[200px] sm:px-8 sm:text-lg"
-                >
-                  <Wallet className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                  {t("landing.startJourney")}
-                </Button>
-              ) : isAuthenticating ? (
-                <Button
-                  size="lg"
-                  disabled
-                  className="h-11 w-full px-4 text-sm sm:h-14 sm:w-auto sm:min-w-[200px] sm:px-8 sm:text-lg"
-                >
-                  <svg
-                    className="mr-2 h-4 w-4 animate-spin sm:h-5 sm:w-5"
-                    viewBox="0 0 24 24"
-                    fill="none"
+              {(() => {
+                if (isAuthenticated) {
+                  return (
+                    <Button
+                      size="lg"
+                      onClick={() => navigate({ to: "/dashboard" })}
+                      className="h-11 w-full px-4 text-sm transition-transform hover:scale-105 active:scale-95 sm:h-14 sm:w-auto sm:min-w-[200px] sm:px-8 sm:text-lg"
+                    >
+                      <Wallet className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                      {t("landing.startJourney")}
+                    </Button>
+                  );
+                }
+                if (isAuthenticating) {
+                  return (
+                    <Button
+                      size="lg"
+                      disabled
+                      className="h-11 w-full px-4 text-sm sm:h-14 sm:w-auto sm:min-w-[200px] sm:px-8 sm:text-lg"
+                    >
+                      <svg
+                        className="mr-2 h-4 w-4 animate-spin sm:h-5 sm:w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                        />
+                      </svg>
+                      {t("landing.connecting")}
+                    </Button>
+                  );
+                }
+                return (
+                  <Button
+                    size="lg"
+                    onClick={showLogin}
+                    className="h-11 w-full px-4 text-sm transition-transform hover:scale-105 active:scale-95 sm:h-14 sm:w-auto sm:min-w-[200px] sm:px-8 sm:text-lg"
                   >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                    />
-                  </svg>
-                  {t("landing.connecting")}
-                </Button>
-              ) : (
-                <Button
-                  size="lg"
-                  onClick={showLogin}
-                  className="h-11 w-full px-4 text-sm transition-transform hover:scale-105 active:scale-95 sm:h-14 sm:w-auto sm:min-w-[200px] sm:px-8 sm:text-lg"
-                >
-                  <Wallet className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                  {t("landing.startJourney")}
-                </Button>
-              )}
+                    <Wallet className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                    {t("landing.startJourney")}
+                  </Button>
+                );
+              })()}
               <Button
                 size="lg"
                 variant="outline"

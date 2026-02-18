@@ -82,9 +82,9 @@ export function ThemeProvider({
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, [theme, resolvedTheme]);
 
-  const setTheme = (theme: Theme) => {
-    setCookie(storageKey, theme, THEME_COOKIE_MAX_AGE);
-    _setTheme(theme);
+  const setTheme = (newTheme: Theme) => {
+    setCookie(storageKey, newTheme, THEME_COOKIE_MAX_AGE);
+    _setTheme(newTheme);
   };
 
   const resetTheme = () => {

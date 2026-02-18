@@ -1,6 +1,9 @@
+import { createLogger } from "@neptu/logger";
 import { NeptuCalculator } from "@neptu/wariga";
 /** Oracle API routes */
 import { Hono } from "hono";
+
+const log = createLogger({ name: "oracle" });
 
 import { NeptuOracle } from "../ai/oracle";
 import { postProcessResponse } from "../ai/prompts";
@@ -60,7 +63,7 @@ oracle.post("/", async (c) => {
       ...response,
     });
   } catch (error) {
-    console.error("[Oracle] askQuestion error:", error);
+    log.error("[Oracle] askQuestion error: %o", error);
     return c.json(
       {
         success: false,
@@ -117,7 +120,7 @@ oracle.get("/daily/:birthDate", async (c) => {
       ...response,
     });
   } catch (error) {
-    console.error("[Oracle] dailyInterpretation error:", error);
+    log.error("[Oracle] dailyInterpretation error: %o", error);
     return c.json(
       {
         success: false,
@@ -189,7 +192,7 @@ oracle.post("/interpret", async (c) => {
     try {
       await redisCache.put(cacheKey, interpretation, { expirationTtl: 21600 });
     } catch (cacheErr) {
-      console.warn("[Oracle] Cache put failed (KV limit?):", cacheErr);
+      log.warn("[Oracle] Cache put failed (KV limit?): %o", cacheErr);
     }
 
     return c.json({
@@ -199,7 +202,7 @@ oracle.post("/interpret", async (c) => {
       cached: false,
     });
   } catch (error) {
-    console.error("[Oracle] interpret error:", error);
+    log.error("[Oracle] interpret error: %o", error);
     return c.json(
       {
         success: false,
@@ -266,7 +269,7 @@ oracle.post("/compatibility", async (c) => {
       ...response,
     });
   } catch (error) {
-    console.error("[Oracle] compatibility error:", error);
+    log.error("[Oracle] compatibility error: %o", error);
     return c.json(
       {
         success: false,

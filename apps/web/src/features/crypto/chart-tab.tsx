@@ -66,14 +66,14 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
   const historyData = useMemo(
     () =>
       chartRaw
-        ? formatPriceData(
-            chartRaw,
-            crypto.ath,
-            crypto.atl,
-            crypto.athDate,
-            crypto.atlDate,
-            crypto.currentPrice
-          )
+        ? formatPriceData({
+            rawData: chartRaw,
+            ath: crypto.ath,
+            atl: crypto.atl,
+            athDate: crypto.athDate,
+            atlDate: crypto.atlDate,
+            currentPrice: crypto.currentPrice,
+          })
         : [],
     [
       chartRaw,
@@ -139,17 +139,19 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
             </div>
           </div>
 
-          {isLoading ? (
+          {isLoading && (
             <div className="flex h-[300px] items-center justify-center text-muted-foreground">
               <Loader2 className="mr-2 h-6 w-6 animate-spin" />
               Loading chart data...
             </div>
-          ) : error ? (
+          )}
+          {!isLoading && error && (
             <div className="flex h-[300px] items-center justify-center text-muted-foreground">
               <AlertCircle className="mr-2 h-5 w-5 text-red-500" />
               Failed to load chart data
             </div>
-          ) : (
+          )}
+          {!isLoading && !error && (
             <PriceChart data={historyData} ath={crypto.ath} atl={crypto.atl} />
           )}
         </CardContent>

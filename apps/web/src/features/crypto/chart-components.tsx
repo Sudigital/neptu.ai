@@ -24,26 +24,24 @@ export function CustomTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null;
   const data = payload[0].payload as ChartDataPoint;
   const displayPrice = data.predPrice ?? data.price;
-  if (displayPrice == null) return null;
+  if (displayPrice === null || displayPrice === undefined) return null;
 
-  const typeLabel =
-    data.type === "ath"
-      ? data.predPrice != null
-        ? "ATH Prediction"
-        : "ATH"
-      : data.type === "atl"
-        ? data.predPrice != null
-          ? "ATL Prediction"
-          : "ATL"
-        : data.type === "now"
-          ? "Current"
-          : null;
-  const typeColor =
-    data.type === "ath"
-      ? "#22c55e"
-      : data.type === "atl"
-        ? "#ef4444"
-        : "#a855f7";
+  const hasPredPrice = data.predPrice !== null && data.predPrice !== undefined;
+  let typeLabel: string | null = null;
+  if (data.type === "ath") {
+    typeLabel = hasPredPrice ? "ATH Prediction" : "ATH";
+  } else if (data.type === "atl") {
+    typeLabel = hasPredPrice ? "ATL Prediction" : "ATL";
+  } else if (data.type === "now") {
+    typeLabel = "Current";
+  }
+
+  let typeColor = "#a855f7";
+  if (data.type === "ath") {
+    typeColor = "#22c55e";
+  } else if (data.type === "atl") {
+    typeColor = "#ef4444";
+  }
 
   return (
     <div className="rounded-lg border bg-popover px-3 py-2 text-sm shadow-md">
@@ -83,7 +81,9 @@ export function PriceChart({
   atl?: number | null;
   currentPrice?: number;
 }) {
-  const hasPred = showPrediction && data.some((d) => d.predPrice != null);
+  const hasPred =
+    showPrediction &&
+    data.some((d) => d.predPrice !== null && d.predPrice !== undefined);
 
   return (
     <ResponsiveContainer width="100%" height={300}>
@@ -115,7 +115,7 @@ export function PriceChart({
           width={70}
         />
         <Tooltip content={<CustomTooltip />} />
-        {atl != null && (
+        {atl !== null && atl !== undefined && (
           <ReferenceLine
             y={atl}
             stroke="#ef4444"
@@ -123,7 +123,7 @@ export function PriceChart({
             strokeOpacity={0.5}
           />
         )}
-        {ath != null && (
+        {ath !== null && ath !== undefined && (
           <ReferenceLine
             y={ath}
             stroke="#22c55e"
@@ -131,7 +131,7 @@ export function PriceChart({
             strokeOpacity={0.5}
           />
         )}
-        {currentPrice != null && (
+        {currentPrice !== null && currentPrice !== undefined && (
           <ReferenceLine
             y={currentPrice}
             stroke="#a855f7"
@@ -165,7 +165,14 @@ export function PriceChart({
               const cx = props.cx as number | undefined;
               const cy = props.cy as number | undefined;
               const pl = props.payload as ChartDataPoint | undefined;
-              if (!pl?.type || pl.type === "now" || cx == null || cy == null)
+              if (
+                !pl?.type ||
+                pl.type === "now" ||
+                cx === null ||
+                cx === undefined ||
+                cy === null ||
+                cy === undefined
+              )
                 return <React.Fragment key={`pd-${cx}`} />;
               const color = pl.type === "ath" ? "#22c55e" : "#ef4444";
               const r = pl.matchLevel === "full" ? 7 : 5;

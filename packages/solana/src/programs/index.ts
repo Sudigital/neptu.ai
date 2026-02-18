@@ -75,18 +75,26 @@ function getReadingTypeIndex(readingType: ReadingType): number {
 }
 
 // Anchor discriminators (first 8 bytes of sha256("global:<instruction_name>"))
+function hexToBytes(hex: string): Uint8Array {
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < hex.length; i += 2) {
+    bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+  }
+  return bytes;
+}
+
 const DISCRIMINATORS = {
   // neptu_economy instructions
-  initializePricing: new Uint8Array([175, 175, 109, 31, 13, 152, 155, 237]),
-  updatePricing: new Uint8Array([93, 119, 38, 193, 53, 92, 85, 171]),
-  payWithSol: new Uint8Array([197, 17, 1, 143, 91, 139, 88, 220]),
-  payWithNeptu: new Uint8Array([156, 36, 200, 161, 119, 115, 155, 242]),
-  claimRewards: new Uint8Array([4, 144, 132, 71, 116, 23, 151, 80]),
-  initializeEconomy: new Uint8Array([190, 133, 245, 21, 62, 129, 54, 248]),
+  initializePricing: hexToBytes("afaf6d1f0d989bed"),
+  updatePricing: hexToBytes("5d7726c1355c55ab"),
+  payWithSol: hexToBytes("c511018f5b8b58dc"),
+  payWithNeptu: hexToBytes("9c24c8a177739bf2"),
+  claimRewards: hexToBytes("0490844774179750"),
+  initializeEconomy: hexToBytes("be85f5153e8136f8"),
   // neptu_token instructions
-  initialize: new Uint8Array([175, 175, 109, 31, 13, 152, 155, 237]),
-  mintInitialSupply: new Uint8Array([156, 88, 81, 196, 28, 73, 133, 139]),
-  transferMintAuthority: new Uint8Array([147, 122, 53, 121, 77, 200, 38, 241]),
+  initialize: hexToBytes("afaf6d1f0d989bed"),
+  mintInitialSupply: hexToBytes("9c5851c41c49858b"),
+  transferMintAuthority: hexToBytes("937a35794dc826f1"),
 };
 
 export interface NeptuPrograms {
@@ -319,15 +327,25 @@ export function buildPayWithNeptuInstruction(
   };
 }
 
-export function buildClaimRewardsInstruction(
-  programs: NeptuPrograms,
-  user: Address,
-  userNeptuAccount: Address,
-  claimRecordPda: Address,
-  amount: bigint,
-  nonce: bigint,
-  signature: Uint8Array = new Uint8Array(64)
-): Instruction {
+export interface ClaimRewardsParams {
+  programs: NeptuPrograms;
+  user: Address;
+  userNeptuAccount: Address;
+  claimRecordPda: Address;
+  amount: bigint;
+  nonce: bigint;
+  signature?: Uint8Array;
+}
+
+export function buildClaimRewardsInstruction({
+  programs,
+  user,
+  userNeptuAccount,
+  claimRecordPda,
+  amount,
+  nonce,
+  signature = new Uint8Array(64),
+}: ClaimRewardsParams): Instruction {
   // Build instruction data: discriminator + amount(u64) + nonce(u64) + signature(64 bytes)
   const data = new Uint8Array(8 + 8 + 8 + 64);
   data.set(DISCRIMINATORS.claimRewards, 0);

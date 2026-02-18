@@ -44,7 +44,7 @@ function toBase58(bytes: Uint8Array): string {
     num = num / 58n;
   }
   for (const b of bytes) {
-    if (b === 0) str = "1" + str;
+    if (b === 0) str = `1${str}`;
     else break;
   }
   return str;

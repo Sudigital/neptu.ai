@@ -113,11 +113,13 @@ export function AdminAnalytics() {
               {analyticsLoading ? "..." : totalCalls.toLocaleString()}
             </div>
             <p className="text-xs text-muted-foreground">
-              {period === "7d"
-                ? "Last 7 days"
-                : period === "30d"
-                  ? "Last 30 days"
-                  : "Last 90 days"}
+              {
+                {
+                  "7d": "Last 7 days",
+                  "30d": "Last 30 days",
+                  "90d": "Last 90 days",
+                }[period]
+              }
             </p>
           </CardContent>
         </Card>
@@ -177,15 +179,18 @@ export function AdminAnalytics() {
           </CardHeader>
           <CardContent>
             <div className="max-h-[300px] space-y-2 overflow-y-auto">
-              {analyticsLoading ? (
+              {analyticsLoading && (
                 <div className="py-8 text-center text-muted-foreground">
                   Loading...
                 </div>
-              ) : analytics?.analytics.length === 0 ? (
+              )}
+              {!analyticsLoading && analytics?.analytics.length === 0 && (
                 <div className="py-8 text-center text-muted-foreground">
                   No data available
                 </div>
-              ) : (
+              )}
+              {!analyticsLoading &&
+                (analytics?.analytics.length ?? 0) > 0 &&
                 analytics?.analytics.map((point) => (
                   <div
                     key={point.date}
@@ -203,8 +208,7 @@ export function AdminAnalytics() {
                       </Badge>
                     </div>
                   </div>
-                ))
-              )}
+                ))}
             </div>
           </CardContent>
         </Card>
@@ -225,13 +229,14 @@ export function AdminAnalytics() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {endpointsLoading ? (
+                {endpointsLoading && (
                   <TableRow>
                     <TableCell colSpan={4} className="py-8 text-center">
                       Loading...
                     </TableCell>
                   </TableRow>
-                ) : endpoints?.endpoints.length === 0 ? (
+                )}
+                {!endpointsLoading && endpoints?.endpoints.length === 0 && (
                   <TableRow>
                     <TableCell
                       colSpan={4}
@@ -240,7 +245,9 @@ export function AdminAnalytics() {
                       No data available
                     </TableCell>
                   </TableRow>
-                ) : (
+                )}
+                {!endpointsLoading &&
+                  (endpoints?.endpoints.length ?? 0) > 0 &&
                   endpoints?.endpoints.slice(0, 10).map((ep, i) => (
                     <TableRow key={i}>
                       <TableCell className="font-mono text-sm">
@@ -256,8 +263,7 @@ export function AdminAnalytics() {
                         {ep.avgResponseTime}ms
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
+                  ))}
               </TableBody>
             </Table>
           </CardContent>

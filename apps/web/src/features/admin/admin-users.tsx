@@ -107,20 +107,26 @@ export function AdminUsers() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
-                  Loading...
-                </TableCell>
-              </TableRow>
-            ) : data?.data.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
-                  No users found
-                </TableCell>
-              </TableRow>
-            ) : (
-              data?.data.map((user) => (
+            {(() => {
+              if (isLoading) {
+                return (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center">
+                      Loading...
+                    </TableCell>
+                  </TableRow>
+                );
+              }
+              if (data?.data.length === 0) {
+                return (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center">
+                      No users found
+                    </TableCell>
+                  </TableRow>
+                );
+              }
+              return data?.data.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell>
                     <div>
@@ -180,8 +186,8 @@ export function AdminUsers() {
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
-              ))
-            )}
+              ));
+            })()}
           </TableBody>
         </Table>
       </div>

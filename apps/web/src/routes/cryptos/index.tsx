@@ -244,13 +244,7 @@ function CryptoCard({
         className="h-full"
       >
         <Card
-          className={`group relative flex h-full cursor-pointer flex-col overflow-hidden transition-all hover:scale-[1.02] hover:shadow-lg ${
-            isBirthday
-              ? "border-2 border-primary ring-2 ring-primary/20"
-              : isThisMonth
-                ? "border-primary/50"
-                : ""
-          }`}
+          className={`group relative flex h-full cursor-pointer flex-col overflow-hidden transition-all hover:scale-[1.02] hover:shadow-lg ${isBirthday ? "border-2 border-primary ring-2 ring-primary/20" : ""}${!isBirthday && isThisMonth ? " border-primary/50" : ""}`}
         >
           {/* Birthday Badge */}
           {isBirthday && (
@@ -396,13 +390,7 @@ function CryptoListItem({
         transition={{ delay: index * 0.03 }}
       >
         <Card
-          className={`group cursor-pointer transition-all hover:bg-muted/30 hover:shadow-md ${
-            isBirthday
-              ? "border-2 border-primary ring-2 ring-primary/20"
-              : isThisMonth
-                ? "border-primary/50"
-                : ""
-          }`}
+          className={`group cursor-pointer transition-all hover:bg-muted/30 hover:shadow-md ${isBirthday ? "border-2 border-primary ring-2 ring-primary/20" : ""}${!isBirthday && isThisMonth ? " border-primary/50" : ""}`}
         >
           <CardContent className="px-4 py-3">
             <div className="flex items-center gap-4">

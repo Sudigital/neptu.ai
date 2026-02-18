@@ -88,11 +88,13 @@ function FeatureRow({ icon, label, values }: FeatureRowProps) {
       </div>
       {values.map((val, i) => (
         <div key={i} className="col-span-1 text-center text-sm">
-          {typeof val === "string" ? (
+          {typeof val === "string" && (
             <span className="font-medium">{val}</span>
-          ) : val ? (
+          )}
+          {typeof val !== "string" && val && (
             <Check className="mx-auto h-4 w-4 text-primary" />
-          ) : (
+          )}
+          {typeof val !== "string" && !val && (
             <X className="mx-auto h-4 w-4 text-muted-foreground/40" />
           )}
         </div>
@@ -334,13 +336,11 @@ export function PricingPage() {
                         ) : (
                           <Button
                             className="w-full"
-                            variant={
-                              isPopular
-                                ? "default"
-                                : isFree
-                                  ? "secondary"
-                                  : "outline"
-                            }
+                            variant={(() => {
+                              if (isPopular) return "default";
+                              if (isFree) return "secondary";
+                              return "outline";
+                            })()}
                           >
                             {isFree
                               ? t("pricing.getStarted")

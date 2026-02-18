@@ -132,6 +132,12 @@ export function Dashboard() {
   const goToPreviousDay = () => setSelectedDate((d) => subDays(d, 1));
   const goToNextDay = () => setSelectedDate((d) => addDays(d, 1));
 
+  const getDateVariant = <T,>(today: T, past: T, future: T): T => {
+    if (isToday(selectedDate)) return today;
+    if (isPast(selectedDate)) return past;
+    return future;
+  };
+
   const getReadingSummary = () => {
     if (!readingData?.reading) return null;
     const { potensi, peluang } = readingData.reading;
@@ -227,22 +233,22 @@ export function Dashboard() {
     <div
       className={cn(
         "rounded-xl p-4 text-white shadow-xl sm:rounded-2xl sm:p-6",
-        isToday(selectedDate)
-          ? "bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700"
-          : isPast(selectedDate)
-            ? "bg-gradient-to-br from-slate-600 via-slate-500 to-slate-700"
-            : "bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700"
+        getDateVariant(
+          "bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700",
+          "bg-gradient-to-br from-slate-600 via-slate-500 to-slate-700",
+          "bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700"
+        )
       )}
     >
       <div className="flex items-center justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-xs font-medium text-white/80 sm:text-sm">
-              {isToday(selectedDate)
-                ? t("dashboard.todaysAlignment")
-                : isPast(selectedDate)
-                  ? t("dashboard.pastReading")
-                  : t("dashboard.futurePrediction")}
+              {getDateVariant(
+                t("dashboard.todaysAlignment"),
+                t("dashboard.pastReading"),
+                t("dashboard.futurePrediction")
+              )}
             </p>
             {!isToday(selectedDate) && (
               <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs">
@@ -262,11 +268,9 @@ export function Dashboard() {
           </p>
         </div>
         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm sm:h-20 sm:w-20">
-          {isToday(selectedDate) ? (
-            <Sparkles className="h-7 w-7 text-white sm:h-10 sm:w-10" />
-          ) : isPast(selectedDate) ? (
-            <CalendarIcon className="h-7 w-7 text-white sm:h-10 sm:w-10" />
-          ) : (
+          {getDateVariant(
+            <Sparkles className="h-7 w-7 text-white sm:h-10 sm:w-10" />,
+            <CalendarIcon className="h-7 w-7 text-white sm:h-10 sm:w-10" />,
             <Star className="h-7 w-7 text-white sm:h-10 sm:w-10" />
           )}
         </div>
@@ -407,17 +411,17 @@ export function Dashboard() {
                 {t("dashboard.title")}
               </h1>
               <p className="text-sm text-muted-foreground">
-                {isToday(selectedDate)
-                  ? t("dashboard.subtitle.today")
-                  : isPast(selectedDate)
-                    ? t("dashboard.subtitle.past")
-                    : t("dashboard.subtitle.future")}
+                {getDateVariant(
+                  t("dashboard.subtitle.today"),
+                  t("dashboard.subtitle.past"),
+                  t("dashboard.subtitle.future")
+                )}
               </p>
             </div>
           </div>
         </div>
 
-        {readingLoading ? (
+        {readingLoading && (
           <div className="flex h-[50vh] items-center justify-center">
             <div className="text-center">
               <Loader2 className="mx-auto h-8 w-8 animate-spin" />
@@ -426,7 +430,8 @@ export function Dashboard() {
               </p>
             </div>
           </div>
-        ) : readingError ? (
+        )}
+        {!readingLoading && readingError && (
           <Card className="mx-auto max-w-md px-6 py-6">
             <div className="text-center">
               <h3 className="text-lg font-semibold tracking-tight text-destructive">
@@ -449,7 +454,8 @@ export function Dashboard() {
               </Button>
             </div>
           </Card>
-        ) : reading ? (
+        )}
+        {!readingLoading && !readingError && reading && (
           <section>
             {isMobileLayout ? (
               <Tabs defaultValue="potensi-peluang" className="w-full">
@@ -482,7 +488,7 @@ export function Dashboard() {
               </div>
             )}
           </section>
-        ) : null}
+        )}
       </Main>
     </>
   );

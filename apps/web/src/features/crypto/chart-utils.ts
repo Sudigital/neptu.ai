@@ -38,14 +38,23 @@ const fmtFull = (d: Date) =>
 // Data Formatter
 // ---------------------------------------------------------------------------
 
-export function formatPriceData(
-  rawData: CoinGeckoChartData,
-  ath?: number | null,
-  atl?: number | null,
-  athDate?: string | null,
-  atlDate?: string | null,
-  currentPrice?: number | null
-): ChartDataPoint[] {
+export interface FormatPriceDataOptions {
+  rawData: CoinGeckoChartData;
+  ath?: number | null;
+  atl?: number | null;
+  athDate?: string | null;
+  atlDate?: string | null;
+  currentPrice?: number | null;
+}
+
+export function formatPriceData({
+  rawData,
+  ath,
+  atl,
+  athDate,
+  atlDate,
+  currentPrice,
+}: FormatPriceDataOptions): ChartDataPoint[] {
   const prices = rawData.prices;
   if (!prices?.length) return [];
 
@@ -85,7 +94,11 @@ export function formatPriceData(
   });
 
   // Append today's current price if the last data point is older than today
-  if (currentPrice != null && result.length > 0) {
+  if (
+    currentPrice !== null &&
+    currentPrice !== undefined &&
+    result.length > 0
+  ) {
     const now = new Date();
     const lastTs = result[result.length - 1].timestamp;
     // If last point is more than 1 hour old, add current price

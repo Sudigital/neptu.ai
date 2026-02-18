@@ -49,6 +49,27 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
+// Response interceptor: retry once on 401 by refreshing tokens
+api.interceptors.response.use(undefined, async (error) => {
+  const original = error.config;
+  if (error.response?.status === 401 && !original._retried) {
+    original._retried = true;
+    const store = usePasetoAuthStore.getState();
+    const { refreshToken } = store.tokens;
+    if (refreshToken && store.needsRefresh()) {
+      try {
+        const result = await refreshTokens(refreshToken);
+        store.setTokens(result.accessToken, result.refreshToken);
+        original.headers.Authorization = `Bearer ${result.accessToken}`;
+        return api(original);
+      } catch {
+        store.clearSession();
+      }
+    }
+  }
+  return Promise.reject(error);
+});
+
 const workerApi = axios.create({
   baseURL: WORKER_URL,
   headers: {

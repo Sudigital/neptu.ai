@@ -27,22 +27,25 @@ export function EnergyScoreCard({
     <div
       className={cn(
         "rounded-2xl p-6 text-white shadow-xl",
-        isToday(selectedDate)
-          ? "bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700"
-          : isPast(selectedDate)
-            ? "bg-gradient-to-br from-slate-600 via-slate-500 to-slate-700"
-            : "bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700"
+        (() => {
+          if (isToday(selectedDate))
+            return "bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700";
+          if (isPast(selectedDate))
+            return "bg-gradient-to-br from-slate-600 via-slate-500 to-slate-700";
+          return "bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700";
+        })()
       )}
     >
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2">
             <p className="text-sm font-medium text-white/80">
-              {isToday(selectedDate)
-                ? t("dashboard.todaysAlignment")
-                : isPast(selectedDate)
-                  ? t("dashboard.pastReading")
-                  : t("dashboard.futurePrediction")}
+              {(() => {
+                if (isToday(selectedDate))
+                  return t("dashboard.todaysAlignment");
+                if (isPast(selectedDate)) return t("dashboard.pastReading");
+                return t("dashboard.futurePrediction");
+              })()}
             </p>
             {!isToday(selectedDate) && (
               <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs">
@@ -61,13 +64,13 @@ export function EnergyScoreCard({
           </p>
         </div>
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
-          {isToday(selectedDate) ? (
-            <Sparkles className="h-10 w-10 text-white" />
-          ) : isPast(selectedDate) ? (
-            <CalendarIcon className="h-10 w-10 text-white" />
-          ) : (
-            <Star className="h-10 w-10 text-white" />
-          )}
+          {(() => {
+            if (isToday(selectedDate))
+              return <Sparkles className="h-10 w-10 text-white" />;
+            if (isPast(selectedDate))
+              return <CalendarIcon className="h-10 w-10 text-white" />;
+            return <Star className="h-10 w-10 text-white" />;
+          })()}
         </div>
       </div>
       {summary && (
