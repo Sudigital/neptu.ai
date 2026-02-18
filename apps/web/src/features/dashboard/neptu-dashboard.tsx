@@ -189,16 +189,12 @@ export function Dashboard() {
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className={cn(
-              "h-9 flex-1 justify-between gap-0 px-1 text-sm font-medium sm:h-10 sm:px-2",
-              !isToday(selectedDate) &&
-                "border-violet-500 bg-violet-50 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300"
-            )}
+            className="h-9 flex-1 justify-between gap-0 px-1 text-sm font-medium hover:bg-transparent sm:px-2"
           >
             <span
               role="button"
               tabIndex={0}
-              className="inline-flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-md transition-colors hover:bg-accent/60"
+              className="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors hover:bg-accent"
               onClick={(e) => {
                 e.stopPropagation();
                 goToPreviousDay();
@@ -212,14 +208,14 @@ export function Dashboard() {
             >
               <ChevronLeft className="h-4 w-4" />
             </span>
-            <span className="flex items-center gap-1.5 px-3 sm:px-4">
+            <span className="inline-flex h-8 items-center gap-1.5 rounded-lg px-3 transition-colors hover:bg-accent sm:px-4">
               <CalendarIcon className="h-4 w-4" />
-              {format(selectedDate, "MMM d, yyyy")}
+              {format(selectedDate, "EEE, MMM d, yyyy")}
             </span>
             <span
               role="button"
               tabIndex={0}
-              className="inline-flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-md transition-colors hover:bg-accent/60"
+              className="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors hover:bg-accent"
               onClick={(e) => {
                 e.stopPropagation();
                 goToNextDay();

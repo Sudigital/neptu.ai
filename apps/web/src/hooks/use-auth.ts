@@ -1,5 +1,5 @@
 import { useDynamicContext, useIsLoggedIn } from "@dynamic-labs/sdk-react-core";
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 export function useAuth() {
   const {
@@ -10,6 +10,15 @@ export function useAuth() {
     handleLogOut,
   } = useDynamicContext();
   const isDynamicLoggedIn = useIsLoggedIn();
+  const wasLoggedIn = useRef(isDynamicLoggedIn);
+
+  // Full reload on disconnect to clear all cached state
+  useEffect(() => {
+    if (wasLoggedIn.current && !isDynamicLoggedIn) {
+      window.location.href = "/";
+    }
+    wasLoggedIn.current = isDynamicLoggedIn;
+  }, [isDynamicLoggedIn]);
 
   const walletAddress = primaryWallet?.address ?? "";
 
