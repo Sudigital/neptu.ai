@@ -181,7 +181,7 @@ authRoutes.post("/verify", zValidator("json", verifySchema), async (c) => {
   }
 
   // Issue PASETO token pair
-  const tokens = issueTokenPair(user.id, walletAddress, user.isAdmin ?? false);
+  const tokens = issueTokenPair(user.id, walletAddress, user.role);
 
   return c.json({
     success: true,
@@ -190,7 +190,7 @@ authRoutes.post("/verify", zValidator("json", verifySchema), async (c) => {
       walletAddress: user.walletAddress,
       displayName: user.displayName,
       onboarded: user.onboarded,
-      isAdmin: user.isAdmin,
+      role: user.role,
     },
     ...tokens,
   });
@@ -216,11 +216,7 @@ authRoutes.post("/refresh", zValidator("json", refreshSchema), async (c) => {
     }
 
     // Issue fresh token pair
-    const tokens = issueTokenPair(
-      user.id,
-      user.walletAddress,
-      user.isAdmin ?? false
-    );
+    const tokens = issueTokenPair(user.id, user.walletAddress, user.role);
 
     return c.json({
       success: true,

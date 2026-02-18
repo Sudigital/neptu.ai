@@ -28,7 +28,7 @@ function createTestApp() {
     c.json({
       userId: c.get("userId"),
       walletAddress: c.get("walletAddress"),
-      isAdmin: c.get("isAdmin"),
+      role: c.get("role"),
     })
   );
 
@@ -78,7 +78,7 @@ describe("pasetoAuth middleware", () => {
 
   test("should accept requests with valid access token", async () => {
     const app = createTestApp();
-    const tokens = await issueTokenPair(TEST_USER_ID, TEST_WALLET, false);
+    const tokens = await issueTokenPair(TEST_USER_ID, TEST_WALLET, "user");
 
     const res = await app.request("/protected/profile", {
       headers: { Authorization: `Bearer ${tokens.accessToken}` },
@@ -88,12 +88,12 @@ describe("pasetoAuth middleware", () => {
     const body = await res.json();
     expect(body.userId).toBe(TEST_USER_ID);
     expect(body.walletAddress).toBe(TEST_WALLET);
-    expect(body.isAdmin).toBe(false);
+    expect(body.role).toBe("user");
   });
 
   test("should reject refresh token used as access token", async () => {
     const app = createTestApp();
-    const tokens = await issueTokenPair(TEST_USER_ID, TEST_WALLET, false);
+    const tokens = await issueTokenPair(TEST_USER_ID, TEST_WALLET, "user");
 
     const res = await app.request("/protected/profile", {
       headers: { Authorization: `Bearer ${tokens.refreshToken}` },
@@ -102,9 +102,9 @@ describe("pasetoAuth middleware", () => {
     expect(res.status).toBe(401);
   });
 
-  test("should set isAdmin=true for admin users", async () => {
+  test("should set role=admin for admin users", async () => {
     const app = createTestApp();
-    const tokens = await issueTokenPair(TEST_USER_ID, TEST_WALLET, true);
+    const tokens = await issueTokenPair(TEST_USER_ID, TEST_WALLET, "admin");
 
     const res = await app.request("/protected/profile", {
       headers: { Authorization: `Bearer ${tokens.accessToken}` },
@@ -112,14 +112,14 @@ describe("pasetoAuth middleware", () => {
 
     expect(res.status).toBe(200);
     const body = await res.json();
-    expect(body.isAdmin).toBe(true);
+    expect(body.role).toBe("admin");
   });
 });
 
 describe("requireAdmin middleware", () => {
   test("should reject non-admin users", async () => {
     const app = createTestApp();
-    const tokens = await issueTokenPair(TEST_USER_ID, TEST_WALLET, false);
+    const tokens = await issueTokenPair(TEST_USER_ID, TEST_WALLET, "user");
 
     const res = await app.request("/admin/dashboard", {
       headers: { Authorization: `Bearer ${tokens.accessToken}` },
@@ -132,7 +132,7 @@ describe("requireAdmin middleware", () => {
 
   test("should allow admin users", async () => {
     const app = createTestApp();
-    const tokens = await issueTokenPair(TEST_USER_ID, TEST_WALLET, true);
+    const tokens = await issueTokenPair(TEST_USER_ID, TEST_WALLET, "admin");
 
     const res = await app.request("/admin/dashboard", {
       headers: { Authorization: `Bearer ${tokens.accessToken}` },

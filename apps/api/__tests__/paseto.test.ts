@@ -18,7 +18,7 @@ beforeAll(() => {
 
 const TEST_USER_ID = "test-user-id-123";
 const TEST_WALLET = "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU";
-const TEST_IS_ADMIN = false;
+const TEST_ROLE = "user" as const;
 
 describe("PASETO Token Service", () => {
   describe("generateSymmetricKey", () => {
@@ -31,7 +31,7 @@ describe("PASETO Token Service", () => {
 
   describe("issueTokenPair", () => {
     test("should issue access and refresh tokens", () => {
-      const tokens = issueTokenPair(TEST_USER_ID, TEST_WALLET, TEST_IS_ADMIN);
+      const tokens = issueTokenPair(TEST_USER_ID, TEST_WALLET, TEST_ROLE);
 
       expect(tokens.accessToken).toStartWith("v4.local.");
       expect(tokens.refreshToken).toStartWith("v4.local.");
@@ -39,26 +39,26 @@ describe("PASETO Token Service", () => {
     });
 
     test("should encode admin flag correctly", () => {
-      const tokens = issueTokenPair(TEST_USER_ID, TEST_WALLET, true);
+      const tokens = issueTokenPair(TEST_USER_ID, TEST_WALLET, "admin");
       const payload = verifyAccessToken(tokens.accessToken);
 
-      expect(payload.adm).toBe(true);
+      expect(payload.role).toBe("admin");
     });
   });
 
   describe("verifyAccessToken", () => {
     test("should verify a valid access token", () => {
-      const tokens = issueTokenPair(TEST_USER_ID, TEST_WALLET, TEST_IS_ADMIN);
+      const tokens = issueTokenPair(TEST_USER_ID, TEST_WALLET, TEST_ROLE);
       const payload = verifyAccessToken(tokens.accessToken);
 
       expect(payload.sub).toBe(TEST_USER_ID);
       expect(payload.wal).toBe(TEST_WALLET);
-      expect(payload.adm).toBe(TEST_IS_ADMIN);
+      expect(payload.role).toBe(TEST_ROLE);
       expect(payload.typ).toBe("access");
     });
 
     test("should reject a refresh token used as access", () => {
-      const tokens = issueTokenPair(TEST_USER_ID, TEST_WALLET, TEST_IS_ADMIN);
+      const tokens = issueTokenPair(TEST_USER_ID, TEST_WALLET, TEST_ROLE);
 
       expect(() => verifyAccessToken(tokens.refreshToken)).toThrow(
         "Expected access token, received refresh"
@@ -66,7 +66,7 @@ describe("PASETO Token Service", () => {
     });
 
     test("should reject a tampered token", () => {
-      const tokens = issueTokenPair(TEST_USER_ID, TEST_WALLET, TEST_IS_ADMIN);
+      const tokens = issueTokenPair(TEST_USER_ID, TEST_WALLET, TEST_ROLE);
 
       const tampered = tokens.accessToken.slice(0, -5) + "AAAAA";
 
@@ -76,17 +76,17 @@ describe("PASETO Token Service", () => {
 
   describe("verifyRefreshToken", () => {
     test("should verify a valid refresh token", () => {
-      const tokens = issueTokenPair(TEST_USER_ID, TEST_WALLET, TEST_IS_ADMIN);
+      const tokens = issueTokenPair(TEST_USER_ID, TEST_WALLET, TEST_ROLE);
       const payload = verifyRefreshToken(tokens.refreshToken);
 
       expect(payload.sub).toBe(TEST_USER_ID);
       expect(payload.wal).toBe(TEST_WALLET);
-      expect(payload.adm).toBe(TEST_IS_ADMIN);
+      expect(payload.role).toBe(TEST_ROLE);
       expect(payload.typ).toBe("refresh");
     });
 
     test("should reject an access token used as refresh", () => {
-      const tokens = issueTokenPair(TEST_USER_ID, TEST_WALLET, TEST_IS_ADMIN);
+      const tokens = issueTokenPair(TEST_USER_ID, TEST_WALLET, TEST_ROLE);
 
       expect(() => verifyRefreshToken(tokens.accessToken)).toThrow(
         "Expected refresh token, received access"
@@ -96,7 +96,7 @@ describe("PASETO Token Service", () => {
 
   describe("verifyToken (generic)", () => {
     test("should decode both token types", () => {
-      const tokens = issueTokenPair(TEST_USER_ID, TEST_WALLET, TEST_IS_ADMIN);
+      const tokens = issueTokenPair(TEST_USER_ID, TEST_WALLET, TEST_ROLE);
 
       const access = verifyToken(tokens.accessToken);
       expect(access.typ).toBe("access");

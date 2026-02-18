@@ -1,4 +1,8 @@
-import { AUTH_ACCESS_TOKEN_TTL, AUTH_REFRESH_TOKEN_TTL } from "@neptu/shared";
+import {
+  AUTH_ACCESS_TOKEN_TTL,
+  AUTH_REFRESH_TOKEN_TTL,
+  type UserRole,
+} from "@neptu/shared";
 import { create } from "zustand";
 
 // ============================================================================
@@ -10,7 +14,7 @@ interface AuthUser {
   walletAddress: string;
   displayName: string | null;
   onboarded: boolean;
-  isAdmin: boolean;
+  role: UserRole;
 }
 
 interface TokenState {

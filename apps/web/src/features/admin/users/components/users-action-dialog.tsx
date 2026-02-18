@@ -18,7 +18,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { adminApi } from "@/features/admin/admin-api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -31,7 +37,7 @@ import { type User } from "../data/schema";
 const formSchema = z.object({
   displayName: z.string().optional(),
   email: z.string().email().optional().or(z.literal("")),
-  isAdmin: z.boolean(),
+  role: z.enum(["admin", "developer", "user"]),
 });
 type UserEditForm = z.infer<typeof formSchema>;
 
@@ -53,7 +59,7 @@ export function UsersActionDialog({
     defaultValues: {
       displayName: currentRow.displayName ?? "",
       email: currentRow.email ?? "",
-      isAdmin: currentRow.isAdmin,
+      role: currentRow.role,
     },
   });
 
@@ -62,7 +68,7 @@ export function UsersActionDialog({
       adminApi.updateUser(currentRow.id, {
         displayName: values.displayName || undefined,
         email: values.email || undefined,
-        isAdmin: values.isAdmin,
+        role: values.role,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
@@ -145,15 +151,21 @@ export function UsersActionDialog({
             />
             <FormField
               control={form.control}
-              name="isAdmin"
+              name="role"
               render={({ field }) => (
                 <FormItem className="grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1">
-                  <FormLabel className="col-span-2 text-end">Admin</FormLabel>
+                  <FormLabel className="col-span-2 text-end">Role</FormLabel>
                   <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="col-span-4">
+                        <SelectValue placeholder="Select role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="admin">Admin</SelectItem>
+                        <SelectItem value="developer">Developer</SelectItem>
+                        <SelectItem value="user">User</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                 </FormItem>
               )}

@@ -146,6 +146,7 @@ export class UserRepository {
     total: number;
     onboarded: number;
     admins: number;
+    developers: number;
     todayNew: number;
   }> {
     const today = new Date();
@@ -155,7 +156,8 @@ export class UserRepository {
       .select({
         total: count(),
         onboarded: sql<number>`COUNT(*) FILTER (WHERE ${users.onboarded} = true)`,
-        admins: sql<number>`COUNT(*) FILTER (WHERE ${users.isAdmin} = true)`,
+        admins: sql<number>`COUNT(*) FILTER (WHERE ${users.role} = 'admin')`,
+        developers: sql<number>`COUNT(*) FILTER (WHERE ${users.role} = 'developer')`,
         todayNew: sql<number>`COUNT(*) FILTER (WHERE ${users.createdAt} >= ${today})`,
       })
       .from(users);
@@ -164,6 +166,7 @@ export class UserRepository {
       total: result[0]?.total ?? 0,
       onboarded: Number(result[0]?.onboarded ?? 0),
       admins: Number(result[0]?.admins ?? 0),
+      developers: Number(result[0]?.developers ?? 0),
       todayNew: Number(result[0]?.todayNew ?? 0),
     };
   }

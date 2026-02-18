@@ -1,3 +1,5 @@
+import type { UserRole } from "@neptu/shared";
+
 import type { Database } from "../client";
 
 import { toUserDTO, type UserDTO } from "../dto/user-dto";
@@ -103,8 +105,10 @@ export class UserService {
     return user?.onboarded ?? false;
   }
 
-  async setAdminStatus(id: string, isAdmin: boolean): Promise<void> {
-    await this.repository.update(id, { isAdmin });
+  async setRole(id: string, role: string): Promise<void> {
+    await this.repository.update(id, {
+      role: role as UserRole,
+    });
   }
 
   // Admin methods
@@ -122,6 +126,7 @@ export class UserService {
     total: number;
     onboarded: number;
     admins: number;
+    developers: number;
     todayNew: number;
   }> {
     return this.repository.getStats();

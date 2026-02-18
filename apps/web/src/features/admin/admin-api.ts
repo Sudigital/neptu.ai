@@ -93,7 +93,7 @@ export const adminApi = {
 
   async updateUser(
     userId: string,
-    updates: { isAdmin?: boolean; displayName?: string; email?: string }
+    updates: { role?: string; displayName?: string; email?: string }
   ): Promise<{ success: boolean; user: UserDTO }> {
     const { data } = await api.put(`/api/admin/users/${userId}`, updates);
     return data;

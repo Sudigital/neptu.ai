@@ -35,7 +35,7 @@ export function UsersMultiDeleteDialog<TData>({
     mutationFn: async () => {
       const users = selectedRows.map((row) => row.original as User);
       await Promise.all(
-        users.map((user) => adminApi.updateUser(user.id, { isAdmin: false }))
+        users.map((user) => adminApi.updateUser(user.id, { role: "user" }))
       );
     },
     onSuccess: () => {

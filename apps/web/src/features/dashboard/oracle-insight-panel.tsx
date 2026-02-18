@@ -180,10 +180,10 @@ export function OracleInsightPanel({
                   >
                     <span className="text-xl">{meta.icon}</span>
                   </div>
-                  <p className="mt-1 text-xs font-semibold capitalize sm:text-sm">
+                  <p className="mt-1 text-[11px] font-semibold capitalize sm:text-xs">
                     {meta.label}
                   </p>
-                  <p className="text-[10px] leading-tight text-muted-foreground">
+                  <p className="text-[9px] leading-tight text-muted-foreground sm:text-[10px]">
                     {meta.tagline}
                   </p>
                 </div>

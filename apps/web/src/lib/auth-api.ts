@@ -20,7 +20,7 @@ interface VerifyResponse {
     walletAddress: string;
     displayName: string | null;
     onboarded: boolean;
-    isAdmin: boolean;
+    role: string;
   };
   accessToken: string;
   refreshToken: string;

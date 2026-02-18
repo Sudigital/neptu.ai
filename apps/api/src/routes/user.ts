@@ -67,13 +67,13 @@ userRoutes.get("/:walletAddress", async (c) => {
   const shouldBeAdmin = !!(
     adminWalletAddress && walletAddress === adminWalletAddress
   );
-  if (shouldBeAdmin !== user.isAdmin) {
+  if (shouldBeAdmin && user.role !== "admin") {
     try {
-      await userService.setAdminStatus(user.id, shouldBeAdmin);
-      user.isAdmin = shouldBeAdmin;
+      await userService.setRole(user.id, "admin");
+      user.role = "admin";
     } catch (e) {
       // Column may not exist in older databases - ignore
-      log.warn("Could not set admin status: %o", e);
+      log.warn("Could not set role: %o", e);
     }
   }
 
@@ -95,13 +95,13 @@ userRoutes.post("/", zValidator("json", createUserSchema), async (c) => {
   // Check if this wallet should be admin (handled gracefully if column doesn't exist)
   const shouldBeAdmin =
     adminWalletAddress && walletAddress === adminWalletAddress;
-  if (shouldBeAdmin && !user.isAdmin) {
+  if (shouldBeAdmin && user.role !== "admin") {
     try {
-      await userService.setAdminStatus(user.id, true);
-      user.isAdmin = true;
+      await userService.setRole(user.id, "admin");
+      user.role = "admin";
     } catch (e) {
       // Column may not exist in older databases - ignore
-      log.warn("Could not set admin status: %o", e);
+      log.warn("Could not set role: %o", e);
     }
   }
 

@@ -1,4 +1,8 @@
-import { AUTH_ACCESS_TOKEN_TTL, AUTH_REFRESH_TOKEN_TTL } from "@neptu/shared";
+import {
+  AUTH_ACCESS_TOKEN_TTL,
+  AUTH_REFRESH_TOKEN_TTL,
+  type UserRole,
+} from "@neptu/shared";
 import { encrypt, decrypt, generateKeys } from "paseto-ts/v4";
 
 // ============================================================================
@@ -10,8 +14,8 @@ export interface TokenPayload {
   sub: string;
   /** Wallet address */
   wal: string;
-  /** Whether user is admin */
-  adm: boolean;
+  /** User role */
+  role: UserRole;
   /** Token type: "access" or "refresh" */
   typ: "access" | "refresh";
 }
@@ -75,14 +79,14 @@ export function generateSymmetricKey(): string {
 export function issueTokenPair(
   userId: string,
   walletAddress: string,
-  isAdmin: boolean
+  role: UserRole
 ): TokenPair {
   const key = getSymmetricKey();
 
   const basePayload = {
     sub: userId,
     wal: walletAddress,
-    adm: isAdmin,
+    role,
   };
 
   const now = Date.now();

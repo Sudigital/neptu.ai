@@ -14,7 +14,7 @@ function getStatus(user: User): UserStatus {
 }
 
 function getRole(user: User): UserRole {
-  return user.isAdmin ? "admin" : "user";
+  return user.role;
 }
 
 function truncateAddress(address: string) {
