@@ -21,6 +21,7 @@ import { pricingRoutes } from "./routes/pricing";
 import { readingRoutes } from "./routes/reading";
 import { tokenRoutes } from "./routes/token";
 import { userRoutes } from "./routes/user";
+import { voiceRoutes } from "./routes/voice";
 import { walletRoutes } from "./routes/wallet";
 
 type Variables = {
@@ -76,6 +77,7 @@ app.route("/api/admin", adminRoutes);
 app.route("/api/developer/oauth", developerOAuthRoutes);
 app.route("/api/developer/oauth", developerWebhookRoutes);
 app.route("/api/oauth", oauthRoutes);
+app.route("/api/voice", voiceRoutes);
 app.route("/api/.well-known", oauthDiscoveryRoutes);
 
 // 404 handler

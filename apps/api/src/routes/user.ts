@@ -45,12 +45,14 @@ const updateUserSchema = z.object({
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/)
     .optional(),
+  preferredLanguage: z.string().min(2).max(5).optional(),
 });
 
 const onboardUserSchema = z.object({
   birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   displayName: z.string().min(1).max(50).optional(),
   interests: z.array(z.enum(USER_INTERESTS)).optional(),
+  preferredLanguage: z.string().min(2).max(5).optional(),
 });
 
 /**

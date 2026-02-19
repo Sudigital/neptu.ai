@@ -38,9 +38,6 @@ dist/
 apps/web/src/
 apps/web/public/
 apps/web/node_modules/
-apps/mobile/src/
-apps/mobile/assets/
-apps/mobile/node_modules/
 apps/cli/src/
 apps/cli/node_modules/
 

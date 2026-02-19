@@ -46,6 +46,7 @@ interface User {
   id: string;
   walletAddress: string;
   birthDate: string | null;
+  preferredLanguage: string;
   displayName: string | null;
   interests: string[] | null;
   onboarded: boolean;
@@ -190,7 +191,7 @@ export const neptuApi = {
     return data;
   },
 
-  // Update user profile (displayName, interests, birthDate)
+  // Update user profile (displayName, interests, birthDate, preferredLanguage)
   async updateProfile(
     walletAddress: string,
     payload: {
@@ -198,6 +199,7 @@ export const neptuApi = {
       email?: string;
       interests?: string[];
       birthDate?: string;
+      preferredLanguage?: string;
     }
   ) {
     const { data } = await api.put<{ success: boolean; user: User }>(

@@ -1,5 +1,6 @@
 import { useAuth } from "@/hooks/use-auth";
 import { neptuApi, setWalletHeader } from "@/lib/api";
+import { useSettingsStore } from "@/stores/settings-store";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
@@ -46,6 +47,14 @@ export function useUser() {
 
   const isOnboarded = !!data?.user?.onboarded;
   const hasBirthDate = !!data?.user?.birthDate;
+
+  // Sync preferredLanguage from DB to settings store
+  const setLanguage = useSettingsStore((s) => s.setLanguage);
+  useEffect(() => {
+    if (data?.user?.preferredLanguage) {
+      setLanguage(data.user.preferredLanguage);
+    }
+  }, [data?.user?.preferredLanguage, setLanguage]);
 
   return {
     user: data?.user,

@@ -8,6 +8,7 @@ export interface UserDTO {
   email: string | null;
   displayName: string | null;
   birthDate: string | null;
+  preferredLanguage: string;
   interests: UserInterest[];
   onboarded: boolean;
   role: UserRole;
@@ -31,6 +32,7 @@ export function toUserDTO(user: User): UserDTO {
     email: user.email,
     displayName: user.displayName,
     birthDate: user.birthDate,
+    preferredLanguage: user.preferredLanguage ?? "en",
     interests: (user.interests ?? []) as UserInterest[],
     onboarded: user.onboarded ?? false,
     role: user.role,
