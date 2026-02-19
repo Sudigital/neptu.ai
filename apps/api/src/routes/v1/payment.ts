@@ -25,7 +25,7 @@ import { z } from "zod";
 import {
   dynamicJwtAuth,
   type DynamicJwtAuthEnv,
-} from "../middleware/dynamic-jwt-auth";
+} from "../../middleware/dynamic-jwt-auth";
 
 type Env = {
   Variables: { db: Database } & DynamicJwtAuthEnv["Variables"];

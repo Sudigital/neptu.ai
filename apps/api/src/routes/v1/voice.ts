@@ -13,11 +13,11 @@ import {
   isSpeechConfigured,
   synthesizeSpeech,
   transcribeAudio,
-} from "../lib/azure-speech";
+} from "../../lib/azure-speech";
 import {
   dynamicJwtAuth,
   type DynamicJwtAuthEnv,
-} from "../middleware/dynamic-jwt-auth";
+} from "../../middleware/dynamic-jwt-auth";
 
 const log = createLogger({ name: "voice" });
 

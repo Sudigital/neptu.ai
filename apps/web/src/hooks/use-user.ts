@@ -1,8 +1,8 @@
 import { useAuth } from "@/hooks/use-auth";
-import { neptuApi, setWalletHeader } from "@/lib/api";
+import { neptuApi, authenticateSession } from "@/lib/api";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function useUser() {
   const {
@@ -19,10 +19,30 @@ export function useUser() {
     logout,
   } = useAuth();
 
-  // Set wallet header for API calls (Dynamic SDK verifies wallet ownership)
+  const [hasToken, setHasToken] = useState(false);
+  const [authError, setAuthError] = useState(false);
+  const authenticatedWallet = useRef<string | null>(null);
+
+  // Authenticate with API when wallet connects (get signed access token)
   useEffect(() => {
-    if (walletAddress) {
-      setWalletHeader(walletAddress);
+    if (walletAddress && walletAddress !== authenticatedWallet.current) {
+      setHasToken(false);
+      setAuthError(false);
+      authenticateSession(walletAddress)
+        .then(() => {
+          authenticatedWallet.current = walletAddress;
+          setHasToken(true);
+        })
+        .catch(() => {
+          authenticatedWallet.current = null;
+          setHasToken(false);
+          setAuthError(true);
+        });
+    }
+    if (!walletAddress) {
+      authenticatedWallet.current = null;
+      setHasToken(false);
+      setAuthError(false);
     }
   }, [walletAddress]);
 
@@ -30,8 +50,8 @@ export function useUser() {
   const isConnected = !!wallet;
   const isLoggedIn = isAuthenticated;
 
-  // Fetch user from DB when we have a wallet address and user is authenticated
-  const queryEnabled = !!walletAddress && isLoggedIn;
+  // Fetch user from DB once we have a signed token
+  const queryEnabled = !!walletAddress && isLoggedIn && hasToken;
   const email = displayEmail || undefined;
   const { data, isPending, isFetching, isError, error, refetch } = useQuery({
     queryKey: ["user", walletAddress],
@@ -41,9 +61,13 @@ export function useUser() {
     staleTime: 1000 * 60 * 5,
   });
 
-  // isPending is true when enabled=false (no data yet), so only show
-  // loading when we're actually fetching
-  const isLoading = queryEnabled && isPending && isFetching;
+  // Show loading while: SDK initializing, waiting for token, or fetching user
+  // This prevents the birthday banner from flashing before data is available
+  const isLoading =
+    !ready ||
+    (!!walletAddress && !isLoggedIn) ||
+    (!!walletAddress && isLoggedIn && !hasToken && !authError) ||
+    (queryEnabled && isPending && isFetching);
 
   const isOnboarded = !!data?.user?.onboarded;
   const hasBirthDate = !!data?.user?.birthDate;
@@ -61,6 +85,7 @@ export function useUser() {
     walletAddress,
     wallet,
     hasWallet,
+    hasToken,
     ready,
     isOnboarded,
     hasBirthDate,

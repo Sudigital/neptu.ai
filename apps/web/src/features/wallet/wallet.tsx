@@ -22,7 +22,7 @@ import { useUser } from "@/hooks/use-user";
 import { useWalletBalance } from "@/hooks/use-wallet-balance";
 import { neptuApi } from "@/lib/api";
 import { isSolanaWallet } from "@dynamic-labs/solana";
-import { VersionedTransaction } from "@solana/web3.js";
+import { Connection, VersionedTransaction } from "@solana/web3.js";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Wallet as WalletIcon, ArrowRight } from "lucide-react";
 import { useState, useCallback } from "react";
@@ -33,7 +33,7 @@ import { TokenStatsCard } from "./components/token-stats";
 import { TransactionHistory } from "./components/transaction-history";
 
 export function Wallet() {
-  const { walletAddress, wallet } = useUser();
+  const { walletAddress, wallet, hasToken } = useUser();
   const queryClient = useQueryClient();
   const [isClaimingRewards, setIsClaimingRewards] = useState(false);
   const t = useTranslate();
@@ -53,7 +53,7 @@ export function Wallet() {
   } = useQuery({
     queryKey: ["tokenBalance", walletAddress],
     queryFn: () => neptuApi.getTokenBalance(walletAddress),
-    enabled: !!walletAddress,
+    enabled: !!walletAddress && hasToken,
     refetchOnWindowFocus: false,
   });
 
@@ -65,7 +65,7 @@ export function Wallet() {
   } = useQuery({
     queryKey: ["pendingRewards", walletAddress],
     queryFn: () => neptuApi.getPendingRewards(walletAddress),
-    enabled: !!walletAddress,
+    enabled: !!walletAddress && hasToken,
   });
 
   // Get streak info
@@ -76,21 +76,21 @@ export function Wallet() {
   } = useQuery({
     queryKey: ["streak", walletAddress],
     queryFn: () => neptuApi.getStreakInfo(walletAddress),
-    enabled: !!walletAddress,
+    enabled: !!walletAddress && hasToken,
   });
 
   // Get transaction history
   const { data: transactionsData, isLoading: transactionsLoading } = useQuery({
     queryKey: ["transactions", walletAddress],
     queryFn: () => neptuApi.getTransactions(walletAddress, { limit: 20 }),
-    enabled: !!walletAddress,
+    enabled: !!walletAddress && hasToken,
   });
 
   // Get token stats
   const { data: statsData, isLoading: statsLoading } = useQuery({
     queryKey: ["tokenStats", walletAddress],
     queryFn: () => neptuApi.getTokenStats(walletAddress),
-    enabled: !!walletAddress,
+    enabled: !!walletAddress && hasToken,
   });
 
   // Check-in mutation
@@ -164,7 +164,7 @@ export function Wallet() {
         throw new Error("Failed to build claim transaction");
       }
 
-      // 2. Sign and send the transaction via Dynamic SDK wallet
+      // 2. Sign the transaction via Dynamic SDK wallet (sign-only avoids Phantom simulation rejection)
       const txBytes = new Uint8Array(buildResult.serializedTransaction);
       const transaction = VersionedTransaction.deserialize(txBytes);
 
@@ -173,10 +173,17 @@ export function Wallet() {
       }
 
       const signer = await wallet.getSigner();
-      const { signature: txSignature } =
-        await signer.signAndSendTransaction(transaction);
+      const signedTx = await signer.signTransaction(transaction);
 
-      // 3. Mark rewards as claimed in the database with real tx signature
+      // 3. Send the signed transaction via our RPC
+      const connection = new Connection(rpcUrl, "confirmed");
+      const rawTx = signedTx.serialize();
+      const txSignature = await connection.sendRawTransaction(rawTx, {
+        skipPreflight: false,
+        preflightCommitment: "confirmed",
+      });
+
+      // 4. Mark rewards as claimed in the database with real tx signature
       const claimPromises = rewardsData.rewards.map((reward) =>
         neptuApi.claimReward(walletAddress, reward.id, txSignature)
       );

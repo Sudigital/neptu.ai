@@ -17,13 +17,13 @@
 
 ### Submission Requirements
 
-- [ ] Functional Android APK
-- [ ] GitHub repository with source code
+- [x] Functional Android APK
+- [x] GitHub repository with source code
 - [ ] Demo video showcasing functionality
 - [ ] Pitch deck or brief presentation
-- [ ] Must integrate Solana Mobile Stack + Mobile Wallet Adapter
-- [ ] Mobile-first design (no PWA wrappers or direct ports)
-- [ ] Meaningful Solana network interaction
+- [x] Must integrate Solana Mobile Stack + Mobile Wallet Adapter
+- [x] Mobile-first design (no PWA wrappers or direct ports)
+- [x] Meaningful Solana network interaction
 
 ### Evaluation Criteria (25% each)
 
@@ -499,31 +499,31 @@ apps/mobile/
 
 ### Week 1: Foundation (Feb 19–23) — 5 days
 
-| Day   | Task                                              | Status      |
-| ----- | ------------------------------------------------- | ----------- |
-| Day 1 | Swap Privy → Mobile Wallet Adapter, basic connect | Not started |
-| Day 1 | Strip existing mobile app to clean slate          | Not started |
-| Day 2 | Onboarding screen (birthday + language picker)    | Not started |
-| Day 2 | Local storage (MMKV) for profile persistence      | Not started |
-| Day 3 | Orb visualizer prototype (Skia + Reanimated)      | Not started |
-| Day 3 | Orb states: idle, listening, thinking, speaking   | Not started |
-| Day 4 | Audio recording hook (expo-av, amplitude data)    | Not started |
-| Day 4 | Audio playback hook (TTS, amplitude extraction)   | Not started |
-| Day 5 | API: `/api/voice/transcribe` (Azure Speech STT)   | Not started |
-| Day 5 | API: `/api/voice/synthesize` (Azure Neural TTS)   | Not started |
+| Day   | Task                                              | Status  |
+| ----- | ------------------------------------------------- | ------- |
+| Day 1 | Swap Privy → Mobile Wallet Adapter, basic connect | ✅ Done |
+| Day 1 | Strip existing mobile app to clean slate          | ✅ Done |
+| Day 2 | Onboarding screen (birthday + language picker)    | ✅ Done |
+| Day 2 | Local storage (MMKV) for profile persistence      | ✅ Done |
+| Day 3 | Orb visualizer prototype (Skia + Reanimated)      | ✅ Done |
+| Day 3 | Orb states: idle, listening, thinking, speaking   | ✅ Done |
+| Day 4 | Audio recording hook (expo-av, amplitude data)    | ✅ Done |
+| Day 4 | Audio playback hook (TTS, amplitude extraction)   | ✅ Done |
+| Day 5 | API: `/api/voice/transcribe` (Azure Speech STT)   | ✅ Done |
+| Day 5 | API: `/api/voice/synthesize` (Azure Neural TTS)   | ✅ Done |
 
 ### Week 2: Integration (Feb 24–28) — 5 days
 
 | Day    | Task                                           | Status      |
 | ------ | ---------------------------------------------- | ----------- |
-| Day 6  | API: `/api/voice/oracle` (combined endpoint)   | Not started |
-| Day 6  | Wire mic → API → Neptu voice response          | Not started |
-| Day 7  | Context injection: Potensi + Peluang in oracle | Not started |
-| Day 7  | Multi-language support (10 langs, same as web) | Not started |
-| Day 8  | Wallet panel: SOL/NEPTU balance, subscription  | Not started |
+| Day 6  | API: `/api/voice/oracle` (combined endpoint)   | ✅ Done     |
+| Day 6  | Wire mic → API → Neptu voice response          | ✅ Done     |
+| Day 7  | Context injection: Potensi + Peluang in oracle | ✅ Done     |
+| Day 7  | Multi-language support (10 langs, same as web) | ✅ Done     |
+| Day 8  | Wallet panel: SOL/NEPTU balance, subscription  | ✅ Done     |
 | Day 8  | Payment flow: MWA transaction signing          | Not started |
 | Day 9  | Free tier logic (5 conversations/day)          | Not started |
-| Day 9  | Settings panel: profile, language, voice       | Not started |
+| Day 9  | Settings panel: profile, language, voice       | ✅ Done     |
 | Day 10 | End-to-end testing on Android emulator         | Not started |
 | Day 10 | Bug fixes & performance optimization           | Not started |
 
@@ -556,22 +556,27 @@ apps/mobile/
 | Voice Personality Guide              | `brainstorming/`       | ✅ Written  |
 | Database (22 schemas)                | `packages/drizzle-orm` | ✅ Done     |
 | Shared constants/types               | `packages/shared`      | ✅ Done     |
+| Voice constants (10 langs)           | `packages/shared`      | ✅ Done     |
+| Azure Speech REST client             | `apps/api`             | ✅ Done     |
+| Voice API routes (4 endpoints)       | `apps/api`             | ✅ Done     |
+| preferredLanguage DB migration       | `packages/drizzle-orm` | ✅ Done     |
+| Web language settings → DB           | `apps/web`             | ✅ Done     |
 
 ### What We Build New
 
-| Component                   | Location      | Effort       |
-| --------------------------- | ------------- | ------------ |
-| Mobile Wallet Adapter setup | `apps/mobile` | 1 day        |
-| Onboarding screen           | `apps/mobile` | 0.5 day      |
-| Orb audio visualizer (Skia) | `apps/mobile` | 2 days       |
-| Audio recording hooks       | `apps/mobile` | 1 day        |
-| Audio playback hooks        | `apps/mobile` | 1 day        |
-| Voice API endpoints         | `apps/api`    | 1.5 days     |
-| Azure Speech STT + TTS      | `apps/worker` | 1 day        |
-| Wallet/Settings panels      | `apps/mobile` | 1 day        |
-| MWA payment signing         | `apps/mobile` | 1 day        |
-| Polish, APK, demo           | `apps/mobile` | 3 days       |
-| **Total new work**          |               | **~13 days** |
+| Component                   | Location      | Effort                |
+| --------------------------- | ------------- | --------------------- |
+| Mobile Wallet Adapter setup | `apps/mobile` | ✅ Done               |
+| Onboarding screen           | `apps/mobile` | ✅ Done               |
+| Orb audio visualizer (Skia) | `apps/mobile` | ✅ Done               |
+| Audio recording hooks       | `apps/mobile` | ✅ Done               |
+| Audio playback hooks        | `apps/mobile` | ✅ Done               |
+| Voice API endpoints         | `apps/api`    | ✅ Done               |
+| Azure Speech STT + TTS      | `apps/api`    | ✅ Done               |
+| Wallet/Settings panels      | `apps/mobile` | ✅ Done               |
+| MWA payment signing         | `apps/mobile` | 1 day                 |
+| Polish, APK, demo           | `apps/mobile` | 3 days                |
+| **Total new work**          |               | **~4 days remaining** |
 
 ---
 
@@ -656,7 +661,7 @@ apps/mobile/
 ## Open Questions
 
 - [ ] SKR bonus prize: Should we integrate SKR (Seeker Rewards)? How?
-- [ ] Voice persona: Record a custom voice model or use Azure Neural presets?
+- [x] Voice persona: ~~Record a custom voice model or use Azure Neural presets?~~ → Using Azure Neural presets (per-language voice mapping in `packages/shared/src/constants/voice.ts`)
 - [ ] Offline mode: Cache last reading for offline access?
 - [ ] Background audio: Allow Neptu to deliver morning readings via notification?
 - [ ] Expo prebuild vs bare workflow: Which is better for Skia + MWA?

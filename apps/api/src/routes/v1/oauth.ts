@@ -20,8 +20,8 @@ import {
 } from "@neptu/shared";
 import { Hono } from "hono";
 
-import { dynamicJwtAuth } from "../middleware/dynamic-jwt-auth";
-import { rateLimit } from "../middleware/rate-limit";
+import { dynamicJwtAuth } from "../../middleware/dynamic-jwt-auth";
+import { rateLimit } from "../../middleware/rate-limit";
 
 type Env = {
   Variables: {
@@ -415,10 +415,10 @@ oauthDiscoveryRoutes.get("/oauth-authorization-server", (c) => {
 
   return c.json({
     issuer: baseUrl,
-    authorization_endpoint: `${baseUrl}/api/oauth/authorize`,
-    token_endpoint: `${baseUrl}/api/oauth/token`,
-    revocation_endpoint: `${baseUrl}/api/oauth/revoke`,
-    userinfo_endpoint: `${baseUrl}/api/oauth/userinfo`,
+    authorization_endpoint: `${baseUrl}/api/v1/oauth/authorize`,
+    token_endpoint: `${baseUrl}/api/v1/oauth/token`,
+    revocation_endpoint: `${baseUrl}/api/v1/oauth/revoke`,
+    userinfo_endpoint: `${baseUrl}/api/v1/oauth/userinfo`,
     scopes_supported: OAUTH_SCOPES,
     response_types_supported: OAUTH_RESPONSE_TYPES,
     grant_types_supported: OAUTH_GRANT_TYPES,

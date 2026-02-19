@@ -5,7 +5,7 @@ import {
 } from "@neptu/drizzle-orm";
 import { Hono } from "hono";
 
-import { type AuthEnv } from "../middleware/paseto-auth";
+import { type AuthEnv } from "../../middleware/paseto-auth";
 
 type Env = AuthEnv & {
   Variables: AuthEnv["Variables"] & {

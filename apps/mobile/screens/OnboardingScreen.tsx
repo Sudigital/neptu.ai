@@ -55,7 +55,7 @@ export function OnboardingScreen({
       saveLanguage(language);
       setOnboarded(true);
 
-      // Sync to API — same endpoint as web: POST /api/users/:wallet/onboard
+      // Sync to API — same endpoint as web: POST /api/v1/users/:wallet/onboard
       await onboardUser(walletAddress, {
         birthDate: dateString,
         preferredLanguage: language,

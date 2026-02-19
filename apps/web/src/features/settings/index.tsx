@@ -22,7 +22,7 @@ import { SidebarNav } from "./components/sidebar-nav";
 
 export function Settings() {
   const t = useTranslate();
-  const { hasBirthDate, isLoading } = useUser();
+  const { hasBirthDate, isLoading, isLoggedIn } = useUser();
 
   const sidebarNavItems = [
     {
@@ -65,7 +65,7 @@ export function Settings() {
       </Header>
 
       <Main fixed>
-        {!isLoading && !hasBirthDate && (
+        {!isLoading && isLoggedIn && !hasBirthDate && (
           <Alert className="mb-4 border-amber-500/50 bg-amber-500/10 text-amber-900 dark:text-amber-200 [&>svg]:text-amber-600 dark:[&>svg]:text-amber-400">
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>{t("settings.birthdayRequired.title")}</AlertTitle>

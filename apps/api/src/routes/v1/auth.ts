@@ -5,7 +5,7 @@ import { getAddressEncoder, getBase58Decoder, address } from "@solana/kit";
 import { Hono } from "hono";
 import { z } from "zod";
 
-import { issueTokenPair, verifyRefreshToken } from "../lib/paseto";
+import { issueTokenPair, verifyRefreshToken } from "../../lib/paseto";
 
 // ============================================================================
 // Types
@@ -58,6 +58,10 @@ const verifySchema = z.object({
   signature: z.string().min(64),
 });
 
+const sessionSchema = z.object({
+  walletAddress: z.string().min(32).max(64),
+});
+
 const refreshSchema = z.object({
   refreshToken: z.string().min(1),
 });
@@ -67,6 +71,50 @@ const refreshSchema = z.object({
 // ============================================================================
 
 export const authRoutes = new Hono<Env>();
+
+/**
+ * POST /api/auth/session
+ * Create a session for a connected wallet (connect-only mode).
+ * Dynamic SDK verifies wallet ownership client-side during connect.
+ * This endpoint issues a JWT pair for the connected wallet address.
+ */
+authRoutes.post("/session", zValidator("json", sessionSchema), async (c) => {
+  const { walletAddress } = c.req.valid("json");
+
+  // Validate Solana address format
+  try {
+    address(walletAddress);
+  } catch {
+    return c.json(
+      { success: false, error: "Invalid Solana wallet address" },
+      400
+    );
+  }
+
+  // Get or create user
+  const db = c.get("db");
+  const userService = new UserService(db);
+  let user = await userService.getUserByWallet(walletAddress);
+
+  if (!user) {
+    user = await userService.createUser({ walletAddress });
+  }
+
+  // Issue JWT token pair
+  const tokens = issueTokenPair(user.id, walletAddress, user.role);
+
+  return c.json({
+    success: true,
+    user: {
+      id: user.id,
+      walletAddress: user.walletAddress,
+      displayName: user.displayName,
+      onboarded: user.onboarded,
+      role: user.role,
+    },
+    ...tokens,
+  });
+});
 
 /**
  * POST /api/auth/nonce
@@ -235,10 +283,15 @@ authRoutes.post("/refresh", zValidator("json", refreshSchema), async (c) => {
 // ============================================================================
 
 const HEX_PATTERN = /^(0x)?[0-9a-fA-F]+$/;
+const BASE64_PATTERN = /^[A-Za-z0-9+/]+=*$/;
 const ED25519_SIGNATURE_LENGTH = 64;
 
 function isHex(value: string): boolean {
   return HEX_PATTERN.test(value);
+}
+
+function isBase64(value: string): boolean {
+  return BASE64_PATTERN.test(value) && value.length >= 80;
 }
 
 function hexToBytes(hex: string): Uint8Array {
@@ -253,13 +306,30 @@ function hexToBytes(hex: string): Uint8Array {
   return bytes;
 }
 
+function base64ToBytes(base64: string): Uint8Array {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
+
 function decodeSignature(signature: string): Uint8Array {
   // Try hex first (128 hex chars = 64 bytes Ed25519 signature)
   if (isHex(signature)) {
     return hexToBytes(signature);
   }
 
-  // Otherwise treat as base58 (Solana wallet adapters encode signatures as base58)
+  // Try base64 (Dynamic SDK wallet adapters return base64)
+  if (isBase64(signature)) {
+    const bytes = base64ToBytes(signature);
+    if (bytes.length === ED25519_SIGNATURE_LENGTH) {
+      return bytes;
+    }
+  }
+
+  // Otherwise treat as base58 (native Solana wallet adapters encode signatures as base58)
   const decoder = getBase58Decoder();
   const bytes = decoder.decode(signature);
 

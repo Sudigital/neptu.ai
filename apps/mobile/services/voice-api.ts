@@ -1,5 +1,3 @@
-import { WALLET_HEADER } from "@neptu/shared";
-
 import type {
   TranscribeResponse,
   SynthesizeResponse,
@@ -11,8 +9,10 @@ import type {
 
 import { API_URL } from "../constants";
 
-// Wallet address set after MWA connect — used in all requests (same as web)
+// Wallet address set after MWA connect
 let currentWallet: string | null = null;
+// Access token obtained from /auth/session after wallet connect
+let accessToken: string | null = null;
 
 export function setWalletAddress(address: string | null) {
   currentWallet = address;
@@ -23,8 +23,34 @@ export function getWalletAddress(): string | null {
 }
 
 /**
- * Base fetch helper — uses X-Wallet-Address header (same auth as web).
- * No tokens, no PASETO. Wallet ownership verified client-side by MWA.
+ * Authenticate with the API after MWA wallet connect.
+ * Calls /auth/session to get a signed access token for this wallet.
+ */
+export async function authenticateWallet(walletAddress: string): Promise<void> {
+  const res = await fetch(`${API_URL}/api/v1/auth/session`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ walletAddress }),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to authenticate wallet with API");
+  }
+
+  const data = (await res.json()) as {
+    success: boolean;
+    accessToken: string;
+  };
+  accessToken = data.accessToken;
+}
+
+export function clearAccessToken(): void {
+  accessToken = null;
+}
+
+/**
+ * Base fetch helper — sends Bearer token from /auth/session.
+ * Wallet address is embedded in the signed token, never sent as a raw header.
  */
 async function fetchApi<T>(
   path: string,
@@ -35,8 +61,8 @@ async function fetchApi<T>(
     ...(options.headers as Record<string, string>),
   };
 
-  if (currentWallet) {
-    headers[WALLET_HEADER] = currentWallet;
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`;
   }
 
   const res = await fetch(`${API_URL}${path}`, { ...options, headers });
@@ -57,8 +83,8 @@ async function fetchApi<T>(
 async function fetchMultipart<T>(path: string, body: FormData): Promise<T> {
   const headers: Record<string, string> = {};
 
-  if (currentWallet) {
-    headers[WALLET_HEADER] = currentWallet;
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`;
   }
 
   const res = await fetch(`${API_URL}${path}`, {
@@ -85,7 +111,7 @@ async function fetchMultipart<T>(path: string, body: FormData): Promise<T> {
 export async function getOrCreateUser(
   walletAddress: string
 ): Promise<{ success: boolean; user: UserProfile }> {
-  return fetchApi("/api/users", {
+  return fetchApi("/api/v1/users", {
     method: "POST",
     body: JSON.stringify({ walletAddress }),
   });
@@ -95,7 +121,7 @@ export async function getOrCreateUser(
 export async function getUserProfile(
   walletAddress: string
 ): Promise<{ success: boolean; user: UserProfile }> {
-  return fetchApi(`/api/users/${walletAddress}`);
+  return fetchApi(`/api/v1/users/${walletAddress}`);
 }
 
 // POST /api/users/:walletAddress/onboard — complete onboarding
@@ -108,7 +134,7 @@ export async function onboardUser(
     preferredLanguage?: string;
   }
 ): Promise<{ success: boolean; user: UserProfile }> {
-  return fetchApi(`/api/users/${walletAddress}/onboard`, {
+  return fetchApi(`/api/v1/users/${walletAddress}/onboard`, {
     method: "POST",
     body: JSON.stringify(payload),
   });
@@ -125,7 +151,7 @@ export async function updateUserProfile(
     preferredLanguage?: string;
   }
 ): Promise<{ success: boolean; user: UserProfile }> {
-  return fetchApi(`/api/users/${walletAddress}`, {
+  return fetchApi(`/api/v1/users/${walletAddress}`, {
     method: "PUT",
     body: JSON.stringify(payload),
   });
@@ -137,7 +163,7 @@ export async function getUserReading(
   targetDate?: string
 ) {
   const params = targetDate ? `?targetDate=${targetDate}` : "";
-  return fetchApi(`/api/users/${walletAddress}/reading${params}`);
+  return fetchApi(`/api/v1/users/${walletAddress}/reading${params}`);
 }
 
 // ============================================================================
@@ -150,7 +176,7 @@ export async function getWalletBalances(walletAddress: string): Promise<
     success: boolean;
   } & WalletBalance
 > {
-  return fetchApi(`/api/wallet/balances/${walletAddress}`);
+  return fetchApi(`/api/v1/wallet/balances/${walletAddress}`);
 }
 
 // ============================================================================
@@ -158,12 +184,12 @@ export async function getWalletBalances(walletAddress: string): Promise<
 // ============================================================================
 
 export async function getPotensi(date: string) {
-  return fetchApi(`/api/reading/potensi?date=${date}`);
+  return fetchApi(`/api/v1/reading/potensi?date=${date}`);
 }
 
 export async function getPeluang(date: string, targetDate?: string) {
   const target = targetDate ?? new Date().toISOString().split("T")[0];
-  return fetchApi(`/api/reading/peluang?date=${date}&targetDate=${target}`);
+  return fetchApi(`/api/v1/reading/peluang?date=${date}&targetDate=${target}`);
 }
 
 // ============================================================================
@@ -174,7 +200,7 @@ export async function getSubscription(
   walletAddress: string
 ): Promise<SubscriptionInfo> {
   try {
-    return await fetchApi(`/api/pricing/subscription/${walletAddress}`);
+    return await fetchApi(`/api/v1/pricing/subscription/${walletAddress}`);
   } catch {
     return {
       plan: "FREE",
@@ -193,7 +219,7 @@ export async function buildPaymentTx(
   readingType: string,
   paymentType: "sol" | "neptu" | "sudigital"
 ) {
-  return fetchApi(`/api/pay/${paymentType}/build`, {
+  return fetchApi(`/api/v1/pay/${paymentType}/build`, {
     method: "POST",
     body: JSON.stringify({ walletAddress, readingType }),
   });
@@ -216,7 +242,7 @@ export async function transcribeAudio(
   } as unknown as Blob);
   formData.append("language", language);
 
-  return fetchMultipart("/api/voice/transcribe", formData);
+  return fetchMultipart("/api/v1/voice/transcribe", formData);
 }
 
 // POST /api/voice/oracle — full voice conversation
@@ -235,7 +261,7 @@ export async function voiceOracle(
     formData.append("language", language);
   }
 
-  return fetchMultipart("/api/voice/oracle", formData);
+  return fetchMultipart("/api/v1/voice/oracle", formData);
 }
 
 // POST /api/voice/synthesize — text → speech
@@ -244,7 +270,7 @@ export async function synthesize(
   language: string,
   voice?: string
 ): Promise<SynthesizeResponse> {
-  return fetchApi("/api/voice/synthesize", {
+  return fetchApi("/api/v1/voice/synthesize", {
     method: "POST",
     body: JSON.stringify({ text, language, voice }),
   });

@@ -67,7 +67,7 @@ interface TopEndpoint {
 export const adminApi = {
   // Dashboard stats
   async getStats(): Promise<AdminStats> {
-    const { data } = await api.get<AdminStats>("/api/admin/stats");
+    const { data } = await api.get<AdminStats>("/api/v1/admin/stats");
     return data;
   },
 
@@ -80,14 +80,14 @@ export const adminApi = {
     sortOrder?: string;
   }): Promise<PaginatedResponse<UserDTO>> {
     const { data } = await api.get<PaginatedResponse<UserDTO>>(
-      "/api/admin/users",
+      "/api/v1/admin/users",
       { params }
     );
     return data;
   },
 
   async getUser(userId: string): Promise<{ success: boolean; user: UserDTO }> {
-    const { data } = await api.get(`/api/admin/users/${userId}`);
+    const { data } = await api.get(`/api/v1/admin/users/${userId}`);
     return data;
   },
 
@@ -95,7 +95,7 @@ export const adminApi = {
     userId: string,
     updates: { role?: string; displayName?: string; email?: string }
   ): Promise<{ success: boolean; user: UserDTO }> {
-    const { data } = await api.put(`/api/admin/users/${userId}`, updates);
+    const { data } = await api.put(`/api/v1/admin/users/${userId}`, updates);
     return data;
   },
 
@@ -107,7 +107,7 @@ export const adminApi = {
     planId?: string;
   }): Promise<PaginatedResponse<ApiSubscriptionDTO>> {
     const { data } = await api.get<PaginatedResponse<ApiSubscriptionDTO>>(
-      "/api/admin/subscriptions",
+      "/api/v1/admin/subscriptions",
       { params }
     );
     return data;
@@ -117,7 +117,10 @@ export const adminApi = {
     id: string,
     updates: { status?: string; creditsRemaining?: number }
   ): Promise<{ success: boolean; subscription: ApiSubscriptionDTO }> {
-    const { data } = await api.put(`/api/admin/subscriptions/${id}`, updates);
+    const { data } = await api.put(
+      `/api/v1/admin/subscriptions/${id}`,
+      updates
+    );
     return data;
   },
 
@@ -129,14 +132,17 @@ export const adminApi = {
     isActive?: boolean;
   }): Promise<PaginatedResponse<ApiKeyDTO>> {
     const { data } = await api.get<PaginatedResponse<ApiKeyDTO>>(
-      "/api/admin/api-keys",
+      "/api/v1/admin/api-keys",
       { params }
     );
     return data;
   },
 
   async revokeApiKey(keyId: string): Promise<{ success: boolean }> {
-    const { data } = await api.put(`/api/admin/api-keys/${keyId}/revoke`, {});
+    const { data } = await api.put(
+      `/api/v1/admin/api-keys/${keyId}/revoke`,
+      {}
+    );
     return data;
   },
 
@@ -146,7 +152,7 @@ export const adminApi = {
     endDate: string;
     groupBy?: string;
   }): Promise<{ success: boolean; analytics: UsageAnalyticsPoint[] }> {
-    const { data } = await api.get("/api/admin/analytics/usage", { params });
+    const { data } = await api.get("/api/v1/admin/analytics/usage", { params });
     return data;
   },
 
@@ -154,7 +160,7 @@ export const adminApi = {
     success: boolean;
     endpoints: TopEndpoint[];
   }> {
-    const { data } = await api.get("/api/admin/analytics/endpoints");
+    const { data } = await api.get("/api/v1/admin/analytics/endpoints");
     return data;
   },
 
@@ -163,14 +169,14 @@ export const adminApi = {
     success: boolean;
     plans: ApiPricingPlanDTO[];
   }> {
-    const { data } = await api.get("/api/admin/plans");
+    const { data } = await api.get("/api/v1/admin/plans");
     return data;
   },
 
   async createPlan(
     plan: Partial<ApiPricingPlanDTO>
   ): Promise<{ success: boolean; plan: ApiPricingPlanDTO }> {
-    const { data } = await api.post("/api/admin/plans", plan);
+    const { data } = await api.post("/api/v1/admin/plans", plan);
     return data;
   },
 
@@ -178,12 +184,12 @@ export const adminApi = {
     planId: string,
     updates: Partial<ApiPricingPlanDTO>
   ): Promise<{ success: boolean; plan: ApiPricingPlanDTO }> {
-    const { data } = await api.put(`/api/admin/plans/${planId}`, updates);
+    const { data } = await api.put(`/api/v1/admin/plans/${planId}`, updates);
     return data;
   },
 
   async deletePlan(planId: string): Promise<{ success: boolean }> {
-    const { data } = await api.delete(`/api/admin/plans/${planId}`);
+    const { data } = await api.delete(`/api/v1/admin/plans/${planId}`);
     return data;
   },
 
@@ -192,14 +198,14 @@ export const adminApi = {
     success: boolean;
     packs: ApiCreditPackDTO[];
   }> {
-    const { data } = await api.get("/api/admin/credit-packs");
+    const { data } = await api.get("/api/v1/admin/credit-packs");
     return data;
   },
 
   async createCreditPack(
     pack: Partial<ApiCreditPackDTO>
   ): Promise<{ success: boolean; pack: ApiCreditPackDTO }> {
-    const { data } = await api.post("/api/admin/credit-packs", pack);
+    const { data } = await api.post("/api/v1/admin/credit-packs", pack);
     return data;
   },
 
@@ -208,14 +214,14 @@ export const adminApi = {
     updates: Partial<ApiCreditPackDTO>
   ): Promise<{ success: boolean; pack: ApiCreditPackDTO }> {
     const { data } = await api.put(
-      `/api/admin/credit-packs/${packId}`,
+      `/api/v1/admin/credit-packs/${packId}`,
       updates
     );
     return data;
   },
 
   async deleteCreditPack(packId: string): Promise<{ success: boolean }> {
-    const { data } = await api.delete(`/api/admin/credit-packs/${packId}`);
+    const { data } = await api.delete(`/api/v1/admin/credit-packs/${packId}`);
     return data;
   },
 };

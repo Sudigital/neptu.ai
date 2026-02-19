@@ -45,8 +45,8 @@ export const VOICE_CACHE_TTL = {
 } as const;
 
 export const VOICE_API_ENDPOINTS = {
-  TRANSCRIBE: "/api/voice/transcribe",
-  SYNTHESIZE: "/api/voice/synthesize",
-  ORACLE: "/api/voice/oracle",
-  GREETING: "/api/voice/greeting",
+  TRANSCRIBE: "/api/v1/voice/transcribe",
+  SYNTHESIZE: "/api/v1/voice/synthesize",
+  ORACLE: "/api/v1/voice/oracle",
+  GREETING: "/api/v1/voice/greeting",
 } as const;

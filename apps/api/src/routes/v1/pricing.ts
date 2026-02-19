@@ -6,7 +6,7 @@ import { z } from "zod";
 import {
   requireAdmin as pasetoRequireAdmin,
   type AuthEnv,
-} from "../middleware/paseto-auth";
+} from "../../middleware/paseto-auth";
 
 type Env = AuthEnv & {
   Variables: AuthEnv["Variables"] & {

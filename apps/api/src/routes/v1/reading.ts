@@ -9,7 +9,7 @@ import { NeptuCalculator } from "@neptu/wariga";
 import { Hono } from "hono";
 import { z } from "zod";
 
-import { dynamicJwtAuth } from "../middleware/dynamic-jwt-auth";
+import { dynamicJwtAuth } from "../../middleware/dynamic-jwt-auth";
 
 export const readingRoutes = new Hono();
 
