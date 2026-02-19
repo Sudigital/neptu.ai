@@ -12,7 +12,10 @@ import { apiSubscriptionPaymentRoutes } from "./routes/api-subscription-payment"
 import { apiUsageRoutes } from "./routes/api-usage";
 import { authRoutes } from "./routes/auth";
 import { developerRoutes } from "./routes/developer";
+import { developerOAuthRoutes } from "./routes/developer-oauth";
+import { developerWebhookRoutes } from "./routes/developer-webhook";
 import { healthRoutes } from "./routes/health";
+import { oauthRoutes, oauthDiscoveryRoutes } from "./routes/oauth";
 import { paymentRoutes } from "./routes/payment";
 import { pricingRoutes } from "./routes/pricing";
 import { readingRoutes } from "./routes/reading";
@@ -70,6 +73,10 @@ app.route("/api/developer/api-pricing", apiPricingRoutes);
 app.route("/api/developer", apiUsageRoutes);
 app.route("/api/developer/pay", apiSubscriptionPaymentRoutes);
 app.route("/api/admin", adminRoutes);
+app.route("/api/developer/oauth", developerOAuthRoutes);
+app.route("/api/developer/oauth", developerWebhookRoutes);
+app.route("/api/oauth", oauthRoutes);
+app.route("/api/.well-known", oauthDiscoveryRoutes);
 
 // 404 handler
 app.notFound((c) => {

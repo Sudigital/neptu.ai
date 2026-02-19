@@ -1,0 +1,21 @@
+{
+  "name": "@neptu/cli",
+  "version": "0.1.0",
+  "bin": {
+    "neptu": "./src/index.ts"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "build": "rolldown -c",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@neptu/shared": "workspace:*",
+    "@neptu/wariga": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.8",
+    "typescript": "^5.9.3"
+  }
+}

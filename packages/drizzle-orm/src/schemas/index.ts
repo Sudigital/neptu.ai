@@ -52,3 +52,33 @@ export {
   type ApiCreditPack,
   type NewApiCreditPack,
 } from "./api-credit-packs";
+export {
+  oauthClients,
+  type OAuthClient,
+  type NewOAuthClient,
+} from "./oauth-clients";
+export {
+  oauthAuthorizationCodes,
+  type OAuthAuthorizationCode,
+  type NewOAuthAuthorizationCode,
+} from "./oauth-authorization-codes";
+export {
+  oauthAccessTokens,
+  type OAuthAccessToken,
+  type NewOAuthAccessToken,
+} from "./oauth-access-tokens";
+export {
+  oauthRefreshTokens,
+  type OAuthRefreshToken,
+  type NewOAuthRefreshToken,
+} from "./oauth-refresh-tokens";
+export {
+  oauthWebhooks,
+  type OAuthWebhook,
+  type NewOAuthWebhook,
+} from "./oauth-webhooks";
+export {
+  oauthWebhookDeliveries,
+  type OAuthWebhookDelivery,
+  type NewOAuthWebhookDelivery,
+} from "./oauth-webhook-deliveries";

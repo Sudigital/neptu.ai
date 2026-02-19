@@ -34,7 +34,9 @@ import { Route as AuthenticatedSettingsNotificationsRouteImport } from './routes
 import { Route as AuthenticatedSettingsDisplayRouteImport } from './routes/_authenticated/settings/display'
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
 import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings/account'
+import { Route as AuthenticatedOauthAuthorizeRouteImport } from './routes/_authenticated/oauth/authorize'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
+import { Route as AuthenticatedDeveloperOauthRouteImport } from './routes/_authenticated/developer/oauth'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedAdminSubscriptionsRouteImport } from './routes/_authenticated/admin/subscriptions'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin/analytics'
@@ -178,11 +180,23 @@ const AuthenticatedSettingsAccountRoute =
     path: '/account',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any)
+const AuthenticatedOauthAuthorizeRoute =
+  AuthenticatedOauthAuthorizeRouteImport.update({
+    id: '/oauth/authorize',
+    path: '/oauth/authorize',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedErrorsErrorRoute =
   AuthenticatedErrorsErrorRouteImport.update({
     id: '/errors/$error',
     path: '/errors/$error',
     getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDeveloperOauthRoute =
+  AuthenticatedDeveloperOauthRouteImport.update({
+    id: '/oauth',
+    path: '/oauth',
+    getParentRoute: () => AuthenticatedDeveloperRouteRoute,
   } as any)
 const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   id: '/users',
@@ -260,7 +274,9 @@ export interface FileRoutesByFullPath {
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/subscriptions': typeof AuthenticatedAdminSubscriptionsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/developer/oauth': typeof AuthenticatedDeveloperOauthRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
+  '/oauth/authorize': typeof AuthenticatedOauthAuthorizeRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayRoute
@@ -292,7 +308,9 @@ export interface FileRoutesByTo {
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/subscriptions': typeof AuthenticatedAdminSubscriptionsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/developer/oauth': typeof AuthenticatedDeveloperOauthRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
+  '/oauth/authorize': typeof AuthenticatedOauthAuthorizeRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayRoute
@@ -330,7 +348,9 @@ export interface FileRoutesById {
   '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/_authenticated/admin/subscriptions': typeof AuthenticatedAdminSubscriptionsRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/_authenticated/developer/oauth': typeof AuthenticatedDeveloperOauthRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
+  '/_authenticated/oauth/authorize': typeof AuthenticatedOauthAuthorizeRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayRoute
@@ -368,7 +388,9 @@ export interface FileRouteTypes {
     | '/admin/analytics'
     | '/admin/subscriptions'
     | '/admin/users'
+    | '/developer/oauth'
     | '/errors/$error'
+    | '/oauth/authorize'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/display'
@@ -400,7 +422,9 @@ export interface FileRouteTypes {
     | '/admin/analytics'
     | '/admin/subscriptions'
     | '/admin/users'
+    | '/developer/oauth'
     | '/errors/$error'
+    | '/oauth/authorize'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/display'
@@ -437,7 +461,9 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/analytics'
     | '/_authenticated/admin/subscriptions'
     | '/_authenticated/admin/users'
+    | '/_authenticated/developer/oauth'
     | '/_authenticated/errors/$error'
+    | '/_authenticated/oauth/authorize'
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/appearance'
     | '/_authenticated/settings/display'
@@ -643,12 +669,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsAccountRouteImport
       parentRoute: typeof AuthenticatedSettingsRouteRoute
     }
+    '/_authenticated/oauth/authorize': {
+      id: '/_authenticated/oauth/authorize'
+      path: '/oauth/authorize'
+      fullPath: '/oauth/authorize'
+      preLoaderRoute: typeof AuthenticatedOauthAuthorizeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/errors/$error': {
       id: '/_authenticated/errors/$error'
       path: '/errors/$error'
       fullPath: '/errors/$error'
       preLoaderRoute: typeof AuthenticatedErrorsErrorRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/developer/oauth': {
+      id: '/_authenticated/developer/oauth'
+      path: '/oauth'
+      fullPath: '/developer/oauth'
+      preLoaderRoute: typeof AuthenticatedDeveloperOauthRouteImport
+      parentRoute: typeof AuthenticatedDeveloperRouteRoute
     }
     '/_authenticated/admin/users': {
       id: '/_authenticated/admin/users'
@@ -766,11 +806,13 @@ const AuthenticatedAdminRouteRouteWithChildren =
   )
 
 interface AuthenticatedDeveloperRouteRouteChildren {
+  AuthenticatedDeveloperOauthRoute: typeof AuthenticatedDeveloperOauthRoute
   AuthenticatedDeveloperIndexRoute: typeof AuthenticatedDeveloperIndexRoute
 }
 
 const AuthenticatedDeveloperRouteRouteChildren: AuthenticatedDeveloperRouteRouteChildren =
   {
+    AuthenticatedDeveloperOauthRoute: AuthenticatedDeveloperOauthRoute,
     AuthenticatedDeveloperIndexRoute: AuthenticatedDeveloperIndexRoute,
   }
 
@@ -811,6 +853,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedWalletRoute: typeof AuthenticatedWalletRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
+  AuthenticatedOauthAuthorizeRoute: typeof AuthenticatedOauthAuthorizeRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -823,6 +866,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedWalletRoute: AuthenticatedWalletRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
+  AuthenticatedOauthAuthorizeRoute: AuthenticatedOauthAuthorizeRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

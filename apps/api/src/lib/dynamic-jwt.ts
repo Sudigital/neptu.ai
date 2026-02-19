@@ -22,16 +22,23 @@ function getEnvironmentId(): string {
   return envId;
 }
 
-const jwksClient = jwksRsa({
-  jwksUri: `https://app.dynamic.xyz/api/v0/sdk/${getEnvironmentId()}/.well-known/jwks`,
-  cache: true,
-  cacheMaxAge: 600_000,
-  rateLimit: true,
-});
+let jwksClient: jwksRsa.JwksClient | null = null;
+
+function getJwksClient(): jwksRsa.JwksClient {
+  if (!jwksClient) {
+    jwksClient = jwksRsa({
+      jwksUri: `https://app.dynamic.xyz/api/v0/sdk/${getEnvironmentId()}/.well-known/jwks`,
+      cache: true,
+      cacheMaxAge: 600_000,
+      rateLimit: true,
+    });
+  }
+  return jwksClient;
+}
 
 function getSigningKey(header: jwt.JwtHeader): Promise<string> {
   return new Promise((resolve, reject) => {
-    jwksClient.getSigningKey(header.kid, (err, key) => {
+    getJwksClient().getSigningKey(header.kid, (err, key) => {
       if (err || !key) {
         reject(err ?? new Error("No signing key found"));
         return;
