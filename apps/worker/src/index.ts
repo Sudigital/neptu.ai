@@ -1,4 +1,9 @@
-import { createDatabase, DailyReadingService } from "@neptu/drizzle-orm";
+import {
+  createDatabase,
+  DailyReadingService,
+  OAuthCleanupService,
+  OAuthWebhookService,
+} from "@neptu/drizzle-orm";
 import { createLogger } from "@neptu/logger";
 import { CORS_ALLOWED_ORIGINS } from "@neptu/shared";
 import { NeptuCalculator } from "@neptu/wariga";
@@ -124,10 +129,44 @@ async function refreshCryptoMarketData(): Promise<void> {
   }
 }
 
+async function cleanupExpiredOAuthTokens(): Promise<void> {
+  log.info("Cleaning up expired OAuth tokens...");
+  try {
+    const cleanupService = new OAuthCleanupService(db);
+    const result = await cleanupService.cleanupExpiredTokens();
+    log.info(
+      {
+        accessTokens: result.expiredAccessTokens,
+        refreshTokens: result.expiredRefreshTokens,
+      },
+      `OAuth cleanup completed: ${result.totalCleaned} tokens removed`
+    );
+  } catch (error) {
+    log.error({ error }, "Failed to cleanup OAuth tokens");
+  }
+}
+
+async function retryFailedWebhooks(): Promise<void> {
+  log.info("Retrying failed webhook deliveries...");
+  try {
+    const webhookService = new OAuthWebhookService(db);
+    const retried = await webhookService.retryFailedDeliveries();
+    const cleaned = await webhookService.cleanupOldDeliveries(30);
+    log.info(
+      { retried, cleaned },
+      `Webhook retry: ${retried} retried, ${cleaned} old deliveries cleaned`
+    );
+  } catch (error) {
+    log.error({ error }, "Failed to retry webhook deliveries");
+  }
+}
+
 // Start BullMQ cron jobs
 await startCronJobs({
   generateDailyReadings: () => generateDailyReadings(),
   refreshCryptoMarketData: () => refreshCryptoMarketData(),
+  cleanupExpiredOAuthTokens: () => cleanupExpiredOAuthTokens(),
+  retryFailedWebhooks: () => retryFailedWebhooks(),
 });
 
 const port = Number(process.env.WORKER_PORT || process.env.PORT || 8787);

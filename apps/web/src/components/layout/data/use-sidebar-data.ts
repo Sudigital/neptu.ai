@@ -14,6 +14,7 @@ import {
   Activity,
   BarChart3,
   Code2,
+  KeyRound,
 } from "lucide-react";
 import { useMemo } from "react";
 
@@ -77,6 +78,11 @@ export function useSidebarData(): SidebarData {
                     title: "API Keys",
                     url: "/developer",
                     icon: Key,
+                  },
+                  {
+                    title: "OAuth Apps",
+                    url: "/developer/oauth",
+                    icon: KeyRound,
                   },
                 ],
               },

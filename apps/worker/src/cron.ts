@@ -8,6 +8,8 @@ const log = createLogger({ name: "cron" });
 interface CronDeps {
   generateDailyReadings: () => Promise<void>;
   refreshCryptoMarketData: () => Promise<void>;
+  cleanupExpiredOAuthTokens: () => Promise<void>;
+  retryFailedWebhooks: () => Promise<void>;
 }
 
 const QUEUE_NAME = "neptu-cron";
@@ -46,6 +48,28 @@ export async function startCronJobs(deps: CronDeps): Promise<void> {
     }
   );
 
+  // Every 6 hours: Cleanup expired OAuth tokens
+  await queue.add(
+    "oauth_token_cleanup",
+    {},
+    {
+      repeat: { pattern: "0 */6 * * *" },
+      removeOnComplete: 100,
+      removeOnFail: 50,
+    }
+  );
+
+  // Every 5 minutes: Retry failed webhook deliveries
+  await queue.add(
+    "webhook_retry",
+    {},
+    {
+      repeat: { pattern: "*/5 * * * *" },
+      removeOnComplete: 100,
+      removeOnFail: 50,
+    }
+  );
+
   // Process jobs
   new Worker(
     QUEUE_NAME,
@@ -61,10 +85,18 @@ export async function startCronJobs(deps: CronDeps): Promise<void> {
           await deps.generateDailyReadings();
           await deps.refreshCryptoMarketData();
           break;
+
+        case "oauth_token_cleanup":
+          await deps.cleanupExpiredOAuthTokens();
+          break;
+
+        case "webhook_retry":
+          await deps.retryFailedWebhooks();
+          break;
       }
     },
     { connection: workerConn, concurrency: 1 }
   );
 
-  log.info("Cron jobs registered (2 repeatable schedules)");
+  log.info("Cron jobs registered (4 repeatable schedules)");
 }

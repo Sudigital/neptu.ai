@@ -45,6 +45,7 @@ export default defineConfig({
     nav: [
       { text: "Home", link: "/" },
       { text: "Guide", link: "/guide/" },
+      { text: "API", link: "/api/oauth" },
       { text: "Agent", link: "/agent/skill" },
       { text: "Tokenomics", link: "/tokenomics" },
       { text: "App", link: "https://neptu.sudigital.com" },
@@ -55,6 +56,12 @@ export default defineConfig({
         {
           text: "Getting Started",
           items: [{ text: "Introduction", link: "/guide/" }],
+        },
+      ],
+      "/api/": [
+        {
+          text: "API Reference",
+          items: [{ text: "OAuth 2.0", link: "/api/oauth" }],
         },
       ],
       "/agent/": [

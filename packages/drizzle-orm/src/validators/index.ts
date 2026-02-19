@@ -108,3 +108,25 @@ export {
   type CreateApiCreditPackInput,
   type UpdateApiCreditPackInput,
 } from "./api-credit-pack-validator";
+
+export {
+  createOAuthClientSchema,
+  updateOAuthClientSchema,
+  authorizeRequestSchema,
+  authorizeDecisionSchema,
+  tokenRequestSchema,
+  revokeTokenSchema,
+  oauthScopesSchema,
+  type CreateOAuthClientInput,
+  type UpdateOAuthClientInput,
+  type AuthorizeRequestInput,
+  type AuthorizeDecisionInput,
+  type TokenRequestInput,
+  type RevokeTokenInput,
+} from "./oauth-validator";
+export {
+  createWebhookSchema,
+  updateWebhookSchema,
+  type CreateWebhookInput,
+  type UpdateWebhookInput,
+} from "./oauth-webhook-validator";

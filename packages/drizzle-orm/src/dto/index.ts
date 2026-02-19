@@ -58,3 +58,9 @@ export {
   type ApiCreditPackDTO,
   toApiCreditPackDTO,
 } from "./api-credit-pack-dto";
+export {
+  type OAuthClientDTO,
+  type OAuthClientWithSecretDTO,
+  type OAuthConsentDTO,
+  toOAuthClientDTO,
+} from "./oauth-dto";
