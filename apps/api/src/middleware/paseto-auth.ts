@@ -26,7 +26,7 @@ export interface AuthEnv {
 // ============================================================================
 
 /**
- * PASETO v4.local authentication middleware.
+ * JWT HS256 authentication middleware.
  * Verifies Bearer token from Authorization header, sets userId,
  * walletAddress, and role on the Hono context.
  */

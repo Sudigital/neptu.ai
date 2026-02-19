@@ -108,7 +108,7 @@ jobs:
             --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
             --set-env-vars \
               "DATABASE_URL=secretref:database-url" \
-              "PASETO_SECRET_KEY=secretref:paseto-secret-key" \
+              "JWT_SECRET=secretref:jwt-secret" \
               "REDIS_URL=secretref:redis-url" \
             --output none
 

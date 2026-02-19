@@ -5,7 +5,9 @@
     "SOLANA_NETWORK",
     "DATABASE_URL",
     "VITE_DYNAMIC_ENVIRONMENT_ID",
-    "API_URL"
+    "DYNAMIC_ENVIRONMENT_ID",
+    "API_URL",
+    "JWT_SECRET"
   ],
   "tasks": {
     "build": {

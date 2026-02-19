@@ -17,11 +17,22 @@ export const api = axios.create({
   },
 });
 
+/**
+ * Set the wallet address header for all API requests.
+ * Wallet ownership is verified client-side by Dynamic SDK.
+ */
 export function setWalletHeader(walletAddress: string) {
   api.defaults.headers.common[WALLET_HEADER] = walletAddress;
 }
 
-// Web app uses Dynamic SDK session — wallet address header is the auth.
+/**
+ * Clear the wallet header (on logout).
+ */
+export function clearAuthToken() {
+  delete api.defaults.headers.common[WALLET_HEADER];
+}
+
+// Web app uses Dynamic SDK session (connect-only) with wallet header auth.
 // PASETO is reserved for developer/external API access only.
 
 const workerApi = axios.create({

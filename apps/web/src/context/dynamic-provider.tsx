@@ -26,10 +26,6 @@ export function DynamicAuthProvider({ children }: DynamicAuthProviderProps) {
         environmentId: DYNAMIC_ENVIRONMENT_ID,
         walletConnectors: [SolanaWalletConnectors],
         initialAuthenticationMode: "connect-only",
-        embeddedWallets: {
-          createOnLogin: "all-users",
-          showTransactionUi: true,
-        },
         overrides: {
           solNetworks: [
             {

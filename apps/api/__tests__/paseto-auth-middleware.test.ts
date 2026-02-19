@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeAll } from "bun:test";
+import crypto from "crypto";
 
 import { Hono } from "hono";
-import { generateKeys } from "paseto-ts/v4";
 
 import { issueTokenPair } from "../src/lib/paseto";
 import {
@@ -10,10 +10,9 @@ import {
   type AuthEnv,
 } from "../src/middleware/paseto-auth";
 
-// Set up a test PASETO key before running tests
+// Set up a test JWT secret before running tests
 beforeAll(() => {
-  const key = generateKeys("local") as string;
-  process.env.PASETO_SECRET_KEY = key;
+  process.env.JWT_SECRET = crypto.randomBytes(64).toString("hex");
 });
 
 const TEST_USER_ID = "middleware-test-user";

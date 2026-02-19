@@ -2,14 +2,21 @@
 // Authentication
 // ============================================================================
 
-/** Access token TTL in seconds (15 minutes) */
-export const AUTH_ACCESS_TOKEN_TTL = 900 as const;
+const SECONDS_PER_DAY = 86_400;
+const TOKEN_TTL_DAYS = 30;
+const NONCE_TTL_MINUTES = 5;
+const SECONDS_PER_MINUTE = 60;
 
-/** Refresh token TTL in seconds (7 days) */
-export const AUTH_REFRESH_TOKEN_TTL = 604800 as const;
+/** Access token TTL in seconds (30 days) */
+export const AUTH_ACCESS_TOKEN_TTL = (TOKEN_TTL_DAYS *
+  SECONDS_PER_DAY) as const;
+
+/** Refresh token TTL in seconds (30 days) */
+export const AUTH_REFRESH_TOKEN_TTL = (TOKEN_TTL_DAYS *
+  SECONDS_PER_DAY) as const;
 
 /** Nonce TTL in seconds (5 minutes) */
-export const AUTH_NONCE_TTL = 300 as const;
+export const AUTH_NONCE_TTL = (NONCE_TTL_MINUTES * SECONDS_PER_MINUTE) as const;
 
 /** Authorization header name */
 export const AUTH_HEADER = "Authorization" as const;

@@ -98,7 +98,7 @@ authRoutes.post("/nonce", zValidator("json", nonceSchema), async (c) => {
 
 /**
  * POST /api/auth/verify
- * Verify a signed nonce and issue PASETO token pair.
+ * Verify a signed nonce and issue JWT token pair.
  */
 authRoutes.post("/verify", zValidator("json", verifySchema), async (c) => {
   const { walletAddress, signature } = c.req.valid("json");
@@ -180,7 +180,7 @@ authRoutes.post("/verify", zValidator("json", verifySchema), async (c) => {
     user = await userService.createUser({ walletAddress });
   }
 
-  // Issue PASETO token pair
+  // Issue JWT token pair (30-day expiry)
   const tokens = issueTokenPair(user.id, walletAddress, user.role);
 
   return c.json({
