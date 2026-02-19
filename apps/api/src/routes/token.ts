@@ -16,14 +16,20 @@ import {
 import { Hono } from "hono";
 import { z } from "zod";
 
-import { type AuthEnv } from "../middleware/paseto-auth";
+import {
+  dynamicJwtAuth,
+  type DynamicJwtAuthEnv,
+} from "../middleware/dynamic-jwt-auth";
 
 type Env = {
-  Variables: { db: Database } & AuthEnv["Variables"];
+  Variables: { db: Database } & DynamicJwtAuthEnv["Variables"];
   Bindings: { SOLANA_NETWORK?: string; SOLANA_RPC_URL?: string };
 };
 
 export const tokenRoutes = new Hono<Env>();
+
+// All token routes require Dynamic JWT authentication
+tokenRoutes.use("/*", dynamicJwtAuth);
 
 // Solana client will be created per-request with env access
 const getSolanaClient = (env?: Env["Bindings"]) => {

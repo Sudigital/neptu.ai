@@ -17,11 +17,13 @@
     "@neptu/wariga": "workspace:*",
     "drizzle-orm": "^0.44.2",
     "hono": "^4.6.0",
-    "paseto-ts": "^2.0.5",
+    "jsonwebtoken": "^9.0.3",
+    "jwks-rsa": "^3.2.2",
     "zod": "^3.25.56"
   },
   "devDependencies": {
     "@types/bun": "^1.3.8",
+    "@types/jsonwebtoken": "^9.0.10",
     "typescript": "^5.9.3"
   }
 }

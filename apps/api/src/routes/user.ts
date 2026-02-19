@@ -8,16 +8,22 @@ import { z } from "zod";
 
 const log = createLogger({ name: "user" });
 
-import { type AuthEnv } from "../middleware/paseto-auth";
+import {
+  dynamicJwtAuth,
+  type DynamicJwtAuthEnv,
+} from "../middleware/dynamic-jwt-auth";
 
-type Env = AuthEnv & {
-  Variables: AuthEnv["Variables"] & {
+type Env = DynamicJwtAuthEnv & {
+  Variables: DynamicJwtAuthEnv["Variables"] & {
     db: Database;
     adminWalletAddress: string | undefined;
   };
 };
 
 export const userRoutes = new Hono<Env>();
+
+// All user routes require Dynamic JWT authentication
+userRoutes.use("/*", dynamicJwtAuth);
 
 const calculator = new NeptuCalculator();
 

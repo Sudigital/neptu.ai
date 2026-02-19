@@ -17,16 +17,22 @@ import {
 import { Hono } from "hono";
 import { z } from "zod";
 
-import { type AuthEnv } from "../middleware/paseto-auth";
+import {
+  dynamicJwtAuth,
+  type DynamicJwtAuthEnv,
+} from "../middleware/dynamic-jwt-auth";
 
-type Env = AuthEnv & {
-  Variables: AuthEnv["Variables"] & {
+type Env = DynamicJwtAuthEnv & {
+  Variables: DynamicJwtAuthEnv["Variables"] & {
     db: Database;
   };
   Bindings: { SOLANA_NETWORK?: string; SOLANA_RPC_URL?: string };
 };
 
 export const walletRoutes = new Hono<Env>();
+
+// All wallet routes require Dynamic JWT authentication
+walletRoutes.use("/*", dynamicJwtAuth);
 
 // Solana client per-request with env access
 const getSolanaClient = (env?: Env["Bindings"]) => {

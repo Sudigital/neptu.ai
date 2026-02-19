@@ -3,7 +3,7 @@ import {
   AUTH_REFRESH_TOKEN_TTL,
   type UserRole,
 } from "@neptu/shared";
-import { encrypt, decrypt, generateKeys } from "paseto-ts/v4";
+import jwt from "jsonwebtoken";
 
 // ============================================================================
 // Types
@@ -37,36 +37,15 @@ export interface TokenPair {
 // Key Management
 // ============================================================================
 
-let symmetricKey: string | null = null;
-
-function getSymmetricKey(): string {
-  if (symmetricKey) return symmetricKey;
-
-  const envKey = process.env.PASETO_SECRET_KEY;
-  if (!envKey) {
+function getSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
     throw new Error(
-      "PASETO_SECRET_KEY is required. Generate one with: " +
-        "bun -e \"import{generateKeys}from'paseto-ts/v4';console.log(generateKeys('local'))\""
+      "JWT_SECRET env var is required. " +
+        "Generate one with: bun -e \"console.log(require('crypto').randomBytes(64).toString('hex'))\""
     );
   }
-
-  // Validate PASERK format: k4.local.<base64url>
-  if (!envKey.startsWith("k4.local.")) {
-    throw new Error(
-      "PASETO_SECRET_KEY must be a PASERK k4.local key (starts with 'k4.local.')"
-    );
-  }
-
-  symmetricKey = envKey;
-  return symmetricKey;
-}
-
-/**
- * Generate a new PASERK k4.local symmetric key for PASETO v4.local tokens.
- * Run once to set PASETO_SECRET_KEY env var.
- */
-export function generateSymmetricKey(): string {
-  return generateKeys("local") as string;
+  return secret;
 }
 
 // ============================================================================
@@ -74,14 +53,15 @@ export function generateSymmetricKey(): string {
 // ============================================================================
 
 /**
- * Issue an access + refresh token pair for a verified user.
+ * Issue an access + refresh JWT pair for a verified user.
+ * Access token: 30-day expiry. Refresh token: 30-day expiry.
  */
 export function issueTokenPair(
   userId: string,
   walletAddress: string,
   role: UserRole
 ): TokenPair {
-  const key = getSymmetricKey();
+  const secret = getSecret();
 
   const basePayload = {
     sub: userId,
@@ -89,31 +69,32 @@ export function issueTokenPair(
     role,
   };
 
-  const now = Date.now();
+  const accessToken = jwt.sign(
+    { ...basePayload, typ: "access" as const },
+    secret,
+    { expiresIn: AUTH_ACCESS_TOKEN_TTL }
+  );
 
-  const accessToken = encrypt(key, {
-    ...basePayload,
-    typ: "access" as const,
-    exp: new Date(now + AUTH_ACCESS_TOKEN_TTL * 1000).toISOString(),
-  });
-
-  const refreshToken = encrypt(key, {
-    ...basePayload,
-    typ: "refresh" as const,
-    exp: new Date(now + AUTH_REFRESH_TOKEN_TTL * 1000).toISOString(),
-  });
+  const refreshToken = jwt.sign(
+    { ...basePayload, typ: "refresh" as const },
+    secret,
+    { expiresIn: AUTH_REFRESH_TOKEN_TTL }
+  );
 
   return { accessToken, refreshToken };
 }
 
 /**
- * Verify and decode a PASETO v4.local token.
+ * Verify and decode a JWT token.
  * Throws on invalid/expired tokens.
  */
 export function verifyToken<T extends TokenPayload>(token: string): T {
-  const key = getSymmetricKey();
-  const { payload } = decrypt<T>(key, token);
-  return payload as T;
+  const secret = getSecret();
+  const payload = jwt.verify(token, secret) as T;
+  if (!payload.sub || !payload.wal) {
+    throw new Error("Invalid JWT payload");
+  }
+  return payload;
 }
 
 /**

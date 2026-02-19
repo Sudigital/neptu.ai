@@ -1,5 +1,3 @@
-import type { SolanaSignAndSendTransactionFeature } from "@solana/wallet-standard-features";
-
 import { ConfigDrawer } from "@/components/config-drawer";
 import { Header } from "@/components/layout/header";
 import { Main } from "@/components/layout/main";
@@ -23,8 +21,9 @@ import { useTranslate } from "@/hooks/use-translate";
 import { useUser } from "@/hooks/use-user";
 import { useWalletBalance } from "@/hooks/use-wallet-balance";
 import { neptuApi } from "@/lib/api";
+import { isSolanaWallet } from "@dynamic-labs/solana";
+import { VersionedTransaction } from "@solana/web3.js";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getWallets } from "@wallet-standard/app";
 import { Wallet as WalletIcon, ArrowRight } from "lucide-react";
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
@@ -33,55 +32,8 @@ import { TokenBalance } from "./components/token-balance";
 import { TokenStatsCard } from "./components/token-stats";
 import { TransactionHistory } from "./components/transaction-history";
 
-// Utility: convert Uint8Array signature to base58 string
-function toBase58(bytes: Uint8Array): string {
-  const ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-  let num = BigInt(0);
-  for (const b of bytes) num = num * 256n + BigInt(b);
-  let str = "";
-  while (num > 0n) {
-    str = ALPHABET[Number(num % 58n)] + str;
-    num = num / 58n;
-  }
-  for (const b of bytes) {
-    if (b === 0) str = `1${str}`;
-    else break;
-  }
-  return str;
-}
-
-const SOLANA_CHAIN = `solana:${import.meta.env.VITE_SOLANA_NETWORK || "devnet"}`;
-
-/** Sign and send a serialized Solana transaction via Wallet Standard */
-async function signAndSendSolanaTransaction(
-  walletAddress: string,
-  transactionBytes: Uint8Array
-): Promise<{ signature: Uint8Array }> {
-  const registeredWallets = getWallets().get();
-
-  for (const wallet of registeredWallets) {
-    const feature = wallet.features["solana:signAndSendTransaction"] as
-      | SolanaSignAndSendTransactionFeature["solana:signAndSendTransaction"]
-      | undefined;
-    if (!feature) continue;
-
-    const account = wallet.accounts.find((a) => a.address === walletAddress);
-    if (!account) continue;
-
-    const [result] = await feature.signAndSendTransaction({
-      account,
-      transaction: transactionBytes,
-      chain: SOLANA_CHAIN,
-    });
-
-    return { signature: result.signature };
-  }
-
-  throw new Error("No compatible Solana wallet found for signing");
-}
-
 export function Wallet() {
-  const { walletAddress } = useUser();
+  const { walletAddress, wallet } = useUser();
   const queryClient = useQueryClient();
   const [isClaimingRewards, setIsClaimingRewards] = useState(false);
   const t = useTranslate();
@@ -212,15 +164,17 @@ export function Wallet() {
         throw new Error("Failed to build claim transaction");
       }
 
-      // 2. Sign and send the transaction on-chain via Wallet Standard
+      // 2. Sign and send the transaction via Dynamic SDK wallet
       const txBytes = new Uint8Array(buildResult.serializedTransaction);
-      const { signature } = await signAndSendSolanaTransaction(
-        walletAddress,
-        txBytes
-      );
+      const transaction = VersionedTransaction.deserialize(txBytes);
 
-      // Convert signature bytes to base58 string
-      const txSignature = toBase58(signature);
+      if (!wallet || !isSolanaWallet(wallet)) {
+        throw new Error("No Solana wallet connected");
+      }
+
+      const signer = await wallet.getSigner();
+      const { signature: txSignature } =
+        await signer.signAndSendTransaction(transaction);
 
       // 3. Mark rewards as claimed in the database with real tx signature
       const claimPromises = rewardsData.rewards.map((reward) =>

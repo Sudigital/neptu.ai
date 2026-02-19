@@ -22,7 +22,7 @@ export function useAuth() {
 
   const walletAddress = primaryWallet?.address ?? "";
 
-  // Authenticated = wallet connected via Dynamic SDK session
+  // connect-only mode: authenticated = wallet connected via Dynamic SDK
   const isAuthenticated = isDynamicLoggedIn;
   const ready = sdkHasLoaded;
 
@@ -30,9 +30,9 @@ export function useAuth() {
     setShowAuthFlow(true);
   }, [setShowAuthFlow]);
 
-  const logout = useCallback(() => {
-    handleLogOut();
-    window.location.href = "/";
+  const logout = useCallback(async () => {
+    await handleLogOut();
+    // Redirect is handled by the useEffect watching isDynamicLoggedIn
   }, [handleLogOut]);
 
   return {

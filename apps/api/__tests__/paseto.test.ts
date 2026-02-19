@@ -1,44 +1,36 @@
 import { describe, test, expect, beforeAll } from "bun:test";
-
-import { generateKeys } from "paseto-ts/v4";
+import crypto from "crypto";
 
 import {
-  generateSymmetricKey,
   issueTokenPair,
   verifyAccessToken,
   verifyRefreshToken,
   verifyToken,
 } from "../src/lib/paseto";
 
-// Set up a test PASETO key before running tests
+// Set up a test JWT secret before running tests
 beforeAll(() => {
-  const key = generateKeys("local") as string;
-  process.env.PASETO_SECRET_KEY = key;
+  process.env.JWT_SECRET = crypto.randomBytes(64).toString("hex");
 });
 
 const TEST_USER_ID = "test-user-id-123";
 const TEST_WALLET = "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU";
 const TEST_ROLE = "user" as const;
 
-describe("PASETO Token Service", () => {
-  describe("generateSymmetricKey", () => {
-    test("should generate a valid k4.local key", () => {
-      const key = generateSymmetricKey();
-      expect(key).toStartWith("k4.local.");
-      expect(key.length).toBeGreaterThan(10);
-    });
-  });
-
+describe("JWT Token Service", () => {
   describe("issueTokenPair", () => {
     test("should issue access and refresh tokens", () => {
       const tokens = issueTokenPair(TEST_USER_ID, TEST_WALLET, TEST_ROLE);
 
-      expect(tokens.accessToken).toStartWith("v4.local.");
-      expect(tokens.refreshToken).toStartWith("v4.local.");
+      expect(tokens.accessToken).toBeTruthy();
+      expect(tokens.refreshToken).toBeTruthy();
       expect(tokens.accessToken).not.toBe(tokens.refreshToken);
+      // JWT format: header.payload.signature
+      expect(tokens.accessToken.split(".").length).toBe(3);
+      expect(tokens.refreshToken.split(".").length).toBe(3);
     });
 
-    test("should encode admin flag correctly", () => {
+    test("should encode admin role correctly", () => {
       const tokens = issueTokenPair(TEST_USER_ID, TEST_WALLET, "admin");
       const payload = verifyAccessToken(tokens.accessToken);
 

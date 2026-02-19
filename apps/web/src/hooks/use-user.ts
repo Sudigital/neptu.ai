@@ -18,7 +18,7 @@ export function useUser() {
     logout,
   } = useAuth();
 
-  // Set wallet header for API calls (Dynamic SDK session auth)
+  // Set wallet header for API calls (Dynamic SDK verifies wallet ownership)
   useEffect(() => {
     if (walletAddress) {
       setWalletHeader(walletAddress);

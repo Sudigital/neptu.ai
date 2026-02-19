@@ -13,12 +13,16 @@ import {
   createApiCreditPackSchema,
   updateApiCreditPackSchema,
 } from "@neptu/drizzle-orm";
-import { WALLET_HEADER } from "@neptu/shared";
 import { Hono } from "hono";
 import { z } from "zod";
 
-type Env = {
-  Variables: {
+import {
+  dynamicJwtAuth,
+  type DynamicJwtAuthEnv,
+} from "../middleware/dynamic-jwt-auth";
+
+type Env = DynamicJwtAuthEnv & {
+  Variables: DynamicJwtAuthEnv["Variables"] & {
     db: Database;
     adminWalletAddress: string | undefined;
   };
@@ -26,9 +30,10 @@ type Env = {
 
 export const adminRoutes = new Hono<Env>();
 
-// Admin middleware — compare wallet address header with ADMIN_WALLET_ADDRESS
+// Admin middleware — verify Dynamic JWT then compare wallet with ADMIN_WALLET_ADDRESS
+adminRoutes.use("/*", dynamicJwtAuth);
 adminRoutes.use("/*", async (c, next) => {
-  const walletAddress = c.req.header(WALLET_HEADER);
+  const walletAddress = c.get("walletAddress");
   const adminWalletAddress = c.get("adminWalletAddress");
 
   if (!walletAddress || !adminWalletAddress) {

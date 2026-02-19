@@ -9,12 +9,12 @@ import { NeptuCalculator } from "@neptu/wariga";
 import { Hono } from "hono";
 import { z } from "zod";
 
-import { walletAuth } from "../middleware/wallet-auth";
+import { dynamicJwtAuth } from "../middleware/dynamic-jwt-auth";
 
 export const readingRoutes = new Hono();
 
-// All reading routes require wallet authentication (Dynamic SDK session)
-readingRoutes.use("/*", walletAuth);
+// All reading routes require Dynamic JWT authentication
+readingRoutes.use("/*", dynamicJwtAuth);
 
 const calculator = new NeptuCalculator();
 

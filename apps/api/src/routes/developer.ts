@@ -17,7 +17,7 @@ type Env = AuthEnv & {
 
 export const developerRoutes = new Hono<Env>();
 
-// Protect all developer routes with PASETO auth
+// Protect all developer routes with JWT auth
 developerRoutes.use("/*", pasetoAuth);
 
 const createApiKeySchema = z.object({

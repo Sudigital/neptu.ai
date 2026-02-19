@@ -184,62 +184,43 @@ export function Dashboard() {
   const reading = readingData?.reading;
 
   const dateNavigation = (
-    <div className="flex items-center">
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            className="h-9 flex-1 justify-between gap-0 px-1 text-sm font-medium hover:bg-transparent sm:px-2"
-          >
-            <span
-              role="button"
-              tabIndex={0}
-              className="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors hover:bg-accent"
-              onClick={(e) => {
-                e.stopPropagation();
-                goToPreviousDay();
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.stopPropagation();
-                  goToPreviousDay();
-                }
-              }}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </span>
-            <span className="inline-flex h-8 items-center gap-1.5 rounded-lg px-3 transition-colors hover:bg-accent sm:px-4">
+    <div className="flex w-full items-center">
+      <div className="flex h-9 w-full items-center justify-between rounded-md border px-1">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7"
+          onClick={goToPreviousDay}
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" className="h-7 gap-2 px-2 text-sm">
               <CalendarIcon className="h-4 w-4" />
               {format(selectedDate, "EEE, MMM d, yyyy")}
-            </span>
-            <span
-              role="button"
-              tabIndex={0}
-              className="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors hover:bg-accent"
-              onClick={(e) => {
-                e.stopPropagation();
-                goToNextDay();
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.stopPropagation();
-                  goToNextDay();
-                }
-              }}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </span>
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="center">
-          <Calendar
-            mode="single"
-            selected={selectedDate}
-            onSelect={(date) => date && setSelectedDate(date)}
-            initialFocus
-          />
-        </PopoverContent>
-      </Popover>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="center">
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={(date) => date && setSelectedDate(date)}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7"
+          onClick={goToNextDay}
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   );
 
