@@ -1,14 +1,12 @@
 import type { Context, Next } from "hono";
 
 import { createLogger } from "@neptu/logger";
-import { AUTH_HEADER, WALLET_HEADER } from "@neptu/shared";
+import { AUTH_HEADER } from "@neptu/shared";
 
 import { extractWalletAddress, verifyDynamicJwt } from "../lib/dynamic-jwt";
+import { verifyAccessToken } from "../lib/paseto";
 
 const log = createLogger({ name: "auth-middleware" });
-
-const SOLANA_ADDRESS_MIN_LENGTH = 32;
-const SOLANA_ADDRESS_MAX_LENGTH = 44;
 
 export interface DynamicJwtAuthEnv {
   Variables: {
@@ -18,70 +16,71 @@ export interface DynamicJwtAuthEnv {
 }
 
 /**
- * Unified authentication middleware for web app routes.
+ * Authentication middleware for web and mobile app routes.
  *
- * Accepts two authentication methods (checked in order):
- * 1. Authorization: Bearer <jwt> — Dynamic Labs JWT verified via JWKS
- * 2. X-Wallet-Address: <address> — Wallet address header (connect-only mode)
+ * Accepts two token types via Authorization: Bearer <token>:
+ *   1. Dynamic Labs JWT (RS256, verified via JWKS) — used by web app
+ *   2. PASETO/HS256 access token (from /auth/session) — used by mobile app
  *
- * Wallet ownership is verified client-side by Dynamic SDK.
- * Both methods set walletAddress in context for downstream handlers.
+ * Wallet address is always extracted from the verified token payload,
+ * never trusted from an unauthenticated header.
  */
 export async function dynamicJwtAuth(
   c: Context<DynamicJwtAuthEnv>,
   next: Next
 ): Promise<Response | void> {
-  // Strategy 1: Dynamic JWT (preferred when available)
   const authHeader = c.req.header(AUTH_HEADER);
-  if (authHeader) {
-    const [scheme, token] = authHeader.split(" ");
-    if (scheme === "Bearer" && token) {
-      try {
-        const payload = await verifyDynamicJwt(token);
-        const walletAddress = extractWalletAddress(payload);
 
-        if (!walletAddress) {
-          return c.json(
-            { success: false, error: "No wallet address found in JWT" },
-            401
-          );
-        }
-
-        c.set("dynamicUserId", payload.sub);
-        c.set("walletAddress", walletAddress);
-        await next();
-        return;
-      } catch (err) {
-        log.debug({ err }, "JWT verification failed, trying wallet header");
-      }
-    }
+  if (!authHeader) {
+    return c.json(
+      {
+        success: false,
+        error:
+          "Authentication required. Send Authorization: Bearer <jwt> header.",
+      },
+      401
+    );
   }
 
-  // Strategy 2: Wallet address header (connect-only mode)
-  const walletAddress = c.req.header(WALLET_HEADER);
-  if (walletAddress) {
-    if (
-      walletAddress.length < SOLANA_ADDRESS_MIN_LENGTH ||
-      walletAddress.length > SOLANA_ADDRESS_MAX_LENGTH
-    ) {
+  const [scheme, token] = authHeader.split(" ");
+  if (scheme !== "Bearer" || !token) {
+    return c.json(
+      {
+        success: false,
+        error: "Invalid Authorization header format. Expected: Bearer <jwt>",
+      },
+      401
+    );
+  }
+
+  // Strategy 1: Try Dynamic Labs JWT (RS256 via JWKS)
+  try {
+    const payload = await verifyDynamicJwt(token);
+    const walletAddress = extractWalletAddress(payload);
+
+    if (!walletAddress) {
       return c.json(
-        { success: false, error: "Invalid wallet address format" },
-        400
+        { success: false, error: "No wallet address found in JWT" },
+        401
       );
     }
 
-    c.set("dynamicUserId", "");
+    c.set("dynamicUserId", payload.sub);
     c.set("walletAddress", walletAddress);
-    await next();
-    return;
+    return next();
+  } catch {
+    // Not a Dynamic JWT — try PASETO next
   }
 
-  return c.json(
-    {
-      success: false,
-      error:
-        "Authentication required. Send Authorization header or X-Wallet-Address header.",
-    },
-    401
-  );
+  // Strategy 2: Try our own HS256 access token (from /auth/session)
+  try {
+    const payload = verifyAccessToken(token);
+
+    c.set("dynamicUserId", payload.sub);
+    c.set("walletAddress", payload.wal);
+    return next();
+  } catch (err) {
+    log.warn({ err }, "All token verification strategies failed");
+    return c.json({ success: false, error: "Invalid or expired token" }, 401);
+  }
 }

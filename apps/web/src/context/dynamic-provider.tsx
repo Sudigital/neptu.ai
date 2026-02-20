@@ -31,6 +31,8 @@ export function DynamicAuthProvider({ children }: DynamicAuthProviderProps) {
             {
               chainId: SOLANA_NETWORK,
               networkId: SOLANA_NETWORK,
+              cluster:
+                SOLANA_NETWORK === "mainnet-beta" ? "mainnet" : SOLANA_NETWORK,
               name:
                 SOLANA_NETWORK === "mainnet-beta"
                   ? "Solana Mainnet"

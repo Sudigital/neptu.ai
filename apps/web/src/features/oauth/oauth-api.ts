@@ -22,7 +22,7 @@ export const oauthApi = {
     code_challenge: string;
     code_challenge_method: string;
   }): Promise<ConsentResponse> {
-    const { data } = await api.get<ConsentResponse>("/api/oauth/authorize", {
+    const { data } = await api.get<ConsentResponse>("/api/v1/oauth/authorize", {
       params,
     });
     return data;
@@ -38,7 +38,7 @@ export const oauthApi = {
     approved: boolean;
   }): Promise<AuthorizeResponse> {
     const { data } = await api.post<AuthorizeResponse>(
-      "/api/oauth/authorize",
+      "/api/v1/oauth/authorize",
       body
     );
     return data;
@@ -50,7 +50,7 @@ export const developerOAuthApi = {
     success: boolean;
     clients: OAuthClientDTO[];
   }> {
-    const { data } = await api.get("/api/developer/oauth/clients");
+    const { data } = await api.get("/api/v1/developer/oauth/clients");
     return data;
   },
 
@@ -67,7 +67,7 @@ export const developerOAuthApi = {
     client: OAuthClientDTO & { clientSecret: string };
     warning: string;
   }> {
-    const { data } = await api.post("/api/developer/oauth/clients", input);
+    const { data } = await api.post("/api/v1/developer/oauth/clients", input);
     return data;
   },
 
@@ -75,7 +75,7 @@ export const developerOAuthApi = {
     success: boolean;
     client: OAuthClientDTO;
   }> {
-    const { data } = await api.get(`/api/developer/oauth/clients/${id}`);
+    const { data } = await api.get(`/api/v1/developer/oauth/clients/${id}`);
     return data;
   },
 
@@ -91,7 +91,7 @@ export const developerOAuthApi = {
     }
   ): Promise<{ success: boolean; client: OAuthClientDTO }> {
     const { data } = await api.patch(
-      `/api/developer/oauth/clients/${id}`,
+      `/api/v1/developer/oauth/clients/${id}`,
       input
     );
     return data;
@@ -103,7 +103,7 @@ export const developerOAuthApi = {
     warning: string;
   }> {
     const { data } = await api.post(
-      `/api/developer/oauth/clients/${id}/rotate-secret`
+      `/api/v1/developer/oauth/clients/${id}/rotate-secret`
     );
     return data;
   },
@@ -112,7 +112,7 @@ export const developerOAuthApi = {
     success: boolean;
     message: string;
   }> {
-    const { data } = await api.delete(`/api/developer/oauth/clients/${id}`);
+    const { data } = await api.delete(`/api/v1/developer/oauth/clients/${id}`);
     return data;
   },
 };

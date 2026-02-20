@@ -11,3 +11,4 @@ export * from "./constants/api-pricing";
 export * from "./constants/auth";
 export * from "./constants/oauth";
 export * from "./constants/roles";
+export * from "./constants/voice";

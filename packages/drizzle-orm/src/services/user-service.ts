@@ -69,6 +69,9 @@ export class UserService {
       updateData.birthDate = validated.birthDate;
       updateData.onboarded = true;
     }
+    if (validated.preferredLanguage !== undefined) {
+      updateData.preferredLanguage = validated.preferredLanguage;
+    }
 
     const user = await this.repository.update(id, updateData);
     return user ? toUserDTO(user) : null;
@@ -83,6 +86,7 @@ export class UserService {
     const user = await this.repository.update(id, {
       birthDate: validated.birthDate,
       displayName: validated.displayName,
+      preferredLanguage: validated.preferredLanguage,
       interests: validated.interests
         ? JSON.stringify(validated.interests)
         : null,

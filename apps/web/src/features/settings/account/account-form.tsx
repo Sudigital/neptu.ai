@@ -22,6 +22,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useTranslate } from "@/hooks/use-translate";
+import { useUser } from "@/hooks/use-user";
+import { neptuApi } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { useSettingsStore } from "@/stores/settings-store";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -52,8 +54,10 @@ type AccountFormValues = z.infer<typeof accountFormSchema>;
 
 export function AccountForm() {
   const t = useTranslate();
+  const { walletAddress, refetch } = useUser();
   const { language, setLanguage } = useSettingsStore();
   const [open, setOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const form = useForm<AccountFormValues>({
     resolver: zodResolver(accountFormSchema),
@@ -62,9 +66,21 @@ export function AccountForm() {
     },
   });
 
-  function onSubmit(data: AccountFormValues) {
-    setLanguage(data.language);
-    toast.success(t("settings.account.updated", "Account settings updated"));
+  async function onSubmit(data: AccountFormValues) {
+    if (!walletAddress) return;
+    setIsSaving(true);
+    try {
+      await neptuApi.updateProfile(walletAddress, {
+        preferredLanguage: data.language,
+      });
+      setLanguage(data.language);
+      await refetch();
+      toast.success(t("settings.account.updated", "Account settings updated"));
+    } catch {
+      toast.error(t("settings.account.error", "Failed to update settings"));
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   return (
@@ -158,8 +174,10 @@ export function AccountForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">
-          {t("settings.account.update", "Update account")}
+        <Button type="submit" disabled={isSaving}>
+          {isSaving
+            ? t("settings.account.saving", "Saving...")
+            : t("settings.account.update", "Update account")}
         </Button>
       </form>
     </Form>

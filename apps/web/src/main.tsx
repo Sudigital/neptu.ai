@@ -14,6 +14,7 @@ import { DirectionProvider } from "./context/direction-provider";
 import { DynamicAuthProvider } from "./context/dynamic-provider";
 import { FontProvider } from "./context/font-provider";
 import { ThemeProvider } from "./context/theme-provider";
+import { hasAuthToken } from "./lib/api";
 // Generated Routes
 import { routeTree } from "./routeTree.gen";
 // Styles
@@ -52,7 +53,7 @@ const queryClient = new QueryClient({
   queryCache: new QueryCache({
     onError: (error) => {
       if (error instanceof AxiosError) {
-        if (error.response?.status === 401) {
+        if (error.response?.status === 401 && hasAuthToken()) {
           toast.error("Session expired!");
           router.navigate({ to: "/" });
         }

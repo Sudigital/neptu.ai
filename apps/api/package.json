@@ -9,12 +9,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@hono/zod-openapi": "^1.2.2",
     "@hono/zod-validator": "^0.4.0",
     "@neptu/drizzle-orm": "workspace:*",
     "@neptu/logger": "workspace:*",
     "@neptu/shared": "workspace:*",
     "@neptu/solana": "workspace:*",
     "@neptu/wariga": "workspace:*",
+    "@scalar/hono-api-reference": "^0.9.44",
     "drizzle-orm": "^0.44.2",
     "hono": "^4.6.0",
     "jsonwebtoken": "^9.0.3",

@@ -22,6 +22,7 @@ export const updateUserSchema = z.object({
     .string()
     .regex(DATE_REGEX, "Date must be YYYY-MM-DD format")
     .optional(),
+  preferredLanguage: z.string().min(2).max(5).optional(),
 });
 
 // Onboarding schema - birthday is required, interests optional
@@ -29,6 +30,7 @@ export const onboardUserSchema = z.object({
   birthDate: z.string().regex(DATE_REGEX, "Date must be YYYY-MM-DD format"),
   displayName: z.string().min(1).max(50).optional(),
   interests: z.array(interestSchema).optional(),
+  preferredLanguage: z.string().min(2).max(5).optional(),
 });
 
 export type CreateUserInput = z.infer<typeof createUserSchema>;

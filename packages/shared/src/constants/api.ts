@@ -3,12 +3,12 @@
 // ============================================================================
 
 export const API_ENDPOINTS = {
-  READING_POTENSI: "/api/reading/potensi",
-  READING_PELUANG: "/api/reading/peluang",
-  READING_COMPATIBILITY: "/api/reading/compatibility",
-  PAYMENT_CREATE: "/api/payment/create",
-  PAYMENT_VERIFY: "/api/payment/verify",
-  USER_PROFILE: "/api/user/profile",
+  READING_POTENSI: "/api/v1/reading/potensi",
+  READING_PELUANG: "/api/v1/reading/peluang",
+  READING_COMPATIBILITY: "/api/v1/reading/compatibility",
+  PAYMENT_CREATE: "/api/v1/payment/create",
+  PAYMENT_VERIFY: "/api/v1/payment/verify",
+  USER_PROFILE: "/api/v1/user/profile",
 } as const;
 
 // ============================================================================

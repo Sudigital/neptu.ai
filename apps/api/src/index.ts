@@ -4,31 +4,42 @@ import { CORS_ALLOWED_ORIGINS } from "@neptu/shared";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { prettyJSON } from "hono/pretty-json";
+import { trimTrailingSlash } from "hono/trailing-slash";
 
+import { mountOpenAPI } from "./lib/openapi";
 import { requestLogger } from "./middleware/request-logger";
-import { adminRoutes } from "./routes/admin";
-import { apiPricingRoutes } from "./routes/api-pricing";
-import { apiSubscriptionPaymentRoutes } from "./routes/api-subscription-payment";
-import { apiUsageRoutes } from "./routes/api-usage";
-import { authRoutes } from "./routes/auth";
-import { developerRoutes } from "./routes/developer";
-import { developerOAuthRoutes } from "./routes/developer-oauth";
-import { developerWebhookRoutes } from "./routes/developer-webhook";
 import { healthRoutes } from "./routes/health";
-import { oauthRoutes, oauthDiscoveryRoutes } from "./routes/oauth";
-import { paymentRoutes } from "./routes/payment";
-import { pricingRoutes } from "./routes/pricing";
-import { readingRoutes } from "./routes/reading";
-import { tokenRoutes } from "./routes/token";
-import { userRoutes } from "./routes/user";
-import { walletRoutes } from "./routes/wallet";
+import {
+  adminRoutes,
+  apiPricingRoutes,
+  apiSubscriptionPaymentRoutes,
+  apiUsageRoutes,
+  authRoutes,
+  developerRoutes,
+  developerOAuthRoutes,
+  developerWebhookRoutes,
+  oauthRoutes,
+  oauthDiscoveryRoutes,
+  paymentRoutes,
+  pricingRoutes,
+  readingRoutes,
+  tokenRoutes,
+  userRoutes,
+  voiceRoutes,
+  walletRoutes,
+} from "./routes/v1";
 
 type Variables = {
   db: ReturnType<typeof createDatabase>;
   adminWalletAddress: string | undefined;
 };
 
+const API_URL = process.env.API_URL ?? "http://localhost:3000";
+
 const app = new Hono<{ Variables: Variables }>();
+
+// Normalize URLs — strip trailing slashes so /reference/ → /reference
+app.use(trimTrailingSlash());
 
 // CORS must be first to handle preflight OPTIONS requests
 app.use(
@@ -61,22 +72,26 @@ app.use("*", async (c, next) => {
 
 // Routes
 app.route("/", healthRoutes);
-app.route("/api/auth", authRoutes);
-app.route("/api/reading", readingRoutes);
-app.route("/api/users", userRoutes);
-app.route("/api/token", tokenRoutes);
-app.route("/api/pay", paymentRoutes);
-app.route("/api/wallet", walletRoutes);
-app.route("/api/pricing", pricingRoutes);
-app.route("/api/developer", developerRoutes);
-app.route("/api/developer/api-pricing", apiPricingRoutes);
-app.route("/api/developer", apiUsageRoutes);
-app.route("/api/developer/pay", apiSubscriptionPaymentRoutes);
-app.route("/api/admin", adminRoutes);
-app.route("/api/developer/oauth", developerOAuthRoutes);
-app.route("/api/developer/oauth", developerWebhookRoutes);
-app.route("/api/oauth", oauthRoutes);
-app.route("/api/.well-known", oauthDiscoveryRoutes);
+app.route("/api/v1/auth", authRoutes);
+app.route("/api/v1/reading", readingRoutes);
+app.route("/api/v1/users", userRoutes);
+app.route("/api/v1/token", tokenRoutes);
+app.route("/api/v1/pay", paymentRoutes);
+app.route("/api/v1/wallet", walletRoutes);
+app.route("/api/v1/pricing", pricingRoutes);
+app.route("/api/v1/developer", developerRoutes);
+app.route("/api/v1/developer/api-pricing", apiPricingRoutes);
+app.route("/api/v1/developer", apiUsageRoutes);
+app.route("/api/v1/developer/pay", apiSubscriptionPaymentRoutes);
+app.route("/api/v1/admin", adminRoutes);
+app.route("/api/v1/developer/oauth", developerOAuthRoutes);
+app.route("/api/v1/developer/oauth", developerWebhookRoutes);
+app.route("/api/v1/oauth", oauthRoutes);
+app.route("/api/v1/voice", voiceRoutes);
+app.route("/api/v1/.well-known", oauthDiscoveryRoutes);
+
+// OpenAPI spec + Scalar API Reference
+mountOpenAPI(app, API_URL);
 
 // 404 handler
 app.notFound((c) => {
@@ -99,4 +114,5 @@ app.onError((err, c) => {
 
 const port = Number(process.env.PORT || 3000);
 log.info({ port }, "Neptu API started");
+log.info(`API Reference: ${API_URL}/reference`);
 Bun.serve({ fetch: app.fetch, port });

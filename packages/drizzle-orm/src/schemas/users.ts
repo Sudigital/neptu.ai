@@ -16,6 +16,7 @@ export const users = pgTable(
     email: text("email"),
     displayName: text("display_name"),
     birthDate: text("birth_date"), // Stored securely, never exposed in public APIs
+    preferredLanguage: text("preferred_language").default("en"),
     interests: jsonb("interests"), // JSON array: ["career", "love", "health", ...]
     onboarded: boolean("onboarded").default(false),
     role: text("role").$type<UserRole>().default(DEFAULT_USER_ROLE).notNull(),

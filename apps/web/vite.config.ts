@@ -74,6 +74,7 @@ export default defineConfig({
     dedupe: [
       "react",
       "react-dom",
+      "@solana/web3.js",
       "@wallet-standard/app",
       "@wallet-standard/base",
       "@wallet-standard/features",
@@ -83,6 +84,7 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: [
+      "@solana/web3.js",
       "@solana-program/memo",
       "@wallet-standard/app",
       "@wallet-standard/base",

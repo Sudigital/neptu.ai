@@ -193,7 +193,7 @@ describe("OAuth Bearer Auth Middleware", () => {
 describe("OAuth Discovery Endpoint", () => {
   test("should return valid server metadata structure", async () => {
     // We can't easily start the full API server, so test the route handler directly
-    const { oauthDiscoveryRoutes } = await import("../src/routes/oauth");
+    const { oauthDiscoveryRoutes } = await import("../src/routes/v1/oauth");
 
     const app = new Hono();
     app.route("/.well-known", oauthDiscoveryRoutes);
@@ -203,10 +203,10 @@ describe("OAuth Discovery Endpoint", () => {
 
     const body = await res.json();
     expect(body.issuer).toBe("https://api.neptu.sudigital.com");
-    expect(body.authorization_endpoint).toContain("/api/oauth/authorize");
-    expect(body.token_endpoint).toContain("/api/oauth/token");
-    expect(body.revocation_endpoint).toContain("/api/oauth/revoke");
-    expect(body.userinfo_endpoint).toContain("/api/oauth/userinfo");
+    expect(body.authorization_endpoint).toContain("/api/v1/oauth/authorize");
+    expect(body.token_endpoint).toContain("/api/v1/oauth/token");
+    expect(body.revocation_endpoint).toContain("/api/v1/oauth/revoke");
+    expect(body.userinfo_endpoint).toContain("/api/v1/oauth/userinfo");
     expect(body.scopes_supported).toContain("neptu:read");
     expect(body.scopes_supported).toContain("neptu:ai");
     expect(body.response_types_supported).toContain("code");

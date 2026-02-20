@@ -1,5 +1,6 @@
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { clearAuthToken } from "@/lib/api";
+import { useAuthStore } from "@/stores/auth-store";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 
 interface SignOutDialogProps {
@@ -9,8 +10,10 @@ interface SignOutDialogProps {
 
 export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
   const { handleLogOut } = useDynamicContext();
+  const clearTokens = useAuthStore((s) => s.clearTokens);
 
   const handleSignOut = async () => {
+    clearTokens();
     clearAuthToken();
     await handleLogOut();
     // Redirect is handled by the useEffect in use-auth.ts watching isDynamicLoggedIn
