@@ -274,7 +274,7 @@ export const neptuApi = {
       message: string;
       cached: boolean;
       tokensUsed?: number;
-    }>("/api/v1/oracle", {
+    }>("/api/oracle", {
       question,
       birthDate,
       targetDate,
@@ -290,7 +290,7 @@ export const neptuApi = {
       date: string;
       message: string;
       cached: boolean;
-    }>(`/api/v1/oracle/daily/${birthDate}?language=${language || "en"}`);
+    }>(`/api/oracle/daily/${birthDate}?language=${language || "en"}`);
     return data;
   },
 
@@ -305,7 +305,7 @@ export const neptuApi = {
       interpretation: string;
       date: string;
       cached: boolean;
-    }>("/api/v1/oracle/interpret", {
+    }>("/api/oracle/interpret", {
       birthDate,
       targetDate,
       language: language || "en",
@@ -324,7 +324,7 @@ export const neptuApi = {
       message: string;
       cached: boolean;
       tokensUsed?: number;
-    }>("/api/v1/oracle/compatibility", {
+    }>("/api/oracle/compatibility", {
       birthDate1,
       birthDate2,
       language: language || "en",
