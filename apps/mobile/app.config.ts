@@ -18,9 +18,20 @@ const config: ExpoConfig = {
       foregroundImage: "./assets/adaptive-icon.png",
       backgroundColor: "#0A0E1A",
     },
-    package: "ai.neptu.mobile",
+    package: "com.sudigital.neptu",
   },
-  plugins: ["expo-av"],
+  plugins: [
+    "expo-av",
+    "@react-native-community/datetimepicker",
+    [
+      "expo-build-properties",
+      {
+        android: {
+          minSdkVersion: 26,
+        },
+      },
+    ],
+  ],
 };
 
 export default config;
