@@ -29,7 +29,9 @@ COPY packages/drizzle-orm/tsconfig.json packages/drizzle-orm/
 COPY packages/logger/src packages/logger/src
 COPY packages/logger/tsconfig.json packages/logger/
 COPY packages/shared/src packages/shared/src
+COPY packages/shared/tsconfig.json packages/shared/
 COPY packages/solana/src packages/solana/src
+COPY packages/solana/tsconfig.json packages/solana/
 COPY packages/wariga/src packages/wariga/src
 COPY packages/typescript-config packages/typescript-config
 COPY tsconfig.json ./
