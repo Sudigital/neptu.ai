@@ -24,6 +24,29 @@ export const SUDIGITAL_TOKEN = {
   MINT: "7zsunv4pLAzVWGCQts2k266TYJuLJfMvHcMbcRSR8xqf",
 } as const;
 
+export const SKR_TOKEN = {
+  SYMBOL: "SKR",
+  NAME: "Seeker Rewards",
+  DECIMALS: 6,
+  MINT_MAINNET: "SKRsqngVhJKCAE2rLGXhJGxVnMTiPjCcoFWxSimdquC",
+} as const;
+
+// Reward token per network: SUDIGITAL on devnet, SKR on mainnet
+export const REWARD_TOKEN = {
+  devnet: {
+    symbol: SUDIGITAL_TOKEN.SYMBOL,
+    name: SUDIGITAL_TOKEN.NAME,
+    decimals: SUDIGITAL_TOKEN.DECIMALS,
+    mint: SUDIGITAL_TOKEN.MINT,
+  },
+  mainnet: {
+    symbol: SKR_TOKEN.SYMBOL,
+    name: SKR_TOKEN.NAME,
+    decimals: SKR_TOKEN.DECIMALS,
+    mint: SKR_TOKEN.MINT_MAINNET,
+  },
+} as const;
+
 // ============================================================================
 // Pricing Constants (in lamports for SOL, raw amount for NEPTU)
 // ============================================================================

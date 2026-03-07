@@ -82,3 +82,26 @@ export {
   type OAuthWebhookDelivery,
   type NewOAuthWebhookDelivery,
 } from "./oauth-webhook-deliveries";
+export { habits, type Habit, type NewHabit } from "./habits";
+export {
+  habitCompletions,
+  type HabitCompletion,
+  type NewHabitCompletion,
+} from "./habit-completions";
+export { persons, type Person, type NewPerson } from "./persons";
+export {
+  billionaireSnapshots,
+  type BillionaireSnapshot,
+  type NewBillionaireSnapshot,
+  type ForbesFinancialAsset,
+} from "./billionaire-snapshots";
+export {
+  billionaireDailySummaries,
+  type BillionaireDailySummary,
+  type NewBillionaireDailySummary,
+} from "./billionaire-daily-summaries";
+export {
+  marketCategories,
+  type MarketCategoryRow,
+  type NewMarketCategory,
+} from "./market-categories";

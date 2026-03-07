@@ -1,18 +1,33 @@
 import { describe, expect, test } from "bun:test";
 
-import { PRICING, NEPTU_TOKEN, SOL_TOKEN } from "@neptu/shared";
+import {
+  PRICING,
+  NEPTU_TOKEN,
+  SOL_TOKEN,
+  SUDIGITAL_TOKEN,
+  SKR_TOKEN,
+  REWARD_TOKEN,
+  GAMIFICATION_REWARDS,
+} from "@neptu/shared";
 
 import {
   solToLamports,
   lamportsToSol,
   neptuToRaw,
   rawToNeptu,
+  sudigitalToRaw,
+  rawToSudigital,
   LAMPORTS_PER_SOL,
   TOKEN_DECIMALS_MULTIPLIER,
+  SUDIGITAL_DECIMALS_MULTIPLIER,
+  DEVNET_ADDRESSES,
+  MAINNET_ADDRESSES,
+  getAddresses,
 } from "../src/constants";
 import {
   calculateSolPaymentReward,
   calculateNeptuPaymentBurn,
+  calculateSudigitalPayment,
   getReadingPrice,
 } from "../src/token/reward";
 
@@ -162,5 +177,128 @@ describe("Reading Prices", () => {
     expect(getReadingPrice("COMPATIBILITY", "neptu")).toBe(
       PRICING.COMPATIBILITY.NEPTU
     );
+  });
+
+  test("getReadingPrice returns correct SUDIGITAL price", () => {
+    expect(getReadingPrice("POTENSI", "sudigital")).toBe(
+      PRICING.POTENSI.SUDIGITAL
+    );
+    expect(getReadingPrice("PELUANG", "sudigital")).toBe(
+      PRICING.PELUANG.SUDIGITAL
+    );
+  });
+});
+
+describe("SUDIGITAL Token", () => {
+  test("SUDIGITAL_TOKEN has correct properties", () => {
+    expect(SUDIGITAL_TOKEN.SYMBOL).toBe("SUDIGITAL");
+    expect(SUDIGITAL_TOKEN.DECIMALS).toBe(6);
+    expect(SUDIGITAL_TOKEN.MINT).toBe(
+      "7zsunv4pLAzVWGCQts2k266TYJuLJfMvHcMbcRSR8xqf"
+    );
+  });
+
+  test("SUDIGITAL_DECIMALS_MULTIPLIER is correct", () => {
+    expect(SUDIGITAL_DECIMALS_MULTIPLIER).toBe(
+      Math.pow(10, SUDIGITAL_TOKEN.DECIMALS)
+    );
+  });
+
+  test("sudigitalToRaw converts correctly", () => {
+    expect(sudigitalToRaw(1)).toBe(BigInt(1_000_000));
+    expect(sudigitalToRaw(10)).toBe(BigInt(10_000_000));
+  });
+
+  test("rawToSudigital converts correctly", () => {
+    expect(rawToSudigital(BigInt(1_000_000))).toBe(1);
+    expect(rawToSudigital(BigInt(10_000_000))).toBe(10);
+  });
+
+  test("round-trip conversion is accurate", () => {
+    const values = [0.5, 1, 5, 10, 100];
+    for (const val of values) {
+      expect(rawToSudigital(sudigitalToRaw(val))).toBe(val);
+    }
+  });
+});
+
+describe("SUDIGITAL Payment Calculations", () => {
+  test("calculateSudigitalPayment for POTENSI", () => {
+    const result = calculateSudigitalPayment("POTENSI");
+    expect(result.sudigitalAmount).toBe(
+      sudigitalToRaw(PRICING.POTENSI.SUDIGITAL)
+    );
+    expect(result.sudigitalAmountFormatted).toBe(PRICING.POTENSI.SUDIGITAL);
+    expect(result.neptuRewardFormatted).toBe(
+      PRICING.POTENSI.SUDIGITAL_NEPTU_REWARD
+    );
+  });
+
+  test("calculateSudigitalPayment for PELUANG", () => {
+    const result = calculateSudigitalPayment("PELUANG");
+    expect(result.sudigitalAmountFormatted).toBe(PRICING.PELUANG.SUDIGITAL);
+  });
+});
+
+describe("SKR Token", () => {
+  test("SKR_TOKEN has correct properties", () => {
+    expect(SKR_TOKEN.SYMBOL).toBe("SKR");
+    expect(SKR_TOKEN.NAME).toBe("Seeker Rewards");
+    expect(SKR_TOKEN.DECIMALS).toBe(6);
+    expect(SKR_TOKEN.MINT_MAINNET).toBe(
+      "SKRsqngVhJKCAE2rLGXhJGxVnMTiPjCcoFWxSimdquC"
+    );
+  });
+});
+
+describe("Reward Token Network Config", () => {
+  test("devnet reward token is SUDIGITAL", () => {
+    expect(REWARD_TOKEN.devnet.symbol).toBe("SUDIGITAL");
+    expect(REWARD_TOKEN.devnet.mint).toBe(SUDIGITAL_TOKEN.MINT);
+    expect(REWARD_TOKEN.devnet.decimals).toBe(6);
+  });
+
+  test("mainnet reward token is SKR", () => {
+    expect(REWARD_TOKEN.mainnet.symbol).toBe("SKR");
+    expect(REWARD_TOKEN.mainnet.mint).toBe(SKR_TOKEN.MINT_MAINNET);
+    expect(REWARD_TOKEN.mainnet.decimals).toBe(6);
+  });
+});
+
+describe("Reward Addresses", () => {
+  test("devnet has rewardMint matching SUDIGITAL", () => {
+    expect(DEVNET_ADDRESSES.rewardMint).toBe(SUDIGITAL_TOKEN.MINT);
+  });
+
+  test("mainnet has rewardMint matching SKR", () => {
+    expect(MAINNET_ADDRESSES.rewardMint).toBe(SKR_TOKEN.MINT_MAINNET);
+  });
+
+  test("getAddresses returns devnet addresses", () => {
+    const addresses = getAddresses("devnet");
+    expect(addresses.rewardMint).toBe(SUDIGITAL_TOKEN.MINT);
+    expect(addresses.sudigitalMint).toBe(SUDIGITAL_TOKEN.MINT);
+  });
+
+  test("getAddresses returns mainnet addresses", () => {
+    const addresses = getAddresses("mainnet");
+    expect(addresses.rewardMint).toBe(SKR_TOKEN.MINT_MAINNET);
+  });
+});
+
+describe("Gamification Rewards", () => {
+  test("conversation reward amounts", () => {
+    expect(GAMIFICATION_REWARDS.CONVERSATION_REWARD).toBe(0.5);
+    expect(GAMIFICATION_REWARDS.PAID_CONVERSATION_REWARD).toBe(2);
+  });
+
+  test("daily check-in reward", () => {
+    expect(GAMIFICATION_REWARDS.DAILY_CHECK_IN).toBe(0.1);
+  });
+
+  test("streak bonuses", () => {
+    expect(GAMIFICATION_REWARDS.STREAK_7_DAYS).toBe(1);
+    expect(GAMIFICATION_REWARDS.STREAK_30_DAYS).toBe(5);
+    expect(GAMIFICATION_REWARDS.STREAK_100_DAYS).toBe(20);
   });
 });

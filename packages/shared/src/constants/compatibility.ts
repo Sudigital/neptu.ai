@@ -1,26 +1,26 @@
-import type { MitraSatruCategory } from "../types/compatibility";
+import type { CompatibilityCategory } from "../types/compatibility";
 
 // ============================================================================
-// Mitra Satru Constants
+// Compatibility Constants
 // ============================================================================
 
-export const MITRA_SATRU_FREKUENSI = {
-  PATI: 0,
-  GURU: 1,
-  RATU: 2,
-  LARA: 3,
+export const COMPATIBILITY_FREKUENSI = {
+  RATU: 0,
+  LARA: 1,
+  PATI: 2,
+  GURU: 3,
 } as const;
 
-export const MITRA_SATRU_DESCRIPTIONS: Record<string, string> = {
+export const COMPATIBILITY_DESCRIPTIONS: Record<string, string> = {
   GURU: "Tertuntun (Guided) — Most auspicious, learning and growth",
   RATU: "Dikuasai (Governed) — Structured, order and stability",
   LARA: "Terhalang (Obstructed) — Challenges that build resilience",
   PATI: "Batal (Voided) — Release, letting go, transformation",
 } as const;
 
-export const MITRA_SATRU_PAIRS: Record<
+export const COMPATIBILITY_PAIRS: Record<
   string,
-  Record<string, MitraSatruCategory>
+  Record<string, CompatibilityCategory>
 > = {
   GURU: { GURU: "mitra", RATU: "mitra", LARA: "neutral", PATI: "satru" },
   RATU: { GURU: "mitra", RATU: "neutral", LARA: "satru", PATI: "neutral" },

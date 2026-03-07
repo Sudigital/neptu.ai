@@ -34,8 +34,8 @@ export const VOICE_LIMITS = {
   MAX_AUDIO_SIZE_BYTES: 5 * 1024 * 1024,
   MAX_RECORDING_DURATION_MS: 30_000,
   MAX_TEXT_LENGTH: 2000,
-  AUDIO_SAMPLE_RATE: 16_000,
-  TTS_OUTPUT_FORMAT: "audio-16khz-128kbitrate-mono-mp3",
+  AUDIO_SAMPLE_RATE: 24_000,
+  TTS_OUTPUT_FORMAT: "audio-24khz-160kbitrate-mono-mp3",
   STT_OUTPUT_FORMAT: "detailed",
 } as const;
 

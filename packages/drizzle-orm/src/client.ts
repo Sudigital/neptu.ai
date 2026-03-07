@@ -9,6 +9,7 @@ export type Database = NodePgDatabase<typeof schema>;
 
 let db: Database | null = null;
 let currentConnectionString: string | undefined;
+let currentPool: pg.Pool | null = null;
 
 /**
  * Create a Drizzle database instance from a PostgreSQL connection
@@ -19,15 +20,24 @@ export function createDatabase(connectionString?: string): Database {
 
   // Create new connection if none exists or if connection string changed
   if (!db || (connStr && connStr !== currentConnectionString)) {
-    const pool = new pg.Pool({
+    currentPool = new pg.Pool({
       connectionString: connStr,
       max: 10,
       idleTimeoutMillis: 30000,
     });
-    db = drizzle(pool, { schema });
+    db = drizzle(currentPool, { schema });
     currentConnectionString = connStr;
   }
   return db;
+}
+
+export async function closeDatabase(): Promise<void> {
+  if (currentPool) {
+    await currentPool.end();
+    currentPool = null;
+    db = null;
+    currentConnectionString = undefined;
+  }
 }
 
 export { schema };

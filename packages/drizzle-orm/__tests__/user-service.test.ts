@@ -103,6 +103,76 @@ describe("UserService", () => {
     expect(user1.id).toBe(user2.id);
   });
 
+  test("should get user by email", async () => {
+    const walletAddress = `${TEST_PREFIX}EmailLookup8XYBnXu5J4C2q`;
+    const email = `${TEST_PREFIX}@test.neptu.day`;
+    const created = await userService.createUser({ walletAddress, email });
+    createdUserIds.push(created.id);
+
+    const user = await userService.getUserByEmail(email);
+    expect(user).toBeDefined();
+    expect(user?.email).toBe(email);
+    expect(user?.walletAddress).toBe(walletAddress);
+  });
+
+  test("should return null for non-existent email", async () => {
+    const user = await userService.getUserByEmail("nonexistent@test.neptu.day");
+    expect(user).toBeNull();
+  });
+
+  test("should find existing user by email when getOrCreateUser is called", async () => {
+    const walletAddress1 = `${TEST_PREFIX}EmailFirst6ABCdEf9G8H2iJ`;
+    const walletAddress2 = `${TEST_PREFIX}EmailFirst7KLMnOp0Q1R3sT`;
+    const email = `${TEST_PREFIX}-emailfirst@test.neptu.day`;
+
+    // Create user with wallet1 + email
+    const user1 = await userService.getOrCreateUser(walletAddress1, email);
+    createdUserIds.push(user1.id);
+    expect(user1.email).toBe(email);
+    expect(user1.walletAddress).toBe(walletAddress1);
+
+    // Login with wallet2 + same email → should find user by email, update wallet
+    const user2 = await userService.getOrCreateUser(walletAddress2, email);
+    expect(user2.id).toBe(user1.id);
+    expect(user2.walletAddress).toBe(walletAddress2);
+  });
+
+  test("should find user by wallet when no email is provided", async () => {
+    const walletAddress = `${TEST_PREFIX}WalletFB9XYZnXu5J4C2qL`;
+    const user1 = await userService.getOrCreateUser(walletAddress);
+    createdUserIds.push(user1.id);
+
+    // Same wallet, no email → should still find the user
+    const user2 = await userService.getOrCreateUser(walletAddress);
+    expect(user2.id).toBe(user1.id);
+  });
+
+  test("should update email when found by wallet without email", async () => {
+    const walletAddress = `${TEST_PREFIX}WalletEmail3KLMnOp0Q1R3`;
+    const email = `${TEST_PREFIX}-walletemail@test.neptu.day`;
+
+    // Create user without email
+    const user1 = await userService.getOrCreateUser(walletAddress);
+    createdUserIds.push(user1.id);
+    expect(user1.email).toBeNull();
+
+    // Same wallet, now with email → should update email
+    const user2 = await userService.getOrCreateUser(walletAddress, email);
+    expect(user2.id).toBe(user1.id);
+    expect(user2.email).toBe(email);
+  });
+
+  test("should create new user when neither email nor wallet found", async () => {
+    const walletAddress = `${TEST_PREFIX}NewUser5VWXyZ0A1B2C3D4E`;
+    const email = `${TEST_PREFIX}-newuser@test.neptu.day`;
+
+    const user = await userService.getOrCreateUser(walletAddress, email);
+    createdUserIds.push(user.id);
+
+    expect(user.walletAddress).toBe(walletAddress);
+    expect(user.email).toBe(email);
+  });
+
   describe("Admin Methods", () => {
     test("should list users with pagination", async () => {
       const result = await userService.listUsers({

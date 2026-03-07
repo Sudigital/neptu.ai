@@ -36,6 +36,20 @@ interface ParsedTokenAccountData {
   };
 }
 
+function parseTokenBalance(
+  result: { value: ReadonlyArray<{ account: { data: unknown } }> },
+  formatFn: (raw: bigint) => number
+): TokenBalance {
+  if (result.value.length === 0) {
+    return { raw: BigInt(0), formatted: 0 };
+  }
+
+  const account = result.value[0];
+  const parsed = account.account.data as unknown as ParsedTokenAccountData;
+  const raw = BigInt(parsed.parsed.info.tokenAmount.amount);
+  return { raw, formatted: formatFn(raw) };
+}
+
 export async function getTokenBalance(
   rpc: SolanaRpc,
   ownerAddress: string,
@@ -55,18 +69,7 @@ export async function getTokenBalance(
       )
       .send();
 
-    if (result.value.length === 0) {
-      return { raw: BigInt(0), formatted: 0 };
-    }
-
-    const account = result.value[0];
-    const parsed = account.account.data as unknown as ParsedTokenAccountData;
-
-    const raw = BigInt(parsed.parsed.info.tokenAmount.amount);
-    return {
-      raw,
-      formatted: rawToNeptu(raw),
-    };
+    return parseTokenBalance(result, rawToNeptu);
   } catch {
     return { raw: BigInt(0), formatted: 0 };
   }
@@ -91,18 +94,46 @@ export async function getSudigitalBalance(
       )
       .send();
 
+    return parseTokenBalance(result, rawToSudigital);
+  } catch {
+    return { raw: BigInt(0), formatted: 0 };
+  }
+}
+
+export async function getRewardTokenBalance(
+  rpc: SolanaRpc,
+  ownerAddress: string,
+  network: NetworkType
+): Promise<TokenBalance> {
+  const addresses = getAddresses(network);
+  if (!addresses.rewardMint) {
+    return { raw: BigInt(0), formatted: 0 };
+  }
+
+  // If reward mint matches sudigital mint, reuse that balance call
+  if (addresses.rewardMint === addresses.sudigitalMint) {
+    return getSudigitalBalance(rpc, ownerAddress, network);
+  }
+
+  try {
+    const result = await rpc
+      .getTokenAccountsByOwner(
+        address(ownerAddress),
+        { mint: address(addresses.rewardMint) },
+        { encoding: "jsonParsed" }
+      )
+      .send();
+
+    // Use uiAmount from parsed data for generic tokens
     if (result.value.length === 0) {
       return { raw: BigInt(0), formatted: 0 };
     }
 
     const account = result.value[0];
     const parsed = account.account.data as unknown as ParsedTokenAccountData;
-
     const raw = BigInt(parsed.parsed.info.tokenAmount.amount);
-    return {
-      raw,
-      formatted: rawToSudigital(raw),
-    };
+    const formatted = parsed.parsed.info.tokenAmount.uiAmount;
+    return { raw, formatted };
   } catch {
     return { raw: BigInt(0), formatted: 0 };
   }

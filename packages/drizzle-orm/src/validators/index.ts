@@ -130,3 +130,39 @@ export {
   type CreateWebhookInput,
   type UpdateWebhookInput,
 } from "./oauth-webhook-validator";
+export {
+  createHabitSchema,
+  updateHabitSchema,
+  completeHabitSchema,
+  getHabitsSchema,
+  getCompletionsSchema,
+  type CreateHabitInput,
+  type UpdateHabitInput,
+  type CompleteHabitInput,
+  type GetHabitsInput,
+  type GetCompletionsInput,
+} from "./habit-validator";
+export {
+  createPersonSchema,
+  updatePersonSchema,
+  listPersonsSchema,
+  type CreatePersonInput,
+  type UpdatePersonInput,
+  type ListPersonsInput,
+} from "./person-validator";
+export {
+  createBillionaireSnapshotSchema,
+  listBillionaireSnapshotsSchema,
+  createBillionaireDailySummarySchema,
+  listBillionaireDailySummariesSchema,
+  type CreateBillionaireSnapshotInput,
+  type ListBillionaireSnapshotsInput,
+  type CreateBillionaireDailySummaryInput,
+  type ListBillionaireDailySummariesInput,
+} from "./billionaire-validator";
+export {
+  createMarketCategorySchema,
+  updateMarketCategorySchema,
+  type CreateMarketCategoryInput,
+  type UpdateMarketCategoryInput,
+} from "./market-category-validator";
