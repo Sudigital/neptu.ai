@@ -1,6 +1,7 @@
 import type { CompatibilityPair } from "@neptu/shared";
 
 import { zValidator } from "@hono/zod-validator";
+import { createLogger } from "@neptu/logger";
 import {
   MAX_COMPATIBILITY_PEOPLE,
   MIN_COMPATIBILITY_PEOPLE,
@@ -11,12 +12,18 @@ import { z } from "zod";
 
 import { dynamicJwtAuth } from "../../middleware/dynamic-jwt-auth";
 
+const log = createLogger({ name: "reading" });
+
 export const readingRoutes = new Hono();
 
 // All reading routes require Dynamic JWT authentication
 readingRoutes.use("/*", dynamicJwtAuth);
 
 const calculator = new NeptuCalculator();
+
+function getWorkerUrl(): string {
+  return process.env.WORKER_URL || "http://localhost:8787";
+}
 
 // Helper to parse date string to Date object
 function parseDate(dateStr: string): Date {
@@ -267,6 +274,75 @@ readingRoutes.get(
               : "Failed to calculate full reading",
         },
         400
+      );
+    }
+  }
+);
+
+/**
+ * POST /api/v1/reading/oracle
+ * Text-only AI oracle (no TTS). Proxies to Worker /api/oracle.
+ * Body: { question: string, birthDate: string, targetDate?: string, language?: string }
+ */
+readingRoutes.post(
+  "/oracle",
+  zValidator(
+    "json",
+    z.object({
+      question: z.string().min(1).max(2000),
+      birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+      targetDate: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/)
+        .optional(),
+      language: z.string().max(10).optional(),
+    })
+  ),
+  async (c) => {
+    const { question, birthDate, targetDate, language } = c.req.valid("json");
+
+    try {
+      const workerUrl = getWorkerUrl();
+      const res = await fetch(`${workerUrl}/api/oracle`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question,
+          birthDate,
+          targetDate,
+          language: language || "en",
+        }),
+      });
+
+      if (!res.ok) {
+        const errorBody = await res.text();
+        log.error(
+          { status: res.status, body: errorBody },
+          "Worker oracle call failed"
+        );
+        throw new Error(`Oracle service returned ${res.status}`);
+      }
+
+      const data = (await res.json()) as {
+        success: boolean;
+        message: string;
+        cached: boolean;
+        tokensUsed?: number;
+      };
+
+      return c.json({
+        success: data.success,
+        message: data.message,
+        cached: data.cached,
+      });
+    } catch (error) {
+      return c.json(
+        {
+          success: false,
+          error:
+            error instanceof Error ? error.message : "Oracle request failed",
+        },
+        500
       );
     }
   }

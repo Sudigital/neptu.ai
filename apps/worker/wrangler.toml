@@ -4,7 +4,7 @@ compatibility_date = "2025-07-18"
 compatibility_flags = ["nodejs_compat"]
 
 # Custom domain
-routes = [{ pattern = "worker.neptu.sudigital.com", custom_domain = true }]
+routes = [{ pattern = "worker.neptu.day", custom_domain = true }]
 
 [triggers]
 # Cron triggers (max 5 on Cloudflare):
@@ -46,7 +46,7 @@ preview_id = "b4a8eea275004dc283b8db47c176caf5"
 [env.production]
 name = "neptu-worker-production"
 compatibility_flags = ["nodejs_compat"]
-routes = [{ pattern = "worker.neptu.sudigital.com", custom_domain = true }]
+routes = [{ pattern = "worker.neptu.day", custom_domain = true }]
 
 [env.production.triggers]
 crons = [

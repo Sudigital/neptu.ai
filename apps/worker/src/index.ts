@@ -12,10 +12,14 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger as honoLogger } from "hono/logger";
 
+import { refreshBillionaireList } from "./billionaire-list-refresher";
+import { createBillionaireSnapshots } from "./billionaire-snapshot-fetcher";
 import { redisCache } from "./cache";
 import { startCronJobs } from "./cron";
 import { fetchAndStoreCryptoMarketData } from "./crypto-market-fetcher";
+import { fetchMarketData } from "./market-fetcher";
 import { crypto } from "./routes/crypto";
+import { market } from "./routes/market";
 import { oracle } from "./routes/oracle";
 
 const log = createLogger({ name: "worker" });
@@ -26,7 +30,11 @@ app.use("*", honoLogger());
 app.use(
   "*",
   cors({
-    origin: [...CORS_ALLOWED_ORIGINS],
+    origin: (origin) => {
+      return (CORS_ALLOWED_ORIGINS as readonly string[]).includes(origin)
+        ? origin
+        : null;
+    },
     allowMethods: ["GET", "POST", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
   })
@@ -79,6 +87,7 @@ app.get("/api/daily/:date", async (c) => {
 // Mount route groups
 app.route("/api/oracle", oracle);
 app.route("/api/crypto", crypto);
+app.route("/api/market", market);
 
 // Global error handler
 app.onError((err, c) => {
@@ -161,12 +170,45 @@ async function retryFailedWebhooks(): Promise<void> {
   }
 }
 
+async function snapshotBillionaires(): Promise<void> {
+  log.info("Running daily billionaire snapshot (Forbes + Neptu)...");
+  try {
+    const result = await createBillionaireSnapshots(db);
+    log.info({ result }, "Billionaire snapshot completed");
+  } catch (error) {
+    log.error({ error }, "Failed to snapshot billionaires");
+  }
+}
+
+async function refreshMarketData(): Promise<void> {
+  log.info("Refreshing market data from Alpha Vantage...");
+  try {
+    const result = await fetchMarketData();
+    log.info({ assets: result?.assets.length ?? 0 }, "Market data refreshed");
+  } catch (error) {
+    log.error({ error }, "Failed to refresh market data");
+  }
+}
+
+async function refreshBillionaireListJob(): Promise<void> {
+  log.info("Refreshing billionaire person list from Forbes API...");
+  try {
+    const result = await refreshBillionaireList(db);
+    log.info({ result }, "Billionaire list refresh completed");
+  } catch (error) {
+    log.error({ error }, "Failed to refresh billionaire list");
+  }
+}
+
 // Start BullMQ cron jobs
 await startCronJobs({
   generateDailyReadings: () => generateDailyReadings(),
   refreshCryptoMarketData: () => refreshCryptoMarketData(),
   cleanupExpiredOAuthTokens: () => cleanupExpiredOAuthTokens(),
   retryFailedWebhooks: () => retryFailedWebhooks(),
+  refreshBillionaireList: () => refreshBillionaireListJob(),
+  snapshotBillionaires: () => snapshotBillionaires(),
+  refreshMarketData: () => refreshMarketData(),
 });
 
 const port = Number(process.env.WORKER_PORT || process.env.PORT || 8787);

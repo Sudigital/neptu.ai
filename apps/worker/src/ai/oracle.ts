@@ -27,6 +27,24 @@ interface OracleResponse {
   tokensUsed?: number;
 }
 
+interface AskQuestionOptions {
+  question: string;
+  potensi: Potensi;
+  peluang?: Peluang;
+  cache?: CacheStore;
+  language?: string;
+  birthDate?: string;
+}
+
+interface DateInterpretationOptions {
+  potensi: Potensi;
+  peluang: Peluang;
+  targetDate: Date;
+  cache?: CacheStore;
+  language?: string;
+  birthDate?: string;
+}
+
 /**
  * Neptu AI Oracle - Provides personalized reading interpretations
  * Using Azure OpenAI
@@ -99,13 +117,15 @@ export class NeptuOracle {
   /**
    * Ask the oracle a question about a reading
    */
-  async askQuestion(
-    question: string,
-    potensi: Potensi,
-    peluang?: Peluang,
-    cache?: CacheStore,
-    language: string = "en"
-  ): Promise<OracleResponse> {
+  async askQuestion(opts: AskQuestionOptions): Promise<OracleResponse> {
+    const {
+      question,
+      potensi,
+      peluang,
+      cache,
+      language = "en",
+      birthDate,
+    } = opts;
     const potensiHash = this.hashString(
       `${potensi.wuku.name}:${potensi.total_urip}`
     );
@@ -121,7 +141,13 @@ export class NeptuOracle {
     }
 
     // Generate prompt with raw data - let AI analyze naturally
-    const userPrompt = generateUserPrompt(question, potensi, peluang, language);
+    const userPrompt = generateUserPrompt(
+      question,
+      potensi,
+      peluang,
+      language,
+      birthDate
+    );
 
     // Call AI
     const { content: rawContent, tokensUsed } = await this.callAzureOpenAI(
@@ -153,7 +179,8 @@ export class NeptuOracle {
     potensi: Potensi,
     peluang: Peluang,
     cache?: CacheStore,
-    language: string = "en"
+    language: string = "en",
+    birthDate?: string
   ): Promise<OracleResponse> {
     const cacheKey = `daily:${potensi.date}:${peluang.date}:${language}`;
 
@@ -165,7 +192,12 @@ export class NeptuOracle {
       }
     }
 
-    const userPrompt = generateDailyPrompt(potensi, peluang, language);
+    const userPrompt = generateDailyPrompt(
+      potensi,
+      peluang,
+      language,
+      birthDate
+    );
 
     const { content: rawContent, tokensUsed } = await this.callAzureOpenAI(
       getSystemPrompt(language),
@@ -193,17 +225,15 @@ export class NeptuOracle {
    * Generate interpretation for a specific date
    */
   async getDateInterpretation(
-    potensi: Potensi,
-    peluang: Peluang,
-    targetDate: Date,
-    _cache?: CacheStore,
-    language: string = "en"
+    opts: DateInterpretationOptions
   ): Promise<string> {
+    const { potensi, peluang, targetDate, language = "en", birthDate } = opts;
     const userPrompt = generateDateInterpretationPrompt(
       potensi,
       peluang,
       targetDate,
-      language
+      language,
+      birthDate
     );
 
     const { content } = await this.callAzureOpenAI(

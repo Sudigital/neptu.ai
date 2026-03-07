@@ -1,8 +1,3 @@
-/**
- * CoinGecko Market Data Fetcher
- * Fetches and caches crypto market data from CoinGecko API
- */
-
 import {
   createDatabase,
   CryptoMarketService,
@@ -10,34 +5,24 @@ import {
   type Database,
 } from "@neptu/drizzle-orm";
 import { createLogger } from "@neptu/logger";
-import { COINGECKO_IDS, COINGECKO_API } from "@neptu/shared";
+import { COINGECKO_API } from "@neptu/shared";
 
 import { TOP_CRYPTO_COINS, type CryptoCoin } from "./crypto-birthdays";
 
 const log = createLogger({ name: "crypto-fetcher" });
 
 export function getCoinGeckoIds(): string[] {
-  return TOP_CRYPTO_COINS.map((coin) => COINGECKO_IDS[coin.symbol]).filter(
-    Boolean
-  );
+  return TOP_CRYPTO_COINS.map((coin) => coin.coingeckoId).filter(Boolean);
 }
 
 export function getCoinGeckoId(symbol: string): string | undefined {
-  return COINGECKO_IDS[symbol.toUpperCase()];
-}
-
-export function getSymbolFromCoinGeckoId(
-  coinGeckoId: string
-): string | undefined {
-  const entry = Object.entries(COINGECKO_IDS).find(
-    ([, id]) => id === coinGeckoId
-  );
-  return entry?.[0];
+  return TOP_CRYPTO_COINS.find(
+    (c) => c.symbol.toUpperCase() === symbol.toUpperCase()
+  )?.coingeckoId;
 }
 
 /**
  * Fetch market data from CoinGecko API
- * Returns data for all our tracked coins
  */
 export async function fetchCoinGeckoMarketData(): Promise<
   CoinGeckoMarketData[]
@@ -55,9 +40,7 @@ export async function fetchCoinGeckoMarketData(): Promise<
   url.searchParams.set("sparkline", "false");
 
   const response = await fetch(url.toString(), {
-    headers: {
-      Accept: "application/json",
-    },
+    headers: { Accept: "application/json" },
   });
 
   if (!response.ok) {
@@ -66,8 +49,7 @@ export async function fetchCoinGeckoMarketData(): Promise<
     );
   }
 
-  const data = (await response.json()) as CoinGeckoMarketData[];
-  return data;
+  return (await response.json()) as CoinGeckoMarketData[];
 }
 
 /**
@@ -80,21 +62,14 @@ export async function fetchAndStoreCryptoMarketData(
     const database = db ?? createDatabase();
     const cryptoService = new CryptoMarketService(database);
 
-    // Fetch from CoinGecko
     const marketData = await fetchCoinGeckoMarketData();
 
-    // Store in database
     await cryptoService.bulkUpsertFromCoinGecko(marketData);
-
-    // Cleanup old history (keep 7 days)
     await cryptoService.cleanupOldHistory();
 
-    return {
-      success: true,
-      coinsUpdated: marketData.length,
-    };
+    return { success: true, coinsUpdated: marketData.length };
   } catch (error) {
-    log.error("Failed to fetch crypto market data: %o", error);
+    log.error({ err: error }, "Failed to fetch crypto market data");
     return {
       success: false,
       coinsUpdated: 0,
@@ -107,7 +82,6 @@ export async function fetchAndStoreCryptoMarketData(
  * Get combined crypto data with birthdays and market info
  */
 export interface CryptoWithMarketData extends CryptoCoin {
-  coingeckoId: string;
   currentPrice: number | null;
   marketCap: number | null;
   marketCapRank: number | null;
@@ -125,7 +99,6 @@ export interface CryptoWithMarketData extends CryptoCoin {
   atl: number | null;
   atlChangePercentage: number | null;
   atlDate: string | null;
-  image: string | null;
   lastUpdated: string | null;
 }
 
@@ -138,15 +111,12 @@ export async function getCryptoWithMarketData(
   const symbols = TOP_CRYPTO_COINS.map((c) => c.symbol);
   const marketData = await cryptoService.getMarketDataBySymbols(symbols);
 
-  // Create a map for quick lookup
   const marketMap = new Map(marketData.map((m) => [m.symbol, m]));
 
-  // Combine birthday data with market data
   return TOP_CRYPTO_COINS.map((coin) => {
     const market = marketMap.get(coin.symbol);
     return {
       ...coin,
-      coingeckoId: COINGECKO_IDS[coin.symbol] || "",
       currentPrice: market?.currentPrice ?? null,
       marketCap: market?.marketCap ?? null,
       marketCapRank: market?.marketCapRank ?? null,
@@ -164,7 +134,7 @@ export async function getCryptoWithMarketData(
       atl: market?.atl ?? null,
       atlChangePercentage: market?.atlChangePercentage ?? null,
       atlDate: market?.atlDate ?? null,
-      image: market?.image ?? null,
+      image: market?.image || coin.image,
       lastUpdated: market?.lastUpdated ?? null,
     };
   });

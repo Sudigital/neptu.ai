@@ -1,5 +1,10 @@
 import { zValidator } from "@hono/zod-validator";
-import { UserService, type Database } from "@neptu/drizzle-orm";
+import {
+  UserService,
+  UserRewardService,
+  UserStreakService,
+  type Database,
+} from "@neptu/drizzle-orm";
 import { createLogger } from "@neptu/logger";
 import {
   VOICE_LANGUAGES,
@@ -244,10 +249,26 @@ voiceRoutes.post("/oracle", async (c) => {
     // Step 1: Transcribe audio → text
     const audioBuffer = await audioFile.arrayBuffer();
     const contentType = audioFile.type || "audio/wav";
+
+    log.info(
+      {
+        audioSize: audioBuffer.byteLength,
+        contentType,
+        fileName: audioFile.name,
+        language,
+      },
+      "Voice oracle: received audio for STT"
+    );
+
     const transcription = await transcribeAudio(
       audioBuffer,
       language,
       contentType
+    );
+
+    log.info(
+      { text: transcription.text, confidence: transcription.confidence },
+      "Voice oracle: STT result"
     );
 
     if (!transcription.text) {
@@ -256,7 +277,7 @@ voiceRoutes.post("/oracle", async (c) => {
         transcript: "",
         response: "",
         audioBase64: null,
-        message: "No speech detected",
+        message: "No speech detected in audio",
       });
     }
 
@@ -311,6 +332,30 @@ voiceRoutes.post("/oracle", async (c) => {
       "Voice oracle conversation completed"
     );
 
+    // Step 4: Grant conversation reward + auto check-in (non-blocking)
+    let rewardAmount = 0;
+    try {
+      const rewardService = new UserRewardService(db);
+      const streakService = new UserStreakService(db);
+
+      // Grant conversation reward (SUDIGITAL on devnet, SKR on mainnet)
+      const reward = await rewardService.grantConversationReward(
+        user.id,
+        false
+      );
+      rewardAmount = Number(reward.neptuAmount);
+
+      // Auto daily check-in on first conversation of the day
+      const streak = await streakService.getStreak(user.id);
+      const today = new Date().toISOString().split("T")[0];
+      const lastCheckIn = streak?.lastCheckIn?.split("T")[0];
+      if (lastCheckIn !== today) {
+        await streakService.recordCheckIn({ userId: user.id });
+      }
+    } catch (rewardErr) {
+      log.warn({ error: rewardErr }, "Failed to grant conversation reward");
+    }
+
     return c.json({
       success: true,
       transcript: transcription.text,
@@ -319,6 +364,7 @@ voiceRoutes.post("/oracle", async (c) => {
       audioContentType: ttsResult.contentType,
       cached: oracleResult.cached,
       tokensUsed: oracleResult.tokensUsed,
+      rewardEarned: rewardAmount,
     });
   } catch (error) {
     log.error({ error }, "Voice oracle failed");
@@ -332,6 +378,161 @@ voiceRoutes.post("/oracle", async (c) => {
     );
   }
 });
+
+/**
+ * POST /api/voice/text-oracle
+ * Text-based oracle — skips STT, sends text directly to AI + TTS.
+ * Used by "Hey Neptu" wake word mode where speech recognition runs on-device.
+ *
+ * Body: JSON { text: string, language?: string }
+ * Returns: JSON { success, transcript, response, audioBase64, ... }
+ */
+voiceRoutes.post(
+  "/text-oracle",
+  zValidator(
+    "json",
+    z.object({
+      text: z.string().min(1).max(2000),
+      language: z.string().optional(),
+    })
+  ),
+  async (c) => {
+    if (!isSpeechConfigured()) {
+      return c.json(
+        { success: false, error: "Voice services not configured" },
+        503
+      );
+    }
+
+    const walletAddress = c.get("walletAddress");
+    if (!walletAddress) {
+      return c.json({ success: false, error: "Authentication required" }, 401);
+    }
+
+    const db = c.get("db");
+    const userService = new UserService(db);
+    const user = await userService.getUserByWallet(walletAddress);
+
+    if (!user) {
+      return c.json({ success: false, error: "User not found" }, 404);
+    }
+
+    if (!user.birthDate) {
+      return c.json(
+        {
+          success: false,
+          error: "Birth date not set. Complete onboarding first.",
+          requiresOnboarding: true,
+        },
+        400
+      );
+    }
+
+    const { text } = c.req.valid("json");
+    const language =
+      c.req.valid("json").language || user.preferredLanguage || "en";
+
+    if (!(language in VOICE_LANGUAGES)) {
+      return c.json(
+        { success: false, error: `Unsupported language: ${language}` },
+        400
+      );
+    }
+
+    try {
+      log.info({ text, language }, "Text oracle: received question");
+
+      const workerUrl = getWorkerUrl();
+      const oracleResponse = await fetch(`${workerUrl}/api/oracle`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question: text,
+          birthDate: user.birthDate,
+          language,
+        }),
+      });
+
+      if (!oracleResponse.ok) {
+        const errorBody = await oracleResponse.text();
+        log.error(
+          { status: oracleResponse.status, body: errorBody },
+          "Worker oracle call failed"
+        );
+        throw new Error(`Oracle service returned ${oracleResponse.status}`);
+      }
+
+      const oracleResult = (await oracleResponse.json()) as {
+        success: boolean;
+        message: string;
+        cached: boolean;
+        tokensUsed?: number;
+      };
+
+      if (!oracleResult.success || !oracleResult.message) {
+        throw new Error("Oracle returned empty response");
+      }
+
+      const voiceLang = language as VoiceLanguageCode;
+      const ttsResult = await synthesizeSpeech(oracleResult.message, voiceLang);
+      const audioBase64 = Buffer.from(ttsResult.audio).toString("base64");
+
+      log.info(
+        {
+          walletAddress,
+          language,
+          textLength: text.length,
+          responseLength: oracleResult.message.length,
+          audioBytes: ttsResult.audio.byteLength,
+          cached: oracleResult.cached,
+        },
+        "Text oracle conversation completed"
+      );
+
+      let rewardAmount = 0;
+      try {
+        const rewardService = new UserRewardService(db);
+        const streakService = new UserStreakService(db);
+
+        const reward = await rewardService.grantConversationReward(
+          user.id,
+          false
+        );
+        rewardAmount = Number(reward.neptuAmount);
+
+        const streak = await streakService.getStreak(user.id);
+        const today = new Date().toISOString().split("T")[0];
+        const lastCheckIn = streak?.lastCheckIn?.split("T")[0];
+        if (lastCheckIn !== today) {
+          await streakService.recordCheckIn({ userId: user.id });
+        }
+      } catch (rewardErr) {
+        log.warn({ error: rewardErr }, "Failed to grant conversation reward");
+      }
+
+      return c.json({
+        success: true,
+        transcript: text,
+        response: oracleResult.message,
+        audioBase64,
+        audioContentType: ttsResult.contentType,
+        cached: oracleResult.cached,
+        tokensUsed: oracleResult.tokensUsed,
+        rewardEarned: rewardAmount,
+      });
+    } catch (error) {
+      log.error({ error }, "Text oracle failed");
+      return c.json(
+        {
+          success: false,
+          error: "Text oracle conversation failed",
+          message: error instanceof Error ? error.message : "Unknown error",
+        },
+        500
+      );
+    }
+  }
+);
 
 /**
  * GET /api/voice/greeting/:language
