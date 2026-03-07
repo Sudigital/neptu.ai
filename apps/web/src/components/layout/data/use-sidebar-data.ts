@@ -15,6 +15,9 @@ import {
   BarChart3,
   Code2,
   KeyRound,
+  Crown,
+  TrendingUp,
+  UserCircle,
 } from "lucide-react";
 import { useMemo } from "react";
 
@@ -112,6 +115,21 @@ export function useSidebarData(): SidebarData {
                     title: "Analytics",
                     url: "/admin/analytics",
                     icon: BarChart3,
+                  },
+                  {
+                    title: "World Economic",
+                    url: "/admin/world-economic",
+                    icon: Crown,
+                  },
+                  {
+                    title: "Market",
+                    url: "/admin/market",
+                    icon: TrendingUp,
+                  },
+                  {
+                    title: "Persons",
+                    url: "/admin/persons",
+                    icon: UserCircle,
                   },
                   {
                     title: "Settings",

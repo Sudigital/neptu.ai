@@ -473,7 +473,7 @@ export function PricingPage() {
                       </Button>
                     </Link>
                     <a
-                      href="https://docs.neptu.sudigital.com/tokenomics"
+                      href="https://docs.neptu.day/tokenomics"
                       target="_blank"
                       rel="noopener noreferrer"
                     >

@@ -6,15 +6,20 @@ import { Sparkles, Loader2, Bot, ALargeSmall } from "lucide-react";
 import { useState } from "react";
 
 import { HighlightedText } from "./highlighted-text";
+import { ProsperityPersonalityPanel } from "./prosperity-personality-panel";
 
 interface OracleTabPanelProps {
   aiLoading: boolean;
   interpretation?: string;
+  totalUrip?: number;
+  birthDate?: string;
 }
 
 export function OracleTabPanel({
   aiLoading,
   interpretation,
+  totalUrip,
+  birthDate,
 }: OracleTabPanelProps) {
   const t = useTranslate();
   const [isLargeFont, setIsLargeFont] = useState(false);
@@ -90,6 +95,14 @@ export function OracleTabPanel({
           </div>
         );
       })()}
+
+      {/* Prosperity & Personality — below oracle insight */}
+      {totalUrip !== undefined && birthDate && (
+        <ProsperityPersonalityPanel
+          totalUrip={totalUrip}
+          birthDate={birthDate}
+        />
+      )}
     </Card>
   );
 }

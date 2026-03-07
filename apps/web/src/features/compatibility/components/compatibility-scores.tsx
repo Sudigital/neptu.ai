@@ -1,14 +1,14 @@
-import type { MitraSatruCategory } from "@neptu/shared";
+import type { CompatibilityCategory } from "@neptu/shared";
 
 import { cn } from "@/lib/utils";
 
 interface ScoreBarProps {
   label: string;
   score: number;
-  category?: MitraSatruCategory;
+  category?: CompatibilityCategory;
 }
 
-const categoryColors: Record<MitraSatruCategory, string> = {
+const categoryColors: Record<CompatibilityCategory, string> = {
   mitra: "bg-emerald-500",
   neutral: "bg-amber-500",
   satru: "bg-red-500",
@@ -46,7 +46,7 @@ interface CompatibilityScoresProps {
     traits: number;
     overall: number;
   };
-  category: MitraSatruCategory;
+  category: CompatibilityCategory;
   t: (key: string, fallback?: string) => string;
 }
 

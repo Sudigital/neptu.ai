@@ -40,7 +40,7 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
   const t = useTranslate();
   const [days, setDays] = useState("365");
 
-  const coingeckoId = crypto.coingeckoId;
+  const coinId = crypto.coingeckoId;
 
   const [now] = useState(() => Date.now());
 
@@ -49,16 +49,16 @@ export function ChartTab({ crypto }: { crypto: CryptoWithMarketData }) {
     isLoading,
     error,
   } = useQuery<CoinGeckoChartData>({
-    queryKey: ["crypto-chart", coingeckoId, days],
+    queryKey: ["crypto-chart", coinId, days],
     queryFn: async () => {
-      const url = `${WORKER_URL}/api/crypto/chart/${coingeckoId}?days=${days}`;
+      const url = `${WORKER_URL}/api/crypto/chart/${coinId}?days=${days}`;
       const res = await fetch(url, {
         headers: { Accept: "application/json" },
       });
       if (!res.ok) throw new Error(`Chart API error: ${res.status}`);
       return (await res.json()) as CoinGeckoChartData;
     },
-    enabled: !!coingeckoId,
+    enabled: !!coinId,
     staleTime: 1000 * 60 * 30,
     refetchOnWindowFocus: false,
   });

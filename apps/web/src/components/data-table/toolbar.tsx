@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { type Table } from "@tanstack/react-table";
+import { useMemo } from "react";
 
 import { DataTableFacetedFilter } from "./faceted-filter";
 import { DataTableViewOptions } from "./view-options";
@@ -20,6 +21,7 @@ type DataTableToolbarProps<TData> = {
       value: string;
       icon?: ComponentType<{ className?: string }>;
     }[];
+    multiValueKey?: string;
   }[];
 };
 
@@ -31,6 +33,27 @@ export function DataTableToolbar<TData>({
 }: DataTableToolbarProps<TData>) {
   const isFiltered =
     table.getState().columnFilters.length > 0 || table.getState().globalFilter;
+
+  const multiValueFacets = useMemo(() => {
+    const result: Record<string, Map<string, number>> = {};
+    const rows = table.getPreFilteredRowModel().rows;
+    for (const f of filters) {
+      if (!f.multiValueKey) continue;
+      const counts = new Map<string, number>();
+      for (const row of rows) {
+        const values = (row.original as Record<string, unknown>)[
+          f.multiValueKey
+        ];
+        if (Array.isArray(values)) {
+          for (const v of values) {
+            counts.set(v as string, (counts.get(v as string) ?? 0) + 1);
+          }
+        }
+      }
+      result[f.columnId] = counts;
+    }
+    return result;
+  }, [table.getPreFilteredRowModel().rows, filters]);
 
   return (
     <div className="flex items-center justify-between">
@@ -64,6 +87,7 @@ export function DataTableToolbar<TData>({
                 column={column}
                 title={filter.title}
                 options={filter.options}
+                customFacets={multiValueFacets[filter.columnId]}
               />
             );
           })}

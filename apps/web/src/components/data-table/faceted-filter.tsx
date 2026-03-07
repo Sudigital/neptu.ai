@@ -28,14 +28,17 @@ type DataTableFacetedFilterProps<TData, TValue> = {
     value: string;
     icon?: React.ComponentType<{ className?: string }>;
   }[];
+  customFacets?: Map<string, number>;
 };
 
 export function DataTableFacetedFilter<TData, TValue>({
   column,
   title,
   options,
+  customFacets,
 }: DataTableFacetedFilterProps<TData, TValue>) {
-  const facets = column?.getFacetedUniqueValues();
+  const defaultFacets = column?.getFacetedUniqueValues();
+  const facets = customFacets ?? defaultFacets;
   const selectedValues = new Set(column?.getFilterValue() as string[]);
 
   return (

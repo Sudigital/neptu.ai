@@ -92,7 +92,7 @@ export function Dashboard() {
     },
     {
       title: t("nav.docs"),
-      href: "https://docs.neptu.sudigital.com",
+      href: "https://docs.neptu.day",
       isActive: false,
       disabled: false,
       external: true,
@@ -352,6 +352,8 @@ export function Dashboard() {
         <OracleTabPanel
           aiLoading={aiLoading}
           interpretation={aiInterpretation?.interpretation}
+          totalUrip={reading?.potensi?.total_urip}
+          birthDate={user?.birthDate}
         />
       </TabsContent>
       {interests.length > 0 && (

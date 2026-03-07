@@ -141,7 +141,7 @@ export function Navbar() {
                 </SheetClose>
                 <SheetClose asChild>
                   <a
-                    href="https://docs.neptu.sudigital.com"
+                    href="https://docs.neptu.day"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted"
@@ -323,7 +323,7 @@ export function Navbar() {
             {t("nav.pricing")}
           </Link>
           <a
-            href="https://docs.neptu.sudigital.com"
+            href="https://docs.neptu.day"
             target="_blank"
             rel="noopener noreferrer"
             className="hidden items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary md:flex"
