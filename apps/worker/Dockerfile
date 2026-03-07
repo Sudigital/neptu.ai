@@ -19,7 +19,7 @@ COPY packages/queues/package.json packages/queues/
 COPY packages/typescript-config/package.json packages/typescript-config/
 
 # Install production dependencies only
-RUN bun install --production --ignore-scripts
+RUN bun install --frozen-lockfile --production --ignore-scripts
 
 # Copy application source
 COPY apps/worker/src apps/worker/src
@@ -27,7 +27,9 @@ COPY apps/worker/tsconfig.json apps/worker/
 COPY packages/drizzle-orm/src packages/drizzle-orm/src
 COPY packages/drizzle-orm/tsconfig.json packages/drizzle-orm/
 COPY packages/shared/src packages/shared/src
+COPY packages/shared/tsconfig.json packages/shared/
 COPY packages/solana/src packages/solana/src
+COPY packages/solana/tsconfig.json packages/solana/
 COPY packages/wariga/src packages/wariga/src
 COPY packages/logger/src packages/logger/src
 COPY packages/logger/tsconfig.json packages/logger/

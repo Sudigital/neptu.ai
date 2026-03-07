@@ -38,12 +38,19 @@ jobs:
           export type { Afirmasi, BaseReading, CompatibilityCategory, CompatibilityResult, DimensionComparison, FullReading, LahirUntuk, NeptuDatabase, NeptuSoulAttribute, NeptuSoulMetadata, Peluang, Potensi, WukuItem } from "@neptu/shared";
           STUB
 
-          # API server - private, uses wariga
+          # API server - private, uses wariga directly
           mkdir -p apps/api/src
           cat > apps/api/package.json << 'STUB'
           {"name":"@neptu/api","version":"0.1.0","type":"module","scripts":{"typecheck":"echo skip","lint":"echo skip","test":"echo skip"}}
           STUB
           echo 'export {};' > apps/api/src/index.ts
+
+          # Worker - private, uses wariga directly
+          mkdir -p apps/worker/src
+          cat > apps/worker/package.json << 'STUB'
+          {"name":"@neptu/worker","version":"0.1.0","type":"module","scripts":{"typecheck":"echo skip","lint":"echo skip","test":"echo skip"}}
+          STUB
+          echo 'export {};' > apps/worker/src/index.ts
 
           # CLI - private dev tool
           mkdir -p apps/cli/src

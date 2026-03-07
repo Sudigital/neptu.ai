@@ -4,6 +4,28 @@ networks:
     external: true
 
 services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: local_api
+    restart: always
+    ports:
+      - 3000:3000
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@local_postgres:5432/neptu
+      REDIS_URL: redis://local_redis:6379
+      JWT_SECRET: ${JWT_SECRET:-}
+      DYNAMIC_ENVIRONMENT_ID: ${DYNAMIC_ENVIRONMENT_ID:-}
+      ADMIN_WALLET_ADDRESS: ${ADMIN_WALLET_ADDRESS:-}
+      WORKER_URL: http://local_worker:8080
+      AZURE_SPEECH_KEY: ${AZURE_SPEECH_KEY:-}
+      AZURE_SPEECH_REGION: ${AZURE_SPEECH_REGION:-}
+      API_URL: http://localhost:3000
+      PORT: "3000"
+    networks:
+      - default
+
   worker:
     build:
       context: .
@@ -19,9 +41,7 @@ services:
       AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT:-}
       AZURE_OPENAI_DEPLOYMENT: ${AZURE_OPENAI_DEPLOYMENT:-}
       AZURE_OPENAI_API_VERSION: ${AZURE_OPENAI_API_VERSION:-}
-      COLOSSEUM_API_KEY: ${COLOSSEUM_API_KEY:-}
-      COLOSSEUM_AGENT_ID: ${COLOSSEUM_AGENT_ID:-}
-      COLOSSEUM_AGENT_NAME: ${COLOSSEUM_AGENT_NAME:-}
+      ALPHA_VANTAGE_API_KEY: ${ALPHA_VANTAGE_API_KEY:-}
       COINGECKO_API_KEY: ${COINGECKO_API_KEY:-}
     networks:
       - default

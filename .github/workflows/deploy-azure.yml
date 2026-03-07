@@ -49,6 +49,7 @@ jobs:
           export const formatFullReading = (..._a: unknown[]): string => "";
           export const formatPeluang = (..._a: unknown[]): string => "";
           export const formatPotensi = (..._a: unknown[]): string => "";
+          export type { Afirmasi, BaseReading, CompatibilityCategory, CompatibilityResult, DimensionComparison, FullReading, LahirUntuk, NeptuDatabase, NeptuSoulAttribute, NeptuSoulMetadata, Peluang, Potensi, WukuItem } from "@neptu/shared";
           EOF
 
           # CLI stub (not needed for API/Worker builds)
@@ -123,6 +124,11 @@ jobs:
               "DATABASE_URL=secretref:database-url" \
               "JWT_SECRET=secretref:jwt-secret" \
               "REDIS_URL=secretref:redis-url" \
+              "DYNAMIC_ENVIRONMENT_ID=secretref:dynamic-environment-id" \
+              "ADMIN_WALLET_ADDRESS=secretref:admin-wallet-address" \
+              "WORKER_URL=secretref:worker-url" \
+              "AZURE_SPEECH_KEY=secretref:azure-speech-key" \
+              "AZURE_SPEECH_REGION=secretref:azure-speech-region" \
             --output none
 
       - name: Deploy Worker to Container Apps
@@ -143,7 +149,7 @@ jobs:
               "AZURE_OPENAI_API_KEY=secretref:azure-openai-api-key" \
               "AZURE_OPENAI_ENDPOINT=secretref:azure-openai-endpoint" \
               "AZURE_OPENAI_DEPLOYMENT=secretref:azure-openai-deployment" \
-              "COLOSSEUM_API_KEY=secretref:colosseum-api-key" \
-              "COLOSSEUM_AGENT_ID=secretref:colosseum-agent-id" \
-              "COLOSSEUM_AGENT_NAME=secretref:colosseum-agent-name" \
+              "AZURE_OPENAI_API_VERSION=secretref:azure-openai-api-version" \
+              "ALPHA_VANTAGE_API_KEY=secretref:alpha-vantage-api-key" \
+              "COINGECKO_API_KEY=secretref:coingecko-api-key" \
             --output none
