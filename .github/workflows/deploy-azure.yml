@@ -52,7 +52,14 @@ jobs:
           export type { Afirmasi, BaseReading, CompatibilityCategory, CompatibilityResult, DimensionComparison, FullReading, LahirUntuk, NeptuDatabase, NeptuSoulAttribute, NeptuSoulMetadata, Peluang, Potensi, WukuItem } from "@neptu/shared";
           EOF
 
-          # CLI stub (not needed for API/Worker builds)
+          # Crawler stub (gitignored - not in repo)
+          mkdir -p apps/crawler/src
+          cat > apps/crawler/package.json << 'EOF'
+          {"name":"@neptu/crawler","version":"0.1.0","type":"module"}
+          EOF
+          echo 'export {};' > apps/crawler/src/index.ts
+
+          # CLI stub (gitignored - not in repo)
           mkdir -p apps/cli/src
           cat > apps/cli/package.json << 'EOF'
           {"name":"@neptu/cli","version":"0.1.0","type":"module"}

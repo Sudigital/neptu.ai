@@ -52,6 +52,13 @@ jobs:
           STUB
           echo 'export {};' > apps/worker/src/index.ts
 
+          # Crawler - gitignored
+          mkdir -p apps/crawler/src
+          cat > apps/crawler/package.json << 'STUB'
+          {"name":"@neptu/crawler","version":"0.1.0","type":"module","scripts":{"typecheck":"echo skip","lint":"echo skip","test":"echo skip"}}
+          STUB
+          echo 'export {};' > apps/crawler/src/index.ts
+
           # CLI - private dev tool
           mkdir -p apps/cli/src
           cat > apps/cli/package.json << 'STUB'
