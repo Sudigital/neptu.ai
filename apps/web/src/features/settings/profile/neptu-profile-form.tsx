@@ -24,6 +24,7 @@ import {
   AlertCircle,
   Eye,
   EyeOff,
+  RefreshCw,
 } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
@@ -55,6 +56,9 @@ export function NeptuProfileForm() {
     walletAddress,
     displayEmail,
     hasWallet,
+    hasToken,
+    authError,
+    retryAuth,
     isLoading,
     isError,
     refetch,
@@ -85,6 +89,25 @@ export function NeptuProfileForm() {
     );
   }
 
+  // Authentication failed — show retry UI instead of a broken form
+  if (authError) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 py-12 text-center">
+        <AlertCircle className="h-8 w-8 text-destructive" />
+        <p className="text-muted-foreground">
+          {t(
+            "settings.profile.authError",
+            "Unable to authenticate your session. Please try again."
+          )}
+        </p>
+        <Button variant="outline" onClick={retryAuth}>
+          <RefreshCw className="mr-2 h-4 w-4" />
+          {t("settings.profile.retryAuth", "Retry Authentication")}
+        </Button>
+      </div>
+    );
+  }
+
   // Error loading user data
   if (isError) {
     return (
@@ -108,6 +131,7 @@ export function NeptuProfileForm() {
       user={user}
       walletAddress={walletAddress}
       displayEmail={displayEmail}
+      hasToken={hasToken}
       t={t}
     />
   );
@@ -117,6 +141,7 @@ interface ProfileFormInnerProps {
   user: ReturnType<typeof useUser>["user"];
   walletAddress: string;
   displayEmail: string;
+  hasToken: boolean;
   t: ReturnType<typeof useTranslate>;
 }
 
@@ -124,6 +149,7 @@ function ProfileFormInner({
   user,
   walletAddress,
   displayEmail,
+  hasToken,
   t,
 }: ProfileFormInnerProps) {
   const queryClient = useQueryClient();
@@ -408,7 +434,7 @@ function ProfileFormInner({
         </div>
       </div>
 
-      <Button type="submit" disabled={updateProfile.isPending}>
+      <Button type="submit" disabled={updateProfile.isPending || !hasToken}>
         {updateProfile.isPending ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
