@@ -13,6 +13,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: deploy-azure-${{ github.ref_name }}
+  cancel-in-progress: true
+
 env:
   REGISTRY: ${{ secrets.ACR_LOGIN_SERVER }}
   WORKER_IMAGE: neptu-worker
