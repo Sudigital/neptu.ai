@@ -1,0 +1,3996 @@
+[
+  {
+    "rank": 1,
+    "name": "Elon Musk",
+    "lastName": "Musk",
+    "slug": "elon-musk",
+    "birthday": "1971-06-28",
+    "gender": "M",
+    "netWorthBillions": 839.04,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 557.49,
+    "profileSlug": "elon-musk",
+    "country": "United States",
+    "state": "Texas",
+    "city": "Austin",
+    "industry": "Technology",
+    "industries": ["Technology"],
+    "wealthSource": "Tesla, SpaceX",
+    "description": "Elon Musk cofounded seven companies, including electric car maker Tesla, rocket producer SpaceX and artificial intelligence startup xAI.",
+    "bios": [
+      "Elon Musk cofounded seven companies, including electric car maker Tesla, rocket producer SpaceX and artificial intelligence startup xAI.",
+      "He owns about 12% of Tesla, which he first backed in 2004, and which he's led as CEO since 2008.",
+      "In 2024, a Delaware judge voided Musk's 2018 deal to receive options equaling an additional 9% of Tesla. Forbes has discounted the options by 50% pending Musk's appeal.",
+      "SpaceX, founded in 2002, is worth $800 billion based on a private tender offer in December 2025. Musk owns an estimated 42% stake.",
+      "Musk bought Twitter in a $44 billion (enterprise value) deal in 2022. He merged it with xAI in March in a deal valuing the combined company at around $125 billion including debt.",
+      "Musk also founded tunneling startup The Boring Company and brain implant outfit Neuralink. The two startups have raised around $2 billion from private investors combined."
+    ],
+    "abouts": [
+      "Musk, who says he's worried about population collapse, has fathered at least 14 children with four women, including triplets and two sets of twins.",
+      "As a kid in South Africa, Musk taught himself to code; he sold his first game, Blastar, for about $500."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/62d700cd6094d2c180f269b9/416x416.jpg?background=000000&cropX1=0&cropX2=959&cropY1=0&cropY2=959",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/62d700cd6094d2c180f269b9/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [
+      {
+        "exchange": "NASDAQ",
+        "ticker": "TSLA-US",
+        "companyName": "Tesla",
+        "numberOfShares": 413152109,
+        "sharePrice": 402.51,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": true,
+        "currentPrice": 402.51
+      },
+      {
+        "exchange": "NASDAQ",
+        "ticker": "TSLA-US",
+        "companyName": "Tesla",
+        "numberOfShares": 303960620,
+        "exerciseOptionPrice": 23.33666666666667,
+        "sharePrice": 402.51,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 402.51
+      }
+    ],
+    "categories": ["billionaire", "entrepreneur"],
+    "tags": ["tech", "energy", "ev", "renewable", "space", "ai"]
+  },
+  {
+    "rank": 2,
+    "name": "Larry Page",
+    "lastName": "Page",
+    "slug": "larry-page",
+    "birthday": "1973-03-26",
+    "gender": "M",
+    "netWorthBillions": 257.08,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 13.43,
+    "profileSlug": "larry-page",
+    "country": "United States",
+    "state": "California",
+    "city": "Palo Alto",
+    "industry": "Technology",
+    "industries": ["Technology"],
+    "wealthSource": "Google",
+    "description": "Larry Page stepped down as CEO of Alphabet, the parent company of Google, in 2019 but remains a board member and a controlling shareholder.",
+    "bios": [
+      "Larry Page stepped down as CEO of Alphabet, the parent company of Google, in 2019 but remains a board member and a controlling shareholder.",
+      "He cofounded Google in 1998 with fellow Stanford Ph.D. student Sergey Brin.",
+      "With Brin, Page invented Google's PageRank algorithm, which powers the search engine.",
+      "Page was CEO until 2001, when Eric Schmidt took over, and then from 2011 until 2015, when he became CEO of Google's new parent firm Alphabet."
+    ],
+    "abouts": [
+      "Page has avoided public appearances since Sundar Pichai became Google's CEO, including Alphabet's 2019 shareholders meeting -- much to investors' chagrin.",
+      "Page is a clean energy advocate; his Palo Alto home uses fuel cells and geothermal energy."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5c76bcaaa7ea43100043c836/416x416.jpg?background=000000&cropX1=227&cropX2=2022&cropY1=22&cropY2=1817",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "NASDAQ",
+        "ticker": "GOOGL-US",
+        "companyName": "Alphabet",
+        "numberOfShares": 390357943,
+        "sharePrice": 311.76,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 311.76
+      },
+      {
+        "exchange": "NASDAQ",
+        "ticker": "GOOG-US",
+        "companyName": "Google Inc. (Cl C)",
+        "numberOfShares": 391579653,
+        "sharePrice": 311.43,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": true,
+        "currentPrice": 311.43
+      }
+    ],
+    "categories": ["billionaire", "entrepreneur"],
+    "tags": ["tech", "ai", "cloud"]
+  },
+  {
+    "rank": 3,
+    "name": "Sergey Brin",
+    "lastName": "Brin",
+    "slug": "sergey-brin",
+    "birthday": "1973-08-21",
+    "gender": "M",
+    "netWorthBillions": 237.23,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 13.24,
+    "profileSlug": "sergey-brin",
+    "country": "United States",
+    "state": "California",
+    "city": "Los Altos",
+    "industry": "Technology",
+    "industries": ["Technology"],
+    "wealthSource": "Google",
+    "description": "Sergey Brin stepped down as president of Alphabet, parent company of Google, in 2019 but remains a board member and a controlling shareholder.",
+    "bios": [
+      "Sergey Brin stepped down as president of Alphabet, parent company of Google, in 2019 but remains a board member and a controlling shareholder.",
+      "Brin moved to the U.S. from Russia when he was 6 years old in the wake of anti-Semitism against his family.",
+      "He cofounded Google with Larry Page in 1998 after the two met at Stanford University while studying for advanced degrees in computer science.",
+      "Google went public in 2004 and began trading as Alphabet, a newly created parent company, in 2015.",
+      "Brin has donated more than $2 billion to Parkinson's research, and focuses his charitable giving on conditions of the central nervous system and climate change."
+    ],
+    "abouts": [],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5c7d7c254bbe6f78090d831f/416x416.jpg?background=000000&cropX1=475&cropX2=2887&cropY1=168&cropY2=2582",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "NASDAQ",
+        "ticker": "GOOGL-US",
+        "companyName": "Alphabet",
+        "numberOfShares": 359069547,
+        "sharePrice": 311.76,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 311.76
+      },
+      {
+        "exchange": "NASDAQ",
+        "ticker": "GOOG-US",
+        "companyName": "Google Inc. (Cl C)",
+        "numberOfShares": 359795958,
+        "sharePrice": 311.43,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": true,
+        "currentPrice": 311.43
+      }
+    ],
+    "categories": ["billionaire", "entrepreneur"],
+    "tags": ["tech", "ai", "cloud"]
+  },
+  {
+    "rank": 4,
+    "name": "Jeff Bezos",
+    "lastName": "Bezos",
+    "slug": "jeff-bezos",
+    "birthday": "1964-01-12",
+    "gender": "M",
+    "netWorthBillions": 223.74,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 38.48,
+    "profileSlug": "jeff-bezos",
+    "country": "United States",
+    "state": "Florida",
+    "city": "Miami",
+    "industry": "Technology",
+    "industries": ["Technology"],
+    "wealthSource": "Amazon",
+    "description": "Jeff Bezos founded e-commerce giant Amazon in 1994 out of his Seattle garage.",
+    "bios": [
+      "Jeff Bezos founded e-commerce giant Amazon in 1994 out of his Seattle garage.",
+      "Bezos stepped down as CEO to become executive chairman in 2021. He owns 8% of the company.",
+      "He and his wife MacKenzie divorced in 2019 after 25 years of marriage and he transferred a quarter of his then-16% Amazon stake to her.",
+      "In 2020, Bezos pledged to donate $10 billion to climate causes by 2030 through his Bezos Earth Fund; he has granted $2 billion so far.",
+      "He owns The Washington Post and Blue Origin, an aerospace company developing rockets; he briefly flew to space in one in 2021.",
+      "Bezos said in a 2022 interview with CNN that he plans to give away the majority of his wealth in his lifetime, without disclosing specific details."
+    ],
+    "abouts": [
+      "Growing up, Bezos worked summers on his grandfather's ranch repairing Caterpillar tractors.",
+      "Bezos met Google founders Larry Page and Sergey Brin in 1998 and managed to become one of the company's first angel investors, putting in an estimated $250,000."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/67531eb2b5f7c9e191f632d7/416x416.jpg?background=000000&cropX1=316&cropX2=1027&cropY1=125&cropY2=838",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/67531eb2b5f7c9e191f632d7/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [
+      {
+        "exchange": "NASDAQ",
+        "ticker": "AMZN-US",
+        "companyName": "Amazon",
+        "numberOfShares": 882202000,
+        "sharePrice": 210,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": true,
+        "currentPrice": 210
+      }
+    ],
+    "categories": ["billionaire", "entrepreneur"],
+    "tags": ["tech", "ecommerce", "cloud", "space"]
+  },
+  {
+    "rank": 5,
+    "name": "Mark Zuckerberg",
+    "lastName": "Zuckerberg",
+    "slug": "mark-zuckerberg",
+    "birthday": "1984-05-14",
+    "gender": "M",
+    "netWorthBillions": 222.3,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 2.53,
+    "profileSlug": "mark-zuckerberg",
+    "country": "United States",
+    "state": "California",
+    "city": "Palo Alto",
+    "industry": "Technology",
+    "industries": ["Technology"],
+    "wealthSource": "Facebook",
+    "description": "A 19-year-old Mark Zuckerberg started Facebook in 2004 for students to match names with photos of classmates.",
+    "bios": [
+      "A 19-year-old Mark Zuckerberg started Facebook in 2004 for students to match names with photos of classmates.",
+      "Zuckerberg took Facebook public in 2012; he now owns about 13% of the company's stock.",
+      "Facebook changed its name to Meta in 2021 to shift the company's focus to the metaverse.",
+      "In 2015, Zuckerberg and his wife, Priscilla Chan, pledged to give away 99% of their Meta stake over their lifetimes."
+    ],
+    "abouts": [
+      "Zuckerberg and his wife, Priscilla Chan, are spending $3 billion in an attempt to end, cure or manage all disease by the year 2100.",
+      "In 2019, Mark Zuckerberg purchased $59 million worth of waterfront property on Lake Tahoe in California."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5c76b7d331358e35dd2773a9/416x416.jpg?background=000000&cropX1=0&cropX2=4401&cropY1=0&cropY2=4401",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/5c76b7d331358e35dd2773a9/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [
+      {
+        "exchange": "NASDAQ",
+        "ticker": "META-US",
+        "companyName": "Meta Platforms",
+        "numberOfShares": 339066318,
+        "sharePrice": 648.18,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": true,
+        "currentPrice": 648.18
+      }
+    ],
+    "categories": ["billionaire", "entrepreneur"],
+    "tags": ["tech", "social_media", "ai"]
+  },
+  {
+    "rank": 6,
+    "name": "Larry Ellison",
+    "lastName": "Ellison",
+    "slug": "larry-ellison",
+    "birthday": "1944-08-17",
+    "gender": "M",
+    "netWorthBillions": 192.89,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 12.73,
+    "profileSlug": "larry-ellison",
+    "country": "United States",
+    "state": "Florida",
+    "city": "Manalapan",
+    "industry": "Technology",
+    "industries": ["Technology"],
+    "wealthSource": "Oracle",
+    "description": "Larry Ellison is chairman, chief technology officer and cofounder of software giant Oracle, of which he owns roughly 40%.",
+    "bios": [
+      "Larry Ellison is chairman, chief technology officer and cofounder of software giant Oracle, of which he owns roughly 40%.",
+      "Ellison gave up the Oracle CEO role in 2014 after 37 years at the helm.",
+      "In September 2025, he became the second person ever worth more than $400 billion, thanks to an AI-driven boom in Oracle's stock price.",
+      "In 2020, Ellison moved permanently to  the Hawaiian island Lanai, which he bought nearly all of in 2012 for $300 million.",
+      "Ellison sat on Tesla's board from 2018 to 2022. He owned 45 million split-adjusted shares before stepping down as a director.",
+      "Ellison also owns nearly 50% of media giant Paramount Skydance, which formed after the nearly $28 billion (enterprise value) merger of Paramount and his son David's Skydance in August 2025."
+    ],
+    "abouts": [
+      "Ellison never finished college. He started out building databases for the CIA.",
+      "Daughter Megan has financed films such as Zero Dark Thirty and American Hustle; son David produced mainstream movies like The Terminator and Mission: Impossible."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5e8b62cfc095010007bffea0/416x416.jpg?background=000000&cropX1=0&cropX2=4529&cropY1=652&cropY2=5184",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "NYSE",
+        "ticker": "ORCL-US",
+        "companyName": "Oracle",
+        "numberOfShares": 1088982000,
+        "sharePrice": 145.4,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": true,
+        "currentPrice": 145.4
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "ORCL-US",
+        "companyName": "Oracle",
+        "numberOfShares": 0,
+        "exerciseOptionPrice": 51.13,
+        "sharePrice": 145.4,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 145.4
+      },
+      {
+        "exchange": "NASDAQ",
+        "ticker": "PSKY-US",
+        "companyName": "Paramount Skydance Corporation (B)",
+        "numberOfShares": 542700000,
+        "sharePrice": 13.51,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 13.51
+      },
+      {
+        "exchange": "NASDAQ",
+        "ticker": "TSLA-US",
+        "companyName": "Tesla",
+        "numberOfShares": 36000000,
+        "sharePrice": 402.51,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 402.51
+      }
+    ],
+    "categories": ["billionaire", "entrepreneur"],
+    "tags": ["tech", "cloud", "ai"]
+  },
+  {
+    "rank": 7,
+    "name": "Bernard Arnault & family",
+    "lastName": "Arnault",
+    "slug": "bernard-arnault",
+    "birthday": "1949-03-05",
+    "gender": "M",
+    "netWorthBillions": 171.12,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 9.41,
+    "profileSlug": "bernard-arnault",
+    "country": "France",
+    "state": null,
+    "city": "Paris",
+    "industry": "Fashion & Retail",
+    "industries": ["Fashion & Retail"],
+    "wealthSource": "LVMH",
+    "description": "Bernard Arnault oversees the LVMH empire of 75 fashion and cosmetics brands, including Louis Vuitton and Sephora.",
+    "bios": [
+      "Bernard Arnault oversees the LVMH empire of 75 fashion and cosmetics brands, including Louis Vuitton and Sephora.",
+      "LVMH acquired American jeweler Tiffany & Co in 2021 for $15.8 billion, believed to be the biggest luxury brand acquisition ever.",
+      "Arnault's holding company Agache backs venture capital firm Aglaé Ventures, which has investments in businesses such as Netflix and TikTok parent company ByteDance.",
+      "His father made a small fortune in construction; Arnault got his start by putting up $15 million from that business to buy Christian Dior in 1984.",
+      "Arnault's five children all work at LVMH; in July 2022, he proposed a reorganization of his holding company Agache to become a limited partnership.",
+      "LVMH was the lead sponsor of the 2024 Paris Olympics and, together with Arnault, contributed 200 million euros to the restoration of Notre Dame Cathedral, which reopened in December 2024."
+    ],
+    "abouts": [
+      "Arnault apparently wooed his wife, Helene Mercier, a concert pianist, by playing Chopin and other classical composers on the piano.",
+      "Arnault and LVMH own a 40% stake in private equity firm L Catterton, which has $37 billion in assets, including investments in Birkenstock and Equinox.",
+      "In 2024, Arnault's holding company Agache bought a majority stake in French soccer team Paris FC."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5dc05518ca425400079c659f/416x416.jpg?background=000000&cropX1=0&cropX2=4000&cropY1=1209&cropY2=5212",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "NYSE",
+        "ticker": "BIRK-US",
+        "companyName": "Birkenstock Holding",
+        "numberOfShares": 10352863,
+        "sharePrice": 41.65,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      },
+      {
+        "exchange": "EURONEXT PARIS",
+        "ticker": "RMS-FR",
+        "companyName": "Hermes International S.C.A.",
+        "numberOfShares": 1974000,
+        "sharePrice": 2419.126328217237,
+        "currencyCode": "EUR",
+        "exchangeRate": 0.847,
+        "interactive": false
+      },
+      {
+        "exchange": "EURONEXT PARIS",
+        "ticker": "MC-FR",
+        "companyName": "LVMH Moet Hennessy Louis Vuitton",
+        "numberOfShares": 243622817,
+        "sharePrice": 642.3848878394333,
+        "currencyCode": "EUR",
+        "exchangeRate": 0.847,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["luxury", "ecommerce"]
+  },
+  {
+    "rank": 8,
+    "name": "Jensen Huang",
+    "lastName": "Huang",
+    "slug": "jensen-huang",
+    "birthday": "1963-02-17",
+    "gender": "M",
+    "netWorthBillions": 153.56,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 2.84,
+    "profileSlug": "jensen-huang",
+    "country": "United States",
+    "state": "California",
+    "city": "Los Altos",
+    "industry": "Technology",
+    "industries": ["Technology"],
+    "wealthSource": "Semiconductors",
+    "description": "Jensen Huang cofounded graphics-chip maker Nvidia in 1993 and has served as its CEO and president ever since.",
+    "bios": [
+      "Jensen Huang cofounded graphics-chip maker Nvidia in 1993 and has served as its CEO and president ever since.",
+      "Huang owns approximately 3% of Nvidia, which he took public in 1999.",
+      "Born in Taiwan, Huang moved to Thailand as a child, but his family sent him and his brother to the U.S as civil unrest mounted in the Asian nation.",
+      "Under Huang, Nvidia's GPUs became dominant first in computer gaming and now in AI. The company became the first to boast a $5 trillion market cap in 2025.",
+      "He's given Stanford $30 million for an engineering center and, in 2022, gave $50 million to Oregon State University for a namesake research center."
+    ],
+    "abouts": [
+      "Shortly after arriving in the U.S., Huang was sent to a boarding school in rural Kentucky for troubled youth by his aunt and uncle, who mistook it for a prep school.",
+      "At boarding school, Huang was assigned to clean the boys' bathroom every day after class, while his brother worked on the tobacco farm.",
+      "Huang also worked as a waiter at Denny's, which he says helped him overcome his shyness."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/68750a2d250de42ce7c5301b/416x416.jpg?background=000000&cropX1=832&cropX2=2632&cropY1=152&cropY2=1951",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/68750a2d250de42ce7c5301b/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [
+      {
+        "exchange": "NASDAQ",
+        "ticker": "NVDA-US",
+        "companyName": "Nvidia",
+        "numberOfShares": 850607817,
+        "sharePrice": 177.19,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      },
+      {
+        "exchange": "NASDAQ",
+        "ticker": "NVDA-US",
+        "companyName": "Nvidia",
+        "numberOfShares": 0,
+        "exerciseOptionPrice": 3.4725,
+        "sharePrice": 177.19,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      },
+      {
+        "exchange": "NASDAQ",
+        "ticker": "NVDA-US",
+        "companyName": "Nvidia",
+        "numberOfShares": 0,
+        "exerciseOptionPrice": 3.155,
+        "sharePrice": 177.19,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      },
+      {
+        "exchange": "NASDAQ",
+        "ticker": "NVDA-US",
+        "companyName": "Nvidia",
+        "numberOfShares": 0,
+        "exerciseOptionPrice": 4,
+        "sharePrice": 177.19,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire", "entrepreneur"],
+    "tags": ["tech", "semiconductor", "ai"]
+  },
+  {
+    "rank": 9,
+    "name": "Warren Buffett",
+    "lastName": "Buffett",
+    "slug": "warren-buffett",
+    "birthday": "1930-08-30",
+    "gender": "M",
+    "netWorthBillions": 149.36,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 0.74,
+    "profileSlug": "warren-buffett",
+    "country": "United States",
+    "state": "Nebraska",
+    "city": "Omaha",
+    "industry": "Finance & Investments",
+    "industries": ["Finance & Investments"],
+    "wealthSource": "Berkshire Hathaway",
+    "description": "Known as the \"Oracle of Omaha,\" Warren Buffett is one of the most successful investors of all time.",
+    "bios": [
+      "Known as the \"Oracle of Omaha,\" Warren Buffett is one of the most successful investors of all time.",
+      "Buffett chairs Berkshire Hathaway, which owns dozens of companies, including insurer Geico, battery maker Duracell and restaurant chain Dairy Queen. He is retired as CEO at the end of 2025.",
+      "The son of a U.S. congressman, he first bought stock at age 11 and first filed taxes at age 13.",
+      "He has promised to donate over 99% of his wealth. So far, he has given away nearly $65 billion, mostly through the Gates Foundation and his kids' foundations.",
+      "In 2010, he and Bill Gates launched the Giving Pledge, asking other billionaires to commit to donating at least half of their fortunes to charitable causes."
+    ],
+    "abouts": [
+      "Buffett still lives in the same Omaha, Nebraska home he purchased in 1958 for $31,500.",
+      "Buffett was rejected from Harvard Business School; he got a master's in economics from Columbia University instead."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5babb7f1a7ea4342a948b79a/416x416.jpg?background=000000&cropX1=748&cropX2=3075&cropY1=1753&cropY2=4082",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/5babb7f1a7ea4342a948b79a/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [
+      {
+        "exchange": "NYSE",
+        "ticker": "BRK.A-US",
+        "companyName": "Berkshire Hathaway Inc. (Cl A)",
+        "numberOfShares": 196317,
+        "sharePrice": 757000,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": true,
+        "currentPrice": 757000
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "BRK.B-US",
+        "companyName": "Berkshire Hathaway Inc. (Cl B)",
+        "numberOfShares": 1140,
+        "sharePrice": 504.95,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 504.95
+      }
+    ],
+    "categories": ["billionaire", "entrepreneur"],
+    "tags": ["finance", "asset_management"]
+  },
+  {
+    "rank": 10,
+    "name": "Amancio Ortega",
+    "lastName": "Ortega",
+    "slug": "amancio-ortega",
+    "birthday": "1936-03-28",
+    "gender": "M",
+    "netWorthBillions": 147.93,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 22.52,
+    "profileSlug": "amancio-ortega",
+    "country": "Spain",
+    "state": null,
+    "city": "La Coruna",
+    "industry": "Fashion & Retail",
+    "industries": ["Fashion & Retail"],
+    "wealthSource": "Zara",
+    "description": "Amancio Ortega of Spain is one of the wealthiest clothing retailers in the world.",
+    "bios": [
+      "Amancio Ortega of Spain is one of the wealthiest clothing retailers in the world.",
+      "A pioneer in fast fashion, he cofounded Inditex, known for its Zara fashion chain, with his ex-wife Rosalia Mera (d. 2013) in 1975.",
+      "He owns about 60% of Madrid-listed Inditex, which has seven brands, including Massimo Dutti and Pull & Bear and 5,000 stores around the world.",
+      "In 2022, after working at Inditex for 15 years, his daughter Marta Ortega Pérez became chairperson of the company.",
+      "Ortega earns more than $400 million in yearly dividends, which he reinvests primarily in real estate across Europe and North America."
+    ],
+    "abouts": [
+      "Ortega first began his career manufacturing textiles through a small family company in 1963.",
+      "Ortega's real estate portfolio, which includes logistics, residential and office properties, rents to tenants including Apple, Amazon and Walmart."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5c76b94131358e35dd27748e/416x416.jpg?background=000000&cropX1=179&cropX2=2232&cropY1=216&cropY2=2269",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "MADRID",
+        "ticker": "SAN-ES",
+        "companyName": "Banco Santander",
+        "numberOfShares": 21830000,
+        "sharePrice": 12.739079102715465,
+        "currencyCode": "EUR",
+        "exchangeRate": 0.847,
+        "interactive": false
+      },
+      {
+        "exchange": "MADRID",
+        "ticker": "ENG-ES",
+        "companyName": "Enagas",
+        "numberOfShares": 13100000,
+        "sharePrice": 18.11688311688312,
+        "currencyCode": "EUR",
+        "exchangeRate": 0.847,
+        "interactive": false
+      },
+      {
+        "exchange": "MADRID",
+        "ticker": "ITX-ES",
+        "companyName": "Industria de Diseno Textil S.A.",
+        "numberOfShares": 1848000000,
+        "sharePrice": 67.08382526564345,
+        "currencyCode": "EUR",
+        "exchangeRate": 0.847,
+        "interactive": false
+      },
+      {
+        "companyName": "Red Electrica Corp SA",
+        "numberOfShares": 27054000,
+        "sharePrice": 20.60212514757969,
+        "currencyCode": "EUR",
+        "exchangeRate": 0.847,
+        "interactive": false
+      },
+      {
+        "exchange": "EURONEXT LISBON",
+        "ticker": "RENE-PT",
+        "companyName": "Redes Energeticas Nacionais",
+        "numberOfShares": 80100000,
+        "sharePrice": 4.545454545454546,
+        "currencyCode": "EUR",
+        "exchangeRate": 0.847,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["luxury", "ecommerce"]
+  },
+  {
+    "rank": 11,
+    "name": "Rob Walton & family",
+    "lastName": "Walton",
+    "slug": "rob-walton",
+    "birthday": "1944-10-27",
+    "gender": "M",
+    "netWorthBillions": 146.05,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 28.76,
+    "profileSlug": "rob-walton",
+    "country": "United States",
+    "state": "Arkansas",
+    "city": "Bentonville",
+    "industry": "Fashion & Retail",
+    "industries": ["Fashion & Retail"],
+    "wealthSource": "Walmart",
+    "description": "Rob Walton is the eldest son of Walmart founder Sam Walton.",
+    "bios": [
+      "Rob Walton is the eldest son of Walmart founder Sam Walton.",
+      "Walton took over as chairman upon his father's death in 1992.",
+      "He retired as chairman in 2015 and was replaced by his son-in-law, Greg Penner. Walton retired from Walmart's board in 2024.",
+      "He and other heirs of Sam Walton collectively own about 45% of Walmart's stock.",
+      "In 2022, a group led by Walton bought the NFL's Denver Broncos for $4.7 billion. Walton transferred controlling ownership of the team to his son-in-law Greg Penner in 2023."
+    ],
+    "abouts": [
+      "Rob Walton, who has a law degree from Columbia University, helped Walmart prepare for its IPO in 1970.",
+      "His daughter Carrie Walton Penner sits on the board of the Walton Family Foundation, which his parents set up on Walmart's 25th anniversary in 1987."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/59d50a9e4bbe6f37dd9ff712/416x416.jpg?background=000000&cropX1=244&cropX2=1841&cropY1=60&cropY2=1658",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "NASDAQ",
+        "ticker": "WMT-US",
+        "companyName": "Walmart",
+        "numberOfShares": 916735787,
+        "sharePrice": 127.95,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": true,
+        "currentPrice": 127.95
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["luxury", "ecommerce"]
+  },
+  {
+    "rank": 12,
+    "name": "Jim Walton & family",
+    "lastName": "Walton",
+    "slug": "jim-walton",
+    "birthday": "1948-06-07",
+    "gender": "M",
+    "netWorthBillions": 143.33,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 26.3,
+    "profileSlug": "jim-walton",
+    "country": "United States",
+    "state": "Arkansas",
+    "city": "Bentonville",
+    "industry": "Fashion & Retail",
+    "industries": ["Fashion & Retail"],
+    "wealthSource": "Walmart",
+    "description": "Jim Walton is the youngest son of Walmart founder Sam Walton (d. 1992).",
+    "bios": [
+      "Jim Walton is the youngest son of Walmart founder Sam Walton (d. 1992).",
+      "He is chairman of the family's Arvest Bank Group, which boasts assets of $27 billion.",
+      "Jim sat on Walmart's board for more than a decade before yielding the seat to his son, Steuart, in 2016.",
+      "Collectively, he and other heirs of Sam Walton own about 45% of Walmart's stock.",
+      "Jim's daughter Annie Proeitti chairs the family's $7.1 billion (2023 assets) Walton Family Foundation."
+    ],
+    "abouts": [
+      "Jim majored in business administration at the University of Arkansas."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5c7ef2fea7ea434b351bca5a/416x416.jpg?background=000000&cropX1=49&cropX2=934&cropY1=65&cropY2=951",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "NASDAQ",
+        "ticker": "WMT-US",
+        "companyName": "Walmart",
+        "numberOfShares": 914632788,
+        "sharePrice": 127.95,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["luxury", "ecommerce"]
+  },
+  {
+    "rank": 13,
+    "name": "Michael Dell",
+    "lastName": "Dell",
+    "slug": "michael-dell",
+    "birthday": "1965-02-23",
+    "gender": "M",
+    "netWorthBillions": 140.66,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 38.17,
+    "profileSlug": "michael-dell",
+    "country": "United States",
+    "state": "Texas",
+    "city": "Austin",
+    "industry": "Technology",
+    "industries": ["Technology"],
+    "wealthSource": "Dell Technologies",
+    "description": "Michael Dell is chairman and CEO of Dell Technologies, which formed in 2016 via Dell's $60 billion merger with computer storage giant EMC.",
+    "bios": [
+      "Michael Dell is chairman and CEO of Dell Technologies, which formed in 2016 via Dell's $60 billion merger with computer storage giant EMC.",
+      "Dell Technologies returned to public markets through a complicated financial restructuring in 2018 after Dell and private equity firm Silver Lake Partners took it private in 2013.",
+      "Dell's cloud software arm, VMware, spun off in 2021; Microchip firm Broadcom bought it in 2023 for $69 billion, 39% of which went to Dell.",
+      "Much of Dell's fortune lies in his private investment firm DFO Management, which has stakes in hotels and invests in liquid corporate credit.",
+      "In 2025, Dell and his wife committed $6.25 billion to seed investment accounts for 25 million U.S. children with $250 apiece."
+    ],
+    "abouts": [
+      "Dell got his start at 19 selling computers out of his University of Texas dorm room, grossing $80,000 by the end of his freshman year.",
+      "Dell's DFO Management owns the Four Seasons Maui, plus indirect stakes in Applebees, IHOP, Calvin Klein and reportedly Grand Central Station."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/615c93f9da61f2ff5b9ecf9b/416x416.jpg?background=000000&cropX1=0&cropX2=1678&cropY1=118&cropY2=1797",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/615c93f9da61f2ff5b9ecf9b/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [
+      {
+        "exchange": "NASDAQ",
+        "ticker": "AVGO-US",
+        "companyName": "Broadcom Inc.",
+        "numberOfShares": 184363642,
+        "sharePrice": 319.55,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "DELL-US",
+        "companyName": "Dell Technologies Inc",
+        "numberOfShares": 294263250,
+        "sharePrice": 148.08,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "VMW-US",
+        "companyName": "VMware",
+        "numberOfShares": 0,
+        "sharePrice": 142.48,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["tech"]
+  },
+  {
+    "rank": 14,
+    "name": "Alice Walton",
+    "lastName": "Walton",
+    "slug": "alice-walton",
+    "birthday": "1949-10-07",
+    "gender": "F",
+    "netWorthBillions": 134.14,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 19.82,
+    "profileSlug": "alice-walton",
+    "country": "United States",
+    "state": "Texas",
+    "city": "Fort Worth",
+    "industry": "Fashion & Retail",
+    "industries": ["Fashion & Retail"],
+    "wealthSource": "Walmart",
+    "description": "Alice Walton is the only daughter of Walmart founder Sam Walton (d. 1992).",
+    "bios": [
+      "Alice Walton is the only daughter of Walmart founder Sam Walton (d. 1992).",
+      "She has focused on curating art and philanthropy, rather than serving on the board of Walmart like her siblings, Rob and Jim.",
+      "In 2011, she opened the Crystal Bridges Museum of American Art in her family's hometown of Bentonville, Arkansas, featuring works by the likes of Andy Warhol, Norman Rockwell and Mark Rothko.",
+      "In July 2025, Walton welcomed the inaugural class of 48 four-year MD students to her new Alice L. Walton School of Medicine in Bentonville."
+    ],
+    "abouts": [
+      "After graduating from Trinity College in 1971, Walton briefly worked for Walmart as a buyer of children's clothes.",
+      "Her art collecting career began when she was 11 and bought a 25-cent print of Picasso's \"Blue Nude.\""
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5c7ef270a7ea434b351bca52/416x416.jpg?background=000000&cropX1=232&cropX2=998&cropY1=222&cropY2=988",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "NASDAQ",
+        "ticker": "WMT-US",
+        "companyName": "Walmart",
+        "numberOfShares": 893456539,
+        "sharePrice": 127.95,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["luxury", "ecommerce"]
+  },
+  {
+    "rank": 15,
+    "name": "Carlos Slim Helu & family",
+    "lastName": "Slim Helu",
+    "slug": "carlos-slim-helu",
+    "birthday": "1940-01-28",
+    "gender": "M",
+    "netWorthBillions": 125.11,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 26.9,
+    "profileSlug": "carlos-slim-helu",
+    "country": "Mexico",
+    "state": null,
+    "city": "Mexico City",
+    "industry": "Telecom",
+    "industries": ["Telecom"],
+    "wealthSource": "Telecom",
+    "description": "Mexico's richest person, Carlos Slim Helú and his family control América Móvil, Latin America's biggest mobile telecom firm.",
+    "bios": [
+      "Mexico's richest person, Carlos Slim Helú and his family control América Móvil, Latin America's biggest mobile telecom firm.",
+      "With foreign telecom partners, Slim bought a stake in Telmex, Mexico's only phone company, in 1990. Telmex is now part of América Móvil.",
+      "He also owns stakes in Mexican construction, consumer goods, mining and real estate companies. He previously held a 17% stake in The New York Times.",
+      "His son-in-law Fernando Romero designed the Soumaya Museum in Mexico City, home to Slim's extensive, eclectic art collection.",
+      "Slim and his family own 76% of Grupo Carso, one of Latin America's largest conglomerates."
+    ],
+    "abouts": [
+      "Every Sunday, Slim's father would give him a 5-peso allowance and required him to record his purchases in a ledger.",
+      "Before going into business, Slim taught algebra at UNAM, a university in Mexico City."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5c76ba144bbe6f24ad99c613/416x416.jpg?background=000000&cropX1=0&cropX2=3005&cropY1=389&cropY2=3395",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "NYSE",
+        "ticker": "AMX-US",
+        "companyName": "America Movil SAB de CV (ADR)",
+        "numberOfShares": 2121440999.9999998,
+        "sharePrice": 26.02,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      },
+      {
+        "exchange": "LONDON",
+        "ticker": "BT.A-GB",
+        "companyName": "BT Group",
+        "numberOfShares": 357808000,
+        "sharePrice": 2.9147620328045174,
+        "currencyCode": "GBP",
+        "exchangeRate": 0.7438,
+        "interactive": false
+      },
+      {
+        "exchange": "MADRID",
+        "ticker": "FCC-ES",
+        "companyName": "Fomento de Construcciones y Contrata",
+        "numberOfShares": 385663000,
+        "sharePrice": 13.931523022432115,
+        "currencyCode": "EUR",
+        "exchangeRate": 0.847,
+        "interactive": false
+      },
+      {
+        "exchange": "MEXICO",
+        "ticker": "GCARSOA1-MX",
+        "companyName": "Grupo Carso S.A.B. de C.V. (Series A",
+        "numberOfShares": 1714036000,
+        "sharePrice": 7.843194234569336,
+        "currencyCode": "MXN",
+        "exchangeRate": 17.206,
+        "interactive": false
+      },
+      {
+        "exchange": "MEXICO",
+        "ticker": "GFINBURO-MX",
+        "companyName": "Grupo Financiero Inbursa S.A.B. de C",
+        "numberOfShares": 4153558000,
+        "sharePrice": 2.5456236196675577,
+        "currencyCode": "MXN",
+        "exchangeRate": 17.206,
+        "interactive": false
+      },
+      {
+        "exchange": "MEXICO",
+        "ticker": "IDEALB.1-MX",
+        "companyName": "Impulsora del Desarrollo y el Empleo",
+        "numberOfShares": 1264110000,
+        "sharePrice": 2.499128211089155,
+        "currencyCode": "MXN",
+        "exchangeRate": 17.206,
+        "interactive": false
+      },
+      {
+        "exchange": "MEXICO",
+        "ticker": "MFRISCOA.1-MX",
+        "companyName": "Minera Frisco SAB de CV",
+        "numberOfShares": 5138903000,
+        "sharePrice": 0.7846100197605487,
+        "currencyCode": "MXN",
+        "exchangeRate": 17.206,
+        "interactive": false
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "PBF-US",
+        "companyName": "PBF Energy Inc  (PBF)",
+        "numberOfShares": 34262000,
+        "sharePrice": 35.6,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      },
+      {
+        "exchange": "MADRID",
+        "ticker": "RLIA-ES",
+        "companyName": "Realia Business",
+        "numberOfShares": 1459673000,
+        "sharePrice": 1.2396694214876034,
+        "currencyCode": "EUR",
+        "exchangeRate": 0.847,
+        "interactive": false
+      },
+      {
+        "companyName": "Talos Energy",
+        "numberOfShares": 43545000,
+        "sharePrice": 10.78,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      },
+      {
+        "exchange": "MEXICO",
+        "ticker": "SITES1A.1-MX",
+        "companyName": "Telesites SAB Class A",
+        "numberOfShares": 2112000000,
+        "sharePrice": 0.8892246890619552,
+        "currencyCode": "MXN",
+        "exchangeRate": 17.206,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["telecom"]
+  },
+  {
+    "rank": 16,
+    "name": "Steve Ballmer",
+    "lastName": "Ballmer",
+    "slug": "steve-ballmer",
+    "birthday": "1956-03-24",
+    "gender": "M",
+    "netWorthBillions": 124.31,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 24.97,
+    "profileSlug": "steve-ballmer",
+    "country": "United States",
+    "state": "Washington",
+    "city": "Hunts Point",
+    "industry": "Technology",
+    "industries": ["Technology"],
+    "wealthSource": "Microsoft",
+    "description": "Steve Ballmer is the high-energy former CEO of Microsoft, who led the company from 2000 to 2014.",
+    "bios": [
+      "Steve Ballmer is the high-energy former CEO of Microsoft, who led the company from 2000 to 2014.",
+      "He joined Microsoft in 1980 as employee No. 30 after dropping out of Stanford's MBA program. He first met Microsoft cofounder Bill Gates when the two were undergrads at Harvard.",
+      "Ballmer oversaw Microsoft after the first dot-com crash and through efforts to catch up to Google in search capabilities and Apple in mobile phones.",
+      "In 2014, the year he retired from Microsoft, he bought the NBA's Los Angeles Clippers for $2 billion; Forbes now values the team at $5.5 billion. He spent another $2 billion building a stadium.",
+      "Ballmer, who owned 4% of Microsoft stock when he retired, has held onto most of his stock and has said he's the company's largest individual shareholder.",
+      "He has ramped up his philanthropy since 2014; to date the Ballmers have given away more than $6.4 billion."
+    ],
+    "abouts": [
+      "Ballmer created a website called USAFacts.org for people to look up and understand where the government is spending money."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/59d50c47a7ea436b47b36d66/416x416.jpg?background=000000&cropX1=553&cropX2=2940&cropY1=322&cropY2=2708",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "NASDAQ",
+        "ticker": "MSFT-US",
+        "companyName": "Microsoft",
+        "numberOfShares": 252818000,
+        "sharePrice": 392.74,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      },
+      {
+        "companyName": "Stagwell",
+        "numberOfShares": 7140000,
+        "sharePrice": 5.62,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "TWTR-US",
+        "companyName": "Twitter, Inc.",
+        "numberOfShares": 0,
+        "sharePrice": 53.7,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["tech"]
+  },
+  {
+    "rank": 17,
+    "name": "Michael Bloomberg",
+    "lastName": "Bloomberg",
+    "slug": "michael-bloomberg",
+    "birthday": "1942-02-14",
+    "gender": "M",
+    "netWorthBillions": 109.42,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 109.42,
+    "profileSlug": "michael-bloomberg",
+    "country": "United States",
+    "state": "New York",
+    "city": "New York",
+    "industry": "Finance & Investments",
+    "industries": ["Finance & Investments"],
+    "wealthSource": "Bloomberg LP",
+    "description": "Michael Bloomberg cofounded financial information and media company Bloomberg LP in 1981.",
+    "bios": [
+      "Michael Bloomberg cofounded financial information and media company Bloomberg LP in 1981.",
+      "He put in the seed funding for the company and now owns 88% of the business, which has estimated annual revenues of nearly $15 billion.",
+      "In 2023, he appointed product head Vlad Kliatchko as CEO of Bloomberg LP and former Bank of England governor Mark Carney as non-executive chair of a new board of directors.",
+      "Bloomberg got his start on Wall Street in 1966 with an entry level job at investment bank Salomon Brothers. He was fired 15 years later.",
+      "A major philanthropist, he gave away $3.7 billion in 2024 and has donated more than $21.1 billion in his lifetime to gun safety, climate change, education and other causes.",
+      "He has committed to donating his stake in Bloomberg LP to Bloomberg Philanthropies when he dies, if not sooner.",
+      "Bloomberg served as mayor of New York City for 12 years, from 2002 to 2013, and launched an unsuccessful bid for president in the 2020 race."
+    ],
+    "abouts": [
+      "In 2024, Bloomberg pledged $1 billion to Johns Hopkins University, his undergraduate alma mater, adding to the more than $3.5 billion he'd already given the school.",
+      "As a teenager, Bloomberg worked at an electronics company in Cambridge, Massachusetts."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5c76b4104bbe6f24ad99c35d/416x416.jpg?background=000000&cropX1=165&cropX2=5613&cropY1=321&cropY2=5769",
+    "thumbnailUrl": null,
+    "financialAssets": [],
+    "categories": ["billionaire", "investor"],
+    "tags": ["finance", "asset_management", "media", "tech"]
+  },
+  {
+    "rank": 18,
+    "name": "Bill Gates",
+    "lastName": "Gates",
+    "slug": "bill-gates",
+    "birthday": "1955-10-28",
+    "gender": "M",
+    "netWorthBillions": 108.23,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 39.53,
+    "profileSlug": "bill-gates",
+    "country": "United States",
+    "state": "Washington",
+    "city": "Medina",
+    "industry": "Technology",
+    "industries": ["Technology"],
+    "wealthSource": "Microsoft",
+    "description": "Bill Gates helped usher in huge changes in personal technology with software firm Microsoft; now he's focused on giving away his massive fortune.",
+    "bios": [
+      "Bill Gates helped usher in huge changes in personal technology with software firm Microsoft; now he's focused on giving away his massive fortune.",
+      "Gates, a computer enthusiast from a young age, dropped out of Harvard to cofound Microsoft with Paul Allen (d. 2018) in 1975, hoping to capitalize on the spread of personal computers.",
+      "After Gates donated Microsoft shares worth billions to the trust that funds the Gates Foundation in 2022, his Microsoft stake is now less than 1%, Forbes estimates.",
+      "In 2021, Bill and Melinda Gates each announced they were ending their marriage after 27 years. He is now the sole chairman of the charitable Gates Foundation.",
+      "Gates, who's donated more than $59 billion to the Gates Foundation, announced in May 2025 that the foundation will shut down in 20 years."
+    ],
+    "abouts": [
+      "Gates has spent nearly two decades and more than $1 billion supporting a nuclear power company,Terrapower, that is aiming to complete its first reactor by 2030.",
+      "Gates took a break from classes his senior year in high school to do programming with his friend Paul Allen at a power plant in North Bonneville, Washington."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/62d599ede3ff49f348f9b9b4/416x416.jpg?background=000000&cropX1=155&cropX2=976&cropY1=340&cropY2=1161",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/62d599ede3ff49f348f9b9b4/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [
+      {
+        "exchange": "NASDAQ",
+        "ticker": "ACGL-US",
+        "companyName": "Arch Capital Group",
+        "numberOfShares": 0,
+        "sharePrice": 100.15,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 100.15
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "ARCO-US",
+        "companyName": "Arcos Dorados Holdings Inc",
+        "numberOfShares": 0,
+        "sharePrice": 8.8,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 8.8
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "AN-US",
+        "companyName": "AutoNation Inc.",
+        "numberOfShares": 7062000,
+        "sharePrice": 195.16,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 195.16
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "BRK.A-US",
+        "companyName": "Berkshire Hathaway Inc. (Cl A)",
+        "numberOfShares": 4350,
+        "sharePrice": 757000,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 757000
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "CNI-US",
+        "companyName": "Canadian National Railway Co.",
+        "numberOfShares": 3539000,
+        "sharePrice": 112.19,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 112.19
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "KOF-US",
+        "companyName": "Coca-Cola FEMSA S.A.B de C.V.",
+        "numberOfShares": 0,
+        "sharePrice": 111.15,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 111.15
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "DE-US",
+        "companyName": "Deere & Co",
+        "numberOfShares": 19771000,
+        "sharePrice": 629.71,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 629.71
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "ECL-US",
+        "companyName": "Ecolab",
+        "numberOfShares": 29178000,
+        "sharePrice": 308.35,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 308.35
+      },
+      {
+        "exchange": "NASDAQ",
+        "ticker": "EVLV-US",
+        "companyName": "Evolv Technologies Holdings",
+        "numberOfShares": 18659000,
+        "sharePrice": 5.3,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 5.3
+      },
+      {
+        "exchange": "NASDAQ",
+        "ticker": "XCUR-US",
+        "companyName": "Exicure",
+        "numberOfShares": 0,
+        "sharePrice": 3.74,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 3.74
+      },
+      {
+        "exchange": "MADRID",
+        "ticker": "FCC-ES",
+        "companyName": "Fomento de Construcciones y Contrata",
+        "numberOfShares": 8533000,
+        "sharePrice": 13.931523022432115,
+        "currencyCode": "EUR",
+        "exchangeRate": 0.847,
+        "interactive": false,
+        "currentPrice": 13.931523022432115
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "FMX-US",
+        "companyName": "Fomento Economico Mex-SP ADR",
+        "numberOfShares": 27900000,
+        "sharePrice": 112.32,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 112.32
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "DNA-US",
+        "companyName": "Ginkgo Bioworks Holdings",
+        "numberOfShares": 3797000,
+        "sharePrice": 6.75,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 6.75
+      },
+      {
+        "exchange": "SIX SWISS",
+        "ticker": "GIVN-CH",
+        "companyName": "Givaudan S.A.",
+        "numberOfShares": 950000,
+        "sharePrice": 4020.2834481861914,
+        "currencyCode": "CHF",
+        "exchangeRate": 0.7691,
+        "interactive": false,
+        "currentPrice": 4020.2834481861914
+      },
+      {
+        "exchange": "MEXICO",
+        "ticker": "TLEVISACPO-MX",
+        "companyName": "Grupo Televisa S.A.B Unit Class A (TLEVISACPO-MX)",
+        "numberOfShares": 0,
+        "sharePrice": 0.5980471928397071,
+        "currencyCode": "MXN",
+        "exchangeRate": 17.206,
+        "interactive": false,
+        "currentPrice": 0.5980471928397071
+      },
+      {
+        "exchange": "EURONEXT AMSTERDAM",
+        "ticker": "HEIO-NL",
+        "companyName": "Heineken Holding",
+        "numberOfShares": 6534000,
+        "sharePrice": 86.42266824085006,
+        "currencyCode": "EUR",
+        "exchangeRate": 0.847,
+        "interactive": false,
+        "currentPrice": 86.42266824085006
+      },
+      {
+        "exchange": "NASDAQ",
+        "ticker": "MSFT-US",
+        "companyName": "Microsoft",
+        "numberOfShares": 22975000,
+        "sharePrice": 392.74,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": true,
+        "currentPrice": 392.74
+      },
+      {
+        "exchange": "EURONEXT AMSTERDAM",
+        "ticker": "OCI-NL",
+        "companyName": "OCI NV",
+        "numberOfShares": 0,
+        "sharePrice": 4.2739079102715465,
+        "currencyCode": "EUR",
+        "exchangeRate": 0.847,
+        "interactive": false,
+        "currentPrice": 4.2739079102715465
+      },
+      {
+        "exchange": "EGYPT",
+        "ticker": "OCIC-EG",
+        "companyName": "Orascom Construction Industries S.A.",
+        "numberOfShares": 0,
+        "sharePrice": 4.535349322210636,
+        "currencyCode": "EGP",
+        "exchangeRate": 47.95,
+        "interactive": false,
+        "currentPrice": 4.535349322210636
+      },
+      {
+        "exchange": "NASDAQ",
+        "ticker": "OTTR-US",
+        "companyName": "Otter Tail Corp.",
+        "numberOfShares": 2973000,
+        "sharePrice": 85.1,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 85.1
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "RSG-US",
+        "companyName": "Republic Services",
+        "numberOfShares": 109812000,
+        "sharePrice": 229,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 229
+      },
+      {
+        "exchange": "SIX SWISS",
+        "ticker": "SIKA-CH",
+        "companyName": "Sika",
+        "numberOfShares": 0,
+        "sharePrice": 207.38525549343387,
+        "currencyCode": "CHF",
+        "exchangeRate": 0.7691,
+        "interactive": false,
+        "currentPrice": 207.38525549343387
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "RBOT-US",
+        "companyName": "Vicarious Surgical",
+        "numberOfShares": 603000,
+        "sharePrice": 2.04,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 2.04
+      },
+      {
+        "exchange": "US OTC",
+        "ticker": "VRMMQ-US",
+        "companyName": "Vroom",
+        "numberOfShares": 0,
+        "sharePrice": 6,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 6
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "WM-US",
+        "companyName": "Waste Management",
+        "numberOfShares": 0,
+        "sharePrice": 240.84,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 240.84
+      }
+    ],
+    "categories": ["billionaire", "entrepreneur"],
+    "tags": ["tech", "healthcare"]
+  },
+  {
+    "rank": 19,
+    "name": "Mukesh Ambani",
+    "lastName": "Ambani",
+    "slug": "mukesh-ambani",
+    "birthday": "1957-04-19",
+    "gender": "M",
+    "netWorthBillions": 99.75,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 4.31,
+    "profileSlug": "mukesh-ambani",
+    "country": "India",
+    "state": null,
+    "city": "Mumbai",
+    "industry": "Diversified",
+    "industries": ["Diversified"],
+    "wealthSource": "Diversified",
+    "description": "Mukesh Ambani chairs and runs $125 billion (revenue) Reliance Industries, which has interests in petrochemicals, oil and gas, telecom, retail, media and financial services.",
+    "bios": [
+      "Mukesh Ambani chairs and runs $125 billion (revenue) Reliance Industries, which has interests in petrochemicals, oil and gas, telecom, retail, media and financial services.",
+      "Reliance was founded by his late father Dhirubhai Ambani, a yarn trader, in 1966 as a small textile manufacturer. After his father's death in 2002, Ambani and his younger sibling Anil divvied up the family empire.",
+      "Reliance's telecom and broadband service Jio has over 500 million subscribers and Ambani has said he plans to list it in 2026. In 2023, Reliance listed its finance arm, Jio Financial Services.",
+      "Ambani has expanded Reliance into green energy. The company will be investing $80 billion over the next decade or so on renewable energy and building a new complex next to its refinery.",
+      "Ambani's three children joined the board of Reliance in 2023. Son Akash heads Jio; daughter Isha oversees retail and financial services; and younger son Anant is in the energy business."
+    ],
+    "abouts": [
+      "During the Covid-19 lockdown, Ambani raised more than $20 billion selling a third of Jio to a string of investors, such as Facebook and Google.",
+      "Reliance owns Network18, a licensee of Forbes Media.",
+      "Ambani's U.S.-educated daughter Isha's marriage to fellow billionaire Ajay Piramal's son in  2018 drew 10,000 guests, including Hillary Clinton.",
+      "Reliance Industries bought the Mandarin Oriental hotel in New York for $98 million in 2022.",
+      "Ambani's son Anant's pre-wedding gala was held over three days in Jamnagar, Gujarat in March 2024 and had 1,600 guests, including Bill Gates, Mark Zuckerberg and Ivanka Trump."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5c7d7829a7ea434b351ba0b6/416x416.jpg?background=000000&cropX1=206&cropX2=2043&cropY1=250&cropY2=2089",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/5c7d7829a7ea434b351ba0b6/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [
+      {
+        "exchange": "BSE INDIA",
+        "ticker": "543940-IN",
+        "companyName": "Jio Financial Services",
+        "numberOfShares": 2929000000,
+        "sharePrice": 2.80677803645349,
+        "currencyCode": "INR",
+        "exchangeRate": 90.9762,
+        "interactive": false
+      },
+      {
+        "exchange": "BSE INDIA",
+        "ticker": "500325-IN",
+        "companyName": "Reliance Industries Ltd.",
+        "numberOfShares": 5690510000,
+        "sharePrice": 15.325986356871356,
+        "currencyCode": "INR",
+        "exchangeRate": 90.9762,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire", "entrepreneur"],
+    "tags": ["energy", "oil_gas", "telecom"]
+  },
+  {
+    "rank": 20,
+    "name": "Francoise Bettencourt Meyers & family",
+    "lastName": "Bettencourt Meyers",
+    "slug": "francoise-bettencourt-meyers",
+    "birthday": "1953-07-10",
+    "gender": "F",
+    "netWorthBillions": 96.96,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 9.83,
+    "profileSlug": "francoise-bettencourt-meyers",
+    "country": "France",
+    "state": null,
+    "city": "Paris",
+    "industry": "Fashion & Retail",
+    "industries": ["Fashion & Retail"],
+    "wealthSource": "L'Oréal",
+    "description": "Francoise Bettencourt Meyers is the granddaughter of the founder of L'Oreal.",
+    "bios": [
+      "Francoise Bettencourt Meyers is the granddaughter of the founder of L'Oreal.",
+      "Bettencourt Meyers and her family own more than a third of the publicly traded beauty giant.",
+      "She has served on L'Oreal's board since 1997 but announced in February she would retire in 2025.",
+      "She became France's reigning L'Oreal heiress in 2017 when her mother Liliane Bettencourt, then the world's richest woman, died at age 94.",
+      "Bettencourt Meyers also serves as the president of her family's philanthropic foundation, which encourages French progress in the sciences and arts.",
+      "Together, L'Oreal and the Bettencourt Meyers family agreed to donate $226 million to repair Notre Dame Cathedral following the 2019 fire."
+    ],
+    "abouts": [
+      "Bettencourt Meyers' inheritance was the subject of a sensational trial in France, in which a man was convicted of manipulating her ailing mother for her fortune.",
+      "Bettencourt Meyers is also a writer and has authored a book on the Greek gods and another with commentary on the Bible."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/605e26e3c65f7c2596bd3e15/416x416.jpg?background=000000&cropX1=0&cropX2=1080&cropY1=0&cropY2=1080",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "EURONEXT PARIS",
+        "ticker": "OR-FR",
+        "companyName": "L'Oreal S.A.",
+        "numberOfShares": 185710000,
+        "sharePrice": 469.18536009445097,
+        "currencyCode": "EUR",
+        "exchangeRate": 0.847,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["luxury", "ecommerce"]
+  },
+  {
+    "rank": 21,
+    "name": "Thomas Peterffy",
+    "lastName": "Peterffy",
+    "slug": "thomas-peterffy",
+    "birthday": "1944-09-30",
+    "gender": "M",
+    "netWorthBillions": 82.86,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 5.19,
+    "profileSlug": "thomas-peterffy",
+    "country": "United States",
+    "state": "Florida",
+    "city": "Palm Beach",
+    "industry": "Finance & Investments",
+    "industries": ["Finance & Investments"],
+    "wealthSource": "Discount brokerage",
+    "description": "A digital trading pioneer, Thomas Peterffy chairs Interactive Brokers, which markets its specialized trading platform to sophisticated investors.",
+    "bios": [
+      "A digital trading pioneer, Thomas Peterffy chairs Interactive Brokers, which markets its specialized trading platform to sophisticated investors.",
+      "He founded Interactive Brokers in 1993 after originally starting in market-making, and was CEO until December 2019.",
+      "In March 2017, he announced part of his market-making operation would phase out. It had been under attack by faster competitors.",
+      "Peterffy arrived in America in 1965 at age 21, the penniless descendant of Hungarian aristocrats who lost nearly everything to the Soviets.",
+      "He is a major landowner, with more than 560,000 acres, primarily located in his home state of Florida."
+    ],
+    "abouts": [
+      "In high school in Hungary, Peterffy sold contraband Juicy Fruit gum to classmates at a 500% markup.",
+      "After immigrating to America, Peterffy saved up $200,000 working as an engineer to buy a $36,000 seat on the American Stock Exchange, where he traded options."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5d8a5c6218444200084e6532/416x416.jpg?background=000000&cropX1=466&cropX2=1132&cropY1=297&cropY2=962",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "NASDAQ",
+        "ticker": "IBKR-US",
+        "companyName": "Interactive Broker Group, Inc.",
+        "numberOfShares": 1089149000,
+        "sharePrice": 71.19,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "NMAX-US",
+        "companyName": "Newsmax",
+        "numberOfShares": 23045000,
+        "sharePrice": 5.95,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire", "investor"],
+    "tags": ["finance", "asset_management", "tech"]
+  },
+  {
+    "rank": 22,
+    "name": "Julia Koch & family",
+    "lastName": "Koch",
+    "slug": "julia-koch",
+    "birthday": "1962-04-12",
+    "gender": "F",
+    "netWorthBillions": 81.19,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 81.19,
+    "profileSlug": "julia-koch",
+    "country": "United States",
+    "state": "New York",
+    "city": "New York",
+    "industry": "Diversified",
+    "industries": ["Diversified"],
+    "wealthSource": "Koch, Inc.",
+    "description": "Julia Koch and her three children inherited a 42% stake in Koch, Inc. (formerly Koch Industries) from her husband, David Koch, who died in 2019 at age 79.",
+    "bios": [
+      "Julia Koch and her three children inherited a 42% stake in Koch, Inc. (formerly Koch Industries) from her husband, David Koch, who died in 2019 at age 79.",
+      "An Iowa native, Koch moved to New York City in the 1980s and worked as an assistant to fashion designer Adolfo.",
+      "She worked with many of his high-profile clients, including First Lady Nancy Reagan.",
+      "Julia met David via a blind date in 1991; they ran into each other again six months later, began dating and got married in 1996.",
+      "In February 2024, the Julia Koch Family Foundation gifted $75 million to fund the Julia Koch Family Ambulatory Care Center at NYU Langone's West Palm Beach location.",
+      "In June 2024, Koch and her three children paid nearly $700 million for 15% of BSE Global, which owns the NBA's Brooklyn Nets and WNBA's New York Liberty."
+    ],
+    "abouts": [
+      "Julia Koch serves on the boards of Koch, Inc., Memorial Sloan Kettering Cancer Center and The Metropolitan Museum of Art."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/6601ce61b79552a97c9e786c/416x416.jpg?background=000000&cropX1=0&cropX2=2583&cropY1=522&cropY2=3106",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/6601ce61b79552a97c9e786c/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [],
+    "categories": ["billionaire"],
+    "tags": []
+  },
+  {
+    "rank": 23,
+    "name": "Charles Koch & family",
+    "lastName": "Koch",
+    "slug": "charles-koch",
+    "birthday": "1935-11-01",
+    "gender": "M",
+    "netWorthBillions": 73.79,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 73.79,
+    "profileSlug": "charles-koch",
+    "country": "United States",
+    "state": "Kansas",
+    "city": "Wichita",
+    "industry": "Diversified",
+    "industries": ["Diversified"],
+    "wealthSource": "Koch, Inc.",
+    "description": "Charles Koch has been chairman of Koch, Inc., America's second largest private company by revenue, since 1967. He brought on his first ever co-CEO in 2023.",
+    "bios": [
+      "Charles Koch has been chairman of Koch, Inc., America's second largest private company by revenue, since 1967. He brought on his first ever co-CEO in 2023.",
+      "The diversified company has some $125 billion in revenues from businesses including pipelines, chemicals, software, automotive components and Dixie cups.",
+      "His father, Fred Koch, improved a method of refining heavy oil into gasoline in 1927 and started the family business in 1940.",
+      "In 1983 Charles and his brother David (d. 2019) bought out their siblings Bill and Frederick (d. 2020) for a reported $800 million. David's widow Julia Koch inherited his 42% stake.",
+      "From 2020 to 2022, Charles transferred $5.3 billion of Koch, Inc.'s nonvoting stock to a pair of nonprofits with fewer restrictions on lobbying and politics than traditional charities.",
+      "Forbes estimates those shares accounted for nearly a tenth of the 42% stake previously held by Koch (though he still has 42% voting power)."
+    ],
+    "abouts": [
+      "Three Koch brothers (Charles, David and Bill) went to MIT; the trio were in the Beta Theta Pi fraternity and David and Charles played on the same club rugby team.",
+      "Koch founded Stand Together, a network of nonprofits and donors focused on philanthropic and political advocacy causes, in 2003.",
+      "Charles' son, Chase Koch, founded venture capital subsidiary Koch Disruptive Technologies, which has invested more than $4 billion in 70-plus companies."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/615c94bd2aac2936a52682d1/416x416.jpg?background=000000&cropX1=286&cropX2=848&cropY1=110&cropY2=672",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/615c94bd2aac2936a52682d1/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [],
+    "categories": ["billionaire"],
+    "tags": []
+  },
+  {
+    "rank": 24,
+    "name": "Zhang Yiming",
+    "lastName": "Zhang",
+    "slug": "zhang-yiming",
+    "birthday": "1984-04-01",
+    "gender": "M",
+    "netWorthBillions": 69.3,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 69.3,
+    "profileSlug": "zhang-yiming",
+    "country": "China",
+    "state": null,
+    "city": "Singapore",
+    "industry": "Technology",
+    "industries": ["Technology"],
+    "wealthSource": "TikTok",
+    "description": "Zhang Yiming is the main cofounder of Chinese tech giant ByteDance, best known for its insanely popular app TikTok, which has more than 1 billion users worldwide.",
+    "bios": [
+      "Zhang Yiming is the main cofounder of Chinese tech giant ByteDance, best known for its insanely popular app TikTok, which has more than 1 billion users worldwide.",
+      "It also has interests in e-commerce, education, gaming and news.",
+      "Zhang stepped down as chairman of ByteDance in 2021 after resigning as CEO earlier that year, reportedly under pressure from the Chinese government.",
+      "The company continues to operate TikTok in the U.S. as it keeps winning reprieves from an earlier ban.",
+      "Zhang started ByteDance in 2012 in a four-bedroom Beijing apartment."
+    ],
+    "abouts": ["He was a member of the 2013 Forbes China 30 Under 30 List."],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/618e91e427fcd6441f93c0c6/416x416.jpg?background=000000&cropX1=227&cropX2=1294&cropY1=14&cropY2=1080",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/618e91e427fcd6441f93c0c6/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [],
+    "categories": ["billionaire", "entrepreneur"],
+    "tags": ["tech", "social_media", "ai"]
+  },
+  {
+    "rank": 25,
+    "name": "Zhong Shanshan",
+    "lastName": "Zhong",
+    "slug": "zhong-shanshan",
+    "birthday": "1954-12-01",
+    "gender": "M",
+    "netWorthBillions": 68.06,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 5.22,
+    "profileSlug": "zhong-shanshan",
+    "country": "China",
+    "state": "Zhejiang",
+    "city": "Hangzhou",
+    "industry": "Food & Beverage",
+    "industries": ["Food & Beverage"],
+    "wealthSource": "Beverages, pharmaceuticals",
+    "description": "Zhong Shanshan is the founder and chairman of Nongfu Spring, a bottled water company that listed its shares in Hong Kong in 2020.",
+    "bios": [
+      "Zhong Shanshan is the founder and chairman of Nongfu Spring, a bottled water company that listed its shares in Hong Kong in 2020.",
+      "Hangzhou-born Zhong dropped out of elementary school during China's chaotic Cultural Revolution.",
+      "He later had jobs as a construction worker, a newspaper reporter and a beverage sales agent before starting his own business.",
+      "Zhong also controls Wantai Biological, which  makes rapid diagnostic tests for infectious diseases including Covid-19.",
+      "His son Zhong Shu Zi is a non-executive director at Nongfu."
+    ],
+    "abouts": [],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/60380e390357bc1fbfc0bc32/416x416.jpg?background=000000&cropX1=116&cropX2=1327&cropY1=201&cropY2=1413",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/60380e390357bc1fbfc0bc32/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [
+      {
+        "exchange": "SHANGHAI",
+        "ticker": "603392-CN",
+        "companyName": "BEIJING WANTAI BIOLOGICAL PHARMACY",
+        "numberOfShares": 929759000,
+        "sharePrice": 5.978966407514915,
+        "currencyCode": "CNY",
+        "exchangeRate": 6.8557,
+        "interactive": false
+      },
+      {
+        "exchange": "HONG KONG",
+        "ticker": "9633-HK",
+        "companyName": "Nongfu Spring",
+        "numberOfShares": 9451302000,
+        "sharePrice": 6.059753774561818,
+        "currencyCode": "HKD",
+        "exchangeRate": 7.8221,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["manufacturing"]
+  },
+  {
+    "rank": 26,
+    "name": "Dieter Schwarz",
+    "lastName": "Schwarz",
+    "slug": "dieter-schwarz",
+    "birthday": "1939-09-24",
+    "gender": "M",
+    "netWorthBillions": 67.16,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 67.16,
+    "profileSlug": "dieter-schwarz",
+    "country": "Germany",
+    "state": null,
+    "city": "Neckarsulm",
+    "industry": "Fashion & Retail",
+    "industries": ["Fashion & Retail"],
+    "wealthSource": "Retail",
+    "description": "Dieter Schwarz owns Schwarz Group, a German discount grocery retailer with revenue of more than $200 billion.",
+    "bios": [
+      "Dieter Schwarz owns Schwarz Group, a German discount grocery retailer with revenue of more than $200 billion.",
+      "Schwarz inherited the company from his father, Josef, who became a partner in Suedfruechte Grosshandel Lidl &amp; Co., a fruit wholesaler, in 1930.",
+      "Dieter opened the first Lidl store in 1973, became CEO in 1977 when Josef died, and built Schwarz Group into Europe's largest retail empire, with 500,000 employees.",
+      "Lidl entered the U.S. in 2017, promising to convince consumers to \"Rethink Grocery.\" Its stores are mostly in Virginia and North and South Carolina.",
+      "Schwarz Group is owned by a foundation, technically a limited liability company, but Dieter maintains full control and is the effective owner."
+    ],
+    "abouts": [
+      "The Dieter Schwarz Foundation supports education and daycare facilities for children, as well as science and research projects.",
+      "A decidedly private person who shuns all publicity, Schwarz has been married for more than 50 years and has two daughters."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/6050f48ca1ab099ed6e290cc/416x416.jpg?background=000000&cropX1=0&cropX2=800&cropY1=0&cropY2=800",
+    "thumbnailUrl": null,
+    "financialAssets": [],
+    "categories": ["billionaire"],
+    "tags": ["luxury", "ecommerce"]
+  },
+  {
+    "rank": 27,
+    "name": "Germán Larrea Mota Velasco & family",
+    "lastName": "Larrea Mota Velasco",
+    "slug": "german-larrea-mota-velasco",
+    "birthday": "1953-10-26",
+    "gender": "M",
+    "netWorthBillions": 67.1,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 7.52,
+    "profileSlug": "german-larrea-mota-velasco",
+    "country": "Mexico",
+    "state": null,
+    "city": "Mexico City",
+    "industry": "Metals & Mining",
+    "industries": ["Metals & Mining"],
+    "wealthSource": "Mining",
+    "description": "Germán Larrea Mota Velasco owns the majority of Mexico's largest copper mining company, Grupo México, which also has operations in Perú and the U.S.",
+    "bios": [
+      "Germán Larrea Mota Velasco owns the majority of Mexico's largest copper mining company, Grupo México, which also has operations in Perú and the U.S.",
+      "Under his leadership as president and CEO, Grupo México expanded into the infrastructure and rail transportation sectors.",
+      "In 2014, the mining company faced scrutiny after a spill at its copper mine in Sonora, Mexico, contaminated two rivers nearby.",
+      "The company agreed with a government request to deposit $150 million in a trust to compensate local residents harmed by the spill.",
+      "In 2017, Larrea spun off Grupo México's transport arm into a new company, GMexico Transportes, part owned by two of Carlos Slim Helú's firms."
+    ],
+    "abouts": [],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/597a47174bbe6f3eb800b6b8/416x416.jpg?background=000000&cropX1=1901&cropX2=3603&cropY1=368&cropY2=2069",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "MEXICO",
+        "ticker": "GMXT-MX",
+        "companyName": "GMexico Transportes",
+        "numberOfShares": 89583000,
+        "sharePrice": 1.981866790654423,
+        "currencyCode": "MXN",
+        "exchangeRate": 17.206,
+        "interactive": false
+      },
+      {
+        "exchange": "MEXICO",
+        "ticker": "GMEXICOB-MX",
+        "companyName": "Grupo Mexico",
+        "numberOfShares": 4659185000,
+        "sharePrice": 12.72986167615948,
+        "currencyCode": "MXN",
+        "exchangeRate": 17.206,
+        "interactive": false
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "SCCO-US",
+        "companyName": "Southern Copper Corp.",
+        "numberOfShares": 392829,
+        "sharePrice": 218.3,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": []
+  },
+  {
+    "rank": 28,
+    "name": "Jeff Yass",
+    "lastName": "Yass",
+    "slug": "jeff-yass",
+    "birthday": "1958-07-17",
+    "gender": "M",
+    "netWorthBillions": 65.65,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 65.65,
+    "profileSlug": "jeff-yass",
+    "country": "United States",
+    "state": "Pennsylvania",
+    "city": "Haverford",
+    "industry": "Finance & Investments",
+    "industries": ["Finance & Investments"],
+    "wealthSource": "Trading, investments",
+    "description": "Jeff Yass is a cofounder of Susquehanna International Group, one of Wall Street's largest and most successful trading firms.",
+    "bios": [
+      "Jeff Yass is a cofounder of Susquehanna International Group, one of Wall Street's largest and most successful trading firms.",
+      "He went to SUNY Binghamton, became a pro gambler, then began trading on the Philadelphia Stock Exchange in 1981 backed by billionaire Israel Englander.",
+      "In 1987, he cofounded Susquehanna with a handful of partners; it's now a giant in options trading and making markets, with more than 3,000 employees worldwide.",
+      "It recruits and trains traders using poker tournaments to sharpen decision-making skills; its traders have won 3 World Series of Poker bracelets.",
+      "Susquehanna has invested in hundreds of private companies globally, including TikTok parent ByteDance, its most valuable holding based on Forbes reporting."
+    ],
+    "abouts": [
+      "In the 1990s, Yass' father Gerald helped build Susquehanna's back-office bookkeeping operations.",
+      "For a college economics class, Yass wrote a final paper titled, \"An Econometric Analysis of Horse Racing,\" that he eventually published in Gambling Times magazine."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/60649a21472ae5b09dad20b1/416x416.jpg?background=000000&cropX1=3&cropX2=819&cropY1=0&cropY2=816",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/60649a21472ae5b09dad20b1/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [],
+    "categories": ["billionaire"],
+    "tags": ["finance", "asset_management"]
+  },
+  {
+    "rank": 29,
+    "name": "Gautam Adani",
+    "lastName": "Adani",
+    "slug": "gautam-adani-1",
+    "birthday": "1962-06-24",
+    "gender": "M",
+    "netWorthBillions": 63.81,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": -1.73,
+    "profileSlug": "gautam-adani-1",
+    "country": "India",
+    "state": null,
+    "city": "Ahmedabad",
+    "industry": "Diversified",
+    "industries": ["Diversified"],
+    "wealthSource": "Infrastructure, commodities",
+    "description": "Gautam Adani is chairman of the Ahmedabad-headquartered Adani Group, with interests in ports, airports, power generation and transmission, and green energy, among others.",
+    "bios": [
+      "Gautam Adani is chairman of the Ahmedabad-headquartered Adani Group, with interests in ports, airports, power generation and transmission, and green energy, among others.",
+      "The Adani Group, which began in 1988 as a commodities trading firm, expanded through acquisitions and with the support of Indian Prime Minister Narendra Modi.",
+      "Adani is India's biggest airport operator and also controls Mundra Port, India's largest, in his home state of Gujarat.",
+      "In January 2023, U.S. firm Hindenburg Research accused Adani and his companies of financial fraud and stock market manipulation. The Adani Group has denied any wrongdoing.",
+      "Adani group's shares, which had plummeted following the Hindenburg report, recovered substantially after India's Supreme Court ruled in the group's favour a year later."
+    ],
+    "abouts": [
+      "Adani owns Abbot Point, a controversial coal mining project in Australia, whose Carmichael coal mine is billed as one of the world's largest.",
+      "Adani became India's second-largest cement producer in 2022, after acquiring Swiss firm Holcim's Indian assets for $10.5 billion.",
+      "Adani says he wants to be the world's largest producer of green energy and will invest up to $70 billion on renewable energy projects.",
+      "A high school dropout, Adani spurned his father's textile shop to start his own commodities trading firm."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/68e693f20b749254082e47fe/416x416.jpg?background=000000&cropX1=0&cropX2=2041&cropY1=161&cropY2=2203",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/68e693f20b749254082e47fe/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [
+      {
+        "exchange": "BSE INDIA",
+        "ticker": "512599-IN",
+        "companyName": "Adani Enterprises",
+        "numberOfShares": 749700000,
+        "sharePrice": 23.79523435799693,
+        "currencyCode": "INR",
+        "exchangeRate": 90.9762,
+        "interactive": false
+      },
+      {
+        "exchange": "BSE INDIA",
+        "ticker": "542066-IN",
+        "companyName": "Adani Gas",
+        "numberOfShares": 411300000,
+        "sharePrice": 5.627845524433862,
+        "currencyCode": "INR",
+        "exchangeRate": 90.9762,
+        "interactive": false
+      },
+      {
+        "exchange": "BSE INDIA",
+        "ticker": "541450-IN",
+        "companyName": "Adani Green Energy",
+        "numberOfShares": 808250000,
+        "sharePrice": 10.422506105992555,
+        "currencyCode": "INR",
+        "exchangeRate": 90.9762,
+        "interactive": false
+      },
+      {
+        "exchange": "BSE INDIA",
+        "ticker": "532921-IN",
+        "companyName": "Adani Port & Special Economic Zone",
+        "numberOfShares": 921283000,
+        "sharePrice": 16.717009503584453,
+        "currencyCode": "INR",
+        "exchangeRate": 90.9762,
+        "interactive": false
+      },
+      {
+        "exchange": "BSE INDIA",
+        "ticker": "533096-IN",
+        "companyName": "Adani Power",
+        "numberOfShares": 8971240000,
+        "sharePrice": 1.5399631991663751,
+        "currencyCode": "INR",
+        "exchangeRate": 90.9762,
+        "interactive": false
+      },
+      {
+        "exchange": "BSE INDIA",
+        "ticker": "539254-IN",
+        "companyName": "Adani Transmission",
+        "numberOfShares": 696900000,
+        "sharePrice": 11.113346127888391,
+        "currencyCode": "INR",
+        "exchangeRate": 90.9762,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": []
+  },
+  {
+    "rank": 30,
+    "name": "Changpeng Zhao",
+    "lastName": "Zhao",
+    "slug": "changpeng-zhao",
+    "birthday": "1977-02-05",
+    "gender": "M",
+    "netWorthBillions": 63.61,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 34.8,
+    "profileSlug": "changpeng-zhao",
+    "country": "Canada",
+    "state": null,
+    "city": "Dubai",
+    "industry": "Finance & Investments",
+    "industries": ["Finance & Investments"],
+    "wealthSource": "Cryptocurrency exchange",
+    "description": "Changpeng Zhao, who goes by CZ, is the founder and former CEO of Binance, the largest cryptocurrency exchange in the world.",
+    "bios": [
+      "Changpeng Zhao, who goes by CZ, is the founder and former CEO of Binance, the largest cryptocurrency exchange in the world.",
+      "The Chinese-Canadian coder cut his teeth building high-frequency trading systems for Wall Street's flash boys.",
+      "Zhao founded Binance in 2017 and still owns an estimated 90% of the exchange plus a stash of its BNB tokens.",
+      "In November 2023, Zhao stepped down as Binance's CEO as part of a sweeping settlement with U.S. authorities.",
+      "Zhao pleaded guilty to failing to maintain an effective anti-money laundering program, paid a $50 million fine and served four months in prison.",
+      "He was pardoned in October 2025 by Donald Trump, whose crypto businesses have had extensive dealings with Binance."
+    ],
+    "abouts": [
+      "Zhao was born in Jiangsu, China. His father, a professor, was labeled a pro-bourgeois intellect and temporarily exiled shortly after CZ was born.",
+      "As a teenager in Vancouver, CZ pitched in to cover the household expenses, flipping burgers at McDonald's and working overnight shifts at a gas station."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/61115ac5b4c5d23845419c4e/416x416.jpg?background=000000&cropX1=0&cropX2=911&cropY1=0&cropY2=911",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/61115ac5b4c5d23845419c4e/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [
+      {
+        "companyName": "Binance Coin (BNB)",
+        "numberOfShares": 47011000,
+        "sharePrice": 610.82,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      },
+      {
+        "companyName": "Bitcoin",
+        "numberOfShares": 1400,
+        "sharePrice": 65626,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire", "entrepreneur"],
+    "tags": ["finance", "asset_management", "crypto", "blockchain"]
+  },
+  {
+    "rank": 31,
+    "name": "Tadashi Yanai & family",
+    "lastName": "Yanai",
+    "slug": "tadashi-yanai",
+    "birthday": "1949-02-07",
+    "gender": "M",
+    "netWorthBillions": 61.79,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 7.37,
+    "profileSlug": "tadashi-yanai",
+    "country": "Japan",
+    "state": null,
+    "city": "Tokyo",
+    "industry": "Fashion & Retail",
+    "industries": ["Fashion & Retail"],
+    "wealthSource": "Fashion retail",
+    "description": "Tadashi Yanai built and runs Tokyo-listed retail clothing empire Fast Retailing, parent of the Uniqlo chain.",
+    "bios": [
+      "Tadashi Yanai built and runs Tokyo-listed retail clothing empire Fast Retailing, parent of the Uniqlo chain.",
+      "Fast Retailing's other brands include Theory, Helmut Lang, J Brand and GU.",
+      "The company reported net profit of $2.8 billion on revenue of $22 billion for the fiscal year ended August 2025.",
+      "Flagship brand Uniqlo has nearly 2,500 stores across 25 countries.",
+      "Yanai wants his company to become the world's largest retailer, which means it would have to surpass H&M and Inditex (parent of Zara)."
+    ],
+    "abouts": [
+      "Yanai resigned as an independent director from the board of SoftBank Group after 18 years, in 2019.",
+      "Yanai grew up living above his parents' clothing store in a small town in Yamaguchi Prefecture in southwestern Japan.",
+      "Yanai has declared English as the company language at Fast Retailing."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/66560a756b74351d5b0711e8/416x416.jpg?background=000000&cropX1=689&cropX2=1604&cropY1=78&cropY2=992",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/66560a756b74351d5b0711e8/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [
+      {
+        "exchange": "TOKYO",
+        "ticker": "9983-JP",
+        "companyName": "Fast Retailing Co. Ltd.",
+        "numberOfShares": 123093000,
+        "sharePrice": 442.1457165732586,
+        "currencyCode": "JPY",
+        "exchangeRate": 156.125,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["luxury", "ecommerce"]
+  },
+  {
+    "rank": 32,
+    "name": "Ma Huateng",
+    "lastName": "Ma",
+    "slug": "ma-huateng",
+    "birthday": "1971-10-29",
+    "gender": "M",
+    "netWorthBillions": 53.84,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 5.2,
+    "profileSlug": "ma-huateng",
+    "country": "China",
+    "state": "Guangdong",
+    "city": "Shenzhen",
+    "industry": "Technology",
+    "industries": ["Technology"],
+    "wealthSource": "Online games",
+    "description": "Ma Huateng, also known as Pony Ma, is the chairman and CEO of Chinese internet giant Tencent Holdings.",
+    "bios": [
+      "Ma Huateng, also known as Pony Ma, is the chairman and CEO of Chinese internet giant Tencent Holdings.",
+      "Tencent's popular social messaging app WeChat has over 1.4 billion monthly users.",
+      "Known at home for mobile games such as battle game Honor of Kings, Tencent is also one of the largest videogame publishers globally and has acquired a stake in U.S. videogame company Epic Games.",
+      "It has also invested in electric car maker Tesla and music-streaming service Spotify, which in turn has a stake in its Tencent Music.",
+      "Ma led research and development of internet paging system at China Motion Telecom Development before starting Tencent in 1998."
+    ],
+    "abouts": [],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/605e23c0f0986f688fbd3e15/416x416.jpg?background=000000&cropX1=0&cropX2=1080&cropY1=0&cropY2=1080",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/605e23c0f0986f688fbd3e15/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [
+      {
+        "exchange": "HONG KONG",
+        "ticker": "3309-HK",
+        "companyName": "C-MER Eye Care Holdings",
+        "numberOfShares": 0,
+        "sharePrice": 0.1892075018217614,
+        "currencyCode": "HKD",
+        "exchangeRate": 7.8221,
+        "interactive": false
+      },
+      {
+        "exchange": "NASDAQ",
+        "ticker": "JD-US",
+        "companyName": "JD.com Inc.",
+        "numberOfShares": 33802000,
+        "sharePrice": 26.53,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      },
+      {
+        "exchange": "HONG KONG",
+        "ticker": "3690-HK",
+        "companyName": "Meituan Dianping",
+        "numberOfShares": 71000000,
+        "sharePrice": 10.374451873537797,
+        "currencyCode": "HKD",
+        "exchangeRate": 7.8221,
+        "interactive": false
+      },
+      {
+        "exchange": "HONG KONG",
+        "ticker": "700-HK",
+        "companyName": "Tencent",
+        "numberOfShares": 709860000,
+        "sharePrice": 66.2226256376165,
+        "currencyCode": "HKD",
+        "exchangeRate": 7.8221,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire", "entrepreneur"],
+    "tags": ["tech", "social_media"]
+  },
+  {
+    "rank": 33,
+    "name": "Robin Zeng",
+    "lastName": "Zeng",
+    "slug": "robin-zeng",
+    "birthday": "1969-01-01",
+    "gender": "M",
+    "netWorthBillions": 53.24,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 2.12,
+    "profileSlug": "robin-zeng",
+    "country": "Hong Kong",
+    "state": "Fujian",
+    "city": "Ningde",
+    "industry": "Energy",
+    "industries": ["Energy"],
+    "wealthSource": "Batteries",
+    "description": "Robin Zeng is the founder, chairman and CEO of Contemporary Amperex Technology (CATL),  one of the world's largest suppliers of batteries for electric vehicles.",
+    "bios": [
+      "Robin Zeng is the founder, chairman and CEO of Contemporary Amperex Technology (CATL),  one of the world's largest suppliers of batteries for electric vehicles.",
+      "CATL, dual-listed in Hong Kong and Shenzhen, supplies batteries to automakers including BMW, Geely and Tesla.",
+      "CATL is headquartered in Zeng's hometown of Ningde in Fujian province.",
+      "The company has been working with Ford since 2023 to build a battery factory in Michigan, although the original $3.5 billion plant has been downsized amid geopolitical tensions."
+    ],
+    "abouts": [
+      "Zeng worked at a state-owned shipbuilding company in Fujian Province early in his career."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/690239904c2185472de3db28/416x416.jpg?background=000000&cropX1=305&cropX2=1307&cropY1=145&cropY2=1147",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/690239904c2185472de3db28/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [
+      {
+        "exchange": "SHENZHEN",
+        "ticker": "300750-CN",
+        "companyName": "Contemporary Amperex Technology",
+        "numberOfShares": 1024704999.9999999,
+        "sharePrice": 49.886955380194586,
+        "currencyCode": "CNY",
+        "exchangeRate": 6.8557,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["energy"]
+  },
+  {
+    "rank": 34,
+    "name": "Iris Fontbona & family",
+    "lastName": "Fontbona",
+    "slug": "iris-fontbona",
+    "birthday": "1943-01-01",
+    "gender": "F",
+    "netWorthBillions": 52.56,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 8.89,
+    "profileSlug": "iris-fontbona",
+    "country": "Chile",
+    "state": null,
+    "city": "Santiago",
+    "industry": "Metals & Mining",
+    "industries": ["Metals & Mining"],
+    "wealthSource": "Mining",
+    "description": "Iris Fontbona is the widow of Andrónico Luksic, who built a fortune in mining and beverages before dying of cancer in 2005.",
+    "bios": [
+      "Iris Fontbona is the widow of Andrónico Luksic, who built a fortune in mining and beverages before dying of cancer in 2005.",
+      "He left his businesses to Fontbona and his three sons: Jean-Paul, Andrónico and Guillermo Luksic (who died of lung cancer in 2013 at age 57).",
+      "Fontbona and her children control Antofagasta Plc, which owns copper mines in Chile and trades on the London Stock Exchange.",
+      "Fontbona and her children also own a majority stake in Quiñenco, a publicly-traded Chilean conglomerate active in banking, beer and manufacturing.",
+      "Jean-Paul Luksic is chairman of Antofagasta; Andrónico Luksic, who headed up Quiñenco since 2013, stepped down in December 2023."
+    ],
+    "abouts": [
+      "In 2004, her son Andrónico climbed Mount Everest, and in 2005 he completed The Seven Summits of the World, reaching the highest peaks on each continent."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5c6db2974bbe6f0ec75418f0/416x416.jpg?background=000000&cropX1=124&cropX2=491&cropY1=0&cropY2=367",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "LONDON",
+        "ticker": "ANTO-GB",
+        "companyName": "Antofagasta PLC",
+        "numberOfShares": 640018000,
+        "sharePrice": 57.38101640225867,
+        "currencyCode": "GBP",
+        "exchangeRate": 0.7438,
+        "interactive": false
+      },
+      {
+        "exchange": "SANTIAGO",
+        "ticker": "QUINENCO-CL",
+        "companyName": "Quinenco SA",
+        "numberOfShares": 1378459000,
+        "sharePrice": 5.033518658338481,
+        "currencyCode": "CLP",
+        "exchangeRate": 874.14,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": []
+  },
+  {
+    "rank": 35,
+    "name": "Masayoshi Son",
+    "lastName": "Son",
+    "slug": "masayoshi-son",
+    "birthday": "1957-08-11",
+    "gender": "M",
+    "netWorthBillions": 51.51,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 5.43,
+    "profileSlug": "masayoshi-son",
+    "country": "Japan",
+    "state": null,
+    "city": "Tokyo",
+    "industry": "Finance & Investments",
+    "industries": ["Finance & Investments"],
+    "wealthSource": "Telecom, Investments",
+    "description": "Masayoshi Son founded and runs investment giant SoftBank Group.",
+    "bios": [
+      "Masayoshi Son founded and runs investment giant SoftBank Group.",
+      "Investors in Son's Vision Fund 1 include Apple, Qualcomm, Foxconn, the family office of billionaire Larry Ellison and Saudi Arabia's sovereign fund.",
+      "The Vision Funds have invested in over 400 companies, including ride-share firm Grab,  Korean e-commerce leader Coupang and India's food-delivery platform Swiggy.",
+      "Son is investing billions of dollars in AI, including in the $500 billion Stargate Project, in partnership with OpenAI, Oracle and MGX, to build AI infrastructure in the U.S."
+    ],
+    "abouts": [
+      "Son spent more than $100 million on a 9-acre estate in Silicon Valley with a 9,000 square foot mansion.",
+      "In November 2025, SoftBank sold its entire stake in chipmaker Nvidia for nearly $6 billion to fund its investment in ChatGPT-maker OpenAI.",
+      "In 2024, SoftBank Group announced a joint venture with Riyadh-based investment firm Alat, for manufacturing industrial robots."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5e8b632801879f000703e485/416x416.jpg?background=000000&cropX1=0&cropX2=4500&cropY1=833&cropY2=5330",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "TOKYO",
+        "ticker": "9984-JP",
+        "companyName": "SoftBank Group Corp.",
+        "numberOfShares": 1759396000,
+        "sharePrice": 26.190552441953564,
+        "currencyCode": "JPY",
+        "exchangeRate": 156.125,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire", "investor"],
+    "tags": ["finance", "asset_management", "venture_capital", "tech", "ai"]
+  },
+  {
+    "rank": 36,
+    "name": "Ken Griffin",
+    "lastName": "Griffin",
+    "slug": "ken-griffin",
+    "birthday": "1968-10-15",
+    "gender": "M",
+    "netWorthBillions": 49.8,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 49.8,
+    "profileSlug": "ken-griffin",
+    "country": "United States",
+    "state": "Florida",
+    "city": "Miami",
+    "industry": "Finance & Investments",
+    "industries": ["Finance & Investments"],
+    "wealthSource": "Hedge funds",
+    "description": "Ken Griffin founded and runs Citadel, a Miami-based hedge fund firm that manages $68 billion in assets.",
+    "bios": [
+      "Ken Griffin founded and runs Citadel, a Miami-based hedge fund firm that manages $68 billion in assets.",
+      "Griffin founded Citadel in 1990 but first began trading from his Harvard dorm in 1987. He put a satellite dish on the roof to get real-time stock quotes.",
+      "Citadel is the world's most profitable hedge fund and has generated $83 billion in net gains since inception in 1990, according to LCH Investments.",
+      "Citadel Securities, one of Wall Street's biggest market-making firms, is responsible for one of every four stock trades in the U.S.",
+      "Griffin has given some $2.4 billion to philanthropic causes. Recent beneficiaries include Memorial Sloan Kettering Cancer Center and nonprofit hospitals in Miami."
+    ],
+    "abouts": [
+      "Griffin bought rare editions of the Emancipation Proclamation and the Thirteenth Amendment, signed by Abraham Lincoln, to be loaned for public display in 2025.",
+      "Griffin's first job was selling Franklin Mint collectibles."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/6247575a5af6af682d503f2f/416x416.jpg?background=000000&cropX1=0&cropX2=1966&cropY1=0&cropY2=1966",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/6247575a5af6af682d503f2f/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [],
+    "categories": ["billionaire", "investor"],
+    "tags": ["finance", "asset_management", "hedge_fund"]
+  },
+  {
+    "rank": 37,
+    "name": "Jacqueline Mars",
+    "lastName": "Mars",
+    "slug": "jacqueline-mars",
+    "birthday": "1939-10-10",
+    "gender": "F",
+    "netWorthBillions": 49.14,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 49.14,
+    "profileSlug": "jacqueline-mars",
+    "country": "United States",
+    "state": "Virginia",
+    "city": "The Plains",
+    "industry": "Food & Beverage",
+    "industries": ["Food & Beverage"],
+    "wealthSource": "Candy, pet food",
+    "description": "Jacqueline Mars owns an estimated one-third of Mars, the candy, food and pet care firm founded by her grandfather.",
+    "bios": [
+      "Jacqueline Mars owns an estimated one-third of Mars, the candy, food and pet care firm founded by her grandfather.",
+      "She worked for the company for nearly 20 years and served on the board until 2016.",
+      "Her son Stephen Badger is on Mars' board of directors.",
+      "Mars acquired snack company Kellavova in December 2025 for $35.9 billion including debt.",
+      "Her brother John owns an estimated third of Mars; her late brother Forrest Jr.'s four daughters own the rest."
+    ],
+    "abouts": [
+      "Mars owns a horse farm in Virginia that has trained horses ridden by Olympic medalists.",
+      "Mars was founded in 1911 by Jacqueline's grandfather, Frank, who, along with her father Forrest Sr., invented the Milky Way bar in 1923."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/59d50d06a7ea436b47b36d84/416x416.jpg?background=000000&cropX1=147&cropX2=1649&cropY1=377&cropY2=1879",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/59d50d06a7ea436b47b36d84/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [],
+    "categories": ["billionaire"],
+    "tags": ["manufacturing"]
+  },
+  {
+    "rank": 37,
+    "name": "John Mars",
+    "lastName": "Mars",
+    "slug": "john-mars",
+    "birthday": "1935-10-15",
+    "gender": "M",
+    "netWorthBillions": 49.14,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 49.14,
+    "profileSlug": "john-mars",
+    "country": "United States",
+    "state": "Wyoming",
+    "city": "Jackson",
+    "industry": "Food & Beverage",
+    "industries": ["Food & Beverage"],
+    "wealthSource": "Candy, pet food",
+    "description": "John Mars and his siblings Jacqueline and Forrest Jr. (d. 2016) inherited stakes in the candy firm Mars when their father died in 1999.",
+    "bios": [
+      "John Mars and his siblings Jacqueline and Forrest Jr. (d. 2016) inherited stakes in the candy firm Mars when their father died in 1999.",
+      "He and Jacqueline each own an estimated one-third of the company. His late brother Forrest Jr.'s four daughters are believed to own the rest.",
+      "The $65 billion (sales) business was founded by John's grandfather, Frank, in 1911.",
+      "Mars acquired snack company Kellavova in December 2025 for $35.9 billion including debt."
+    ],
+    "abouts": [
+      "John Mars and his wife, Adrienne, are noted supporters of the Smithsonian Institution in Washington, D.C.",
+      "The company's first big hit was the Milky Way candy bar, introduced in 1923."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5ba41e08a7ea434e4c6948eb/416x416.jpg?background=000000&cropX1=53&cropX2=1401&cropY1=9&cropY2=1357",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/5ba41e08a7ea434e4c6948eb/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [],
+    "categories": ["billionaire"],
+    "tags": ["manufacturing"]
+  },
+  {
+    "rank": 39,
+    "name": "Lukas Walton",
+    "lastName": "Walton",
+    "slug": "lukas-walton",
+    "birthday": "1986-09-19",
+    "gender": "M",
+    "netWorthBillions": 48.93,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 10.59,
+    "profileSlug": "lukas-walton",
+    "country": "United States",
+    "state": "Illinois",
+    "city": "Chicago",
+    "industry": "Fashion & Retail",
+    "industries": ["Fashion & Retail"],
+    "wealthSource": "Walmart ",
+    "description": "Lukas Walton is a grandson of Walmart founder Sam Walton (d. 1992).",
+    "bios": [
+      "Lukas Walton is a grandson of Walmart founder Sam Walton (d. 1992).",
+      "He inherited a fortune when his father, John Walton, died in a 2005 plane crash.",
+      "He received about one third of his father's estate; his mother, Christy Walton, got about one sixth.",
+      "He owns stakes in Walmart and his family's $27 billion (assets) Arvest Bank Group, though he does not work for either company.",
+      "He founded and runs Builders Vision, a sustainability-focused philanthropic and impact-investing platform that has doled out more than $3 billion since launching in 2021."
+    ],
+    "abouts": [
+      "Lukas battled cancer as child. His mother has reportedly claimed that an all-organic diet eliminated his tumor.",
+      "Lukas studied environmental science and economics at Colorado College."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5d89f3c36de3150009a4e5bd/416x416.jpg?background=000000&cropX1=122&cropX2=576&cropY1=26&cropY2=480",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "NASDAQ",
+        "ticker": "FSLR-US",
+        "companyName": "First Solar Inc.",
+        "numberOfShares": 2217552,
+        "sharePrice": 197.2,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      },
+      {
+        "exchange": "NASDAQ",
+        "ticker": "WMT-US",
+        "companyName": "Walmart",
+        "numberOfShares": 296242049,
+        "sharePrice": 127.95,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["luxury", "ecommerce"]
+  },
+  {
+    "rank": 40,
+    "name": "Giovanni Ferrero",
+    "lastName": "Ferrero",
+    "slug": "giovanni-ferrero",
+    "birthday": "1964-09-21",
+    "gender": "M",
+    "netWorthBillions": 48.75,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 48.75,
+    "profileSlug": "giovanni-ferrero",
+    "country": "Italy",
+    "state": null,
+    "city": "Brussels",
+    "industry": "Food & Beverage",
+    "industries": ["Food & Beverage"],
+    "wealthSource": "Nutella, chocolates",
+    "description": "Giovanni Ferrero is executive chairman of his family's namesake confections business, which boasts $20 billion in annual sales.",
+    "bios": [
+      "Giovanni Ferrero is executive chairman of his family's namesake confections business, which boasts $20 billion in annual sales.",
+      "The firm is best known for its iconic Nutella chocolate-hazelnut spread, Kinder chocolates and Tic Tac mints.",
+      "Giovanni served as co-CEO with his brother, Pietro, who died of a heart attack in 2011.",
+      "In 2017 he stepped down as CEO but stayed on as executive chairman to focus on corporate strategy.",
+      "Ferrero acquired Nestle's entire U.S. confections business in 2018 for $2.8 billion.",
+      "In 2025 it acquired WK Kellogg, the makers behind Corn Flakes and Rice Krispies, for $3.1 billion."
+    ],
+    "abouts": ["Ferrero is a novelist who has published eight books."],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5b11bc5ca7ea436b547f29cb/416x416.jpg?background=000000&cropX1=622&cropX2=1844&cropY1=361&cropY2=1582",
+    "thumbnailUrl": null,
+    "financialAssets": [],
+    "categories": ["billionaire"],
+    "tags": ["manufacturing"]
+  },
+  {
+    "rank": 41,
+    "name": "Li Ka-shing",
+    "lastName": "Li",
+    "slug": "li-ka-shing",
+    "birthday": "1928-06-13",
+    "gender": "M",
+    "netWorthBillions": 46.98,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 22.39,
+    "profileSlug": "li-ka-shing",
+    "country": "Hong Kong",
+    "state": null,
+    "city": "Hong Kong",
+    "industry": "Diversified",
+    "industries": ["Diversified"],
+    "wealthSource": "Diversified",
+    "description": "Nicknamed Superman, Li Ka-shing is revered as one of the most influential businessmen in Asia.",
+    "bios": [
+      "Nicknamed Superman, Li Ka-shing is revered as one of the most influential businessmen in Asia.",
+      "Li retired as chairman of CK Hutchison Holdings and CK Asset Holdings in 2018 but remains senior advisor.",
+      "His son Victor now heads the conglomerate, which has more than 300,000 employees and operates in more than 50 nations.",
+      "Li started Cheung Kong Plastics, named after the Yangtze River, in 1950 at age 21 with $6,500 in savings and loans from relatives.",
+      "His Li Ka Shing Foundation has donated more than $3.8 billion; over 80% has gone to Greater China."
+    ],
+    "abouts": [
+      "Li says it took him five minutes in 2007 to decide to invest in Facebook, even though it barely had any revenues. He also invested in Siri and Spotify.",
+      "At age 12, Li fled China with his family. Two years later his father, who had been a primary school principal in China but then worked at a watch factory, died.",
+      "At the announcement of his retirement, Li joked that he'd been \"working for a long time, too long.\""
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/65d4c4432a6eece8368e841b/416x416.jpg?background=000000&cropX1=250&cropX2=1494&cropY1=226&cropY2=1471",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/65d4c4432a6eece8368e841b/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [
+      {
+        "exchange": "NASDAQ",
+        "ticker": "CELH-US",
+        "companyName": "Celsius Holdings",
+        "numberOfShares": 10028000,
+        "sharePrice": 53.61,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "CVE-US",
+        "companyName": "cenovus energy - Common Stock",
+        "numberOfShares": 231194000,
+        "sharePrice": 22.31,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      },
+      {
+        "exchange": "HONG KONG",
+        "ticker": "1113-HK",
+        "companyName": "CK Asset Holdings",
+        "numberOfShares": 1330969000,
+        "sharePrice": 6.364019892356273,
+        "currencyCode": "HKD",
+        "exchangeRate": 7.8221,
+        "interactive": false
+      },
+      {
+        "exchange": "HONG KONG",
+        "ticker": "1-HK",
+        "companyName": "CK Hutchison",
+        "numberOfShares": 1164904000,
+        "sharePrice": 8.23308318737935,
+        "currencyCode": "HKD",
+        "exchangeRate": 7.8221,
+        "interactive": false
+      },
+      {
+        "exchange": "HONG KONG",
+        "ticker": "1038-HK",
+        "companyName": "CK Infrastructure Holdings",
+        "numberOfShares": 5428000,
+        "sharePrice": 8.495161145983815,
+        "currencyCode": "HKD",
+        "exchangeRate": 7.8221,
+        "interactive": false
+      },
+      {
+        "exchange": "TORONTO",
+        "ticker": "HSE-CA",
+        "companyName": "Husky Energy Inc.",
+        "numberOfShares": 0,
+        "sharePrice": 4.956375100813843,
+        "currencyCode": "CAD",
+        "exchangeRate": 1.3639,
+        "interactive": false
+      },
+      {
+        "exchange": "HONG KONG",
+        "ticker": "215-HK",
+        "companyName": "Hutchison Telecommunications Hong Kong Holdings Ltd.",
+        "numberOfShares": 53605000,
+        "sharePrice": 0.15085462983086384,
+        "currencyCode": "HKD",
+        "exchangeRate": 7.8221,
+        "interactive": false
+      },
+      {
+        "exchange": "TORONTO",
+        "ticker": "NXE-CA",
+        "companyName": "NexGen Energy, Ltd",
+        "numberOfShares": 0,
+        "sharePrice": 12.75753354351492,
+        "currencyCode": "CAD",
+        "exchangeRate": 1.3639,
+        "interactive": false
+      },
+      {
+        "exchange": "HONG KONG",
+        "ticker": "1658-HK",
+        "companyName": "Postal Savings Bank of China",
+        "numberOfShares": 0,
+        "sharePrice": 0.6302655297170836,
+        "currencyCode": "HKD",
+        "exchangeRate": 7.8221,
+        "interactive": false
+      },
+      {
+        "exchange": "NASDAQ",
+        "ticker": "ZM-US",
+        "companyName": "Zoom Video Communications",
+        "numberOfShares": 10641000,
+        "sharePrice": 73.94,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire", "investor"],
+    "tags": ["real_estate", "finance", "telecom"]
+  },
+  {
+    "rank": 42,
+    "name": "Mark Mateschitz",
+    "lastName": "Mateschitz",
+    "slug": "mark-mateschitz",
+    "birthday": "1992-05-07",
+    "gender": "M",
+    "netWorthBillions": 45.79,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 45.79,
+    "profileSlug": "mark-mateschitz",
+    "country": "Austria",
+    "state": null,
+    "city": "Salzburg",
+    "industry": "Food & Beverage",
+    "industries": ["Food & Beverage"],
+    "wealthSource": "Red Bull",
+    "description": "Mark Mateschitz is the only child of the late Austrian billionaire Dietrich Mateschitz, who cofounded energy drink firm Red Bull in 1987.",
+    "bios": [
+      "Mark Mateschitz is the only child of the late Austrian billionaire Dietrich Mateschitz, who cofounded energy drink firm Red Bull in 1987.",
+      "He inherited his father's 49% stake in Red Bull after the elder Mateschitz died in October 2022 at the age of 78.",
+      "Dietrich Mateschitz cofounded Red Bull with Thai businessman Chaleo Yoovidhya (d. 2012); Yoovidhya's son Chalerm is a billionaire today.",
+      "Red Bull sold 12.1 billion cans worldwide in 2023, enough to caffeinate every person on the planet.",
+      "After his father's death, Mark Mateschitz stepped down from his role as Head of Organics at the $11.4 billion (2023 sales) company to concentrate on his role as a shareholder."
+    ],
+    "abouts": [
+      "Dietrich Mateschitz discovered energy drinks while traveling to Asia as a marketing executive for German consumer products firm Blendax in the 1980s.",
+      "Red Bull owns several sports teams, including F1's Red Bull Racing, the MLS's New York Red Bulls and hockey team EC Red Bull Salzburg."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/642b2ae09caa113a6ce1c15e/416x416.jpg?background=000000&cropX1=898&cropX2=3376&cropY1=239&cropY2=2714",
+    "thumbnailUrl": null,
+    "financialAssets": [],
+    "categories": ["billionaire"],
+    "tags": ["manufacturing"]
+  },
+  {
+    "rank": 43,
+    "name": "Rafaela Aponte-Diamant",
+    "lastName": "Aponte-Diamant",
+    "slug": "rafaela-aponte-diamant",
+    "birthday": "1945-03-26",
+    "gender": "F",
+    "netWorthBillions": 45.59,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 45.34,
+    "profileSlug": "rafaela-aponte-diamant",
+    "country": "Switzerland",
+    "state": null,
+    "city": "Geneva",
+    "industry": "Logistics",
+    "industries": ["Logistics"],
+    "wealthSource": "Shipping",
+    "description": "Rafaela Aponte-Diamant and her husband Gianluigi each own a 50% stake in MSC, the world's largest shipping line.",
+    "bios": [
+      "Rafaela Aponte-Diamant and her husband Gianluigi each own a 50% stake in MSC, the world's largest shipping line.",
+      "Rafaela first met Gianluigi on a trip to the Italian island of Capri in the 1960s, when Gianluigi was a ship captain.",
+      "They entered the shipping industry together in 1970, when they purchased a ship with a $200,000 loan.",
+      "MSC also operates in holiday cruises (MSC Cruises), inland logistics (Medlog) and port operations (Terminal Investment Limited.)",
+      "Rafaela is responsible for decorating ships for MSC Cruises; Gianluigi is MSC's executive chairman and their son, Diego, is MSC's president."
+    ],
+    "abouts": [
+      "The second ship that the Apontes bought was named after Rafaela.",
+      "In December 2022, MSC bought Bolloré Africa Logistics, the African transport and logistics arm of the Bolloré Group, for $6 billion."
+    ],
+    "imageUrl": null,
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "SAO PAULO",
+        "ticker": "LOGN3-BR",
+        "companyName": "Log-In Logistica",
+        "numberOfShares": 39438473,
+        "sharePrice": 6.28851103658061,
+        "currencyCode": "BRL",
+        "exchangeRate": 5.1284,
+        "interactive": false
+      },
+      {
+        "exchange": "SAO PAULO",
+        "ticker": "PORT3-BR",
+        "companyName": "Wilson Sons Holdings",
+        "numberOfShares": 0,
+        "sharePrice": 3.6580609936822404,
+        "currencyCode": "BRL",
+        "exchangeRate": 5.1284,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["manufacturing"]
+  },
+  {
+    "rank": 44,
+    "name": "Gianluigi Aponte",
+    "lastName": "Aponte",
+    "slug": "gianluigi-aponte",
+    "birthday": "1940-06-27",
+    "gender": "M",
+    "netWorthBillions": 45.59,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 45.34,
+    "profileSlug": "gianluigi-aponte",
+    "country": "Switzerland",
+    "state": null,
+    "city": "Geneva",
+    "industry": "Logistics",
+    "industries": ["Logistics"],
+    "wealthSource": "Shipping",
+    "description": "Gianluigi Aponte and his wife Rafaela each own a 50% stake in MSC, the world's largest shipping line.",
+    "bios": [
+      "Gianluigi Aponte and his wife Rafaela each own a 50% stake in MSC, the world's largest shipping line.",
+      "Gianluigi first met Rafaela on a trip to the Italian island of Capri in the 1960s, when he was a ship captain.",
+      "They entered the shipping industry together in 1970, when they purchased a ship with a $200,000 loan.",
+      "MSC also operates in holiday cruises (MSC Cruises), inland logistics (Medlog) and port operations (Terminal Investment Limited.)",
+      "Gianluigi is MSC's executive chairman; Rafaela is responsible for decorating ships for MSC Cruises and their son, Diego, is MSC's president."
+    ],
+    "abouts": [
+      "The second ship that the Apontes bought was named after Rafaela.",
+      "In December 2022, MSC bought Bolloré Africa Logistics, the African transport and logistics arm of the Bolloré Group, for $6 billion."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5e77ceeac7b02d000666de20/416x416.jpg?background=000000&cropX1=1096&cropX2=5302&cropY1=46&cropY2=4249",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "SAO PAULO",
+        "ticker": "LOGN3-BR",
+        "companyName": "Log-In Logistica",
+        "numberOfShares": 39438473,
+        "sharePrice": 6.28851103658061,
+        "currencyCode": "BRL",
+        "exchangeRate": 5.1284,
+        "interactive": false
+      },
+      {
+        "exchange": "SAO PAULO",
+        "ticker": "PORT3-BR",
+        "companyName": "Wilson Sons Holdings",
+        "numberOfShares": 0,
+        "sharePrice": 3.6580609936822404,
+        "currencyCode": "BRL",
+        "exchangeRate": 5.1284,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["manufacturing"]
+  },
+  {
+    "rank": 45,
+    "name": "Andrea Pignataro",
+    "lastName": "Pignataro",
+    "slug": "andrea-pignataro",
+    "birthday": "1970-06-10",
+    "gender": "M",
+    "netWorthBillions": 42.96,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 42.96,
+    "profileSlug": "andrea-pignataro",
+    "country": "Italy",
+    "state": null,
+    "city": "St. Moritz",
+    "industry": "Finance & Investments",
+    "industries": ["Finance & Investments"],
+    "wealthSource": "Financial software",
+    "description": "Andrea Pignataro is the founder and CEO of ION Group, a London-based financial data and technology firm.",
+    "bios": [
+      "Andrea Pignataro is the founder and CEO of ION Group, a London-based financial data and technology firm.",
+      "Born in Italy, he founded the firm in 1998 while working as a bond trader at Salomon Brothers.",
+      "ION Group had $31 billion in net assets in 2024 and owns firms ranging from financial markets platform Dealogic to trading software group Fidessa.",
+      "The group is organized in five main divisions: markets, analytics, core banking, corporates and credit information.",
+      "Pignataro also owns a collection of luxury villas and hotels on the island of Canouan in St. Vincent and the Grenadines."
+    ],
+    "abouts": [],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/660c251294ad0b108cfcdf06/416x416.jpg?background=000000&cropX1=711&cropX2=2015&cropY1=56&cropY2=1360",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/660c251294ad0b108cfcdf06/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [],
+    "categories": ["billionaire"],
+    "tags": ["finance", "asset_management"]
+  },
+  {
+    "rank": 46,
+    "name": "Klaus-Michael Kuehne",
+    "lastName": "Kuehne",
+    "slug": "klaus-michael-kuehne",
+    "birthday": "1937-06-02",
+    "gender": "M",
+    "netWorthBillions": 41.95,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 14,
+    "profileSlug": "klaus-michael-kuehne",
+    "country": "Germany",
+    "state": null,
+    "city": "Schindellegi",
+    "industry": "Logistics",
+    "industries": ["Logistics"],
+    "wealthSource": "Shipping",
+    "description": "Logistics magnate Klaus-Michael Kuehne is honorary chairman of Kuehne + Nagel International AG, based in &#8206;Schindellegi&#8206;, Switzerland.",
+    "bios": [
+      "Logistics magnate Klaus-Michael Kuehne is honorary chairman of Kuehne + Nagel International AG, based in &#8206;Schindellegi&#8206;, Switzerland.",
+      "He joined the company, cofounded by his grandfather, in 1958, eventually taking over as CEO in 1966.",
+      "In 2016, his Kuehne Holding AG acquired 20% of VTG, a rail logistics company. Two years later, it sold the stake to Morgan Stanley Infrastructure.",
+      "He owns roughly 30% of shipping and logistics company Hapag-Lloyd, a holding he has steadily increased in recent years.",
+      "Throughout the course of 2022, he acquired a 17.5% in Lufthansa, the German airline carrier, and became its largest single investor."
+    ],
+    "abouts": [
+      "Despite expressing frustration with the team's performance, Kuehne remains a minority owner of Hamburger SV, which plays in the second tier of pro soccer in Germany.",
+      "He transformed the 600-year old Castell Son Claret on Mallorca into a luxury hotel, and built another hotel, The Fontenay, in Hamburg.",
+      "Kuehne is an only child and has no children. His charitable foundation will continue to manage his wealth after he passes away."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5e762e4fc7b02d000666c89b/416x416.jpg?background=000000&cropX1=792&cropX2=4141&cropY1=0&cropY2=3347",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "XETRA",
+        "ticker": "BNR-DE",
+        "companyName": "Brenntag AG",
+        "numberOfShares": 28890000,
+        "sharePrice": 61.747343565525384,
+        "currencyCode": "EUR",
+        "exchangeRate": 0.847,
+        "interactive": false
+      },
+      {
+        "exchange": "XETRA",
+        "ticker": "LHA-DE",
+        "companyName": "Deutsche Lufthansa",
+        "numberOfShares": 228943000,
+        "sharePrice": 10.729634002361275,
+        "currencyCode": "EUR",
+        "exchangeRate": 0.847,
+        "interactive": false
+      },
+      {
+        "exchange": "XETRA",
+        "ticker": "HLAG-DE",
+        "companyName": "Hapag Lloyd",
+        "numberOfShares": 52728000,
+        "sharePrice": 154.30932703659977,
+        "currencyCode": "EUR",
+        "exchangeRate": 0.847,
+        "interactive": false
+      },
+      {
+        "exchange": "SIX SWISS",
+        "ticker": "KNIN-CH",
+        "companyName": "Kuehne & Nagel International AG",
+        "numberOfShares": 66777000,
+        "sharePrice": 233.19464308932518,
+        "currencyCode": "CHF",
+        "exchangeRate": 0.7691,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["manufacturing"]
+  },
+  {
+    "rank": 47,
+    "name": "Thomas Frist Jr & family",
+    "lastName": "Frist",
+    "slug": "thomas-frist-jr",
+    "birthday": "1938-08-12",
+    "gender": "M",
+    "netWorthBillions": 41.12,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 4.4,
+    "profileSlug": "thomas-frist-jr",
+    "country": "United States",
+    "state": "Tennessee",
+    "city": "Nashville",
+    "industry": "Healthcare",
+    "industries": ["Healthcare"],
+    "wealthSource": "Hospitals",
+    "description": "Thomas Frist Jr., a former Air Force flight surgeon, founded Hospital Corp. of America with his father in 1968.",
+    "bios": [
+      "Thomas Frist Jr., a former Air Force flight surgeon, founded Hospital Corp. of America with his father in 1968.",
+      "He took it public for the third time in 2011 after two management buyouts and owns over 25% of the company with his family.",
+      "HCA Healthcare owns and operates 190 hospitals and around 2,400 sites of care in 20 U.S. states and the U.K.",
+      "Frist Jr. doesn't have an executive position at HCA, but his sons, Thomas Frist III and William Frist, are board members."
+    ],
+    "abouts": [
+      "Frist Jr.'s brother, Bill Frist, was the U.S. Senate majority leader from 2003 to 2007, while George W. Bush was president.",
+      "Through the Frist Foundation, Frist Jr. and his family played an integral role in creating Nashville's Frist Art Museum, where he serves as Director Emeritus."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/ee825ff539047091cda533423b10d65b/416x416.jpg?background=000000&cropX1=16&cropX2=947&cropY1=153&cropY2=1084",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "NYSE",
+        "ticker": "HCA-US",
+        "companyName": "HCA Holdings Inc.",
+        "numberOfShares": 69318000,
+        "sharePrice": 529.7,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["healthcare"]
+  },
+  {
+    "rank": 48,
+    "name": "Idan Ofer",
+    "lastName": "Ofer",
+    "slug": "idan-ofer",
+    "birthday": "1955-10-02",
+    "gender": "M",
+    "netWorthBillions": 41.11,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 36.23,
+    "profileSlug": "idan-ofer",
+    "country": "Israel",
+    "state": null,
+    "city": "London",
+    "industry": "Diversified",
+    "industries": ["Diversified"],
+    "wealthSource": "Shipping",
+    "description": "Idan Ofer is one of two sons of shipping magnate Sammy Ofer, who died in 2011 and was once Israel's richest man.",
+    "bios": [
+      "Idan Ofer is one of two sons of shipping magnate Sammy Ofer, who died in 2011 and was once Israel's richest man.",
+      "Ofer owns a company that operates a fleet of more than 200 bulk, container and crude oil ships.",
+      "He also owns 51% of Israel Corp., a publicly-traded chemicals, energy and shipping conglomerate.",
+      "Israel Corp. spun off its power, transportation & shipping units into a listed firm called Kenon Holdings in 2015; Ofer is a controlling shareholder.",
+      "Ofer owns a 30% stake in Spanish soccer team Atletico de Madrid, as well as an 85% stake of Portuguese soccer club FC Famalicao."
+    ],
+    "abouts": [
+      "Idan and his brother Eyal split their father's art holdings, a rare collection rumored to include pieces by Van Gogh and Picasso.",
+      "The Sammy Ofer Centre at London Business School officially opened in September 2017, four years after Idan gave $42 million to school."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5e76cd8010380d0006fbb808/416x416.jpg?background=000000&cropX1=25&cropX2=1096&cropY1=93&cropY2=1164",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "OSLO",
+        "ticker": "AKVA-NO",
+        "companyName": "AKVA Group",
+        "numberOfShares": 3366000,
+        "sharePrice": 10.46944310130973,
+        "currencyCode": "NOK",
+        "exchangeRate": 9.5134,
+        "interactive": false
+      },
+      {
+        "exchange": "FRANKFURT",
+        "ticker": "HQ3-DE",
+        "companyName": "Cool Co",
+        "numberOfShares": 31254000,
+        "sharePrice": 9.386068476977568,
+        "currencyCode": "EUR",
+        "exchangeRate": 0.847,
+        "interactive": false
+      },
+      {
+        "exchange": "OSLO",
+        "ticker": "EWIND-NO",
+        "companyName": "Edda Wind",
+        "numberOfShares": 22564000,
+        "sharePrice": 2.386108016061555,
+        "currencyCode": "NOK",
+        "exchangeRate": 9.5134,
+        "interactive": false
+      },
+      {
+        "exchange": "TEL AVIV",
+        "ticker": "ICL-IL",
+        "companyName": "ICL Group",
+        "numberOfShares": 289179000,
+        "sharePrice": 4.72363091251236,
+        "currencyCode": "ILS",
+        "exchangeRate": 3.1353,
+        "interactive": false
+      },
+      {
+        "exchange": "TEL AVIV",
+        "ticker": "OPCE-IL",
+        "companyName": "OPC Energy",
+        "numberOfShares": 85904209,
+        "sharePrice": 31.483430612700538,
+        "currencyCode": "ILS",
+        "exchangeRate": 3.1353,
+        "interactive": false
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "ZIM-US",
+        "companyName": "ZIM Integrated Shipping Services",
+        "numberOfShares": 14981000,
+        "sharePrice": 28.83,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": []
+  },
+  {
+    "rank": 49,
+    "name": "Alain Wertheimer",
+    "lastName": "Wertheimer",
+    "slug": "alain-wertheimer",
+    "birthday": "1948-08-28",
+    "gender": "M",
+    "netWorthBillions": 39.43,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 39.43,
+    "profileSlug": "alain-wertheimer",
+    "country": "France",
+    "state": "New York",
+    "city": "New York",
+    "industry": "Fashion & Retail",
+    "industries": ["Fashion & Retail"],
+    "wealthSource": "Chanel",
+    "description": "Alain Wertheimer is the chairman of Chanel, the French luxury brand.",
+    "bios": [
+      "Alain Wertheimer is the chairman of Chanel, the French luxury brand.",
+      "He owns the company with this brother Gerard, who oversees the watch division.",
+      "His grandfather Pierre Wertheimer founded it with Gabrielle (Coco) Chanel, the company's namesake.",
+      "Karl Lagerfeld, the public face of Chanel, died in 2019 at the age of 85. He had been the company's creative director for over 35 years."
+    ],
+    "abouts": [
+      "Alain and Gerard breed and race thoroughbreds. Their horses have won races at the French Derby and the Breeders' Cup Turf in the U.S.",
+      "Alain and his brother own vineyards in France and Napa Valley, California."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/645d0add2a0a83a54a9aa149/416x416.jpg?background=000000&cropX1=0&cropX2=2730&cropY1=100&cropY2=2831",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/645d0add2a0a83a54a9aa149/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [],
+    "categories": ["billionaire"],
+    "tags": ["luxury", "ecommerce"]
+  },
+  {
+    "rank": 49,
+    "name": "Gerard Wertheimer",
+    "lastName": "Wertheimer",
+    "slug": "gerard-wertheimer-1",
+    "birthday": "1951-01-09",
+    "gender": "M",
+    "netWorthBillions": 39.43,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 39.43,
+    "profileSlug": "gerard-wertheimer-1",
+    "country": "France",
+    "state": "New York",
+    "city": "New York",
+    "industry": "Fashion & Retail",
+    "industries": ["Fashion & Retail"],
+    "wealthSource": "Chanel",
+    "description": "Gerard Wertheimer and his brother Alain own French luxury brand Chanel.",
+    "bios": [
+      "Gerard Wertheimer and his brother Alain own French luxury brand Chanel.",
+      "Gerard heads the company's watch division and lives in Switzerland.",
+      "His grandfather, Pierre, partnered with Gabrielle (Coco) Chanel, the company's namesake, in the 1920s.",
+      "Karl Lagerfeld, the public face of Chanel, died in 2019 at the age of 85. He had been the company's creative director for over 35 years."
+    ],
+    "abouts": [
+      "Alain and Gerard breed and race thoroughbreds. Their horses have won races at the French Derby and the Breeders' Cup Turf in the U.S.",
+      "Gerard and his brother own vineyards in the Bordeaux region in France and Napa Valley, California."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/645d02e2c7d39022642796dd/416x416.jpg?background=000000&cropX1=1150&cropX2=4216&cropY1=0&cropY2=3068",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/645d02e2c7d39022642796dd/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [],
+    "categories": ["billionaire"],
+    "tags": ["luxury", "ecommerce"]
+  },
+  {
+    "rank": 51,
+    "name": "Savitri Jindal & family",
+    "lastName": "Jindal",
+    "slug": "savitri-jindal",
+    "birthday": "1950-03-20",
+    "gender": "F",
+    "netWorthBillions": 39.12,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 0.57,
+    "profileSlug": "savitri-jindal",
+    "country": "India",
+    "state": null,
+    "city": "Hisar",
+    "industry": "Metals & Mining",
+    "industries": ["Metals & Mining"],
+    "wealthSource": "Steel",
+    "description": "Jindal Group, whose interests include steel, power, cement and infrastructure, is chaired by Savitri Jindal, widow of founder Om Prakash Jindal.",
+    "bios": [
+      "Jindal Group, whose interests include steel, power, cement and infrastructure, is chaired by Savitri Jindal, widow of founder Om Prakash Jindal.",
+      "Upon O.P. Jindal's death in 2005 in a helicopter crash, the group's companies were divided among his four sons, who now run them independently.",
+      "The biggest assets of  the group are overseen by her Mumbai-based son Sajjan Jindal, who oversees JSW Steel, JSW Cement and JSW Paints, among much else.",
+      "In 2024, Sajjan Jindal set up an EV joint venture with MG Motor. In 2025, he took JSW Cement public",
+      "Jindal's younger, Delhi-based son, Naveen, manages Jindal Steel & Power. In March 2024, he quit the Congress party and joined the Bharatiya Janata Party."
+    ],
+    "abouts": [
+      "O.P. Jindal got his start making buckets in 1952, then went on to found a pipe unit named Jindal India in 1964.",
+      "The family's cement arm JSW Cement was listed in August 2025 at a small premium to its issue price."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/55f77874e4b0ffa7afe4940e/416x416.jpg?background=000000&cropX1=90&cropX2=676&cropY1=53&cropY2=640",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/55f77874e4b0ffa7afe4940e/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [
+      {
+        "exchange": "BSE INDIA",
+        "ticker": "500378-IN",
+        "companyName": "Jindal Saw Ltd.",
+        "numberOfShares": 361033000,
+        "sharePrice": 2.0329492768438335,
+        "currencyCode": "INR",
+        "exchangeRate": 90.9762,
+        "interactive": false
+      },
+      {
+        "exchange": "BSE INDIA",
+        "ticker": "532286-IN",
+        "companyName": "Jindal Steel & Power Ltd.",
+        "numberOfShares": 600647000,
+        "sharePrice": 13.681050648411343,
+        "currencyCode": "INR",
+        "exchangeRate": 90.9762,
+        "interactive": false
+      },
+      {
+        "exchange": "BSE INDIA",
+        "ticker": "532508-IN",
+        "companyName": "JSL Ltd.",
+        "numberOfShares": 503318000,
+        "sharePrice": 8.52145945862764,
+        "currencyCode": "INR",
+        "exchangeRate": 90.9762,
+        "interactive": false
+      },
+      {
+        "exchange": "BSE INDIA",
+        "ticker": "544480-IN",
+        "companyName": "JSW Cement",
+        "numberOfShares": 978838000,
+        "sharePrice": 1.377283289475709,
+        "currencyCode": "INR",
+        "exchangeRate": 90.9762,
+        "interactive": false
+      },
+      {
+        "exchange": "BSE INDIA",
+        "ticker": "533148-IN",
+        "companyName": "JSW Energy",
+        "numberOfShares": 1054432000,
+        "sharePrice": 5.356895539712584,
+        "currencyCode": "INR",
+        "exchangeRate": 90.9762,
+        "interactive": false
+      },
+      {
+        "exchange": "BSE INDIA",
+        "ticker": "543994-IN",
+        "companyName": "JSW Infrastructure",
+        "numberOfShares": 1755921000,
+        "sharePrice": 2.8012820935585347,
+        "currencyCode": "INR",
+        "exchangeRate": 90.9762,
+        "interactive": false
+      },
+      {
+        "exchange": "BSE INDIA",
+        "ticker": "500228-IN",
+        "companyName": "JSW Steel Ltd.",
+        "numberOfShares": 960770000,
+        "sharePrice": 13.935512804447756,
+        "currencyCode": "INR",
+        "exchangeRate": 90.9762,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": []
+  },
+  {
+    "rank": 52,
+    "name": "Stephen Schwarzman",
+    "lastName": "Schwarzman",
+    "slug": "stephen-schwarzman",
+    "birthday": "1947-02-14",
+    "gender": "M",
+    "netWorthBillions": 38.3,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 11.15,
+    "profileSlug": "stephen-schwarzman",
+    "country": "United States",
+    "state": "New York",
+    "city": "New York",
+    "industry": "Finance & Investments",
+    "industries": ["Finance & Investments"],
+    "wealthSource": "Investments",
+    "description": "The son of a dry goods store owner, Stephen Schwarzman founded private equity firm Blackstone with fellow billionaire Peter Peterson in 1985.",
+    "bios": [
+      "The son of a dry goods store owner, Stephen Schwarzman founded private equity firm Blackstone with fellow billionaire Peter Peterson in 1985.",
+      "Initially a boutique merger-and-acquisition advisory business, Blackstone has grown into the world's largest alternative asset manager, with more than $1 trillion in assets under management.",
+      "While Peter Peterson (d. 2018) retired shortly after Blackstone's 2007 IPO, Schwarzman still presides over the business as chairman and CEO.",
+      "Schwarzman got his start on Wall Street at Lehman Brothers; he wrote in his 2019 memoir about mistakes by management at that firm.",
+      "He started his first business, a lawn-mowing operation, at age 14, employing his younger twin brothers to mow while he brought in the clients."
+    ],
+    "abouts": [
+      "Blackstone is a combination of its founders' names -- \"Schwarz\" means black in German and Yiddish, while \"Peter\" means stone in Greek.",
+      "His Schwarzman Scholars, inspired by the Rhodes Scholarships, sends students from around the world to a one-year master's program at China's Tsinghua University."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5d89f4d318444200084e5265/416x416.jpg?background=000000&cropX1=1911&cropX2=5305&cropY1=26&cropY2=3418",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "NYSE",
+        "ticker": "BX-US",
+        "companyName": "Blackstone Group",
+        "numberOfShares": 231924793,
+        "sharePrice": 113.37,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "PJT-US",
+        "companyName": "PJT Partners",
+        "numberOfShares": 5781000,
+        "sharePrice": 147.68,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire", "investor"],
+    "tags": ["finance", "asset_management", "private_equity", "real_estate"]
+  },
+  {
+    "rank": 53,
+    "name": "William Ding",
+    "lastName": "Ding",
+    "slug": "william-ding",
+    "birthday": "1971-10-01",
+    "gender": "M",
+    "netWorthBillions": 37.9,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 4.54,
+    "profileSlug": "william-ding",
+    "country": "China",
+    "state": "Zhejiang",
+    "city": "Hangzhou",
+    "industry": "Technology",
+    "industries": ["Technology"],
+    "wealthSource": "Online games",
+    "description": "William Ding is the founder and CEO of NetEase, one of the world's largest online games companies.",
+    "bios": [
+      "William Ding is the founder and CEO of NetEase, one of the world's largest online games companies.",
+      "In addition to legacy titles such as Fantasy Westward Journey, the company's portfolio also includes casual game Eggy Party and battle game Justice Mobile, which uses AI to generate storylines.",
+      "Facing tough competition in games from rival Tencent, NetEase has expanded into movies, e-commerce and online music.",
+      "Ding was China's richest man and its first internet and gaming billionaire back in 2003.",
+      "The mogul also has an interest in sustainable agriculture, with NetEase's e-commerce arm Yanxuan selling pork sourced from its own farms."
+    ],
+    "abouts": [],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/65496210455fdb2807b461fc/416x416.jpg?background=000000&cropX1=376&cropX2=1713&cropY1=341&cropY2=1679",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/65496210455fdb2807b461fc/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [
+      {
+        "exchange": "NASDAQ",
+        "ticker": "NTES-US",
+        "companyName": "Netease.com Inc-ADR",
+        "numberOfShares": 290100000,
+        "sharePrice": 114.97,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["tech"]
+  },
+  {
+    "rank": 54,
+    "name": "Miriam Adelson & family",
+    "lastName": "Adelson",
+    "slug": "miriam-adelson",
+    "birthday": "1945-10-10",
+    "gender": "F",
+    "netWorthBillions": 37.5,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 15.56,
+    "profileSlug": "miriam-adelson",
+    "country": "United States",
+    "state": "Nevada",
+    "city": "Las Vegas",
+    "industry": "Gambling & Casinos",
+    "industries": ["Gambling & Casinos"],
+    "wealthSource": "Casinos",
+    "description": "Miriam Adelson is the widow of Sheldon Adelson, the former CEO and chairman of casino company Las Vegas Sands, who died at 87 in 2021.",
+    "bios": [
+      "Miriam Adelson is the widow of Sheldon Adelson, the former CEO and chairman of casino company Las Vegas Sands, who died at 87 in 2021.",
+      "She and her family now own more than half of the New York Stock Exchange-listed gambling empire, which has casinos in Singapore and Macao.",
+      "In 2022, Las Vegas Sands sold its assets on the Vegas Strip, the Venetian Resort and the Sands Expo and Convention Center, to Apollo Global and Vici Properties for $6.25 billion.",
+      "She bought a majority stake in the Dallas Mavericks NBA team from Mark Cuban in late 2023.",
+      "Long known as a GOP megadonor, both alongside Sheldon and after his death, Adelson is a top backer of Donald Trump.",
+      "Born in Israel, Adelson became a medical doctor focusing on addiction."
+    ],
+    "abouts": [
+      "Miriam and Sheldon Adelson founded the Sheldon G. Adelson Research Clinic in Las Vegas, which treats people for opioid use disorder."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/6488d2e2af4e79d11875c367/416x416.jpg?background=000000&cropX1=741&cropX2=1624&cropY1=351&cropY2=1233",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/6488d2e2af4e79d11875c367/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [
+      {
+        "exchange": "NYSE",
+        "ticker": "LVS-US",
+        "companyName": "Las Vegas Sands Corp.",
+        "numberOfShares": 386828000,
+        "sharePrice": 56.72,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": []
+  },
+  {
+    "rank": 55,
+    "name": "Alexey Mordashov & family",
+    "lastName": "Mordashov",
+    "slug": "alexey-mordashov",
+    "birthday": "1965-09-26",
+    "gender": "M",
+    "netWorthBillions": 37.25,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 25.92,
+    "profileSlug": "alexey-mordashov",
+    "country": "Russia",
+    "state": null,
+    "city": "Moscow",
+    "industry": "Metals & Mining",
+    "industries": ["Metals & Mining"],
+    "wealthSource": "Steel, investments",
+    "description": "Alexey Mordashov is the majority shareholder in steel company Severstal, which he ran as CEO for 19 years before resigning in 2015.",
+    "bios": [
+      "Alexey Mordashov is the majority shareholder in steel company Severstal, which he ran as CEO for 19 years before resigning in 2015.",
+      "Hit by sanctions in 2022, he immediately transferred ownership of key assets, including shares of leisure company TUI and mining outfit Nordgold.",
+      "Severstal, in which he still has a 77% stake, lost more than $400 million in 2022 due to Western sanctions, according to Mordashov.",
+      "Severstal sold off two U.S. steel plants in 2014, withdrawing from the market at a time of rising tensions between Russia and the West, and turned its focus to its domestic business.",
+      "The son of mill workers, Mordashov rose to become the finance director of a steel mill.",
+      "When the plant's elderly director instructed him to acquire shares to keep them from an outsider, Mordashov kept most of them for himself."
+    ],
+    "abouts": [
+      "Mordashov is a council member at the Bolshoi Theatre.",
+      "His yacht, Lady M, and a $115 million villa in Sardinia were both frozen by Italian police. His new yacht Nord, meanwhile, was spotted in the Maldives in November."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5e87b07fbf94c200067fcf57/416x416.jpg?background=000000&cropX1=1002&cropX2=4157&cropY1=163&cropY2=3318",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "MICEX",
+        "ticker": "LNTA-RU",
+        "companyName": "Lenta International (MICEX)",
+        "numberOfShares": 76111000,
+        "sharePrice": 14.772878794613094,
+        "currencyCode": "RUB",
+        "exchangeRate": 89.996,
+        "interactive": false
+      },
+      {
+        "exchange": "MICEX",
+        "ticker": "RTKM-RU",
+        "companyName": "Rostelecom",
+        "numberOfShares": 96545000,
+        "sharePrice": 0.7789235077114538,
+        "currencyCode": "RUB",
+        "exchangeRate": 89.996,
+        "interactive": false
+      },
+      {
+        "exchange": "MICEX",
+        "ticker": "CHMF-RU",
+        "companyName": "Severstal JSC",
+        "numberOfShares": 645295000,
+        "sharePrice": 14.887328325703365,
+        "currencyCode": "RUB",
+        "exchangeRate": 89.996,
+        "interactive": false
+      },
+      {
+        "exchange": "XETRA",
+        "ticker": "TUI1-DE",
+        "companyName": "TUI",
+        "numberOfShares": 55179000,
+        "sharePrice": 9.539551357733176,
+        "currencyCode": "EUR",
+        "exchangeRate": 0.847,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": []
+  },
+  {
+    "rank": 56,
+    "name": "Colin Huang",
+    "lastName": "Huang",
+    "slug": "colin-huang",
+    "birthday": "1980-02-02",
+    "gender": "M",
+    "netWorthBillions": 36.56,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": null,
+    "profileSlug": "colin-huang",
+    "country": "China",
+    "state": "Shanghai",
+    "city": "Shanghai",
+    "industry": "Technology",
+    "industries": ["Technology"],
+    "wealthSource": "E-commerce",
+    "description": "Colin Huang is the founder of PDD Holdings, the Chinese e-commerce company that changed its name from Pinduoduo in 2023.",
+    "bios": [
+      "Colin Huang is the founder of PDD Holdings, the Chinese e-commerce company that changed its name from Pinduoduo in 2023.",
+      "Huang, who stepped down as chairman of the company in 2021, is still a major shareholder of PDD.",
+      "PDD launched budget shopping site Temu in 2022 to compete with Shein, led by fellow Chinese billionaire Sky Xu.",
+      "A serial entrepreneur, Huang earlier founded online games company Xinyoudi and e-commerce platform Ouku.com.",
+      "Huang, who has a master's in computer science from the University of Wisconsin, interned at Microsoft in both Beijing and Seattle before starting his career at Google in the U.S. in 2004."
+    ],
+    "abouts": [],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5dc0500b3195ed0007eab3f7/416x416.jpg?background=000000&cropX1=1059&cropX2=3699&cropY1=45&cropY2=2683",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "NASDAQ",
+        "ticker": "PDD-US",
+        "companyName": "Pinduoduo",
+        "numberOfShares": 352436000,
+        "sharePrice": 103.73,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["tech"]
+  },
+  {
+    "rank": 57,
+    "name": "Robert Pera",
+    "lastName": "Pera",
+    "slug": "robert-pera",
+    "birthday": "1978-03-10",
+    "gender": "M",
+    "netWorthBillions": 36.55,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 2.02,
+    "profileSlug": "robert-pera",
+    "country": "United States",
+    "state": "California",
+    "city": "San Jose",
+    "industry": "Technology",
+    "industries": ["Technology"],
+    "wealthSource": "Wireless networking",
+    "description": "Robert Pera is the founder and CEO of wireless equipment maker Ubiquiti Networks.",
+    "bios": [
+      "Robert Pera is the founder and CEO of wireless equipment maker Ubiquiti Networks.",
+      "Ubiquiti, which had revenue of $2.6 billion in fiscal 2025, sells wireless broadband systems with a focus on emerging markets.",
+      "Pera owns 93% of the publicly traded firm.",
+      "Pera started his career at Apple in 2003, and within 10 months on the job, founded Ubiquiti. He left Apple to work at Ubiquiti full time in 2005.",
+      "Pera bought the NBA's Memphis Grizzlies in 2012, making him the youngest controlling owner in the league at the time."
+    ],
+    "abouts": [
+      "Pera missed a year of high school because of a rare heart-valve infection.",
+      "He holds degrees in electrical engineering and Japanese from UC San Diego."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5f1f2df0e0da1e7313d9879a/416x416.jpg?background=000000&cropX1=217&cropX2=1125&cropY1=71&cropY2=980",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "NYSE",
+        "ticker": "UI-US",
+        "companyName": "Ubiquiti",
+        "numberOfShares": 45023000,
+        "sharePrice": 766.99,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["tech"]
+  },
+  {
+    "rank": 58,
+    "name": "Eduardo Saverin",
+    "lastName": "Saverin",
+    "slug": "eduardo-saverin",
+    "birthday": "1982-03-19",
+    "gender": "M",
+    "netWorthBillions": 35.89,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 1.24,
+    "profileSlug": "eduardo-saverin",
+    "country": "Brazil",
+    "state": null,
+    "city": "Singapore",
+    "industry": "Technology",
+    "industries": ["Technology"],
+    "wealthSource": "Facebook",
+    "description": "Eduardo Saverin cofounded Meta Platforms, formerly Facebook, with Harvard classmate Mark Zuckerberg in 2004.",
+    "bios": [
+      "Eduardo Saverin cofounded Meta Platforms, formerly Facebook, with Harvard classmate Mark Zuckerberg in 2004.",
+      "Now a venture capitalist, he still derives most of his wealth from his small but valuable stake in Meta.",
+      "In 2015, he launched venture fund B Capital, with BCG and Bain Capital veteran Raj Ganguly. The fund has more than $7 billion in assets under management.",
+      "In 2022, B Capital raised $250 million to invest in early stage startups.",
+      "A Brazilian native, Saverin has been a Singapore resident and renounced his U.S. citizenship ahead of Facebook's 2012 IPO."
+    ],
+    "abouts": [
+      "Saverin was a competitive chess player from 1997 to 2001.",
+      "Saverin counts meteorology among his interests."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/61114d7c57eb065321419c4e/416x416.jpg?background=000000&cropX1=0&cropX2=2236&cropY1=0&cropY2=2235",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/61114d7c57eb065321419c4e/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [
+      {
+        "exchange": "NASDAQ",
+        "ticker": "META-US",
+        "companyName": "Meta Platforms",
+        "numberOfShares": 53463000,
+        "sharePrice": 648.18,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["tech"]
+  },
+  {
+    "rank": 59,
+    "name": "Eric Schmidt",
+    "lastName": "Schmidt",
+    "slug": "eric-schmidt",
+    "birthday": "1955-04-27",
+    "gender": "M",
+    "netWorthBillions": 35.53,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 7.8,
+    "profileSlug": "eric-schmidt",
+    "country": "United States",
+    "state": "California",
+    "city": "Atherton",
+    "industry": "Technology",
+    "industries": ["Technology"],
+    "wealthSource": "Google",
+    "description": "Eric Schmidt left the board of Google parent company Alphabet in June 2019 after 18 years; he stayed on as a technical advisor until February 2020.",
+    "bios": [
+      "Eric Schmidt left the board of Google parent company Alphabet in June 2019 after 18 years; he stayed on as a technical advisor until February 2020.",
+      "Schmidt was Google's CEO from 2001 to 2011; prior to that he had stints as CEO of Novell and chief technology officer at Sun Microsystems.",
+      "He co-founded Innovation Endeavors, a venture capital firm that has invested in Uber, SoFi, and Zymergen, among others.",
+      "In May 2015, his family's investment vehicle bought a 20% stake in hedge fund firm D.E. Shaw &amp; Co. for an undisclosed price."
+    ],
+    "abouts": [
+      "Schmidt's family is passionate about environmental sustainability and has donated to various projects related to renewable energy and climate change.",
+      "He has toured some of the world's most tightly controlled regimes to promote open internet access, including in Cuba and North Korea."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5f4526a6f048a75b8e14e6b2/416x416.jpg?background=000000&cropX1=0&cropX2=3235&cropY1=381&cropY2=3615",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "NASDAQ",
+        "ticker": "GOOGL-US",
+        "companyName": "Alphabet",
+        "numberOfShares": 48770000,
+        "sharePrice": 311.76,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false,
+        "currentPrice": 311.76
+      },
+      {
+        "exchange": "NASDAQ",
+        "ticker": "GOOG-US",
+        "companyName": "Google Inc. (Cl C)",
+        "numberOfShares": 40218711,
+        "sharePrice": 311.43,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": true,
+        "currentPrice": 311.43
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["tech"]
+  },
+  {
+    "rank": 60,
+    "name": "Eyal Ofer",
+    "lastName": "Ofer",
+    "slug": "eyal-ofer",
+    "birthday": "1950-06-02",
+    "gender": "M",
+    "netWorthBillions": 33.37,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 25.04,
+    "profileSlug": "eyal-ofer",
+    "country": "Israel",
+    "state": null,
+    "city": "Monte Carlo",
+    "industry": "Diversified",
+    "industries": ["Diversified"],
+    "wealthSource": "Real estate, shipping",
+    "description": "Eyal Ofer is the chairman of the Monaco-based Ofer Global, active in shipping, real estate, technology, banking, energy and other investments.",
+    "bios": [
+      "Eyal Ofer is the chairman of the Monaco-based Ofer Global, active in shipping, real estate, technology, banking, energy and other investments.",
+      "Ofer is one of two sons of shipping magnate Sammy Ofer, who died in 2011 and was once Israel's richest man.",
+      "The elder Ofer brother has expanded these holdings significantly. Through Zodiac Group, his shipping company, he now owns and operates roughly 200 ships.",
+      "His Global Holdings real estate portfolio spans 120 properties around the world, including 15 Central Park West and 50 United Nations Plaza in Manhattan, and Vogue House in London.",
+      "Eyal's other assets include the VC tech fund O.G. Venture Partners, O.G. Energy and stakes in the public companies Mizrahi Tefahot Bank and Royal Caribbean Cruises.",
+      "He and his family also started the Eyal &amp; Marilyn Ofer Family Foundation, which supports education, healthcare and the arts."
+    ],
+    "abouts": [
+      "Eyal and his brother Idan split their father's art holdings, a rare collection rumored to include pieces by Van Gogh and Picasso.",
+      "Ofer's four children--Daniel, Jonathan, David and Olivia--are all involved in the various divisions of Ofer Global."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/660c1a1c7931863e499fb8c4/416x416.jpg?background=000000&cropX1=137&cropX2=1211&cropY1=52&cropY2=1127",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/660c1a1c7931863e499fb8c4/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [
+      {
+        "exchange": "TEL AVIV",
+        "ticker": "MLSR-IL",
+        "companyName": "Melisron Ltd.",
+        "numberOfShares": 0,
+        "sharePrice": 135.329952476637,
+        "currencyCode": "ILS",
+        "exchangeRate": 3.1353,
+        "interactive": false
+      },
+      {
+        "exchange": "TEL AVIV",
+        "ticker": "MZTF-IL",
+        "companyName": "Mizrahi Tefahot Bank Ltd.",
+        "numberOfShares": 54486000,
+        "sharePrice": 74.82537556214716,
+        "currencyCode": "ILS",
+        "exchangeRate": 3.1353,
+        "interactive": false
+      },
+      {
+        "exchange": "NEW ZEALAND",
+        "ticker": "NZO-NZ",
+        "companyName": "New Zealand Oil & Gas",
+        "numberOfShares": 160583035,
+        "sharePrice": 0.228022802280228,
+        "currencyCode": "NZD",
+        "exchangeRate": 1.6665,
+        "interactive": false
+      },
+      {
+        "exchange": "NYSE",
+        "ticker": "RCL-US",
+        "companyName": "Royal Caribbean Cruises Ltd",
+        "numberOfShares": 13546520,
+        "sharePrice": 310.96,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": []
+  },
+  {
+    "rank": 61,
+    "name": "Abigail Johnson",
+    "lastName": "Johnson",
+    "slug": "abigail-johnson",
+    "birthday": "1961-12-19",
+    "gender": "F",
+    "netWorthBillions": 33.18,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 33.18,
+    "profileSlug": "abigail-johnson",
+    "country": "United States",
+    "state": null,
+    "city": null,
+    "industry": "Finance & Investments",
+    "industries": ["Finance & Investments"],
+    "wealthSource": "Fidelity",
+    "description": "Abigail Johnson has served as CEO of Fidelity Investments since 2014, when she took over for her father, and has been chairman since 2016.",
+    "bios": [
+      "Abigail Johnson has served as CEO of Fidelity Investments since 2014, when she took over for her father, and has been chairman since 2016.",
+      "Her grandfather, Edward Johnson II, founded the Boston-based mutual fund giant in 1946.",
+      "She owns an estimated 29% stake of the firm, which as of March 2025 manages discretionary assets totaling $5.9 trillion.",
+      "Johnson has embraced cryptocurrencies and, in 2018, Fidelity launched a platform that allows institutional investors to custody and trade bitcoin, ether and litecoin.",
+      "She worked summers at Fidelity through college and joined full-time as an analyst in 1988 after receiving a Harvard M.B.A."
+    ],
+    "abouts": [
+      "The Johnson family is a frequent donor to nonprofits in the Boston area and has given money to Harvard, the Institute of Contemporary Art and Historic New England."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/6333a5b13de1fff2da377afb/416x416.jpg?background=000000&cropX1=0&cropX2=1077&cropY1=3&cropY2=1080",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/6333a5b13de1fff2da377afb/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [],
+    "categories": ["billionaire", "investor"],
+    "tags": ["finance", "asset_management"]
+  },
+  {
+    "rank": 62,
+    "name": "Zheng Shuliang & family",
+    "lastName": "Zheng",
+    "slug": "zheng-shuliang",
+    "birthday": "1946-01-01",
+    "gender": "F",
+    "netWorthBillions": 33.16,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 5.52,
+    "profileSlug": "zheng-shuliang",
+    "country": "China",
+    "state": "Shandong",
+    "city": "Binzhou",
+    "industry": "Metals & Mining",
+    "industries": ["Metals & Mining"],
+    "wealthSource": "Aluminum products",
+    "description": "Zheng Shuliang is the vice chairman of China Hongqiao Group, one of the country's largest aluminum producers founded by her late husband Zhang Shiping.",
+    "bios": [
+      "Zheng Shuliang is the vice chairman of China Hongqiao Group, one of the country's largest aluminum producers founded by her late husband Zhang Shiping.",
+      "Zhang, who died in 2019, built Hongqiao into a multibillion-dollar business during the reform and opening-up years ushered in by then-leader Deng Xiaoping.",
+      "The couple's son, Zhang Bo, is the chairman and CEO of Hong Kong-listed Hongqiao.",
+      "Their daughter, Zhang Hongxia, is the chairman of textile producer Weiqiao Textile, which was taken private from the Hong Kong Stock Exchange in 2024."
+    ],
+    "abouts": [],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/6724f9cdf203631b720a86fe/416x416.jpg?background=000000&cropX1=2&cropX2=800&cropY1=1&cropY2=799",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/6724f9cdf203631b720a86fe/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [
+      {
+        "exchange": "HONG KONG",
+        "ticker": "1378-HK",
+        "companyName": "China Hongqiao Group",
+        "numberOfShares": 6098900000,
+        "sharePrice": 4.533309469324095,
+        "currencyCode": "HKD",
+        "exchangeRate": 7.8221,
+        "interactive": false
+      },
+      {
+        "exchange": "HONG KONG",
+        "ticker": "2698-HK",
+        "companyName": "Weiqiao Textile Co. Ltd.",
+        "numberOfShares": 0,
+        "sharePrice": 0.44617174416077526,
+        "currencyCode": "HKD",
+        "exchangeRate": 7.8221,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": []
+  },
+  {
+    "rank": 63,
+    "name": "He Xiangjian & family",
+    "lastName": "He",
+    "slug": "he-xiangjian",
+    "birthday": "1942-08-11",
+    "gender": "M",
+    "netWorthBillions": 33.16,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 5.35,
+    "profileSlug": "he-xiangjian",
+    "country": "China",
+    "state": "Guangdong",
+    "city": "Foshan",
+    "industry": "Manufacturing",
+    "industries": ["Manufacturing"],
+    "wealthSource": "Home appliances",
+    "description": "Entrepreneur He Xiangjian built Midea Group into one of the world's largest appliance makers.",
+    "bios": [
+      "Entrepreneur He Xiangjian built Midea Group into one of the world's largest appliance makers.",
+      "In 1968, He led a group of 23 residents from the town of Beijiao in Guangdong province to form a lid production workshop that became Midea. It trades in both Shenzhen and Hong Kong.",
+      "Midea Group took German robotics firm Kuka private from the Frankfurt Stock Exchange in 2022 and became its sole owner.",
+      "He stepped down as chairman of Midea Group in 2012.",
+      "His son He Jianfeng is a director of Midea Group and Midea Real Estate Holding."
+    ],
+    "abouts": [
+      "In 2023, He pledged to donate $410 million to set up a fund supporting scientific research in China."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/5f88aa3c6e0f7a6ca036fc64/416x416.jpg?background=000000&cropX1=1462&cropX2=2567&cropY1=1200&cropY2=2305",
+    "thumbnailUrl": null,
+    "financialAssets": [
+      {
+        "exchange": "SHENZHEN",
+        "ticker": "300291-CN",
+        "companyName": "Beijing HualuBaina Film & TV",
+        "numberOfShares": 293000000,
+        "sharePrice": 1.1829572472541097,
+        "currencyCode": "CNY",
+        "exchangeRate": 6.8557,
+        "interactive": false
+      },
+      {
+        "exchange": "SHENZHEN",
+        "ticker": "300291-CN",
+        "companyName": "Beijing HualuBaina Film & TV",
+        "numberOfShares": 0,
+        "sharePrice": 1.1829572472541097,
+        "currencyCode": "CNY",
+        "exchangeRate": 6.8557,
+        "interactive": false
+      },
+      {
+        "exchange": "SHENZHEN",
+        "ticker": "000967-CN",
+        "companyName": "Infore Environment Technology Group",
+        "numberOfShares": 0,
+        "sharePrice": 1.2208818938985078,
+        "currencyCode": "CNY",
+        "exchangeRate": 6.8557,
+        "interactive": false
+      },
+      {
+        "exchange": "SHENZHEN",
+        "ticker": "000967-CN",
+        "companyName": "Infore Environment Technology Group",
+        "numberOfShares": 1298200000,
+        "sharePrice": 1.2208818938985078,
+        "currencyCode": "CNY",
+        "exchangeRate": 6.8557,
+        "interactive": false
+      },
+      {
+        "exchange": "SHENZHEN",
+        "ticker": "000967-CN",
+        "companyName": "Infore Environment Technology Group",
+        "numberOfShares": 0,
+        "sharePrice": 1.2208818938985078,
+        "currencyCode": "CNY",
+        "exchangeRate": 6.8557,
+        "interactive": false
+      },
+      {
+        "exchange": "SHENZHEN",
+        "ticker": "000333-CN",
+        "companyName": "Midea Group Co. Ltd.",
+        "numberOfShares": 2201088000,
+        "sharePrice": 11.47074696967487,
+        "currencyCode": "CNY",
+        "exchangeRate": 6.8557,
+        "interactive": false
+      },
+      {
+        "exchange": "SHENZHEN",
+        "ticker": "000333-CN",
+        "companyName": "Midea Group Co. Ltd.",
+        "numberOfShares": 0,
+        "sharePrice": 11.47074696967487,
+        "currencyCode": "CNY",
+        "exchangeRate": 6.8557,
+        "interactive": false
+      },
+      {
+        "exchange": "HONG KONG",
+        "ticker": "3990-HK",
+        "companyName": "Midea Real Estate Holding Limited",
+        "numberOfShares": 1164606000,
+        "sharePrice": 0.5394970660052927,
+        "currencyCode": "HKD",
+        "exchangeRate": 7.8221,
+        "interactive": false
+      },
+      {
+        "exchange": "HONG KONG",
+        "ticker": "382-HK",
+        "companyName": "Welling Holding Ltd.",
+        "numberOfShares": 0,
+        "sharePrice": 0,
+        "currencyCode": "HKD",
+        "exchangeRate": 7.8221,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["manufacturing"]
+  },
+  {
+    "rank": 64,
+    "name": "Marilyn Simons & family",
+    "lastName": "Simons",
+    "slug": "marilyn-simons",
+    "birthday": "1951-01-04",
+    "gender": "F",
+    "netWorthBillions": 32.55,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 32.55,
+    "profileSlug": "marilyn-simons",
+    "country": "United States",
+    "state": "New York",
+    "city": "East Setauket",
+    "industry": "Finance & Investments",
+    "industries": ["Finance & Investments"],
+    "wealthSource": "Hedge funds",
+    "description": "Marilyn Simons is the widow of hedge fund legend Jim Simons, who died in 2024 at age 86.",
+    "bios": [
+      "Marilyn Simons is the widow of hedge fund legend Jim Simons, who died in 2024 at age 86.",
+      "She got a Ph.D. in economics from Stony Brook University, where she met Jim.",
+      "She chairs the $4.5 billion (assets) Simons Foundation, which is the primary funder of Math for America.",
+      "Simons also sits on the boards of Stony Brook's foundation and Rockefeller University, and she chairs the board of Cold Spring Harbor Laboratory."
+    ],
+    "abouts": [],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/66fb374ccc56f1359fc8a29f/416x416.jpg?background=000000&cropX1=415&cropX2=1146&cropY1=156&cropY2=886",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/66fb374ccc56f1359fc8a29f/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [],
+    "categories": ["billionaire"],
+    "tags": ["finance", "asset_management"]
+  },
+  {
+    "rank": 65,
+    "name": "Vagit Alekperov",
+    "lastName": "Alekperov",
+    "slug": "vagit-alekperov",
+    "birthday": "1950-09-01",
+    "gender": "M",
+    "netWorthBillions": 31.82,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 16.23,
+    "profileSlug": "vagit-alekperov",
+    "country": "Russia",
+    "state": null,
+    "city": "Moscow",
+    "industry": "Energy",
+    "industries": ["Energy"],
+    "wealthSource": "Oil",
+    "description": "A former Caspian Sea oil rig worker, Vagit Alekperov became a deputy minister overseeing the oil industry in the Soviet Union.",
+    "bios": [
+      "A former Caspian Sea oil rig worker, Vagit Alekperov became a deputy minister overseeing the oil industry in the Soviet Union.",
+      "In 1991 he took three large ministry-controlled oil fields and set up Lukoil, now Russia's largest independent oil company.",
+      "Lukoil, of which he owns about 30%, was hit by U.S. sanctions in September 2014.",
+      "Alekperov stepped down as the president of Lukoil in April 2022, a few days after being sanctioned by the U.K.",
+      "Alekperov transferred his ownership in Dutch shipyard Heesen Yachts, where his 230-foot yacht Galactica Super Nova was built, to a dutch foundation in 2022."
+    ],
+    "abouts": [
+      "Alekperov penned a book called \"Oil of Russia: Past, Present and Future.\"",
+      "Alekperov, who collects old coins, opened the International Numismatic Club in Moscow, where his collection is exhibited."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/62291dbe5c22ffeaf37a7528/416x416.jpg?background=000000&cropX1=232&cropX2=1762&cropY1=83&cropY2=1614",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/62291dbe5c22ffeaf37a7528/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [
+      {
+        "exchange": "MICEX",
+        "ticker": "LKOH-RU",
+        "companyName": "Lukoil Holdings",
+        "numberOfShares": 196289000,
+        "sharePrice": 79.44797546557625,
+        "currencyCode": "RUB",
+        "exchangeRate": 89.996,
+        "interactive": false
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["energy"]
+  },
+  {
+    "rank": 66,
+    "name": "Phil Knight & family",
+    "lastName": "Knight",
+    "slug": "phil-knight",
+    "birthday": "1938-02-24",
+    "gender": "M",
+    "netWorthBillions": 31.12,
+    "dailyChangeBillions": 0,
+    "privateAssetsWorth": 12.17,
+    "profileSlug": "phil-knight",
+    "country": "United States",
+    "state": "Oregon",
+    "city": "Hillsboro",
+    "industry": "Fashion & Retail",
+    "industries": ["Fashion & Retail"],
+    "wealthSource": "Nike",
+    "description": "Phil Knight, cofounder of shoe giant Nike, retired as chairman in 2016 after 52 years at the company.",
+    "bios": [
+      "Phil Knight, cofounder of shoe giant Nike, retired as chairman in 2016 after 52 years at the company.",
+      "Knight ran track at the University of Oregon and created Nike shoes with his former track coach, Bill Bowerman.",
+      "In 1964, they each put up $500 to start Blue Ribbon Sports. Knight & family still own 21% of the $46 billion (fiscal 2025 revenue) company now known as Nike.",
+      "Knight and his wife Penny have given $4 billion to charity so far--mainly through their Knight Foundation. They rank among America's top philanthropists.",
+      "The Knights have pledged over $500 million in donations to each of the University of Oregon and Stanford University, Phil's alma maters.",
+      "The couple pledged $400 million to help rebuild Portland, Oregon's historically Black Albina neighborhood in 2023.",
+      "In August 2025, the Knights pledged another $2 billion to Oregon Health & Science University's Knight Cancer Institute."
+    ],
+    "abouts": [
+      "Before cofounding Nike, Knight sold Japanese running shoes from the trunk of his car.",
+      "Knight paid a Portland State University student $35 to design Nike's iconic \"Swoosh\" logo."
+    ],
+    "imageUrl": "https://specials-images.forbesimg.com/imageserve/6488d5874961598251b12f50/416x416.jpg?background=000000&cropX1=598&cropX2=3344&cropY1=0&cropY2=2747",
+    "thumbnailUrl": "http://specials-images.forbesimg.com/imageserve/6488d5874961598251b12f50/280x425.jpg?fit=scale&background=000000",
+    "financialAssets": [
+      {
+        "exchange": "NYSE",
+        "ticker": "NKE-US",
+        "companyName": "Nike",
+        "numberOfShares": 304797000,
+        "sharePrice": 62.18,
+        "currencyCode": "USD",
+        "exchangeRate": 1,
+        "interactive": true,
+        "currentPrice": 62.18
+      }
+    ],
+    "categories": ["billionaire"],
+    "tags": ["luxury", "ecommerce"]
+  }
+]

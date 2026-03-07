@@ -70,6 +70,7 @@ apps/crawler/
 !drizzle.config.ts
 !packages/typescript-config/*.json
 !packages/drizzle-orm/drizzle/**/*.json
+!packages/drizzle-orm/src/seeds/data/*.json
 **/*-keypair.json
 **/id.json
 **/wallet.json
