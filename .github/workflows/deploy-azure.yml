@@ -10,6 +10,9 @@ on:
       - ".github/workflows/deploy-azure.yml"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 env:
   REGISTRY: ${{ secrets.ACR_LOGIN_SERVER }}
   WORKER_IMAGE: neptu-worker

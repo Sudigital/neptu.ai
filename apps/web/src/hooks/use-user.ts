@@ -2,7 +2,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { neptuApi, authenticateSession } from "@/lib/api";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export function useUser() {
   const {
@@ -47,6 +47,25 @@ export function useUser() {
     }
   }, [walletAddress, displayEmail]);
 
+  // Retry authentication manually (e.g. after a transient failure)
+  const retryAuth = useCallback(() => {
+    if (!walletAddress) return;
+    setAuthError(false);
+    setHasToken(false);
+    authenticatedWallet.current = null;
+    const email = displayEmail || undefined;
+    authenticateSession(walletAddress, email)
+      .then(() => {
+        authenticatedWallet.current = walletAddress;
+        setHasToken(true);
+      })
+      .catch(() => {
+        authenticatedWallet.current = null;
+        setHasToken(false);
+        setAuthError(true);
+      });
+  }, [walletAddress, displayEmail]);
+
   const hasWallet = !!walletAddress;
   const isConnected = !!wallet;
   const isLoggedIn = isAuthenticated;
@@ -87,6 +106,8 @@ export function useUser() {
     wallet,
     hasWallet,
     hasToken,
+    authError,
+    retryAuth,
     ready,
     isOnboarded,
     hasBirthDate,
