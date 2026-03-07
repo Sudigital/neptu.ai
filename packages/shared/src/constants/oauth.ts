@@ -69,7 +69,7 @@ export const OAUTH_CLIENT_ID_PREFIX = "nptu_client_" as const;
 
 export const OAUTH_CLIENT_ID_LENGTH = 24 as const;
 
-export const OAUTH_CLIENT_SECRET_LENGTH = (OAUTH_CLIENT_ID_LENGTH * 2) as const;
+export const OAUTH_CLIENT_SECRET_LENGTH = OAUTH_CLIENT_ID_LENGTH * 2;
 
 // ---------------------------------------------------------------------------
 // Limits
@@ -98,7 +98,7 @@ export type OAuthResponseType = (typeof OAUTH_RESPONSE_TYPES)[number];
 
 export const OAUTH_TOKEN_TYPE = "Bearer" as const;
 
-export const OAUTH_JWT_ISSUER = "https://api.neptu.sudigital.com" as const;
+export const OAUTH_JWT_ISSUER = "https://api.neptu.day" as const;
 
 // ---------------------------------------------------------------------------
 // Webhook Events

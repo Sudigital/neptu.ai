@@ -55,6 +55,15 @@ export class UserRepository {
     return result[0] ?? null;
   }
 
+  async findByEmail(email: string): Promise<User | null> {
+    const result = await this.db
+      .select()
+      .from(users)
+      .where(eq(users.email, email))
+      .limit(1);
+    return result[0] ?? null;
+  }
+
   async update(
     id: string,
     data: Partial<Omit<NewUser, "id">>
@@ -77,20 +86,38 @@ export class UserRepository {
     walletAddress: string,
     data?: Partial<NewUser>
   ): Promise<User> {
-    const existing = await this.findByWalletAddress(walletAddress);
-    if (existing) {
-      // Update existing user with any new info (email, etc.)
+    // 1. If email provided, try to find user by email first
+    if (data?.email) {
+      const byEmail = await this.findByEmail(data.email);
+      if (byEmail) {
+        const updates: Partial<Omit<NewUser, "id">> = {};
+        // Sync wallet address if it changed
+        if (byEmail.walletAddress !== walletAddress) {
+          updates.walletAddress = walletAddress;
+        }
+        if (Object.keys(updates).length > 0) {
+          const updated = await this.update(byEmail.id, updates);
+          return updated ?? byEmail;
+        }
+        return byEmail;
+      }
+    }
+
+    // 2. If no email or not found by email, try wallet address
+    const byWallet = await this.findByWalletAddress(walletAddress);
+    if (byWallet) {
       const updates: Partial<Omit<NewUser, "id">> = {};
-      if (data?.email && data.email !== existing.email) {
+      if (data?.email && data.email !== byWallet.email) {
         updates.email = data.email;
       }
       if (Object.keys(updates).length > 0) {
-        const updated = await this.update(existing.id, updates);
-        return updated ?? existing;
+        const updated = await this.update(byWallet.id, updates);
+        return updated ?? byWallet;
       }
-      return existing;
+      return byWallet;
     }
 
+    // 3. Neither email nor wallet found — create new user
     const id = crypto.randomUUID();
     return this.create({
       id,

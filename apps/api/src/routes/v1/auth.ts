@@ -1,7 +1,7 @@
 import { zValidator } from "@hono/zod-validator";
 import { UserService, type Database } from "@neptu/drizzle-orm";
 import { AUTH_NONCE_TTL, AUTH_NONCE_MESSAGE } from "@neptu/shared";
-import { getAddressEncoder, getBase58Decoder, address } from "@solana/kit";
+import { getAddressEncoder, getBase58Encoder, address } from "@solana/kit";
 import { Hono } from "hono";
 import { z } from "zod";
 
@@ -60,6 +60,7 @@ const verifySchema = z.object({
 
 const sessionSchema = z.object({
   walletAddress: z.string().min(32).max(64),
+  email: z.string().email().optional(),
 });
 
 const refreshSchema = z.object({
@@ -79,7 +80,7 @@ export const authRoutes = new Hono<Env>();
  * This endpoint issues a JWT pair for the connected wallet address.
  */
 authRoutes.post("/session", zValidator("json", sessionSchema), async (c) => {
-  const { walletAddress } = c.req.valid("json");
+  const { walletAddress, email } = c.req.valid("json");
 
   // Validate Solana address format
   try {
@@ -91,14 +92,10 @@ authRoutes.post("/session", zValidator("json", sessionSchema), async (c) => {
     );
   }
 
-  // Get or create user
+  // Get or create user (email-first → wallet → create)
   const db = c.get("db");
   const userService = new UserService(db);
-  let user = await userService.getUserByWallet(walletAddress);
-
-  if (!user) {
-    user = await userService.createUser({ walletAddress });
-  }
+  const user = await userService.getOrCreateUser(walletAddress, email);
 
   // Issue JWT token pair
   const tokens = issueTokenPair(user.id, walletAddress, user.role);
@@ -330,8 +327,8 @@ function decodeSignature(signature: string): Uint8Array {
   }
 
   // Otherwise treat as base58 (native Solana wallet adapters encode signatures as base58)
-  const decoder = getBase58Decoder();
-  const bytes = decoder.decode(signature);
+  const encoder = getBase58Encoder();
+  const bytes = new Uint8Array(encoder.encode(signature));
 
   if (bytes.length !== ED25519_SIGNATURE_LENGTH) {
     throw new Error(

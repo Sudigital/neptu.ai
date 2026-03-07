@@ -28,6 +28,7 @@ export {
 export {
   getTokenBalance,
   getSudigitalBalance,
+  getRewardTokenBalance,
   getAssociatedTokenAddress,
   calculateSolPaymentReward,
   calculateNeptuPaymentBurn,

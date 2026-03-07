@@ -27,6 +27,7 @@ import {
   userRoutes,
   voiceRoutes,
   walletRoutes,
+  habitRoutes,
 } from "./routes/v1";
 
 type Variables = {
@@ -89,6 +90,7 @@ app.route("/api/v1/developer/oauth", developerWebhookRoutes);
 app.route("/api/v1/oauth", oauthRoutes);
 app.route("/api/v1/voice", voiceRoutes);
 app.route("/api/v1/.well-known", oauthDiscoveryRoutes);
+app.route("/api/v1/habits", habitRoutes);
 
 // OpenAPI spec + Scalar API Reference
 mountOpenAPI(app, API_URL);

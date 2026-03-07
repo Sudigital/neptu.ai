@@ -35,7 +35,7 @@ jobs:
           export const formatFullReading = (..._a: unknown[]): string => "";
           export const formatPeluang = (..._a: unknown[]): string => "";
           export const formatPotensi = (..._a: unknown[]): string => "";
-          export type { Afirmasi, BaseReading, CompatibilityResult, DimensionComparison, FullReading, LahirUntuk, MitraSatruCategory, NeptuDatabase, NeptuSoulAttribute, NeptuSoulMetadata, Peluang, Potensi, WukuItem } from "@neptu/shared";
+          export type { Afirmasi, BaseReading, CompatibilityCategory, CompatibilityResult, DimensionComparison, FullReading, LahirUntuk, NeptuDatabase, NeptuSoulAttribute, NeptuSoulMetadata, Peluang, Potensi, WukuItem } from "@neptu/shared";
           STUB
 
           # API server - private, uses wariga

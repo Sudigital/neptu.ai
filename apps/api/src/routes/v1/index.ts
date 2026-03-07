@@ -14,3 +14,4 @@ export { tokenRoutes } from "./token";
 export { userRoutes } from "./user";
 export { voiceRoutes } from "./voice";
 export { walletRoutes } from "./wallet";
+export { habitRoutes } from "./habit";

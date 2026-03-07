@@ -26,7 +26,7 @@ function signTestToken(
   secret = JWT_SECRET
 ): string {
   return jwt.sign(payload, secret, {
-    issuer: "https://api.neptu.sudigital.com",
+    issuer: "https://api.neptu.day",
   });
 }
 
@@ -136,7 +136,7 @@ describe("OAuth Bearer Auth Middleware", () => {
         jti: "hash-1",
       },
       JWT_SECRET,
-      { issuer: "https://api.neptu.sudigital.com", expiresIn: -10 }
+      { issuer: "https://api.neptu.day", expiresIn: -10 }
     );
     const res = await app.request("/protected/data", {
       headers: { Authorization: `Bearer ${expiredToken}` },
@@ -202,7 +202,7 @@ describe("OAuth Discovery Endpoint", () => {
     expect(res.status).toBe(200);
 
     const body = await res.json();
-    expect(body.issuer).toBe("https://api.neptu.sudigital.com");
+    expect(body.issuer).toBe("https://api.neptu.day");
     expect(body.authorization_endpoint).toContain("/api/v1/oauth/authorize");
     expect(body.token_endpoint).toContain("/api/v1/oauth/token");
     expect(body.revocation_endpoint).toContain("/api/v1/oauth/revoke");
@@ -294,12 +294,12 @@ describe("OAuth JWT Token Structure", () => {
       JWT_SECRET,
       {
         expiresIn: 3600,
-        issuer: "https://api.neptu.sudigital.com",
+        issuer: "https://api.neptu.day",
       }
     );
 
     const decoded = jwt.verify(token, JWT_SECRET, {
-      issuer: "https://api.neptu.sudigital.com",
+      issuer: "https://api.neptu.day",
     }) as jwt.JwtPayload;
 
     expect(decoded.sub).toBe("user-123");
@@ -307,7 +307,7 @@ describe("OAuth JWT Token Structure", () => {
     expect(decoded.scope).toBe("neptu:read neptu:ai");
     expect(decoded.typ).toBe("oauth_access");
     expect(decoded.jti).toBe("abc123hash");
-    expect(decoded.iss).toBe("https://api.neptu.sudigital.com");
+    expect(decoded.iss).toBe("https://api.neptu.day");
     expect(decoded.exp).toBeGreaterThan(now);
     expect(decoded.iat).toBeGreaterThanOrEqual(now - 1);
   });
@@ -319,7 +319,7 @@ describe("OAuth JWT Token Structure", () => {
 
     expect(() => {
       jwt.verify(token, JWT_SECRET, {
-        issuer: "https://api.neptu.sudigital.com",
+        issuer: "https://api.neptu.day",
       });
     }).toThrow();
   });
@@ -334,11 +334,11 @@ describe("OAuth JWT Token Structure", () => {
         jti: "hash-1",
       },
       JWT_SECRET,
-      { issuer: "https://api.neptu.sudigital.com" }
+      { issuer: "https://api.neptu.day" }
     );
 
     const decoded = jwt.verify(token, JWT_SECRET, {
-      issuer: "https://api.neptu.sudigital.com",
+      issuer: "https://api.neptu.day",
     }) as Record<string, string>;
 
     expect(decoded.typ).not.toBe("oauth_access");
@@ -354,7 +354,7 @@ describe("OAuth JWT Token Structure", () => {
         jti: "hash-1",
       },
       JWT_SECRET,
-      { issuer: "https://api.neptu.sudigital.com", expiresIn: 3600 }
+      { issuer: "https://api.neptu.day", expiresIn: 3600 }
     );
 
     const decoded = jwt.decode(token) as Record<string, unknown>;

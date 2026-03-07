@@ -1,10 +1,10 @@
 import type { Frekuensi, Potensi } from "./wuku";
 
 // ============================================================================
-// Compatibility Types (Mitra Satru)
+// Compatibility Types
 // ============================================================================
 
-export type MitraSatruCategory = "mitra" | "neutral" | "satru";
+export type CompatibilityCategory = "mitra" | "neutral" | "satru";
 
 export interface DimensionComparison {
   dimension: string;
@@ -16,11 +16,11 @@ export interface DimensionComparison {
 export interface CompatibilityResult {
   person1: Potensi;
   person2: Potensi;
-  mitraSatru: {
+  pairing: {
     person1Frekuensi: Frekuensi;
     person2Frekuensi: Frekuensi;
     combinedFrekuensi: Frekuensi;
-    category: MitraSatruCategory;
+    category: CompatibilityCategory;
     description: string;
   };
   dimensions: DimensionComparison[];

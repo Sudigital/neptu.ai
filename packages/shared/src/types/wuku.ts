@@ -66,8 +66,8 @@ export interface NeptuDatabase {
   rasa: Rasa[];
   karsa: Karsa[];
   tindakan: Tindakan[];
-  mitra_satru_ning_dina: Frekuensi[];
-  mitra_satru_peluang: Frekuensi[];
+  compatibility_ning_dina: Frekuensi[];
+  compatibility_peluang: Frekuensi[];
   kanda_pat: KandaPat[];
   steps: Steps[];
   panca_tirta: PancaTirta[];

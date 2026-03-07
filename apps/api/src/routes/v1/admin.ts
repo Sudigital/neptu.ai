@@ -7,12 +7,16 @@ import {
   ApiUsageService,
   ApiKeyService,
   ApiCreditPackService,
+  PersonService,
+  MarketCategoryService,
   type Database,
   createApiPricingPlanSchema,
   updateApiPricingPlanSchema,
   createApiCreditPackSchema,
   updateApiCreditPackSchema,
+  createPersonSchema,
 } from "@neptu/drizzle-orm";
+import { NeptuCalculator } from "@neptu/wariga";
 import { Hono } from "hono";
 import { z } from "zod";
 
@@ -443,3 +447,129 @@ adminRoutes.get("/settings", async (c) => {
     },
   });
 });
+
+// ============ MARKET CATEGORIES ============
+
+adminRoutes.get("/market-categories", async (c) => {
+  const db = c.get("db");
+  const service = new MarketCategoryService(db);
+
+  const categories = await service.getActive();
+
+  return c.json({ success: true, data: categories });
+});
+
+adminRoutes.get("/market-categories/:slug", async (c) => {
+  const slug = c.req.param("slug");
+  const db = c.get("db");
+  const service = new MarketCategoryService(db);
+
+  const category = await service.getBySlug(slug);
+  if (!category) {
+    return c.json({ success: false, error: "Category not found" }, 404);
+  }
+
+  return c.json({ success: true, data: category });
+});
+
+// ============ NOTABLE FIGURES ============
+
+const listFiguresSchema = z.object({
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(500).default(50),
+  category: z.string().optional(),
+  status: z.enum(["active", "inactive", "pending_review"]).optional(),
+  search: z.string().optional(),
+});
+
+adminRoutes.get(
+  "/persons",
+  zValidator("query", listFiguresSchema),
+  async (c) => {
+    const { page, limit, category, status, search } = c.req.valid("query");
+    const db = c.get("db");
+    const service = new PersonService(db);
+
+    const offset = (page - 1) * limit;
+    const figures = await service.list({
+      category,
+      status,
+      search,
+      limit,
+      offset,
+    });
+
+    return c.json({
+      success: true,
+      data: figures,
+      page,
+      limit,
+    });
+  }
+);
+
+adminRoutes.get("/persons/stats", async (c) => {
+  const db = c.get("db");
+  const service = new PersonService(db);
+  const stats = await service.getStats();
+
+  return c.json({ success: true, stats });
+});
+
+adminRoutes.post("/persons/recalculate", async (c) => {
+  const db = c.get("db");
+  const service = new PersonService(db);
+  const calculator = new NeptuCalculator();
+
+  // Fetch all persons in pages to avoid memory pressure
+  const PAGE_SIZE = 200;
+  let offset = 0;
+  let updated = 0;
+  let errors = 0;
+  let total = 0;
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const batch = await service.list({ limit: PAGE_SIZE, offset });
+    if (batch.length === 0) break;
+    total += batch.length;
+
+    for (const person of batch) {
+      try {
+        const [year, month, day] = person.birthday.split("-").map(Number);
+        const birthDate = new Date(year!, month! - 1, day);
+        const reading = calculator.getFullReading(birthDate);
+        const wukuData = reading as unknown as Record<string, unknown>;
+
+        await service.update(person.id, { wukuData });
+        updated++;
+      } catch {
+        errors++;
+      }
+    }
+
+    offset += batch.length;
+    if (batch.length < PAGE_SIZE) break;
+  }
+
+  return c.json({
+    success: true,
+    total,
+    updated,
+    errors,
+  });
+});
+
+adminRoutes.post(
+  "/persons",
+  zValidator("json", createPersonSchema),
+  async (c) => {
+    const input = c.req.valid("json");
+    const db = c.get("db");
+    const service = new PersonService(db);
+
+    const person = await service.create(input);
+
+    return c.json({ success: true, data: person }, 201);
+  }
+);

@@ -5,6 +5,7 @@ WORKDIR /app
 COPY package.json bun.lock* ./
 COPY apps/worker/package.json apps/worker/
 COPY apps/api/package.json apps/api/
+COPY apps/crawler/package.json apps/crawler/
 COPY apps/mobile/package.json apps/mobile/
 COPY apps/web/package.json apps/web/
 COPY apps/cli/package.json apps/cli/
@@ -28,8 +29,10 @@ COPY packages/drizzle-orm/tsconfig.json packages/drizzle-orm/
 COPY packages/shared/src packages/shared/src
 COPY packages/solana/src packages/solana/src
 COPY packages/wariga/src packages/wariga/src
-COPY packages/logger/src packages/logger/
-COPY packages/queues/src packages/queues/
+COPY packages/logger/src packages/logger/src
+COPY packages/logger/tsconfig.json packages/logger/
+COPY packages/queues/src packages/queues/src
+COPY packages/queues/tsconfig.json packages/queues/
 COPY packages/typescript-config packages/typescript-config
 COPY tsconfig.json ./
 

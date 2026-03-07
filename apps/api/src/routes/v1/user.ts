@@ -81,7 +81,7 @@ userRoutes.get("/:walletAddress", async (c) => {
       user.role = "admin";
     } catch (e) {
       // Column may not exist in older databases - ignore
-      log.warn("Could not set role: %o", e);
+      log.warn({ err: e }, "Could not set role");
     }
   }
 
@@ -109,7 +109,7 @@ userRoutes.post("/", zValidator("json", createUserSchema), async (c) => {
       user.role = "admin";
     } catch (e) {
       // Column may not exist in older databases - ignore
-      log.warn("Could not set role: %o", e);
+      log.warn({ err: e }, "Could not set role");
     }
   }
 
@@ -168,7 +168,7 @@ userRoutes.put(
       const updatedUser = await userService.getUserByWallet(walletAddress);
       return c.json({ success: true, user: updatedUser });
     } catch (error) {
-      log.error("Update user error: %o", error);
+      log.error({ err: error }, "Update user error");
       return c.json({ success: false, error: String(error) }, 500);
     }
   }

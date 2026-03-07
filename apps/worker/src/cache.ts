@@ -18,7 +18,12 @@ cacheConn.on("error", (err) => log.error({ err }, "Redis connection error"));
 
 export const redisCache: CacheStore = {
   async get(key: string): Promise<string | null> {
-    return cacheConn.get(key);
+    try {
+      return await cacheConn.get(key);
+    } catch {
+      log.warn("Cache get failed for key=%s, skipping", key);
+      return null;
+    }
   },
 
   async put(
@@ -26,11 +31,19 @@ export const redisCache: CacheStore = {
     value: string,
     options?: { expirationTtl?: number }
   ): Promise<void> {
-    const ttl = options?.expirationTtl ?? 3600;
-    await cacheConn.set(key, value, "EX", ttl);
+    try {
+      const ttl = options?.expirationTtl ?? 3600;
+      await cacheConn.set(key, value, "EX", ttl);
+    } catch {
+      log.warn("Cache put failed for key=%s, skipping", key);
+    }
   },
 
   async delete(key: string): Promise<void> {
-    await cacheConn.del(key);
+    try {
+      await cacheConn.del(key);
+    } catch {
+      log.warn("Cache delete failed for key=%s, skipping", key);
+    }
   },
 };

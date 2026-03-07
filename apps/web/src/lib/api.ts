@@ -40,13 +40,14 @@ export function clearAuthToken() {
  * Returns signed PASETO access + refresh tokens.
  */
 export async function authenticateSession(
-  walletAddress: string
+  walletAddress: string,
+  email?: string
 ): Promise<string> {
   const { data } = await axios.post<{
     success: boolean;
     accessToken: string;
     refreshToken: string;
-  }>(`${API_URL}/api/v1/auth/session`, { walletAddress });
+  }>(`${API_URL}/api/v1/auth/session`, { walletAddress, email });
 
   setBearerToken(data.accessToken);
   return data.accessToken;

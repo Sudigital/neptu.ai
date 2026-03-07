@@ -1,4 +1,4 @@
-import type { CompatibilityResult, MitraSatruCategory } from "@neptu/shared";
+import type { CompatibilityResult, CompatibilityCategory } from "@neptu/shared";
 
 import { ConfigDrawer } from "@/components/config-drawer";
 import { Header } from "@/components/layout/header";
@@ -39,7 +39,7 @@ import {
 } from "./components";
 
 const CATEGORY_STYLES: Record<
-  MitraSatruCategory,
+  CompatibilityCategory,
   { gradient: string; badge: string; ring: string; glow: string }
 > = {
   mitra: {
@@ -94,7 +94,7 @@ export function CompatibilityPage() {
   };
 
   const reading = result?.reading;
-  const category = reading?.mitraSatru.category;
+  const category = reading?.pairing.category;
   const styles = category ? CATEGORY_STYLES[category] : null;
 
   const topNav = [
@@ -112,7 +112,7 @@ export function CompatibilityPage() {
     },
     {
       title: t("nav.docs"),
-      href: "https://docs.neptu.sudigital.com",
+      href: "https://docs.neptu.day",
       isActive: false,
       disabled: false,
       external: true,
@@ -302,7 +302,7 @@ function CompatibilityResultView({
 }: {
   reading: CompatibilityResult;
   styles: { gradient: string; badge: string; ring: string; glow: string };
-  category: MitraSatruCategory;
+  category: CompatibilityCategory;
   t: (key: string, fallback?: string) => string;
 }) {
   const categoryLabel = t(`compatibility.category.${category}`, category);
@@ -320,7 +320,7 @@ function CompatibilityResultView({
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs font-medium tracking-wider text-white/70 uppercase sm:text-sm">
-              {t("compatibility.mitraSatru")}
+              {t("compatibility.pairing")}
             </p>
             <h2 className="mt-2 text-4xl font-bold tracking-tight sm:text-5xl">
               {reading.scores.overall}
@@ -339,7 +339,7 @@ function CompatibilityResultView({
                 {categoryLabel}
               </span>
               <span className="text-xs text-white/60">
-                {reading.mitraSatru.combinedFrekuensi.name}
+                {reading.pairing.combinedFrekuensi.name}
               </span>
             </div>
           </div>
@@ -378,7 +378,7 @@ function CompatibilityResultView({
           />
           <FrekuensiCard
             label={t("compatibility.person1")}
-            name={reading.mitraSatru.person1Frekuensi.name}
+            name={reading.pairing.person1Frekuensi.name}
             purpose={reading.person1.lahir_untuk.description}
             t={t}
           />
@@ -425,7 +425,7 @@ function CompatibilityResultView({
           />
           <FrekuensiCard
             label={t("compatibility.person2")}
-            name={reading.mitraSatru.person2Frekuensi.name}
+            name={reading.pairing.person2Frekuensi.name}
             purpose={reading.person2.lahir_untuk.description}
             t={t}
           />

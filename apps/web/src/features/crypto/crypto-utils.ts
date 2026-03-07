@@ -1,9 +1,9 @@
 export interface CryptoWithMarketData {
   symbol: string;
   name: string;
+  coingeckoId: string;
   birthday: string;
   description?: string;
-  coingeckoId?: string;
   image?: string;
   currentPrice?: number;
   marketCap?: number;

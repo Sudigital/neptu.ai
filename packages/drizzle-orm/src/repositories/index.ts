@@ -33,3 +33,15 @@ export { OAuthAccessTokenRepository } from "./oauth-access-token-repository";
 export { OAuthRefreshTokenRepository } from "./oauth-refresh-token-repository";
 export { OAuthWebhookRepository } from "./oauth-webhook-repository";
 export { OAuthWebhookDeliveryRepository } from "./oauth-webhook-delivery-repository";
+export { HabitRepository } from "./habit-repository";
+export { HabitCompletionRepository } from "./habit-completion-repository";
+export { PersonRepository, type FindPersonsOptions } from "./person-repository";
+export {
+  BillionaireSnapshotRepository,
+  type FindBillionaireSnapshotsOptions,
+} from "./billionaire-snapshot-repository";
+export {
+  BillionaireDailySummaryRepository,
+  type FindBillionaireSummariesOptions,
+} from "./billionaire-daily-summary-repository";
+export { MarketCategoryRepository } from "./market-category-repository";

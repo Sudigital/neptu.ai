@@ -28,7 +28,8 @@ export function useUser() {
     if (walletAddress && walletAddress !== authenticatedWallet.current) {
       setHasToken(false);
       setAuthError(false);
-      authenticateSession(walletAddress)
+      const email = displayEmail || undefined;
+      authenticateSession(walletAddress, email)
         .then(() => {
           authenticatedWallet.current = walletAddress;
           setHasToken(true);
@@ -44,7 +45,7 @@ export function useUser() {
       setHasToken(false);
       setAuthError(false);
     }
-  }, [walletAddress]);
+  }, [walletAddress, displayEmail]);
 
   const hasWallet = !!walletAddress;
   const isConnected = !!wallet;
@@ -52,10 +53,10 @@ export function useUser() {
 
   // Fetch user from DB once we have a signed token
   const queryEnabled = !!walletAddress && isLoggedIn && hasToken;
-  const email = displayEmail || undefined;
+  const queryEmail = displayEmail || undefined;
   const { data, isPending, isFetching, isError, error, refetch } = useQuery({
     queryKey: ["user", walletAddress],
-    queryFn: () => neptuApi.getOrCreateUser(walletAddress, email),
+    queryFn: () => neptuApi.getOrCreateUser(walletAddress, queryEmail),
     enabled: queryEnabled,
     retry: 2,
     staleTime: 1000 * 60 * 5,

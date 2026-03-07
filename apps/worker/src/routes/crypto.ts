@@ -10,7 +10,6 @@ import {
   TOP_CRYPTO_COINS,
 } from "@neptu/shared";
 import { NeptuCalculator } from "@neptu/wariga";
-/** Crypto Market API routes */
 import { Hono } from "hono";
 
 import { redisCache } from "../cache";
@@ -166,53 +165,54 @@ crypto.post("/refresh", async (c) => {
  * Query params: days (7|30|90|365, default 365)
  */
 crypto.get("/chart/:id", async (c) => {
-  const coinId = c.req.param("id");
+  const coinId = c.req.param("id").toLowerCase();
   const days = c.req.query("days") || "365";
   const allowedDays = new Set<string>(COINGECKO_API.ALLOWED_CHART_DAYS);
 
   if (!coinId || !allowedDays.has(days)) {
-    return c.json({ error: "Invalid id or days param" }, 400);
+    return c.json({ error: "Invalid coin id or days param" }, 400);
   }
 
   const cacheKey = `chart:${coinId}:${days}`;
 
   const cached = await redisCache.get(cacheKey);
   if (cached) {
-    return c.json(JSON.parse(cached), 200, {
-      "X-Cache": "HIT",
-    });
+    return c.json(JSON.parse(cached), 200, { "X-Cache": "HIT" });
   }
 
-  const chartUrl = `${COINGECKO_API.BASE_URL}${COINGECKO_API.CHART_ENDPOINT.replace("{id}", coinId)}?vs_currency=${COINGECKO_API.VS_CURRENCY}&days=${days}`;
-  const apiKey = process.env.COINGECKO_API_KEY;
+  try {
+    const chartUrl = `${COINGECKO_API.BASE_URL}${COINGECKO_API.CHART_ENDPOINT.replace("{id}", coinId)}?vs_currency=${COINGECKO_API.VS_CURRENCY}&days=${days}`;
 
-  const fetchHeaders: Record<string, string> = {
-    Accept: "application/json",
-  };
-  if (apiKey) {
-    fetchHeaders["x-cg-demo-api-key"] = apiKey;
-  }
+    const fetchHeaders: Record<string, string> = {
+      Accept: "application/json",
+    };
 
-  const res = await fetch(chartUrl, { headers: fetchHeaders });
+    const res = await fetch(chartUrl, { headers: fetchHeaders });
 
-  if (!res.ok) {
+    if (!res.ok) {
+      const body = await res.text();
+      log.error("CoinGecko chart error: %d %s", res.status, body);
+      return c.json(
+        { error: `CoinGecko returned ${res.status}` },
+        res.status === 429 ? 429 : 502
+      );
+    }
+
     const body = await res.text();
-    log.error("CoinGecko chart error: %d %s", res.status, body);
+    const ttl = CHART_CACHE_TTL[days] ?? CHART_CACHE_TTL["365"];
+    await redisCache.put(cacheKey, body, { expirationTtl: ttl });
+
+    return c.json(JSON.parse(body), 200, { "X-Cache": "MISS" });
+  } catch (error) {
+    log.error(
+      "Chart error: %s",
+      error instanceof Error ? error.message : error
+    );
     return c.json(
-      { error: `CoinGecko returned ${res.status}` },
-      res.status === 429 ? 429 : 502
+      { error: error instanceof Error ? error.message : "Chart fetch failed" },
+      500
     );
   }
-
-  const body = await res.text();
-
-  const ttl = CHART_CACHE_TTL[days] ?? CHART_CACHE_TTL["365"];
-
-  redisCache.put(cacheKey, body, { expirationTtl: ttl });
-
-  return c.json(JSON.parse(body), 200, {
-    "X-Cache": "MISS",
-  });
 });
 
 /**
@@ -297,5 +297,10 @@ crypto.get("/cosmic/:birthDate", async (c) => {
     );
   }
 });
+
+/* ── Compose signal sub-routes (fear-greed, funding-rate, open-interest, wealth-flow) ── */
+import { signals } from "./crypto-signals";
+
+crypto.route("/", signals);
 
 export { crypto };

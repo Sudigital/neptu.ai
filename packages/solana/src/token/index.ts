@@ -1,6 +1,7 @@
 export {
   getTokenBalance,
   getSudigitalBalance,
+  getRewardTokenBalance,
   getAssociatedTokenAddress,
   neptuToRaw,
   rawToNeptu,

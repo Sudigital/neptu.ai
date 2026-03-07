@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const APP_URL = "https://neptu.sudigital.com";
+const APP_URL = "https://neptu.day";
 
 const features = [
   {

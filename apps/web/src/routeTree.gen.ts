@@ -37,8 +37,11 @@ import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_auth
 import { Route as AuthenticatedOauthAuthorizeRouteImport } from './routes/_authenticated/oauth/authorize'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 import { Route as AuthenticatedDeveloperOauthRouteImport } from './routes/_authenticated/developer/oauth'
+import { Route as AuthenticatedAdminWorldEconomicRouteImport } from './routes/_authenticated/admin/world-economic'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedAdminSubscriptionsRouteImport } from './routes/_authenticated/admin/subscriptions'
+import { Route as AuthenticatedAdminPersonsRouteImport } from './routes/_authenticated/admin/persons'
+import { Route as AuthenticatedAdminMarketRouteImport } from './routes/_authenticated/admin/market'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin/analytics'
 import { Route as AuthenticatedAdminSettingsRouteRouteImport } from './routes/_authenticated/admin/settings/route'
 import { Route as AuthenticatedAdminSettingsIndexRouteImport } from './routes/_authenticated/admin/settings/index'
@@ -198,6 +201,12 @@ const AuthenticatedDeveloperOauthRoute =
     path: '/oauth',
     getParentRoute: () => AuthenticatedDeveloperRouteRoute,
   } as any)
+const AuthenticatedAdminWorldEconomicRoute =
+  AuthenticatedAdminWorldEconomicRouteImport.update({
+    id: '/world-economic',
+    path: '/world-economic',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -207,6 +216,18 @@ const AuthenticatedAdminSubscriptionsRoute =
   AuthenticatedAdminSubscriptionsRouteImport.update({
     id: '/subscriptions',
     path: '/subscriptions',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminPersonsRoute =
+  AuthenticatedAdminPersonsRouteImport.update({
+    id: '/persons',
+    path: '/persons',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminMarketRoute =
+  AuthenticatedAdminMarketRouteImport.update({
+    id: '/market',
+    path: '/market',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
 const AuthenticatedAdminAnalyticsRoute =
@@ -272,8 +293,11 @@ export interface FileRoutesByFullPath {
   '/cryptos/': typeof CryptosIndexRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRouteRouteWithChildren
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
+  '/admin/market': typeof AuthenticatedAdminMarketRoute
+  '/admin/persons': typeof AuthenticatedAdminPersonsRoute
   '/admin/subscriptions': typeof AuthenticatedAdminSubscriptionsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/admin/world-economic': typeof AuthenticatedAdminWorldEconomicRoute
   '/developer/oauth': typeof AuthenticatedDeveloperOauthRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/oauth/authorize': typeof AuthenticatedOauthAuthorizeRoute
@@ -306,8 +330,11 @@ export interface FileRoutesByTo {
   '/cryptos/$symbol': typeof CryptosSymbolRoute
   '/cryptos': typeof CryptosIndexRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
+  '/admin/market': typeof AuthenticatedAdminMarketRoute
+  '/admin/persons': typeof AuthenticatedAdminPersonsRoute
   '/admin/subscriptions': typeof AuthenticatedAdminSubscriptionsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/admin/world-economic': typeof AuthenticatedAdminWorldEconomicRoute
   '/developer/oauth': typeof AuthenticatedDeveloperOauthRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/oauth/authorize': typeof AuthenticatedOauthAuthorizeRoute
@@ -346,8 +373,11 @@ export interface FileRoutesById {
   '/cryptos/': typeof CryptosIndexRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRouteRouteWithChildren
   '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
+  '/_authenticated/admin/market': typeof AuthenticatedAdminMarketRoute
+  '/_authenticated/admin/persons': typeof AuthenticatedAdminPersonsRoute
   '/_authenticated/admin/subscriptions': typeof AuthenticatedAdminSubscriptionsRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/_authenticated/admin/world-economic': typeof AuthenticatedAdminWorldEconomicRoute
   '/_authenticated/developer/oauth': typeof AuthenticatedDeveloperOauthRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/_authenticated/oauth/authorize': typeof AuthenticatedOauthAuthorizeRoute
@@ -386,8 +416,11 @@ export interface FileRouteTypes {
     | '/cryptos/'
     | '/admin/settings'
     | '/admin/analytics'
+    | '/admin/market'
+    | '/admin/persons'
     | '/admin/subscriptions'
     | '/admin/users'
+    | '/admin/world-economic'
     | '/developer/oauth'
     | '/errors/$error'
     | '/oauth/authorize'
@@ -420,8 +453,11 @@ export interface FileRouteTypes {
     | '/cryptos/$symbol'
     | '/cryptos'
     | '/admin/analytics'
+    | '/admin/market'
+    | '/admin/persons'
     | '/admin/subscriptions'
     | '/admin/users'
+    | '/admin/world-economic'
     | '/developer/oauth'
     | '/errors/$error'
     | '/oauth/authorize'
@@ -459,8 +495,11 @@ export interface FileRouteTypes {
     | '/cryptos/'
     | '/_authenticated/admin/settings'
     | '/_authenticated/admin/analytics'
+    | '/_authenticated/admin/market'
+    | '/_authenticated/admin/persons'
     | '/_authenticated/admin/subscriptions'
     | '/_authenticated/admin/users'
+    | '/_authenticated/admin/world-economic'
     | '/_authenticated/developer/oauth'
     | '/_authenticated/errors/$error'
     | '/_authenticated/oauth/authorize'
@@ -690,6 +729,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDeveloperOauthRouteImport
       parentRoute: typeof AuthenticatedDeveloperRouteRoute
     }
+    '/_authenticated/admin/world-economic': {
+      id: '/_authenticated/admin/world-economic'
+      path: '/world-economic'
+      fullPath: '/admin/world-economic'
+      preLoaderRoute: typeof AuthenticatedAdminWorldEconomicRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/users': {
       id: '/_authenticated/admin/users'
       path: '/users'
@@ -702,6 +748,20 @@ declare module '@tanstack/react-router' {
       path: '/subscriptions'
       fullPath: '/admin/subscriptions'
       preLoaderRoute: typeof AuthenticatedAdminSubscriptionsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/persons': {
+      id: '/_authenticated/admin/persons'
+      path: '/persons'
+      fullPath: '/admin/persons'
+      preLoaderRoute: typeof AuthenticatedAdminPersonsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/market': {
+      id: '/_authenticated/admin/market'
+      path: '/market'
+      fullPath: '/admin/market'
+      preLoaderRoute: typeof AuthenticatedAdminMarketRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
     '/_authenticated/admin/analytics': {
@@ -785,8 +845,11 @@ const AuthenticatedAdminSettingsRouteRouteWithChildren =
 interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminSettingsRouteRoute: typeof AuthenticatedAdminSettingsRouteRouteWithChildren
   AuthenticatedAdminAnalyticsRoute: typeof AuthenticatedAdminAnalyticsRoute
+  AuthenticatedAdminMarketRoute: typeof AuthenticatedAdminMarketRoute
+  AuthenticatedAdminPersonsRoute: typeof AuthenticatedAdminPersonsRoute
   AuthenticatedAdminSubscriptionsRoute: typeof AuthenticatedAdminSubscriptionsRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
+  AuthenticatedAdminWorldEconomicRoute: typeof AuthenticatedAdminWorldEconomicRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
@@ -795,8 +858,11 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminSettingsRouteRoute:
       AuthenticatedAdminSettingsRouteRouteWithChildren,
     AuthenticatedAdminAnalyticsRoute: AuthenticatedAdminAnalyticsRoute,
+    AuthenticatedAdminMarketRoute: AuthenticatedAdminMarketRoute,
+    AuthenticatedAdminPersonsRoute: AuthenticatedAdminPersonsRoute,
     AuthenticatedAdminSubscriptionsRoute: AuthenticatedAdminSubscriptionsRoute,
     AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
+    AuthenticatedAdminWorldEconomicRoute: AuthenticatedAdminWorldEconomicRoute,
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   }
 

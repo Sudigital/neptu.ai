@@ -10,6 +10,9 @@ interface CronDeps {
   refreshCryptoMarketData: () => Promise<void>;
   cleanupExpiredOAuthTokens: () => Promise<void>;
   retryFailedWebhooks: () => Promise<void>;
+  refreshBillionaireList: () => Promise<void>;
+  snapshotBillionaires: () => Promise<void>;
+  refreshMarketData: () => Promise<void>;
 }
 
 const QUEUE_NAME = "neptu-cron";
@@ -25,6 +28,9 @@ export async function startCronJobs(deps: CronDeps): Promise<void> {
   for (const job of existing) {
     await queue.removeRepeatableByKey(job.key);
   }
+
+  // Drain leftover jobs from previous process to avoid lock errors
+  await queue.drain(true);
 
   // Every 10 min: Refresh crypto market data
   await queue.add(
@@ -70,6 +76,39 @@ export async function startCronJobs(deps: CronDeps): Promise<void> {
     }
   );
 
+  // Daily at 06:00 UTC: Snapshot billionaire wealth + Neptu scores
+  await queue.add(
+    "billionaire_snapshot",
+    {},
+    {
+      repeat: { pattern: "0 6 * * *" },
+      removeOnComplete: 100,
+      removeOnFail: 50,
+    }
+  );
+
+  // Daily at 05:00 UTC: Refresh billionaire person list from Forbes API
+  await queue.add(
+    "billionaire_list_refresh",
+    {},
+    {
+      repeat: { pattern: "0 5 * * *" },
+      removeOnComplete: 100,
+      removeOnFail: 50,
+    }
+  );
+
+  // Every 2 hours: Refresh market data (AV free tier = 25 req/day)
+  await queue.add(
+    "market_refresh",
+    {},
+    {
+      repeat: { pattern: "0 */2 * * *" },
+      removeOnComplete: 100,
+      removeOnFail: 50,
+    }
+  );
+
   // Process jobs
   new Worker(
     QUEUE_NAME,
@@ -86,6 +125,18 @@ export async function startCronJobs(deps: CronDeps): Promise<void> {
           await deps.refreshCryptoMarketData();
           break;
 
+        case "billionaire_snapshot":
+          await deps.snapshotBillionaires();
+          break;
+
+        case "billionaire_list_refresh":
+          await deps.refreshBillionaireList();
+          break;
+
+        case "market_refresh":
+          await deps.refreshMarketData();
+          break;
+
         case "oauth_token_cleanup":
           await deps.cleanupExpiredOAuthTokens();
           break;
@@ -95,8 +146,8 @@ export async function startCronJobs(deps: CronDeps): Promise<void> {
           break;
       }
     },
-    { connection: workerConn, concurrency: 1 }
+    { connection: workerConn, concurrency: 1, lockDuration: 60_000 }
   );
 
-  log.info("Cron jobs registered (4 repeatable schedules)");
+  log.info("Cron jobs registered (7 repeatable schedules)");
 }

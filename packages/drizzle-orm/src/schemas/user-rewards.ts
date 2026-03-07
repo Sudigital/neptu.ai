@@ -19,6 +19,8 @@ export const userRewards = pgTable(
         "social_share",
         "auspicious_day",
         "payment_reward",
+        "habit_completion",
+        "habit_streak",
       ],
     }).notNull(),
     neptuAmount: numeric("neptu_amount").notNull(),

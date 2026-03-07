@@ -18,7 +18,7 @@ ENVIRONMENT = "development"
 name = "neptu-api-production"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = false
-routes = [{ pattern = "api.neptu.sudigital.com", custom_domain = true }]
+routes = [{ pattern = "api.neptu.day", custom_domain = true }]
 
 [[env.production.d1_databases]]
 binding = "DB"

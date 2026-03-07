@@ -169,4 +169,23 @@ export class UserRewardService {
       description,
     });
   }
+
+  async grantConversationReward(
+    userId: string,
+    isPaidUser: boolean
+  ): Promise<UserRewardDTO> {
+    const amount = isPaidUser
+      ? GAMIFICATION_REWARDS.PAID_CONVERSATION_REWARD
+      : GAMIFICATION_REWARDS.CONVERSATION_REWARD;
+    const description = isPaidUser
+      ? "Paid subscriber conversation reward"
+      : "Free conversation reward";
+
+    return this.createReward({
+      userId,
+      rewardType: "payment_reward",
+      neptuAmount: amount,
+      description,
+    });
+  }
 }

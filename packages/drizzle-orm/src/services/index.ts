@@ -35,3 +35,10 @@ export {
   type WebhookDTO,
   type WebhookDeliveryDTO,
 } from "./oauth-webhook-service";
+export { HabitService, type HabitCompletionResult } from "./habit-service";
+export { PersonService, type PersonStats } from "./person-service";
+export {
+  BillionaireTrackingService,
+  type BillionaireSnapshotBatch,
+} from "./billionaire-tracking-service";
+export { MarketCategoryService } from "./market-category-service";

@@ -13,7 +13,7 @@ declare_id!("7JDw4pncZg6g7ezhQSNxKhj3ptT62okgttDjLL4TwqHW");
 /// NEPTU Token Constants
 pub const TOKEN_NAME: &str = "Neptu";
 pub const TOKEN_SYMBOL: &str = "NEPTU";
-pub const TOKEN_URI: &str = "https://neptu.io/token-metadata.json";
+pub const TOKEN_URI: &str = "https://neptu.day/token-metadata.json";
 pub const TOKEN_DECIMALS: u8 = 6;
 pub const TOTAL_SUPPLY: u64 = 1_000_000_000_000_000; // 1B with 6 decimals
 

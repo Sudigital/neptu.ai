@@ -4,6 +4,10 @@ import type {
   ApiKeyDTO,
   ApiPricingPlanDTO,
   ApiCreditPackDTO,
+  PersonDTO,
+  PersonStats,
+  CreatePersonInput,
+  MarketCategoryDTO,
 } from "@neptu/drizzle-orm";
 
 import { api } from "@/lib/api";
@@ -222,6 +226,47 @@ export const adminApi = {
 
   async deleteCreditPack(packId: string): Promise<{ success: boolean }> {
     const { data } = await api.delete(`/api/v1/admin/credit-packs/${packId}`);
+    return data;
+  },
+
+  // Market Categories
+  async listMarketCategories(): Promise<{
+    success: boolean;
+    data: MarketCategoryDTO[];
+  }> {
+    const { data } = await api.get("/api/v1/admin/market-categories");
+    return data;
+  },
+
+  // Persons
+  async listPersons(params: {
+    page?: number;
+    limit?: number;
+    category?: string;
+    status?: string;
+    search?: string;
+  }): Promise<{
+    success: boolean;
+    data: PersonDTO[];
+    page: number;
+    limit: number;
+  }> {
+    const { data } = await api.get("/api/v1/admin/persons", { params });
+    return data;
+  },
+
+  async getPersonStats(): Promise<{
+    success: boolean;
+    stats: PersonStats;
+  }> {
+    const { data } = await api.get("/api/v1/admin/persons/stats");
+    return data;
+  },
+
+  async createPerson(
+    input: CreatePersonInput
+  ): Promise<{ success: boolean; data: PersonDTO }> {
+    const { data } = await api.post("/api/v1/admin/persons", input);
     return data;
   },
 };

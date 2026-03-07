@@ -39,6 +39,8 @@ export const GAMIFICATION_REWARDS = {
   REFEREE_BONUS: 2,
   SOCIAL_SHARE: 0.5,
   AUSPICIOUS_MULTIPLIER: 2,
+  CONVERSATION_REWARD: 0.5,
+  PAID_CONVERSATION_REWARD: 2,
 } as const;
 
 export const STREAK_MILESTONES = {
@@ -55,6 +57,8 @@ export type RewardType =
   | "referee_bonus"
   | "social_share"
   | "auspicious_day"
-  | "payment_reward";
+  | "payment_reward"
+  | "habit_completion"
+  | "habit_streak";
 
 export type RewardStatus = "pending" | "claimed" | "expired";

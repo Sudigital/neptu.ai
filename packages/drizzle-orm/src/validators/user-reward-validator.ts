@@ -9,6 +9,8 @@ const rewardTypeEnum = z.enum([
   "social_share",
   "auspicious_day",
   "payment_reward",
+  "habit_completion",
+  "habit_streak",
 ]);
 
 const rewardStatusEnum = z.enum(["pending", "claimed", "expired"]);

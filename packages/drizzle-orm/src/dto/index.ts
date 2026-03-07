@@ -64,3 +64,28 @@ export {
   type OAuthConsentDTO,
   toOAuthClientDTO,
 } from "./oauth-dto";
+export {
+  type HabitDTO,
+  type HabitCompletionDTO,
+  type HabitWithProgressDTO,
+  toHabitDTO,
+  toHabitDTOList,
+  toHabitCompletionDTO,
+  toHabitCompletionDTOList,
+} from "./habit-dto";
+export { type PersonDTO, toPersonDTO, toPersonDTOList } from "./person-dto";
+export {
+  type BillionaireSnapshotDTO,
+  toBillionaireSnapshotDTO,
+  toBillionaireSnapshotDTOList,
+} from "./billionaire-snapshot-dto";
+export {
+  type BillionaireDailySummaryDTO,
+  toBillionaireDailySummaryDTO,
+  toBillionaireDailySummaryDTOList,
+} from "./billionaire-daily-summary-dto";
+export {
+  type MarketCategoryDTO,
+  toMarketCategoryDTO,
+  toMarketCategoryDTOList,
+} from "./market-category-dto";

@@ -52,6 +52,11 @@ export class UserService {
     return user ? toUserDTO(user) : null;
   }
 
+  async getUserByEmail(email: string): Promise<UserDTO | null> {
+    const user = await this.repository.findByEmail(email);
+    return user ? toUserDTO(user) : null;
+  }
+
   async updateUser(
     id: string,
     input: UpdateUserInput

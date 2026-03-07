@@ -50,20 +50,21 @@ oracle.post("/", async (c) => {
       peluang = calculator.calculatePeluang(targetDate, birthDate);
     }
 
-    const response = await oracleAI.askQuestion(
-      body.question,
+    const response = await oracleAI.askQuestion({
+      question: body.question,
       potensi,
       peluang,
-      redisCache,
-      language
-    );
+      cache: redisCache,
+      language,
+      birthDate: body.birthDate,
+    });
 
     return c.json({
       success: true,
       ...response,
     });
   } catch (error) {
-    log.error("[Oracle] askQuestion error: %o", error);
+    log.error({ err: error }, "[Oracle] askQuestion error");
     return c.json(
       {
         success: false,
@@ -111,7 +112,8 @@ oracle.get("/daily/:birthDate", async (c) => {
       potensi,
       peluang,
       redisCache,
-      language
+      language,
+      birthDateStr
     );
 
     return c.json({
@@ -120,7 +122,7 @@ oracle.get("/daily/:birthDate", async (c) => {
       ...response,
     });
   } catch (error) {
-    log.error("[Oracle] dailyInterpretation error: %o", error);
+    log.error({ err: error }, "[Oracle] dailyInterpretation error");
     return c.json(
       {
         success: false,
@@ -180,19 +182,20 @@ oracle.post("/interpret", async (c) => {
     const potensi = calculator.calculatePotensi(birthDate);
     const peluang = calculator.calculatePeluang(targetDate, birthDate);
 
-    const interpretation = await oracleAI.getDateInterpretation(
+    const interpretation = await oracleAI.getDateInterpretation({
       potensi,
       peluang,
       targetDate,
-      redisCache,
-      language
-    );
+      cache: redisCache,
+      language,
+      birthDate: body.birthDate,
+    });
 
     // Cache for 6 hours (non-critical — don't fail if KV limit reached)
     try {
       await redisCache.put(cacheKey, interpretation, { expirationTtl: 21600 });
     } catch (cacheErr) {
-      log.warn("[Oracle] Cache put failed (KV limit?): %o", cacheErr);
+      log.warn({ err: cacheErr }, "[Oracle] Cache put failed (KV limit?)");
     }
 
     return c.json({
@@ -202,7 +205,7 @@ oracle.post("/interpret", async (c) => {
       cached: false,
     });
   } catch (error) {
-    log.error("[Oracle] interpret error: %o", error);
+    log.error({ err: error }, "[Oracle] interpret error");
     return c.json(
       {
         success: false,
@@ -269,7 +272,7 @@ oracle.post("/compatibility", async (c) => {
       ...response,
     });
   } catch (error) {
-    log.error("[Oracle] compatibility error: %o", error);
+    log.error({ err: error }, "[Oracle] compatibility error");
     return c.json(
       {
         success: false,

@@ -1,9 +1,20 @@
+import { writeFile, readFile, unlink } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
 import { createLogger } from "@neptu/logger";
 import {
   VOICE_LANGUAGES,
   VOICE_LIMITS,
   type VoiceLanguageCode,
 } from "@neptu/shared";
+
+function resolveAudioExtension(contentType: string): string {
+  if (contentType.includes("mp4") || contentType.includes("m4a")) return ".m4a";
+  if (contentType.includes("ogg")) return ".ogg";
+  if (contentType.includes("aac")) return ".aac";
+  return ".bin";
+}
 
 const log = createLogger({ name: "azure-speech" });
 
@@ -42,6 +53,78 @@ function getVoiceConfig(languageCode: string) {
 }
 
 /**
+ * Convert non-WAV audio to PCM WAV using ffmpeg.
+ * Azure STT REST API only reliably decodes WAV/PCM.
+ * Returns the original buffer if already WAV.
+ */
+async function ensureWav(
+  audioBuffer: ArrayBuffer,
+  contentType: string
+): Promise<{ buffer: ArrayBuffer; contentType: string }> {
+  // Already WAV — no conversion needed
+  if (
+    contentType === "audio/wav" ||
+    contentType === "audio/x-wav" ||
+    contentType === "audio/wave"
+  ) {
+    return { buffer: audioBuffer, contentType: "audio/wav" };
+  }
+
+  const id = `stt_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  const ext = resolveAudioExtension(contentType);
+  const inputPath = join(tmpdir(), `${id}${ext}`);
+  const outputPath = join(tmpdir(), `${id}.wav`);
+
+  try {
+    await writeFile(inputPath, Buffer.from(audioBuffer));
+
+    const proc = Bun.spawn(
+      [
+        "ffmpeg",
+        "-y",
+        "-i",
+        inputPath,
+        "-ar",
+        "16000",
+        "-ac",
+        "1",
+        "-f",
+        "wav",
+        outputPath,
+      ],
+      { stdout: "pipe", stderr: "pipe" }
+    );
+
+    await proc.exited;
+
+    if (proc.exitCode !== 0) {
+      const stderr = await new Response(proc.stderr).text();
+      log.error(
+        { stderr, exitCode: proc.exitCode },
+        "ffmpeg conversion failed"
+      );
+      // Fall back to original — Azure may still partially decode it
+      return { buffer: audioBuffer, contentType };
+    }
+
+    const wavBuffer = await readFile(outputPath);
+    log.info(
+      {
+        from: contentType,
+        inputBytes: audioBuffer.byteLength,
+        outputBytes: wavBuffer.byteLength,
+      },
+      "Converted audio to WAV for STT"
+    );
+    return { buffer: wavBuffer.buffer, contentType: "audio/wav" };
+  } finally {
+    // Clean up temp files
+    await unlink(inputPath).catch(() => {});
+    await unlink(outputPath).catch(() => {});
+  }
+}
+
+/**
  * Transcribe audio to text using Azure Speech-to-Text REST API
  */
 export async function transcribeAudio(
@@ -49,6 +132,9 @@ export async function transcribeAudio(
   languageCode: string,
   contentType: string = "audio/wav"
 ): Promise<TranscriptionResult> {
+  // Convert non-WAV to WAV — Azure STT REST API only reliably decodes WAV/PCM
+  const wav = await ensureWav(audioBuffer, contentType);
+
   const { subscriptionKey, region } = getConfig();
   const voiceConfig = getVoiceConfig(languageCode);
 
@@ -63,10 +149,10 @@ export async function transcribeAudio(
     method: "POST",
     headers: {
       "Ocp-Apim-Subscription-Key": subscriptionKey,
-      "Content-Type": contentType,
+      "Content-Type": wav.contentType,
       Accept: "application/json",
     },
-    body: audioBuffer,
+    body: wav.buffer,
   });
 
   if (!response.ok) {

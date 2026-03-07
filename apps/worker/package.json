@@ -14,6 +14,7 @@
     "@neptu/queues": "workspace:*",
     "@neptu/shared": "workspace:*",
     "@neptu/wariga": "workspace:*",
+    "ccxt": "^4.5.40",
     "drizzle-orm": "^0.44.2",
     "hono": "^4.6.0",
     "openai": "^6.17.0"

@@ -8,15 +8,13 @@ const NONCE_TTL_MINUTES = 5;
 const SECONDS_PER_MINUTE = 60;
 
 /** Access token TTL in seconds (30 days) */
-export const AUTH_ACCESS_TOKEN_TTL = (TOKEN_TTL_DAYS *
-  SECONDS_PER_DAY) as const;
+export const AUTH_ACCESS_TOKEN_TTL = TOKEN_TTL_DAYS * SECONDS_PER_DAY;
 
 /** Refresh token TTL in seconds (30 days) */
-export const AUTH_REFRESH_TOKEN_TTL = (TOKEN_TTL_DAYS *
-  SECONDS_PER_DAY) as const;
+export const AUTH_REFRESH_TOKEN_TTL = TOKEN_TTL_DAYS * SECONDS_PER_DAY;
 
 /** Nonce TTL in seconds (5 minutes) */
-export const AUTH_NONCE_TTL = (NONCE_TTL_MINUTES * SECONDS_PER_MINUTE) as const;
+export const AUTH_NONCE_TTL = NONCE_TTL_MINUTES * SECONDS_PER_MINUTE;
 
 /** Authorization header name */
 export const AUTH_HEADER = "Authorization" as const;
