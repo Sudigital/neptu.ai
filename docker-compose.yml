@@ -4,21 +4,6 @@ networks:
     external: true
 
 services:
-  api:
-    build:
-      context: .
-      dockerfile: apps/api/Dockerfile
-    container_name: local_api
-    restart: always
-    ports:
-      - 3000:3000
-    environment:
-      DATABASE_URL: postgresql://postgres:postgres@local_postgres:5432/neptu
-      REDIS_URL: redis://local_redis:6379
-      ADMIN_WALLET_ADDRESS: ${ADMIN_WALLET_ADDRESS:-}
-    networks:
-      - default
-
   worker:
     build:
       context: .

@@ -6,12 +6,9 @@ export default defineConfig({
 
   head: [
     ["link", { rel: "icon", type: "image/svg+xml", href: "/logo.svg" }],
-    ["link", { rel: "canonical", href: "https://docs.neptu.sudigital.com" }],
+    ["link", { rel: "canonical", href: "https://docs.neptu.day" }],
     ["meta", { property: "og:type", content: "website" }],
-    [
-      "meta",
-      { property: "og:url", content: "https://docs.neptu.sudigital.com" },
-    ],
+    ["meta", { property: "og:url", content: "https://docs.neptu.day" }],
     [
       "meta",
       { property: "og:title", content: "Neptu - Ancient Wisdom, On-Chain" },
@@ -28,7 +25,7 @@ export default defineConfig({
       "meta",
       {
         property: "og:image",
-        content: "https://neptu.sudigital.com/og-image.png",
+        content: "https://neptu.day/og-image.png",
       },
     ],
     ["meta", { name: "twitter:card", content: "summary_large_image" }],
@@ -48,7 +45,7 @@ export default defineConfig({
       { text: "API", link: "/api/oauth" },
       { text: "Agent", link: "/agent/skill" },
       { text: "Tokenomics", link: "/tokenomics" },
-      { text: "App", link: "https://neptu.sudigital.com" },
+      { text: "App", link: "https://neptu.day" },
     ],
 
     sidebar: {
@@ -87,7 +84,7 @@ export default defineConfig({
     footer: {
       message: "🌴 Ancient Balinese Wisdom meets Web3 on Solana",
       copyright:
-        "Copyright © 2026 Neptu - Ancient Balinese Wisdom meets Web3 | <a href='https://neptu.sudigital.com'>Launch App</a>",
+        "Copyright © 2026 Neptu - Ancient Balinese Wisdom meets Web3 | <a href='https://neptu.day'>Launch App</a>",
     },
   },
 });

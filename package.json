@@ -6,7 +6,7 @@
   "workspaces": [
     "apps/api",
     "apps/cli",
-    "apps/mobile",
+    "apps/crawler",
     "apps/web",
     "apps/worker",
     "packages/*",
@@ -19,7 +19,7 @@
     "format": "oxfmt .",
     "lint": "oxlint .",
     "lint:fix": "oxlint --fix .",
-    "typecheck": "oxlint --type-check",
+    "typecheck": "turbo run typecheck && oxlint --type-check",
     "build": "turbo build",
     "test": "turbo test",
     "api": "bun run --filter=@neptu/api dev",

@@ -44,3 +44,44 @@
 ## Runtime
 
 - **ALWAYS** use **Bun** as the runtime/package manager
+
+## Essential Commands
+
+### Validation (ALWAYS run before committing)
+
+| Command             | Description                |
+| ------------------- | -------------------------- |
+| `bun run format`    | Prettier formatting        |
+| `bun run lint`      | Lint all packages          |
+| `bun run lint:fix`  | Auto-fix lint issues       |
+| `bun run typecheck` | TypeScript type checking   |
+| `bun run test`      | Run tests via Turbo/Vitest |
+| `bun run build`     | Build all packages         |
+
+## SDLC — Notion-Based Workflow
+
+All project management lives in Notion. See `.blueprint/guide/notion.md` for full API reference and database IDs.
+
+### Notion Databases
+
+| Database | ID                                     |
+| -------- | -------------------------------------- |
+| Projects | `c955c0d3-a495-42ee-be92-50f51a6748c0` |
+| Tasks    | `835f8da2-aab5-46e4-8a50-7db5519779a2` |
+
+### Workflow
+
+1. **Plan** — Create a Project in Notion, then break into Tasks linked via `Project` relation
+2. **Branch** — Use type prefix + Notion **Task ID** as the git branch name: `git checkout -b feature/NLT-29` (prefixes: `feature/`, `bugfix/`, `hotfix/`, `improvement/`, `chore/`)
+3. **Implement** — Set task status to **In progress**, write code + tests
+4. **Review** — Push, open PR, set task status to **Code Review**
+5. **QA** — PR merged, set task status to **Quality Assurance**, verify on device/staging
+6. **Ship** — All checks pass, set task status to **Done**
+
+### Rules
+
+- **ALWAYS** check existing Notion tasks in the same project first — if one matches the current changes, use it. Only create a new task if no existing task is related
+- **ALWAYS** update task status as you progress through the lifecycle
+- **ALWAYS** use `.blueprint/guide/notion.md` as the single source of truth for project tracking
+- **NEVER** work on a task without setting it to **In progress** first
+- **NEVER** commit without a linked Notion task in the same project

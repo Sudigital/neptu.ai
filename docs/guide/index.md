@@ -85,4 +85,4 @@ AI Oracle responses automatically use your selected language.
 ## Next Steps
 
 - [View Tokenomics →](/tokenomics)
-- [Launch the App →](https://neptu.sudigital.com)
+- [Launch the App →](https://neptu.day)

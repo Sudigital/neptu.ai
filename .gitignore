@@ -46,8 +46,15 @@ apps/web/.tanstack/
 apps/web/src/routeTree.gen.ts
 
 # Original Python prototype (IP reference)
-brainstorming/neptu/database.json
-brainstorming/neptu/main.py
+.blueprint/neptu/database.json
+.blueprint/neptu/main.py
+
+# Blueprint - internal docs with Notion IDs, API patterns, credentials references
+.blueprint/guide/
+.blueprint/neptu/SOLANA-MOBILE-HACKATHON.md
+
+# Crawler - scraped person/birthday data
+apps/crawler/
 
 # ===========================================
 # BLOCKCHAIN - SENSITIVE FILES
@@ -87,4 +94,29 @@ docs/.vitepress/cache/
 local.db
 .wrangler/
 
+# ===========================================
+# SENSITIVE - DO NOT COMMIT TO PUBLIC REPO
+# ===========================================
+# Scripts with DB access, migration tools, seeders
 scripts/
+
+# Database backups / dumps
+backups/
+*.dump
+*.sql.gz
+
+# Azure infrastructure release plan (contains resource names, DB hostnames, usernames)
+docs/release/AZURE-RELEASE-PLAN.md
+
+# Mobile build artifacts (may contain signing keys)
+apps/mobile/android/build/
+apps/mobile/android/.gradle/
+apps/mobile/android/.kotlin/
+*.apk
+*.aab
+*.keystore
+*.jks
+
+# Google/Firebase service files
+google-services.json
+GoogleService-Info.plist

@@ -280,7 +280,7 @@ Access tokens are JWTs with the following payload:
   "scope": "neptu:read neptu:ai",
   "typ": "oauth_access",
   "jti": "token-hash-for-revocation",
-  "iss": "https://api.neptu.sudigital.com",
+  "iss": "https://api.neptu.day",
   "iat": 1708300000,
   "exp": 1708303600
 }
