@@ -23,7 +23,6 @@ export const styles = StyleSheet.create({
     top: 4,
     bottom: -4,
     borderRadius: 20,
-    opacity: 0.35,
     zIndex: 1,
   },
   heroTopRow: {
@@ -75,6 +74,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.1)",
     borderRadius: 10,
     padding: 10,
+    minHeight: 56,
   },
   heroInsightText: {
     fontSize: 12,

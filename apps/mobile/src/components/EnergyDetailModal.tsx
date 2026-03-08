@@ -1,15 +1,14 @@
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 
-import { LinearGradient } from "expo-linear-gradient";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Modal,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import type { ReadingData, CardTheme } from "../utils/energy-helpers";
 
@@ -29,6 +28,7 @@ import {
 } from "./EnergyDetailModalStyles";
 
 interface EnergyDetailModalProps {
+  visible: boolean;
   onClose: () => void;
   reading: ReadingData | null;
   theme: CardTheme;
@@ -99,6 +99,7 @@ function renderOracleContent(opts: OracleContentOptions): React.ReactNode {
   );
 }
 export function EnergyDetailModal({
+  visible,
   onClose,
   reading,
   theme,
@@ -106,7 +107,6 @@ export function EnergyDetailModal({
   dayLabel,
 }: EnergyDetailModalProps) {
   const { colors, isDark } = useTheme();
-  const insets = useSafeAreaInsets();
   const slideScrollRef = useRef<ScrollView>(null);
   const [slideIndex, setSlideIndex] = useState(0);
   const profile = useMemo(() => getProfile(), []);
@@ -242,246 +242,241 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`;
 
   if (!reading) return null;
 
-  const potensiUrip = reading.potensi?.total_urip ?? 0;
-  const peluangUrip = reading.peluang.total_urip;
-
   return (
-    <View style={[styles.overlay, { backgroundColor: colors.background }]}>
-      <View
-        style={[
-          styles.sheet,
-          {
-            backgroundColor: colors.background,
-          },
-        ]}
-      >
-        {/* Hero header */}
-        <LinearGradient
-          colors={theme.gradient}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[styles.heroHeader, { paddingTop: insets.top + 16 }]}
+    <Modal
+      visible={visible}
+      animationType="slide"
+      transparent
+      onRequestClose={onClose}
+    >
+      <View style={styles.overlay}>
+        <View
+          style={[
+            styles.sheet,
+            {
+              backgroundColor: `${colors.surface}F2`,
+              borderColor: `${colors.textMuted}40`,
+            },
+          ]}
         >
-          <View style={styles.heroHeaderTop}>
-            <View style={styles.heroHeaderTitleGroup}>
-              <Text style={styles.heroHeaderIcon}>{theme.icon}</Text>
-              <View>
-                <Text style={styles.heroHeaderTitle}>{theme.title}</Text>
-                <Text style={styles.heroHeaderDate}>{dayLabel}</Text>
-              </View>
-            </View>
-            <TouchableOpacity
-              onPress={onClose}
-              activeOpacity={0.7}
-              style={styles.closeBtn}
-            >
-              <Text style={styles.closeBtnText}>←</Text>
+          {/* Header */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={onClose} activeOpacity={0.7}>
+              <Text style={[styles.cancelText, { color: colors.textMuted }]}>
+                Close
+              </Text>
             </TouchableOpacity>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>
+              {theme.title}
+            </Text>
+            <View style={{ width: 40 }} />
           </View>
-          <Text style={styles.heroHeaderScore}>
-            {potensiUrip} / {peluangUrip}
-          </Text>
-          <Text style={styles.heroHeaderSub}>Birth Energy / Day Energy</Text>
-        </LinearGradient>
 
-        {/* Slide counter */}
-        <View style={styles.slideCounter}>
-          <Text style={[styles.slideCounterText, { color: colors.textMuted }]}>
-            {slideIndex + 1} / {totalSlides}
-            {slideIndex === 0
-              ? " · Oracle Insight"
-              : ` · ${INTEREST_LABELS[interests[slideIndex - 1]] ?? interests[slideIndex - 1]} Insight`}
-          </Text>
-        </View>
+          {/* Slide counter */}
+          <View style={styles.slideCounter}>
+            <Text
+              style={[styles.slideCounterText, { color: colors.textMuted }]}
+            >
+              {slideIndex + 1} / {totalSlides}
+              {slideIndex === 0
+                ? " · Oracle Insight"
+                : ` · ${INTEREST_LABELS[interests[slideIndex - 1]] ?? interests[slideIndex - 1]} Insight`}
+            </Text>
+          </View>
 
-        {/* Horizontal card carousel */}
-        <ScrollView
-          ref={slideScrollRef}
-          horizontal
-          pagingEnabled={false}
-          showsHorizontalScrollIndicator={false}
-          snapToInterval={SLIDE_SNAP}
-          decelerationRate="fast"
-          contentContainerStyle={styles.slideScroll}
-          onMomentumScrollEnd={handleSlideScrollEnd}
-          style={styles.slideContainer}
-        >
-          {/* Card 1: General Oracle */}
-          <View
-            style={[
-              styles.slideCard,
-              {
-                width: SLIDE_WIDTH,
-                backgroundColor: isDark
-                  ? (colors.surfaceLight ?? colors.surface)
-                  : "#FAFAFA",
-                borderColor: `${colors.textMuted}15`,
-              },
-            ]}
+          {/* Horizontal card carousel */}
+          <ScrollView
+            ref={slideScrollRef}
+            horizontal
+            pagingEnabled={false}
+            showsHorizontalScrollIndicator={false}
+            snapToInterval={SLIDE_SNAP}
+            decelerationRate="fast"
+            contentContainerStyle={styles.slideScroll}
+            onMomentumScrollEnd={handleSlideScrollEnd}
+            style={styles.slideContainer}
           >
-            <View style={styles.oracleHeader}>
-              <View
-                style={[
-                  styles.oracleIconCircle,
-                  { backgroundColor: `${theme.bg}20` },
-                ]}
-              >
-                <Text style={styles.oracleIconEmoji}>🔮</Text>
-              </View>
-              <View style={styles.oracleHeaderText}>
-                <Text style={[styles.oracleTitle, { color: colors.text }]}>
-                  Oracle Insight
-                </Text>
-                <Text style={[styles.oracleDate, { color: colors.textMuted }]}>
-                  {dayLabel}
-                </Text>
-              </View>
-            </View>
+            {/* Card 1: General Oracle */}
             <View
               style={[
-                styles.divider,
-                { backgroundColor: `${colors.textMuted}15` },
-              ]}
-            />
-            {renderOracleContent({
-              loading: generalOracle.loading,
-              text: generalOracle.text,
-              badges: null,
-              loadingMessage: "Consulting the oracle…",
-              emptyIcon: "✨",
-              emptyMessage: "Tap to receive your oracle insight",
-              colors,
-            })}
-          </View>
-
-          {/* Cards 2+: Per-interest oracles */}
-          {interests.map((interest, i) => {
-            const cfg = INTEREST_ICONS[interest] ?? {
-              icon: "✨",
-              bg: "#EDE9FE",
-            };
-            const label = INTEREST_LABELS[interest] ?? interest;
-            const oracle = interestOracles[interest];
-            const isLast = i === interests.length - 1;
-
-            return (
-              <View
-                key={interest}
-                style={[
-                  styles.slideCard,
-                  {
-                    width: SLIDE_WIDTH,
-                    marginRight: isLast ? 0 : SLIDE_GAP,
-                    backgroundColor: isDark
-                      ? (colors.surfaceLight ?? colors.surface)
-                      : "#FAFAFA",
-                    borderColor: `${colors.textMuted}15`,
-                  },
-                ]}
-              >
-                <View style={styles.oracleHeader}>
-                  <View
-                    style={[
-                      styles.oracleIconCircle,
-                      { backgroundColor: isDark ? `${cfg.bg}30` : cfg.bg },
-                    ]}
-                  >
-                    <Text style={styles.oracleIconEmoji}>{cfg.icon}</Text>
-                  </View>
-                  <View style={styles.oracleHeaderText}>
-                    <Text style={[styles.oracleTitle, { color: colors.text }]}>
-                      {label} Insight
-                    </Text>
-                    <Text
-                      style={[styles.oracleDate, { color: colors.textMuted }]}
-                    >
-                      {dayLabel}
-                    </Text>
-                  </View>
-                </View>
-                <View
-                  style={[
-                    styles.divider,
-                    { backgroundColor: `${colors.textMuted}15` },
-                  ]}
-                />
-
-                {renderOracleContent({
-                  loading: !!oracle?.loading,
-                  text: oracle?.text ?? "",
-                  badges: oracle?.text ? (
-                    <View style={styles.badgeRow}>
-                      <View
-                        style={[
-                          styles.badge,
-                          {
-                            backgroundColor: isDark ? `${cfg.bg}30` : cfg.bg,
-                          },
-                        ]}
-                      >
-                        <Text
-                          style={[
-                            styles.badgeText,
-                            { color: isDark ? "#E2E8F0" : "#334155" },
-                          ]}
-                        >
-                          {oracle.affirmation}
-                        </Text>
-                      </View>
-                      <View
-                        style={[
-                          styles.badge,
-                          {
-                            backgroundColor: isDark
-                              ? `${theme.bg}30`
-                              : `${theme.bg}18`,
-                          },
-                        ]}
-                      >
-                        <Text
-                          style={[
-                            styles.badgeText,
-                            { color: isDark ? "#E2E8F0" : "#334155" },
-                          ]}
-                        >
-                          ⚡ {oracle?.action}
-                        </Text>
-                      </View>
-                    </View>
-                  ) : null,
-                  loadingMessage: `Analyzing ${label.toLowerCase()}…`,
-                  emptyIcon: cfg.icon,
-                  emptyMessage: `Swipe here to load ${label.toLowerCase()} insight`,
-                  colors,
-                })}
-              </View>
-            );
-          })}
-        </ScrollView>
-
-        {/* Dot indicators */}
-        <View style={styles.dots}>
-          {Array.from({ length: totalSlides }, (_, i) => (
-            <View
-              key={i}
-              style={[
-                i === slideIndex ? styles.dotActive : styles.dotInactive,
+                styles.slideCard,
                 {
-                  backgroundColor:
-                    i === slideIndex ? colors.text : `${colors.textMuted}30`,
+                  width: SLIDE_WIDTH,
+                  backgroundColor: isDark
+                    ? (colors.surfaceLight ?? colors.surface)
+                    : "#FAFAFA",
+                  borderColor: `${colors.textMuted}15`,
                 },
               ]}
-            />
-          ))}
-        </View>
+            >
+              <View style={styles.oracleHeader}>
+                <View
+                  style={[
+                    styles.oracleIconCircle,
+                    { backgroundColor: `${theme.bg}20` },
+                  ]}
+                >
+                  <Text style={styles.oracleIconEmoji}>🔮</Text>
+                </View>
+                <View style={styles.oracleHeaderText}>
+                  <Text style={[styles.oracleTitle, { color: colors.text }]}>
+                    Oracle Insight
+                  </Text>
+                  <Text
+                    style={[styles.oracleDate, { color: colors.textMuted }]}
+                  >
+                    {dayLabel}
+                  </Text>
+                </View>
+              </View>
+              <View
+                style={[
+                  styles.divider,
+                  { backgroundColor: `${colors.textMuted}15` },
+                ]}
+              />
+              {renderOracleContent({
+                loading: generalOracle.loading,
+                text: generalOracle.text,
+                badges: null,
+                loadingMessage: "Consulting the oracle…",
+                emptyIcon: "✨",
+                emptyMessage: "Tap to receive your oracle insight",
+                colors,
+              })}
+            </View>
 
-        {/* No interests hint */}
-        {interests.length === 0 && (
-          <Text style={[styles.noInterestsHint, { color: colors.textMuted }]}>
-            Add interests in your Profile to see personalized insights
-          </Text>
-        )}
+            {/* Cards 2+: Per-interest oracles */}
+            {interests.map((interest, i) => {
+              const cfg = INTEREST_ICONS[interest] ?? {
+                icon: "✨",
+                bg: "#EDE9FE",
+              };
+              const label = INTEREST_LABELS[interest] ?? interest;
+              const oracle = interestOracles[interest];
+              const isLast = i === interests.length - 1;
+
+              return (
+                <View
+                  key={interest}
+                  style={[
+                    styles.slideCard,
+                    {
+                      width: SLIDE_WIDTH,
+                      marginRight: isLast ? 0 : SLIDE_GAP,
+                      backgroundColor: isDark
+                        ? (colors.surfaceLight ?? colors.surface)
+                        : "#FAFAFA",
+                      borderColor: `${colors.textMuted}15`,
+                    },
+                  ]}
+                >
+                  <View style={styles.oracleHeader}>
+                    <View
+                      style={[
+                        styles.oracleIconCircle,
+                        { backgroundColor: isDark ? `${cfg.bg}30` : cfg.bg },
+                      ]}
+                    >
+                      <Text style={styles.oracleIconEmoji}>{cfg.icon}</Text>
+                    </View>
+                    <View style={styles.oracleHeaderText}>
+                      <Text
+                        style={[styles.oracleTitle, { color: colors.text }]}
+                      >
+                        {label} Insight
+                      </Text>
+                      <Text
+                        style={[styles.oracleDate, { color: colors.textMuted }]}
+                      >
+                        {dayLabel}
+                      </Text>
+                    </View>
+                  </View>
+                  <View
+                    style={[
+                      styles.divider,
+                      { backgroundColor: `${colors.textMuted}15` },
+                    ]}
+                  />
+
+                  {renderOracleContent({
+                    loading: !!oracle?.loading,
+                    text: oracle?.text ?? "",
+                    badges: oracle?.text ? (
+                      <View style={styles.badgeRow}>
+                        <View
+                          style={[
+                            styles.badge,
+                            {
+                              backgroundColor: isDark ? `${cfg.bg}30` : cfg.bg,
+                            },
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.badgeText,
+                              { color: isDark ? "#E2E8F0" : "#334155" },
+                            ]}
+                          >
+                            {oracle.affirmation}
+                          </Text>
+                        </View>
+                        <View
+                          style={[
+                            styles.badge,
+                            {
+                              backgroundColor: isDark
+                                ? `${theme.bg}30`
+                                : `${theme.bg}18`,
+                            },
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.badgeText,
+                              { color: isDark ? "#E2E8F0" : "#334155" },
+                            ]}
+                          >
+                            ⚡ {oracle?.action}
+                          </Text>
+                        </View>
+                      </View>
+                    ) : null,
+                    loadingMessage: `Analyzing ${label.toLowerCase()}…`,
+                    emptyIcon: cfg.icon,
+                    emptyMessage: `Swipe here to load ${label.toLowerCase()} insight`,
+                    colors,
+                  })}
+                </View>
+              );
+            })}
+          </ScrollView>
+
+          {/* Dot indicators */}
+          <View style={styles.dots}>
+            {Array.from({ length: totalSlides }, (_, i) => (
+              <View
+                key={i}
+                style={[
+                  i === slideIndex ? styles.dotActive : styles.dotInactive,
+                  {
+                    backgroundColor:
+                      i === slideIndex ? colors.text : `${colors.textMuted}30`,
+                  },
+                ]}
+              />
+            ))}
+          </View>
+
+          {/* No interests hint */}
+          {interests.length === 0 && (
+            <Text style={[styles.noInterestsHint, { color: colors.textMuted }]}>
+              Add interests in your Profile to see personalized insights
+            </Text>
+          )}
+        </View>
       </View>
-    </View>
+    </Modal>
   );
 }

@@ -11,8 +11,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@neptu/shared": "workspace:*",
-    "@neptu/solana": "workspace:*",
+    "@neptu/shared": "file:../../packages/shared",
+    "@neptu/solana": "file:../../packages/solana",
     "@react-native-community/datetimepicker": "8.4.4",
     "@shopify/react-native-skia": "2.2.12",
     "@solana-mobile/mobile-wallet-adapter-protocol": "^2.1.0",
@@ -41,7 +41,7 @@
     "react-native-worklets-core": "^1.6.3"
   },
   "devDependencies": {
-    "@neptu/typescript-config": "workspace:*",
+    "@neptu/typescript-config": "file:../../packages/typescript-config",
     "@types/react": "~19.1.0",
     "typescript": "^5.9.3"
   }

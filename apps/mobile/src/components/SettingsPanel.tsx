@@ -1,5 +1,5 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -27,7 +27,8 @@ import {
   getAutoPlayAudio,
   saveAutoPlayAudio,
 } from "../services/storage";
-import { onboardUser } from "../services/voice-api";
+import { onboardUser, updateUserProfile } from "../services/voice-api";
+import { INTEREST_ICONS, INTEREST_LABELS } from "../utils/interest-helpers";
 
 interface SettingsPanelProps {
   walletAddress: string;
@@ -54,6 +55,45 @@ export function SettingsPanel({
   );
   const [savingBirthday, setSavingBirthday] = useState(false);
   const [showBirthDate, setShowBirthDate] = useState(false);
+
+  const MAX_INTERESTS = 3;
+  const ALL_INTERESTS = Object.keys(INTEREST_LABELS);
+  const [interests, setInterests] = useState<string[]>(
+    profile?.interests ?? []
+  );
+  const savingRef = useRef(false);
+
+  const persistInterests = useCallback(
+    async (next: string[]) => {
+      if (savingRef.current) return;
+      savingRef.current = true;
+      try {
+        const existing = getProfile();
+        saveProfile({ ...existing, interests: next });
+        await updateUserProfile(walletAddress, { interests: next });
+      } catch {
+        // Non-critical
+      } finally {
+        savingRef.current = false;
+      }
+    },
+    [walletAddress]
+  );
+
+  const toggleInterest = (interest: string) => {
+    setInterests((prev) => {
+      let next: string[];
+      if (prev.includes(interest)) {
+        next = prev.filter((i) => i !== interest);
+      } else if (prev.length < MAX_INTERESTS) {
+        next = [...prev, interest];
+      } else {
+        return prev;
+      }
+      persistInterests(next);
+      return next;
+    });
+  };
 
   if (!visible) return null;
 
@@ -197,6 +237,50 @@ export function SettingsPanel({
 
           <View style={styles.divider} />
 
+          {/* Interests */}
+          <View style={styles.section}>
+            <Text style={styles.label}>
+              Interests ({interests.length}/{MAX_INTERESTS})
+            </Text>
+            <Text style={styles.modeHint}>
+              Pick up to {MAX_INTERESTS} to personalise your readings
+            </Text>
+          </View>
+
+          <View style={styles.interestsGrid}>
+            {ALL_INTERESTS.map((key) => {
+              const selected = interests.includes(key);
+              const disabled = !selected && interests.length >= MAX_INTERESTS;
+              const meta = INTEREST_ICONS[key];
+              return (
+                <TouchableOpacity
+                  key={key}
+                  style={[
+                    styles.interestChip,
+                    selected && styles.interestChipActive,
+                    disabled && styles.interestChipDisabled,
+                  ]}
+                  onPress={() => toggleInterest(key)}
+                  disabled={disabled}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.interestEmoji}>{meta?.icon}</Text>
+                  <Text
+                    style={[
+                      styles.interestLabel,
+                      selected && styles.interestLabelActive,
+                    ]}
+                    numberOfLines={1}
+                  >
+                    {INTEREST_LABELS[key]}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          <View style={styles.divider} />
+
           {/* Auto-play audio toggle */}
           <View style={styles.section}>
             <View style={styles.toggleRow}>
@@ -257,10 +341,7 @@ const styles = StyleSheet.create({
     zIndex: 100,
     flexDirection: "row",
   },
-  backdrop: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
+  backdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)" },
   panel: {
     width: 300,
     backgroundColor: COLORS.surface,
@@ -273,18 +354,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 24,
   },
-  backText: {
-    color: COLORS.textSecondary,
-    fontSize: 16,
-  },
-  title: {
-    color: COLORS.text,
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  section: {
-    marginBottom: 16,
-  },
+  backText: { color: COLORS.textSecondary, fontSize: 16 },
+  title: { color: COLORS.text, fontSize: 18, fontWeight: "600" },
+  section: { marginBottom: 16 },
   label: {
     color: COLORS.textMuted,
     fontSize: 12,
@@ -292,15 +364,8 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 1,
   },
-  value: {
-    color: COLORS.text,
-    fontSize: 16,
-  },
-  valueMono: {
-    color: COLORS.text,
-    fontSize: 16,
-    fontFamily: "monospace",
-  },
+  value: { color: COLORS.text, fontSize: 16 },
+  valueMono: { color: COLORS.text, fontSize: 16, fontFamily: "monospace" },
   languageGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -316,20 +381,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: COLORS.surfaceLight,
   },
-  langButtonActive: {
-    backgroundColor: COLORS.primary,
-  },
-  langFlag: {
-    fontSize: 16,
-  },
-  langLabel: {
-    color: COLORS.textSecondary,
-    fontSize: 12,
-  },
-  langLabelActive: {
-    color: COLORS.text,
-    fontWeight: "600",
-  },
+  langButtonActive: { backgroundColor: COLORS.primary },
+  langFlag: { fontSize: 16 },
+  langLabel: { color: COLORS.textSecondary, fontSize: 12 },
+  langLabelActive: { color: COLORS.text, fontWeight: "600" },
   divider: {
     height: 1,
     backgroundColor: COLORS.surfaceLight,
@@ -352,13 +407,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
   },
-  lockIcon: {
-    fontSize: 14,
-  },
-  eyeIcon: {
-    fontSize: 14,
-    marginLeft: 8,
-  },
+  lockIcon: { fontSize: 14 },
+  eyeIcon: { fontSize: 14, marginLeft: 8 },
   lockedHint: {
     color: COLORS.textMuted,
     fontSize: 11,
@@ -375,9 +425,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     marginTop: 4,
   },
-  dateIcon: {
-    fontSize: 16,
-  },
+  dateIcon: { fontSize: 16 },
   warningText: {
     color: COLORS.warning,
     fontSize: 11,
@@ -391,9 +439,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 8,
   },
-  saveBirthdayDisabled: {
-    opacity: 0.6,
-  },
+  saveBirthdayDisabled: { opacity: 0.6 },
   saveBirthdayText: {
     color: COLORS.text,
     fontSize: 13,
@@ -410,4 +456,29 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
+  interestsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginBottom: 8,
+  },
+  interestChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 10,
+    backgroundColor: COLORS.surfaceLight,
+    borderWidth: 1,
+    borderColor: "transparent",
+  },
+  interestChipActive: {
+    backgroundColor: "rgba(139,92,246,0.15)",
+    borderColor: COLORS.primary,
+  },
+  interestChipDisabled: { opacity: 0.35 },
+  interestEmoji: { fontSize: 15 },
+  interestLabel: { color: COLORS.textSecondary, fontSize: 12 },
+  interestLabelActive: { color: COLORS.text, fontWeight: "600" },
 });
