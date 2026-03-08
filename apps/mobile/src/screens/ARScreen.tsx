@@ -34,21 +34,27 @@ function getDisabledGradient(isDark: boolean): string[] {
 
 interface ARScreenProps {
   walletAddress: string;
+  onSubScreenChange?: (isSubScreen: boolean) => void;
 }
 
-export function ARScreen({ walletAddress }: ARScreenProps) {
+export function ARScreen({ walletAddress, onSubScreenChange }: ARScreenProps) {
   const { colors, isDark } = useTheme();
   const insets = useSafeAreaInsets();
   const [activeView, setActiveView] = useState<ARView>("list");
 
-  const handleFeaturePress = useCallback((feature: ARFeatureConfig) => {
-    if (!feature.available) return;
-    setActiveView(feature.id);
-  }, []);
+  const handleFeaturePress = useCallback(
+    (feature: ARFeatureConfig) => {
+      if (!feature.available) return;
+      setActiveView(feature.id);
+      onSubScreenChange?.(true);
+    },
+    [onSubScreenChange]
+  );
 
   const handleBack = useCallback(() => {
     setActiveView("list");
-  }, []);
+    onSubScreenChange?.(false);
+  }, [onSubScreenChange]);
 
   // Sub-screen: Aura Scanner
   if (activeView === "aura") {
@@ -217,7 +223,10 @@ export function ARScreen({ walletAddress }: ARScreenProps) {
         >
           <TouchableOpacity
             style={[styles.oracleCard, { borderColor: `${colors.accent}30` }]}
-            onPress={() => setActiveView("orb")}
+            onPress={() => {
+              setActiveView("orb");
+              onSubScreenChange?.(true);
+            }}
             activeOpacity={0.7}
           >
             <LinearGradient

@@ -82,13 +82,20 @@ export function toDateString(date: Date): string {
 }
 
 export function mapToDimensions(r: Potensi | Peluang): SoulDimensions {
+  const dim = (
+    field: { value?: number; name?: string } | undefined | null
+  ): DimValue => ({
+    value: field?.value ?? 0,
+    name: titleCase(field?.name ?? ""),
+  });
+
   return {
-    cipta: { value: r.cipta.value, name: titleCase(r.cipta.name) },
-    rasa: { value: r.rasa.value, name: titleCase(r.rasa.name) },
-    karsa: { value: r.karsa.value, name: titleCase(r.karsa.name) },
-    tindakan: { value: r.tindakan.value, name: titleCase(r.tindakan.name) },
-    frekuensi: { value: r.frekuensi.value, name: titleCase(r.frekuensi.name) },
-    dualitas: r.dualitas,
+    cipta: dim(r.cipta),
+    rasa: dim(r.rasa),
+    karsa: dim(r.karsa),
+    tindakan: dim(r.tindakan),
+    frekuensi: dim(r.frekuensi),
+    dualitas: r.dualitas ?? "YIN",
     afirmasi: r.afirmasi?.name ?? "",
   };
 }

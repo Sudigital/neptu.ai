@@ -25,6 +25,7 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>("connect");
   const [activeTab, setActiveTab] = useState<MainTab>("home");
   const [isGuest, setIsGuest] = useState(false);
+  const [hideTabBar, setHideTabBar] = useState(false);
 
   const handleConnect = useCallback(async () => {
     const address = await wallet.connect();
@@ -83,7 +84,12 @@ export default function App() {
               {activeTab === "calendar" && (
                 <HabitScreen walletAddress={activeAddress} />
               )}
-              {activeTab === "ar" && <ARScreen walletAddress={activeAddress} />}
+              {activeTab === "ar" && (
+                <ARScreen
+                  walletAddress={activeAddress}
+                  onSubScreenChange={setHideTabBar}
+                />
+              )}
               {activeTab === "wallet" && (
                 <WalletScreen walletAddress={activeAddress} />
               )}
@@ -94,7 +100,9 @@ export default function App() {
                 />
               )}
             </View>
-            <BottomTabBar activeTab={activeTab} onTabPress={setActiveTab} />
+            {!hideTabBar && (
+              <BottomTabBar activeTab={activeTab} onTabPress={setActiveTab} />
+            )}
           </View>
         )}
       </ThemeContext.Provider>

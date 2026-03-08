@@ -83,20 +83,24 @@ export function SoulRadarChart({
   const autoMax = useMemo(() => {
     let mx = 1;
     for (const k of DIM_KEYS) {
-      mx = Math.max(mx, peluang[k].value);
-      if (potensi) mx = Math.max(mx, potensi[k].value);
+      mx = Math.max(mx, peluang[k]?.value ?? 0);
+      if (potensi) mx = Math.max(mx, potensi[k]?.value ?? 0);
     }
     return mx;
   }, [peluang, potensi]);
 
   const radarPeluang = useMemo(
-    () => DIM_KEYS.map((k) => ({ value: peluang[k].value, max: autoMax })),
+    () =>
+      DIM_KEYS.map((k) => ({ value: peluang[k]?.value ?? 0, max: autoMax })),
     [peluang, autoMax]
   );
 
   const radarPotensi = useMemo(() => {
     if (!potensi) return null;
-    return DIM_KEYS.map((k) => ({ value: potensi[k].value, max: autoMax }));
+    return DIM_KEYS.map((k) => ({
+      value: potensi[k]?.value ?? 0,
+      max: autoMax,
+    }));
   }, [potensi, autoMax]);
 
   return (
@@ -307,7 +311,7 @@ export function SoulRadarChart({
       {/* Soul Profile — dimension values with arrows */}
       <View style={styles.profilGrid}>
         {DIM_KEYS.map((k, i) => {
-          const pel = peluang[k];
+          const pel = peluang[k] ?? { value: 0, name: "" };
           const pot = potensi?.[k];
           const diff = pot ? pel.value - pot.value : 0;
           const arrow = getArrow(diff);
