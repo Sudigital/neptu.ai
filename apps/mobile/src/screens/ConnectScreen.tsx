@@ -4,6 +4,7 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import Animated, { FadeIn, FadeInUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -16,6 +17,10 @@ import {
   ANIM_SLIDE_DELAY_MEDIUM,
   ANIM_CONNECT_DELAY_SLOW,
 } from "../constants";
+import { useTranslate } from "../hooks/useTranslate";
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const neptuLogo = require("../../assets/icon.png") as number;
 
 interface ConnectScreenProps {
   onConnect: () => Promise<string | null>;
@@ -31,6 +36,7 @@ export function ConnectScreen({
   error,
 }: ConnectScreenProps) {
   const insets = useSafeAreaInsets();
+  const t = useTranslate();
 
   return (
     <View
@@ -43,8 +49,8 @@ export function ConnectScreen({
         entering={FadeIn.duration(ANIM_CONNECT_FADE_DURATION)}
         style={styles.logoArea}
       >
-        <View style={styles.logoCircle}>
-          <Text style={styles.logoText}>◉</Text>
+        <View style={styles.logoGlow}>
+          <Image source={neptuLogo} style={styles.logoImage} />
         </View>
         <Animated.Text
           entering={FadeInUp.delay(ANIM_SLIDE_DELAY_FAST).duration(
@@ -60,7 +66,7 @@ export function ConnectScreen({
           )}
           style={styles.subtitle}
         >
-          Talk to the Cosmos. It Talks Back.
+          {t("connect.subtitle")}
         </Animated.Text>
       </Animated.View>
 
@@ -70,9 +76,7 @@ export function ConnectScreen({
         )}
         style={styles.bottomArea}
       >
-        <Text style={styles.connectPrompt}>
-          Connect your wallet to awaken the oracle
-        </Text>
+        <Text style={styles.connectPrompt}>{t("connect.prompt")}</Text>
 
         <TouchableOpacity
           style={[
@@ -84,9 +88,9 @@ export function ConnectScreen({
           activeOpacity={0.8}
         >
           {isConnecting ? (
-            <ActivityIndicator color={COLORS.text} />
+            <ActivityIndicator color={COLORS.background} />
           ) : (
-            <Text style={styles.connectButtonText}>Connect with Phantom</Text>
+            <Text style={styles.connectButtonText}>{t("connect.button")}</Text>
           )}
         </TouchableOpacity>
 
@@ -96,12 +100,12 @@ export function ConnectScreen({
           disabled={isConnecting}
           activeOpacity={0.8}
         >
-          <Text style={styles.guestButtonText}>Try as Guest</Text>
+          <Text style={styles.guestButtonText}>{t("connect.guest")}</Text>
         </TouchableOpacity>
 
         {error && <Text style={styles.errorText}>{error}</Text>}
 
-        <Text style={styles.poweredBy}>Powered by Solana</Text>
+        <Text style={styles.poweredBy}>{t("connect.powered")}</Text>
       </Animated.View>
     </View>
   );
@@ -120,67 +124,79 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
   },
-  logoCircle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: COLORS.surface,
-    borderWidth: 2,
-    borderColor: COLORS.primary,
+  logoGlow: {
+    width: 140,
+    height: 140,
+    borderRadius: 70,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 24,
+    marginBottom: 28,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 30,
+    elevation: 12,
   },
-  logoText: {
-    fontSize: 48,
-    color: COLORS.primary,
+  logoImage: {
+    width: 140,
+    height: 140,
+    borderRadius: 70,
   },
   title: {
     fontSize: 36,
     fontWeight: "700",
     color: COLORS.text,
     letterSpacing: 8,
-    marginBottom: 8,
+    marginBottom: 10,
   },
   subtitle: {
     fontSize: 14,
     color: COLORS.textSecondary,
     textAlign: "center",
     fontStyle: "italic",
+    lineHeight: 20,
+    paddingHorizontal: 16,
   },
   bottomArea: {
     width: "100%",
     alignItems: "center",
-    gap: 16,
+    gap: 14,
   },
   connectPrompt: {
     color: COLORS.textSecondary,
-    fontSize: 15,
+    fontSize: 14,
     textAlign: "center",
-    marginBottom: 8,
+    marginBottom: 6,
+    lineHeight: 20,
   },
   connectButton: {
     width: "100%",
     backgroundColor: COLORS.primary,
     borderRadius: 16,
-    padding: 18,
+    paddingVertical: 18,
     alignItems: "center",
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 6,
   },
   connectButtonDisabled: {
     opacity: 0.6,
   },
   connectButtonText: {
-    color: COLORS.text,
+    color: COLORS.background,
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "700",
+    letterSpacing: 0.5,
   },
   guestButton: {
     width: "100%",
     backgroundColor: "transparent",
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: COLORS.surfaceLight,
-    padding: 16,
+    borderWidth: 1.5,
+    borderColor: `${COLORS.textMuted}60`,
+    paddingVertical: 16,
     alignItems: "center",
   },
   guestButtonText: {
@@ -195,7 +211,8 @@ const styles = StyleSheet.create({
   },
   poweredBy: {
     color: COLORS.textMuted,
-    fontSize: 12,
-    marginTop: 8,
+    fontSize: 11,
+    marginTop: 4,
+    letterSpacing: 0.5,
   },
 });

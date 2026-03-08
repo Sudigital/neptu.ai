@@ -1,14 +1,18 @@
-import type { Peluang } from "@neptu/shared";
-import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
+import type {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  ViewToken,
+} from "react-native";
 
 import { LinearGradient } from "expo-linear-gradient";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
+  FlatList,
+  Pressable,
   ScrollView,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import Animated, { FadeIn, FadeInUp } from "react-native-reanimated";
@@ -47,14 +51,18 @@ const CARD_PEEK = 24;
 const CARD_WIDTH = SCREEN_WIDTH - CARD_HORIZONTAL_MARGIN * 2 - CARD_PEEK;
 const CARD_GAP = 10;
 const TODAY_INDEX = 1;
+const HERO_SNAP = CARD_WIDTH + CARD_GAP;
 
 const INSIGHT_CARD_GAP = CARD_GAP;
 const INSIGHT_CARD_WIDTH = CARD_WIDTH;
 const INSIGHT_SNAP = INSIGHT_CARD_WIDTH + INSIGHT_CARD_GAP;
 const INSIGHT_TOTAL = 3;
-const ACTIVE_OPACITY = 0.85;
+const STACK_LAYER_OPACITY = 0.35;
 
 const GUEST_ADDRESS = "GUEST_MODE";
+
+// Stable viewability config (must not be recreated each render)
+const VIEWABILITY_CONFIG = { itemVisiblePercentThreshold: 60 };
 
 interface HomeScreenProps {
   walletAddress: string;
@@ -63,7 +71,7 @@ interface HomeScreenProps {
 export function HomeScreen({ walletAddress }: HomeScreenProps) {
   const { colors, isDark } = useTheme();
   const insets = useSafeAreaInsets();
-  const heroScrollRef = useRef<ScrollView>(null);
+  const heroListRef = useRef<FlatList<ReadingData>>(null);
   const insightScrollRef = useRef<ScrollView>(null);
   const [selectedIndex, setSelectedIndex] = useState(TODAY_INDEX);
   const [insightIndex, setInsightIndex] = useState(0);
@@ -93,7 +101,8 @@ export function HomeScreen({ walletAddress }: HomeScreenProps) {
 
     async function fetchReadings() {
       // Try API for all 3 days (same endpoint as web)
-      if (!isGuest) {
+      // Guard: only call API when birthDate is available (matches web's enabled: !!user?.birthDate)
+      if (!isGuest && birthDate) {
         try {
           const results = await Promise.all(
             DAY_OFFSETS.map((offset) => {
@@ -105,10 +114,10 @@ export function HomeScreen({ walletAddress }: HomeScreenProps) {
           );
 
           const apiReadings = results.map((r) => {
-            if (r?.success && r.reading?.potensi && r.reading?.peluang) {
+            if (r?.success && r.reading?.peluang) {
               return {
-                potensi: r.reading.potensi as Potensi,
-                peluang: r.reading.peluang as Peluang,
+                potensi: r.reading.potensi ?? null,
+                peluang: r.reading.peluang,
               };
             }
             return null;
@@ -164,35 +173,39 @@ export function HomeScreen({ walletAddress }: HomeScreenProps) {
   const currentReading = readings[selectedIndex] ?? null;
   const isSelectedToday = selectedIndex === TODAY_INDEX;
 
-  // Insight text matching web's getReadingSummary
-  const insightText = useMemo(() => {
-    if (!currentReading?.potensi) return "";
-    const { potensi, peluang } = currentReading;
-    if (potensi.frekuensi.name === peluang.frekuensi.name) {
+  // Insight text per reading — plain function (not memoized), matching web's getReadingSummary pattern
+  const getInsightText = (reading: ReadingData | null): string => {
+    if (!reading) return "";
+    const { potensi, peluang } = reading;
+
+    // No potensi (birthDate missing or not synced) — show peluang-only insight
+    if (!potensi) {
+      const peluangRole = titleCase(
+        peluang.diberi_hak_untuk?.name || peluang.frekuensi?.name || ""
+      );
+      return peluangRole
+        ? `Today's cosmic energy carries ${peluangRole} vibrations.`
+        : "Explore your cosmic energy for this day.";
+    }
+
+    if (potensi.frekuensi?.name === peluang.frekuensi?.name) {
       return "\u2728 Perfect alignment! Today's energy matches your birth energy.";
     }
     const peluangRole = titleCase(
-      "diberi_hak_untuk" in peluang
-        ? ((peluang as Peluang).diberi_hak_untuk?.name ?? "")
-        : ""
+      peluang.diberi_hak_untuk?.name || peluang.frekuensi?.name || ""
     );
-    const potensiRole = titleCase(potensi.lahir_untuk?.name ?? "");
+    const potensiRole = titleCase(
+      potensi.lahir_untuk?.name || potensi.frekuensi?.name || ""
+    );
     return `Today's ${peluangRole} energy complements your ${potensiRole} nature.`;
-  }, [currentReading]);
+  };
 
-  // Scroll to today card once layout is ready
-  const handleHeroLayout = useCallback(() => {
-    const offset = TODAY_INDEX * (CARD_WIDTH + CARD_GAP);
-    heroScrollRef.current?.scrollTo({ x: offset, animated: false });
-  }, []);
-
-  // Track which card is snapped to
-  const handleScrollEnd = useCallback(
-    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const x = e.nativeEvent.contentOffset.x;
-      const idx = Math.round(x / (CARD_WIDTH + CARD_GAP));
-      const clamped = Math.max(0, Math.min(idx, 2));
-      setSelectedIndex(clamped);
+  // Track visible card via FlatList viewability (most reliable on Android)
+  const handleViewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+      if (viewableItems.length > 0 && viewableItems[0].index !== null) {
+        setSelectedIndex(viewableItems[0].index);
+      }
     },
     []
   );
@@ -204,6 +217,111 @@ export function HomeScreen({ walletAddress }: HomeScreenProps) {
       setInsightIndex(Math.max(0, Math.min(idx, INSIGHT_TOTAL - 1)));
     },
     []
+  );
+
+  // Hero card tap handler — called from renderItem
+  const handleCardPress = useCallback(
+    (idx: number) => {
+      if (idx === selectedIndex) {
+        setDetailVisible(true);
+      } else {
+        heroListRef.current?.scrollToIndex({ index: idx, animated: true });
+      }
+    },
+    [selectedIndex]
+  );
+
+  // FlatList layout helper for getItemLayout (enables scrollToIndex)
+  const getHeroItemLayout = useCallback(
+    (_data: ArrayLike<ReadingData> | null | undefined, index: number) => ({
+      length: CARD_WIDTH + CARD_GAP,
+      offset: index * (CARD_WIDTH + CARD_GAP),
+      index,
+    }),
+    []
+  );
+
+  // Snap offsets for all 3 cards
+  const heroSnapOffsets = useMemo(
+    () => readings.map((_, i) => i * HERO_SNAP),
+    [readings]
+  );
+
+  // Render a single hero card
+  const renderHeroCard = useCallback(
+    ({ item: reading, index: idx }: { item: ReadingData; index: number }) => {
+      const theme = CARD_THEMES[idx];
+      const isToday = idx === TODAY_INDEX;
+      const hasPotensi = !!reading.potensi;
+      const potensiUrip = reading.potensi?.total_urip ?? null;
+      const peluangUrip = reading.peluang.total_urip;
+      const dayEnergy = isToday ? "Today's Energy" : DAY_LABELS[idx];
+      const dateObj = addDays(today, DAY_OFFSETS[idx]);
+      const dateBadge = isToday ? null : formatDateLabel(dateObj);
+      const isSelected = idx === selectedIndex;
+      const cardInsight = getInsightText(reading);
+      return (
+        <Pressable
+          style={[
+            styles.heroCardWrapper,
+            { width: CARD_WIDTH, marginRight: idx < 2 ? CARD_GAP : 0 },
+          ]}
+          onPress={() => handleCardPress(idx)}
+        >
+          <View
+            style={[
+              styles.stackLayer,
+              {
+                backgroundColor: theme.bg,
+                opacity: isSelected ? STACK_LAYER_OPACITY : 0,
+              },
+            ]}
+          />
+          <LinearGradient
+            colors={theme.gradient}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.heroCard}
+          >
+            {/* Top row: title + date badge ... icon */}
+            <View style={styles.heroTopRow}>
+              <View style={styles.heroTitleGroup}>
+                <Text style={styles.heroTitle}>{theme.title}</Text>
+                {dateBadge && (
+                  <View style={styles.heroBadge}>
+                    <Text style={styles.heroBadgeText}>{dateBadge}</Text>
+                  </View>
+                )}
+              </View>
+              <View style={styles.heroIcon}>
+                <Text style={styles.heroIconText}>{theme.icon}</Text>
+              </View>
+            </View>
+
+            {/* Energy score */}
+            <Text style={styles.heroScore}>
+              {hasPotensi ? potensiUrip : "--"} / {peluangUrip}
+            </Text>
+            <Text style={styles.heroSubtitle}>
+              {hasPotensi ? `Birth Energy / ${dayEnergy}` : dayEnergy}
+            </Text>
+
+            {/* Insight + tap hint */}
+            {cardInsight !== "" && (
+              <View style={styles.heroInsight}>
+                <Text style={styles.heroInsightText} numberOfLines={2}>
+                  {cardInsight}
+                </Text>
+              </View>
+            )}
+            <View style={styles.heroTapHint}>
+              <Text style={styles.heroTapHintText}>Tap to explore ›</Text>
+            </View>
+          </LinearGradient>
+        </Pressable>
+      );
+    },
+    [selectedIndex, today, handleCardPress]
   );
 
   if (loading) {
@@ -220,18 +338,17 @@ export function HomeScreen({ walletAddress }: HomeScreenProps) {
     );
   }
 
-  // Full-screen oracle insight view (replaces home content)
-  if (detailVisible) {
-    return (
-      <EnergyDetailModal
-        onClose={() => setDetailVisible(false)}
-        reading={currentReading}
-        theme={CARD_THEMES[selectedIndex] ?? CARD_THEMES[TODAY_INDEX]}
-        dateLabel={toDateString(addDays(today, DAY_OFFSETS[selectedIndex]))}
-        dayLabel={DAY_LABELS[selectedIndex]}
-      />
-    );
-  }
+  // Full-screen oracle insight dialog
+  const energyModal = (
+    <EnergyDetailModal
+      visible={detailVisible}
+      onClose={() => setDetailVisible(false)}
+      reading={currentReading}
+      theme={CARD_THEMES[selectedIndex] ?? CARD_THEMES[TODAY_INDEX]}
+      dateLabel={toDateString(addDays(today, DAY_OFFSETS[selectedIndex]))}
+      dayLabel={DAY_LABELS[selectedIndex]}
+    />
+  );
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -247,103 +364,31 @@ export function HomeScreen({ walletAddress }: HomeScreenProps) {
           paddingBottom: 120,
         }}
         showsVerticalScrollIndicator={false}
+        nestedScrollEnabled
       >
         {/* Hero carousel: Yesterday - Today - Tomorrow */}
         <Animated.View
           entering={FadeIn.duration(HERO_FADE_DURATION)}
           style={styles.heroSection}
         >
-          <ScrollView
-            ref={heroScrollRef}
+          <FlatList
+            ref={heroListRef}
+            data={readings}
+            keyExtractor={(_item, idx) => String(idx)}
+            renderItem={renderHeroCard}
             horizontal
             showsHorizontalScrollIndicator={false}
-            snapToInterval={CARD_WIDTH + CARD_GAP}
+            snapToOffsets={heroSnapOffsets}
+            snapToAlignment="start"
             decelerationRate="fast"
+            nestedScrollEnabled
             contentContainerStyle={styles.heroScroll}
-            onLayout={handleHeroLayout}
-            onMomentumScrollEnd={handleScrollEnd}
-          >
-            {readings.map((reading, idx) => {
-              const theme = CARD_THEMES[idx];
-              const isToday = idx === TODAY_INDEX;
-              const potensiUrip = reading.potensi?.total_urip ?? 0;
-              const peluangUrip = reading.peluang.total_urip;
-              const dateObj = addDays(today, DAY_OFFSETS[idx]);
-              const dateBadge = isToday ? null : formatDateLabel(dateObj);
-              const isSelected = idx === selectedIndex;
-              return (
-                <View
-                  key={idx}
-                  style={[
-                    styles.heroCardWrapper,
-                    { width: CARD_WIDTH, marginRight: idx < 2 ? CARD_GAP : 0 },
-                  ]}
-                >
-                  {isSelected && (
-                    <View
-                      style={[styles.stackLayer, { backgroundColor: theme.bg }]}
-                    />
-                  )}
-                  <TouchableOpacity
-                    activeOpacity={isSelected ? ACTIVE_OPACITY : 1}
-                    onPress={() => {
-                      if (isSelected) setDetailVisible(true);
-                    }}
-                  >
-                    <LinearGradient
-                      colors={theme.gradient}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                      style={styles.heroCard}
-                    >
-                      {/* Top row: title + date badge ... icon */}
-                      <View style={styles.heroTopRow}>
-                        <View style={styles.heroTitleGroup}>
-                          <Text style={styles.heroTitle}>{theme.title}</Text>
-                          {dateBadge && (
-                            <View style={styles.heroBadge}>
-                              <Text style={styles.heroBadgeText}>
-                                {dateBadge}
-                              </Text>
-                            </View>
-                          )}
-                        </View>
-                        <View style={styles.heroIcon}>
-                          <Text style={styles.heroIconText}>{theme.icon}</Text>
-                        </View>
-                      </View>
-
-                      {/* Energy score */}
-                      <Text style={styles.heroScore}>
-                        {potensiUrip} / {peluangUrip}
-                      </Text>
-                      <Text style={styles.heroSubtitle}>
-                        Birth Energy /{" "}
-                        {isToday ? "Today's Energy" : DAY_LABELS[idx]}
-                      </Text>
-
-                      {/* Insight + tap hint */}
-                      {insightText !== "" && (
-                        <View style={styles.heroInsight}>
-                          <Text
-                            style={styles.heroInsightText}
-                            numberOfLines={2}
-                          >
-                            {insightText}
-                          </Text>
-                        </View>
-                      )}
-                      <View style={styles.heroTapHint}>
-                        <Text style={styles.heroTapHintText}>
-                          Tap to explore ›
-                        </Text>
-                      </View>
-                    </LinearGradient>
-                  </TouchableOpacity>
-                </View>
-              );
-            })}
-          </ScrollView>
+            initialScrollIndex={TODAY_INDEX}
+            getItemLayout={getHeroItemLayout}
+            onViewableItemsChanged={handleViewableItemsChanged}
+            viewabilityConfig={VIEWABILITY_CONFIG}
+            extraData={selectedIndex}
+          />
         </Animated.View>
 
         {/* 24h Energy Chart */}
@@ -378,6 +423,7 @@ export function HomeScreen({ walletAddress }: HomeScreenProps) {
               decelerationRate="fast"
               contentContainerStyle={styles.insightScroll}
               onMomentumScrollEnd={handleInsightScrollEnd}
+              nestedScrollEnabled
             >
               {/* Card 1: Soul Radar */}
               <View
@@ -450,6 +496,7 @@ export function HomeScreen({ walletAddress }: HomeScreenProps) {
           </Animated.View>
         )}
       </ScrollView>
+      {energyModal}
     </View>
   );
 }

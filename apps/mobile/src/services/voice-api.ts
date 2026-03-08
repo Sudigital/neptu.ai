@@ -1,3 +1,5 @@
+import type { Peluang, Potensi } from "@neptu/shared";
+
 import type {
   TranscribeResponse,
   SynthesizeResponse,
@@ -241,9 +243,9 @@ export async function updateUserProfile(
 export interface ReadingApiResponse {
   success: boolean;
   reading?: {
-    potensi: unknown;
-    peluang: unknown;
-    full: unknown;
+    potensi: Potensi | null;
+    peluang: Peluang;
+    full: Record<string, unknown>;
     date: string;
   };
   requiresBirthDate?: boolean;
