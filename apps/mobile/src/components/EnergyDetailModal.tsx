@@ -109,7 +109,7 @@ export function EnergyDetailModal({
   const { colors, isDark } = useTheme();
   const slideScrollRef = useRef<ScrollView>(null);
   const [slideIndex, setSlideIndex] = useState(0);
-  const profile = useMemo(() => getProfile(), []);
+  const profile = useMemo(() => (visible ? getProfile() : null), [visible]);
   const interests = useMemo(() => profile?.interests ?? [], [profile]);
   const birthDate = profile?.birthDate ?? "";
   const language = profile?.preferredLanguage ?? "en";
@@ -126,8 +126,9 @@ export function EnergyDetailModal({
   const [interestOracles, setInterestOracles] = useState<
     Record<string, OracleResult>
   >({});
-  // Reset state on mount
+  // Reset state every time the modal opens
   useEffect(() => {
+    if (!visible) return;
     setSlideIndex(0);
     slideScrollRef.current?.scrollTo({ x: 0, animated: false });
     setGeneralOracle({
@@ -137,12 +138,12 @@ export function EnergyDetailModal({
       action: "",
     });
     setInterestOracles({});
-  }, []);
-  // Fetch general oracle on mount
+  }, [visible]);
+  // Fetch general oracle every time the modal opens
   useEffect(() => {
-    if (!birthDate || generalOracle.text || generalOracle.loading) return;
+    if (!visible || !birthDate) return;
 
-    setGeneralOracle((prev) => ({ ...prev, loading: true }));
+    setGeneralOracle({ loading: true, text: "", affirmation: "", action: "" });
     askOracle(
       `Give me a concise oracle insight for today based on my Balinese birth chart. Focus on the overall energy, mood, and guidance. Keep it under 150 words.`,
       birthDate,
@@ -165,13 +166,7 @@ export function EnergyDetailModal({
           action: "",
         });
       });
-  }, [
-    birthDate,
-    targetDate,
-    language,
-    generalOracle.text,
-    generalOracle.loading,
-  ]);
+  }, [visible, birthDate, targetDate, language]);
   // Fetch interest oracle when slide comes into view
   const fetchInterestOracle = useCallback(
     (interest: string) => {
