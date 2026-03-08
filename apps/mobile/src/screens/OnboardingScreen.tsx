@@ -58,17 +58,32 @@ export function OnboardingScreen({
       setOnboarded(true);
 
       // Sync to API — same endpoint as web: POST /api/v1/users/:wallet/onboard
-      const result = await onboardUser(walletAddress, {
-        birthDate: dateString,
-        preferredLanguage: language,
-      });
-      if (result?.user) {
-        saveProfile(result.user);
+      try {
+        const result = await onboardUser(walletAddress, {
+          birthDate: dateString,
+          preferredLanguage: language,
+        });
+        if (result?.user) {
+          saveProfile(result.user);
+        }
+      } catch {
+        // API unavailable or guest mode — save profile locally so birthDate
+        // is available for local readings and oracle (when wallet connects later)
+        saveProfile({
+          id: "",
+          walletAddress,
+          email: null,
+          displayName: null,
+          birthDate: dateString,
+          preferredLanguage: language,
+          interests: [],
+          onboarded: true,
+          role: "user",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        });
       }
 
-      onComplete();
-    } catch {
-      // Still proceed even if API sync fails — local data is saved
       onComplete();
     } finally {
       setSaving(false);
