@@ -1,5 +1,6 @@
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 
+import { LinearGradient } from "expo-linear-gradient";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -12,8 +13,11 @@ import {
 
 import type { ReadingData, CardTheme } from "../utils/energy-helpers";
 
-import { useTheme } from "../hooks/useTheme";
-import { getProfile } from "../services/storage";
+import {
+  getCachedOracle,
+  getProfile,
+  setCachedOracle,
+} from "../services/storage";
 import { askOracle } from "../services/voice-api";
 import {
   INTEREST_ICONS,
@@ -43,10 +47,6 @@ interface OracleResult {
   action: string;
 }
 
-interface OracleColors {
-  text: string;
-  textMuted: string;
-}
 interface OracleContentOptions {
   loading: boolean;
   text: string;
@@ -54,25 +54,15 @@ interface OracleContentOptions {
   loadingMessage: string;
   emptyIcon: string;
   emptyMessage: string;
-  colors: OracleColors;
 }
 function renderOracleContent(opts: OracleContentOptions): React.ReactNode {
-  const {
-    loading,
-    text,
-    badges,
-    loadingMessage,
-    emptyIcon,
-    emptyMessage,
-    colors,
-  } = opts;
+  const { loading, text, badges, loadingMessage, emptyIcon, emptyMessage } =
+    opts;
   if (loading) {
     return (
       <View style={styles.loadingBox}>
-        <ActivityIndicator size="small" color={colors.textMuted} />
-        <Text style={[styles.loadingText, { color: colors.textMuted }]}>
-          {loadingMessage}
-        </Text>
+        <ActivityIndicator size="small" color="rgba(255,255,255,0.7)" />
+        <Text style={styles.loadingText}>{loadingMessage}</Text>
       </View>
     );
   }
@@ -83,18 +73,14 @@ function renderOracleContent(opts: OracleContentOptions): React.ReactNode {
         showsVerticalScrollIndicator={false}
       >
         {badges}
-        <Text style={[styles.oracleText, { color: colors.text }]}>{text}</Text>
+        <Text style={styles.oracleText}>{text}</Text>
       </ScrollView>
     );
   }
   return (
     <View style={styles.loadingBox}>
-      <Text style={[styles.oracleEmptyIcon, { color: colors.textMuted }]}>
-        {emptyIcon}
-      </Text>
-      <Text style={[styles.oracleEmptyText, { color: colors.textMuted }]}>
-        {emptyMessage}
-      </Text>
+      <Text style={styles.oracleEmptyIcon}>{emptyIcon}</Text>
+      <Text style={styles.oracleEmptyText}>{emptyMessage}</Text>
     </View>
   );
 }
@@ -106,10 +92,11 @@ export function EnergyDetailModal({
   dateLabel,
   dayLabel,
 }: EnergyDetailModalProps) {
-  const { colors, isDark } = useTheme();
   const slideScrollRef = useRef<ScrollView>(null);
   const [slideIndex, setSlideIndex] = useState(0);
-  const profile = useMemo(() => (visible ? getProfile() : null), [visible]);
+  const profile = useMemo(() => {
+    return visible ? getProfile() : null;
+  }, [visible]);
   const interests = useMemo(() => profile?.interests ?? [], [profile]);
   const birthDate = profile?.birthDate ?? "";
   const language = profile?.preferredLanguage ?? "en";
@@ -126,22 +113,27 @@ export function EnergyDetailModal({
   const [interestOracles, setInterestOracles] = useState<
     Record<string, OracleResult>
   >({});
-  // Reset state every time the modal opens
+  // Reset slide position every time the modal opens
   useEffect(() => {
     if (!visible) return;
     setSlideIndex(0);
     slideScrollRef.current?.scrollTo({ x: 0, animated: false });
-    setGeneralOracle({
-      loading: false,
-      text: "",
-      affirmation: "",
-      action: "",
-    });
-    setInterestOracles({});
   }, [visible]);
-  // Fetch general oracle every time the modal opens
+  // Fetch general oracle — uses cache first, only calls AI on cache miss
   useEffect(() => {
     if (!visible || !birthDate) return;
+
+    // Check cache first
+    const cached = getCachedOracle(targetDate, "");
+    if (cached && cached.text) {
+      setGeneralOracle({
+        loading: false,
+        text: cached.text,
+        affirmation: cached.affirmation,
+        action: cached.action,
+      });
+      return;
+    }
 
     setGeneralOracle({ loading: true, text: "", affirmation: "", action: "" });
     askOracle(
@@ -151,12 +143,13 @@ export function EnergyDetailModal({
       language
     )
       .then((res) => {
-        setGeneralOracle({
-          loading: false,
+        const result = {
           text: res.message || "",
           affirmation: "",
           action: "",
-        });
+        };
+        setCachedOracle(targetDate, "", result);
+        setGeneralOracle({ loading: false, ...result });
       })
       .catch(() => {
         setGeneralOracle({
@@ -167,7 +160,7 @@ export function EnergyDetailModal({
         });
       });
   }, [visible, birthDate, targetDate, language]);
-  // Fetch interest oracle when slide comes into view
+  // Fetch interest oracle when slide comes into view — uses cache first
   const fetchInterestOracle = useCallback(
     (interest: string) => {
       if (
@@ -176,6 +169,16 @@ export function EnergyDetailModal({
         interestOracles[interest]?.loading
       )
         return;
+
+      // Check cache first
+      const cached = getCachedOracle(targetDate, interest);
+      if (cached && cached.text) {
+        setInterestOracles((prev) => ({
+          ...prev,
+          [interest]: { loading: false, ...cached },
+        }));
+        return;
+      }
 
       setInterestOracles((prev) => ({
         ...prev,
@@ -193,14 +196,15 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`;
       askOracle(prompt, birthDate, targetDate, language)
         .then((res) => {
           const insights = parseInsights(res.message, interest);
+          const result = {
+            text: insights.mainText,
+            affirmation: insights.affirmation,
+            action: insights.action,
+          };
+          setCachedOracle(targetDate, interest, result);
           setInterestOracles((prev) => ({
             ...prev,
-            [interest]: {
-              loading: false,
-              text: insights.mainText,
-              affirmation: insights.affirmation,
-              action: insights.action,
-            },
+            [interest]: { loading: false, ...result },
           }));
         })
         .catch(() => {
@@ -245,33 +249,24 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`;
       onRequestClose={onClose}
     >
       <View style={styles.overlay}>
-        <View
-          style={[
-            styles.sheet,
-            {
-              backgroundColor: `${colors.surface}F2`,
-              borderColor: `${colors.textMuted}40`,
-            },
-          ]}
+        <LinearGradient
+          colors={theme.gradient}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.gradient}
         >
           {/* Header */}
           <View style={styles.header}>
             <TouchableOpacity onPress={onClose} activeOpacity={0.7}>
-              <Text style={[styles.cancelText, { color: colors.textMuted }]}>
-                Close
-              </Text>
+              <Text style={styles.cancelText}>Close</Text>
             </TouchableOpacity>
-            <Text style={[styles.headerTitle, { color: colors.text }]}>
-              {theme.title}
-            </Text>
+            <Text style={styles.headerTitle}>{theme.title}</Text>
             <View style={{ width: 40 }} />
           </View>
 
           {/* Slide counter */}
           <View style={styles.slideCounter}>
-            <Text
-              style={[styles.slideCounterText, { color: colors.textMuted }]}
-            >
+            <Text style={styles.slideCounterText}>
               {slideIndex + 1} / {totalSlides}
               {slideIndex === 0
                 ? " · Oracle Insight"
@@ -292,44 +287,17 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`;
             style={styles.slideContainer}
           >
             {/* Card 1: General Oracle */}
-            <View
-              style={[
-                styles.slideCard,
-                {
-                  width: SLIDE_WIDTH,
-                  backgroundColor: isDark
-                    ? (colors.surfaceLight ?? colors.surface)
-                    : "#FAFAFA",
-                  borderColor: `${colors.textMuted}15`,
-                },
-              ]}
-            >
+            <View style={[styles.slideCard, { width: SLIDE_WIDTH }]}>
               <View style={styles.oracleHeader}>
-                <View
-                  style={[
-                    styles.oracleIconCircle,
-                    { backgroundColor: `${theme.bg}20` },
-                  ]}
-                >
+                <View style={styles.oracleIconCircle}>
                   <Text style={styles.oracleIconEmoji}>🔮</Text>
                 </View>
                 <View style={styles.oracleHeaderText}>
-                  <Text style={[styles.oracleTitle, { color: colors.text }]}>
-                    Oracle Insight
-                  </Text>
-                  <Text
-                    style={[styles.oracleDate, { color: colors.textMuted }]}
-                  >
-                    {dayLabel}
-                  </Text>
+                  <Text style={styles.oracleTitle}>Oracle Insight</Text>
+                  <Text style={styles.oracleDate}>{dayLabel}</Text>
                 </View>
               </View>
-              <View
-                style={[
-                  styles.divider,
-                  { backgroundColor: `${colors.textMuted}15` },
-                ]}
-              />
+              <View style={styles.divider} />
               {renderOracleContent({
                 loading: generalOracle.loading,
                 text: generalOracle.text,
@@ -337,7 +305,6 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`;
                 loadingMessage: "Consulting the oracle…",
                 emptyIcon: "✨",
                 emptyMessage: "Tap to receive your oracle insight",
-                colors,
               })}
             </View>
 
@@ -359,80 +326,32 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`;
                     {
                       width: SLIDE_WIDTH,
                       marginRight: isLast ? 0 : SLIDE_GAP,
-                      backgroundColor: isDark
-                        ? (colors.surfaceLight ?? colors.surface)
-                        : "#FAFAFA",
-                      borderColor: `${colors.textMuted}15`,
                     },
                   ]}
                 >
                   <View style={styles.oracleHeader}>
-                    <View
-                      style={[
-                        styles.oracleIconCircle,
-                        { backgroundColor: isDark ? `${cfg.bg}30` : cfg.bg },
-                      ]}
-                    >
+                    <View style={styles.oracleIconCircle}>
                       <Text style={styles.oracleIconEmoji}>{cfg.icon}</Text>
                     </View>
                     <View style={styles.oracleHeaderText}>
-                      <Text
-                        style={[styles.oracleTitle, { color: colors.text }]}
-                      >
-                        {label} Insight
-                      </Text>
-                      <Text
-                        style={[styles.oracleDate, { color: colors.textMuted }]}
-                      >
-                        {dayLabel}
-                      </Text>
+                      <Text style={styles.oracleTitle}>{label} Insight</Text>
+                      <Text style={styles.oracleDate}>{dayLabel}</Text>
                     </View>
                   </View>
-                  <View
-                    style={[
-                      styles.divider,
-                      { backgroundColor: `${colors.textMuted}15` },
-                    ]}
-                  />
+                  <View style={styles.divider} />
 
                   {renderOracleContent({
                     loading: !!oracle?.loading,
                     text: oracle?.text ?? "",
                     badges: oracle?.text ? (
                       <View style={styles.badgeRow}>
-                        <View
-                          style={[
-                            styles.badge,
-                            {
-                              backgroundColor: isDark ? `${cfg.bg}30` : cfg.bg,
-                            },
-                          ]}
-                        >
-                          <Text
-                            style={[
-                              styles.badgeText,
-                              { color: isDark ? "#E2E8F0" : "#334155" },
-                            ]}
-                          >
+                        <View style={styles.badge}>
+                          <Text style={styles.badgeText}>
                             {oracle.affirmation}
                           </Text>
                         </View>
-                        <View
-                          style={[
-                            styles.badge,
-                            {
-                              backgroundColor: isDark
-                                ? `${theme.bg}30`
-                                : `${theme.bg}18`,
-                            },
-                          ]}
-                        >
-                          <Text
-                            style={[
-                              styles.badgeText,
-                              { color: isDark ? "#E2E8F0" : "#334155" },
-                            ]}
-                          >
+                        <View style={styles.badge}>
+                          <Text style={styles.badgeText}>
                             ⚡ {oracle?.action}
                           </Text>
                         </View>
@@ -441,7 +360,6 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`;
                     loadingMessage: `Analyzing ${label.toLowerCase()}…`,
                     emptyIcon: cfg.icon,
                     emptyMessage: `Swipe here to load ${label.toLowerCase()} insight`,
-                    colors,
                   })}
                 </View>
               );
@@ -453,24 +371,18 @@ ACTION: [one specific action word or phrase for ${interest}, max 3 words]`;
             {Array.from({ length: totalSlides }, (_, i) => (
               <View
                 key={i}
-                style={[
-                  i === slideIndex ? styles.dotActive : styles.dotInactive,
-                  {
-                    backgroundColor:
-                      i === slideIndex ? colors.text : `${colors.textMuted}30`,
-                  },
-                ]}
+                style={i === slideIndex ? styles.dotActive : styles.dotInactive}
               />
             ))}
           </View>
 
           {/* No interests hint */}
           {interests.length === 0 && (
-            <Text style={[styles.noInterestsHint, { color: colors.textMuted }]}>
+            <Text style={styles.noInterestsHint}>
               Add interests in your Profile to see personalized insights
             </Text>
           )}
-        </View>
+        </LinearGradient>
       </View>
     </Modal>
   );

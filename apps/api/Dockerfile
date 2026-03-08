@@ -1,4 +1,8 @@
 FROM oven/bun:1.2-slim
+
+# Install ffmpeg for audio conversion (m4a→WAV for Azure Speech-to-Text)
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 # Copy workspace package.json files for dependency resolution

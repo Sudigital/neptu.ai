@@ -117,6 +117,15 @@ async function ensureWav(
       "Converted audio to WAV for STT"
     );
     return { buffer: wavBuffer.buffer, contentType: "audio/wav" };
+  } catch (err) {
+    // ffmpeg not installed or spawn failed — fall back to original audio.
+    // Azure STT can handle compressed formats (m4a/aac/ogg) via the REST API
+    // when the correct content-type is provided.
+    log.warn(
+      { error: err instanceof Error ? err.message : String(err), contentType },
+      "ffmpeg not available, sending original audio to Azure STT"
+    );
+    return { buffer: audioBuffer, contentType };
   } finally {
     // Clean up temp files
     await unlink(inputPath).catch(() => {});
