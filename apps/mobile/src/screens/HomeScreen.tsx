@@ -112,9 +112,16 @@ export function HomeScreen({ walletAddress }: HomeScreenProps) {
               );
             })
           );
-
           const apiReadings = results.map((r) => {
-            if (r?.success && r.reading?.peluang) {
+            if (
+              r?.success &&
+              r.reading?.peluang &&
+              // Verify the API actually returned populated data — the deployed
+              // wariga stub may return empty objects ({}) that are truthy but
+              // useless.  Fall back to local calculator when total_urip is
+              // missing.
+              typeof r.reading.peluang.total_urip === "number"
+            ) {
               return {
                 potensi: r.reading.potensi ?? null,
                 peluang: r.reading.peluang,
@@ -155,11 +162,10 @@ export function HomeScreen({ walletAddress }: HomeScreenProps) {
 
       // Fallback: local NeptuCalculator (works offline)
       if (!cancelled) {
-        setReadings(
-          DAY_OFFSETS.map((offset) =>
-            computeLocalReading(addDays(today, offset), birthDate)
-          )
+        const localReadings = DAY_OFFSETS.map((offset) =>
+          computeLocalReading(addDays(today, offset), birthDate)
         );
+        setReadings(localReadings);
         setLoading(false);
       }
     }

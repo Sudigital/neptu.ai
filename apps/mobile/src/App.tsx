@@ -15,7 +15,7 @@ import { HomeScreen } from "./screens/HomeScreen";
 import { OnboardingScreen } from "./screens/OnboardingScreen";
 import { ProfileScreen } from "./screens/ProfileScreen";
 import { WalletScreen } from "./screens/WalletScreen";
-import { isOnboarded, clearAll } from "./services/storage";
+import { isOnboarded, getProfile, clearAll } from "./services/storage";
 
 const GUEST_ADDRESS = "GUEST_MODE";
 
@@ -31,7 +31,11 @@ export default function App() {
     const address = await wallet.connect();
     if (address) {
       setIsGuest(false);
-      setScreen(isOnboarded() ? "main" : "onboarding");
+      // Only skip onboarding when profile has birthDate — prevents hero
+      // cards showing "--" for potensi when onboarded flag is set but
+      // birthDate was never persisted to MMKV.
+      const ready = isOnboarded() && !!getProfile()?.birthDate;
+      setScreen(ready ? "main" : "onboarding");
     }
     return address;
   }, [wallet]);
