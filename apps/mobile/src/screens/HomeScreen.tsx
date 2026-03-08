@@ -1,4 +1,3 @@
-import type { Peluang, Potensi } from "@neptu/shared";
 import type {
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -102,7 +101,8 @@ export function HomeScreen({ walletAddress }: HomeScreenProps) {
 
     async function fetchReadings() {
       // Try API for all 3 days (same endpoint as web)
-      if (!isGuest) {
+      // Guard: only call API when birthDate is available (matches web's enabled: !!user?.birthDate)
+      if (!isGuest && birthDate) {
         try {
           const results = await Promise.all(
             DAY_OFFSETS.map((offset) => {
@@ -116,8 +116,8 @@ export function HomeScreen({ walletAddress }: HomeScreenProps) {
           const apiReadings = results.map((r) => {
             if (r?.success && r.reading?.peluang) {
               return {
-                potensi: (r.reading.potensi as Potensi) ?? null,
-                peluang: r.reading.peluang as Peluang,
+                potensi: r.reading.potensi ?? null,
+                peluang: r.reading.peluang,
               };
             }
             return null;
@@ -173,34 +173,32 @@ export function HomeScreen({ walletAddress }: HomeScreenProps) {
   const currentReading = readings[selectedIndex] ?? null;
   const isSelectedToday = selectedIndex === TODAY_INDEX;
 
-  // Insight text matching web's getReadingSummary
-  const insightText = useMemo(() => {
-    if (!currentReading) return "";
-    const { potensi, peluang } = currentReading;
+  // Insight text per reading — plain function (not memoized), matching web's getReadingSummary pattern
+  const getInsightText = (reading: ReadingData | null): string => {
+    if (!reading) return "";
+    const { potensi, peluang } = reading;
 
     // No potensi (birthDate missing or not synced) — show peluang-only insight
     if (!potensi) {
       const peluangRole = titleCase(
-        "diberi_hak_untuk" in peluang
-          ? ((peluang as Peluang).diberi_hak_untuk?.name ?? "")
-          : ""
+        peluang.diberi_hak_untuk?.name || peluang.frekuensi?.name || ""
       );
       return peluangRole
         ? `Today's cosmic energy carries ${peluangRole} vibrations.`
         : "Explore your cosmic energy for this day.";
     }
 
-    if (potensi.frekuensi.name === peluang.frekuensi.name) {
+    if (potensi.frekuensi?.name === peluang.frekuensi?.name) {
       return "\u2728 Perfect alignment! Today's energy matches your birth energy.";
     }
     const peluangRole = titleCase(
-      "diberi_hak_untuk" in peluang
-        ? ((peluang as Peluang).diberi_hak_untuk?.name ?? "")
-        : ""
+      peluang.diberi_hak_untuk?.name || peluang.frekuensi?.name || ""
     );
-    const potensiRole = titleCase(potensi.lahir_untuk?.name ?? "");
+    const potensiRole = titleCase(
+      potensi.lahir_untuk?.name || potensi.frekuensi?.name || ""
+    );
     return `Today's ${peluangRole} energy complements your ${potensiRole} nature.`;
-  }, [currentReading]);
+  };
 
   // Track visible card via FlatList viewability (most reliable on Android)
   const handleViewableItemsChanged = useCallback(
@@ -261,6 +259,7 @@ export function HomeScreen({ walletAddress }: HomeScreenProps) {
       const dateObj = addDays(today, DAY_OFFSETS[idx]);
       const dateBadge = isToday ? null : formatDateLabel(dateObj);
       const isSelected = idx === selectedIndex;
+      const cardInsight = getInsightText(reading);
       return (
         <Pressable
           style={[
@@ -308,10 +307,10 @@ export function HomeScreen({ walletAddress }: HomeScreenProps) {
             </Text>
 
             {/* Insight + tap hint */}
-            {insightText !== "" && (
+            {cardInsight !== "" && (
               <View style={styles.heroInsight}>
                 <Text style={styles.heroInsightText} numberOfLines={2}>
-                  {insightText}
+                  {cardInsight}
                 </Text>
               </View>
             )}
@@ -322,7 +321,7 @@ export function HomeScreen({ walletAddress }: HomeScreenProps) {
         </Pressable>
       );
     },
-    [selectedIndex, today, insightText, handleCardPress]
+    [selectedIndex, today, handleCardPress]
   );
 
   if (loading) {
