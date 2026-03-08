@@ -26,6 +26,7 @@ const KEYS = {
   HABIT_COMPLETIONS: "habit_completions",
   AI_SUGGESTS_TODAY: "ai_suggests_today",
   AI_SUGGESTS_DATE: "ai_suggests_date",
+  ORACLE_CACHE: "oracle_cache",
 } as const;
 
 export function saveProfile(profile: UserProfile): void {
@@ -254,4 +255,49 @@ export function incrementAiSuggests(): number {
   const count = (mmkv.getNumber(KEYS.AI_SUGGESTS_TODAY) ?? 0) + 1;
   mmkv.set(KEYS.AI_SUGGESTS_TODAY, count);
   return count;
+}
+
+// Oracle response cache — keyed by date+interest, cleared daily
+interface OracleCache {
+  date: string;
+  entries: Record<
+    string,
+    { text: string; affirmation: string; action: string }
+  >;
+}
+
+function getOracleCache(): OracleCache {
+  const raw = mmkv.getString(KEYS.ORACLE_CACHE);
+  if (!raw) return { date: "", entries: {} };
+  return JSON.parse(raw) as OracleCache;
+}
+
+/**
+ * Get a cached oracle result for the given targetDate + interest key.
+ * Returns null on cache miss or if the cache is from a different day.
+ */
+export function getCachedOracle(
+  targetDate: string,
+  interest: string
+): { text: string; affirmation: string; action: string } | null {
+  const cache = getOracleCache();
+  if (cache.date !== targetDate) return null;
+  const key = interest || "__general__";
+  return cache.entries[key] ?? null;
+}
+
+/**
+ * Store an oracle result in MMKV cache, keyed by targetDate + interest.
+ */
+export function setCachedOracle(
+  targetDate: string,
+  interest: string,
+  result: { text: string; affirmation: string; action: string }
+): void {
+  const cache = getOracleCache();
+  // If date changed, start fresh cache
+  const entries = cache.date === targetDate ? cache.entries : {};
+  const key = interest || "__general__";
+  entries[key] = result;
+  mmkv.set(KEYS.ORACLE_CACHE, JSON.stringify({ date: targetDate, entries }));
 }
