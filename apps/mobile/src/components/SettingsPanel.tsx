@@ -69,7 +69,9 @@ export function SettingsPanel({
       savingRef.current = true;
       try {
         const existing = getProfile();
-        saveProfile({ ...existing, interests: next });
+        if (existing) {
+          saveProfile({ ...existing, interests: next });
+        }
         await updateUserProfile(walletAddress, { interests: next });
       } catch {
         // Non-critical
@@ -182,14 +184,30 @@ export function SettingsPanel({
                     setSavingBirthday(true);
                     try {
                       const dateString = birthday.toISOString().split("T")[0];
-                      await onboardUser(walletAddress, {
-                        birthDate: dateString,
-                        preferredLanguage: selectedLang,
-                      });
+                      try {
+                        await onboardUser(walletAddress, {
+                          birthDate: dateString,
+                          preferredLanguage: selectedLang,
+                        });
+                      } catch {
+                        // API unavailable or guest mode — continue to save locally
+                      }
                       const existing = getProfile();
-                      saveProfile({ ...existing, birthDate: dateString });
-                    } catch {
-                      // Non-critical
+                      saveProfile({
+                        id: existing?.id ?? "",
+                        walletAddress: existing?.walletAddress ?? walletAddress,
+                        email: existing?.email ?? null,
+                        displayName: existing?.displayName ?? null,
+                        birthDate: dateString,
+                        preferredLanguage:
+                          existing?.preferredLanguage ?? selectedLang,
+                        interests: existing?.interests ?? [],
+                        onboarded: existing?.onboarded ?? true,
+                        role: existing?.role ?? "user",
+                        createdAt:
+                          existing?.createdAt ?? new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                      });
                     } finally {
                       setSavingBirthday(false);
                     }
