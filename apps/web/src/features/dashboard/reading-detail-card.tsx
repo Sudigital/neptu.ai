@@ -39,9 +39,20 @@ function Row({ label, value }: { label: string; value: string | undefined }) {
       <span className="text-[11px] text-muted-foreground sm:text-xs">
         {label}
       </span>
-      <span className="text-[11px] font-medium sm:text-xs">{value}</span>
+      <span className="text-[11px] font-medium sm:text-xs">{value || "—"}</span>
     </div>
   );
+}
+
+function resolveWariga(
+  t: (key: string, fallback?: string) => string,
+  prefix: string,
+  name: string | undefined,
+  transform?: (n: string) => string
+): string | undefined {
+  if (!name) return undefined;
+  const key = transform ? transform(name) : name;
+  return t(`${prefix}.${key}`, name);
 }
 
 export function ReadingDetailCard({
@@ -89,52 +100,41 @@ export function ReadingDetailCard({
       <div className="space-y-1 pb-2 sm:space-y-1.5 sm:pb-2.5">
         <Row
           label={t("dashboard.sapta")}
-          value={t(
-            `wariga.day.${reading?.sapta_wara?.name}`,
-            reading?.sapta_wara?.name
-          )}
+          value={resolveWariga(t, "wariga.day", reading?.sapta_wara?.name)}
         />
         <Row label={t("dashboard.panca")} value={reading?.panca_wara?.name} />
         <Row label={t("dashboard.wuku")} value={reading?.wuku?.name} />
         <Row
           label={t("dashboard.frekuensi")}
-          value={t(
-            `${warigaPrefix}.${reading?.frekuensi?.name}`,
-            reading?.frekuensi?.name
-          )}
+          value={resolveWariga(t, warigaPrefix, reading?.frekuensi?.name)}
         />
         <div className={`border-t ${dividerClass} my-1.5 sm:my-2`} />
         <Row
           label={t("dashboard.cipta")}
-          value={t(
-            `wariga.cipta.${reading?.cipta?.name}`,
-            reading?.cipta?.name
-          )}
+          value={resolveWariga(t, "wariga.cipta", reading?.cipta?.name)}
         />
         <Row
           label={t("dashboard.rasa")}
-          value={t(`wariga.rasa.${reading?.rasa?.name}`, reading?.rasa?.name)}
+          value={resolveWariga(t, "wariga.rasa", reading?.rasa?.name)}
         />
         <Row
           label={t("dashboard.karsa")}
-          value={t(
-            `wariga.karsa.${reading?.karsa?.name?.replace(/[()+-]/g, "_")}`,
-            reading?.karsa?.name
+          value={resolveWariga(t, "wariga.karsa", reading?.karsa?.name, (n) =>
+            n.replace(/[()+-]/g, "_")
           )}
         />
         <Row
           label={t("dashboard.tindakan")}
-          value={t(
-            `wariga.tindakan.${reading?.tindakan?.name?.replace(/\s+/g, "_")}`,
-            reading?.tindakan?.name
+          value={resolveWariga(
+            t,
+            "wariga.tindakan",
+            reading?.tindakan?.name,
+            (n) => n.replace(/\s+/g, "_")
           )}
         />
         <Row
           label={t("dashboard.siklus")}
-          value={t(
-            `wariga.siklus.${reading?.siklus?.name}`,
-            reading?.siklus?.name
-          )}
+          value={resolveWariga(t, "wariga.siklus", reading?.siklus?.name)}
         />
       </div>
     </Card>
