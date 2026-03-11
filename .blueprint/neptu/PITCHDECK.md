@@ -11,7 +11,7 @@
 **Subtitle:** Talk to the Cosmos. It Talks Back.
 
 **Body:**
-A voice-first AI oracle on Solana, powered by the ancient Balinese Wuku calendar.
+A voice AI oracle on Solana, powered by the ancient Balinese Wuku calendar.
 
 MONOLITH — Solana Mobile Hackathon 2026
 

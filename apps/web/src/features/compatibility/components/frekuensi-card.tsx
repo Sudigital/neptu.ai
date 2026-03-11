@@ -16,10 +16,10 @@ export function FrekuensiCard({
       <CardContent className="pt-4 text-center">
         <CardDescription className="text-xs">{label}</CardDescription>
         <p className="mt-1 text-lg font-bold sm:text-xl">
-          {t(`wariga.lahirUntuk.${name}`, name)}
+          {name ? t(`wariga.lahirUntuk.${name}`, name) : "—"}
         </p>
         <p className="mt-0.5 text-xs text-muted-foreground">
-          {t(`wariga.lahirUntukDesc.${purpose}`, purpose)}
+          {purpose ? t(`wariga.lahirUntukDesc.${purpose}`, purpose) : "—"}
         </p>
       </CardContent>
     </Card>

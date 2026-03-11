@@ -8,7 +8,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useIsBelowLg } from "@/hooks/use-mobile";
 import { useTranslate } from "@/hooks/use-translate";
@@ -32,11 +31,8 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 
-import { ComparisonBarChart } from "./comparison-bar-chart";
-import { HourlyGrid, SoulRadarChart } from "./dashboard-charts";
 import { DashboardHeader } from "./dashboard-header";
-import { InterestCarousel } from "./interest-carousel";
-import { OracleTabPanel } from "./oracle-tab-panel";
+import { DashboardTabContents } from "./dashboard-tab-contents";
 import { ReadingDetailCard } from "./reading-detail-card";
 import { ScrollableTabsList } from "./scrollable-tabs";
 
@@ -138,29 +134,38 @@ export function Dashboard() {
     return future;
   };
 
+  const resolveKey = (
+    prefix: string,
+    name: string | undefined,
+    fallback = ""
+  ): string => (name ? t(`${prefix}.${name}`, name) : fallback);
+
   const getReadingSummary = () => {
     if (!readingData?.reading) return null;
     const { potensi, peluang } = readingData.reading;
     if (!potensi || !peluang) return null;
-    const potensiName = t(
-      `wariga.lahirUntuk.${potensi.lahir_untuk?.name}`,
-      potensi.lahir_untuk?.name || potensi.frekuensi?.name || ""
+    if (typeof potensi.total_urip !== "number") return null;
+    const rk = resolveKey;
+    const potensiName = rk(
+      "wariga.lahirUntuk",
+      potensi.lahir_untuk?.name || potensi.frekuensi?.name
     );
-    const peluangName = t(
-      `wariga.lahirUntuk.${peluang.diberi_hak_untuk?.name}`,
-      peluang.diberi_hak_untuk?.name || peluang.frekuensi?.name || ""
+    const peluangName = rk(
+      "wariga.lahirUntuk",
+      peluang.diberi_hak_untuk?.name || peluang.frekuensi?.name
     );
-    const potensiDesc = t(
-      `wariga.lahirUntukDesc.${potensi.lahir_untuk?.description}`,
-      potensi.lahir_untuk?.description || ""
+    const potensiDesc = rk(
+      "wariga.lahirUntukDesc",
+      potensi.lahir_untuk?.description
     );
-    const peluangDesc = t(
-      `wariga.lahirUntukDesc.${peluang.diberi_hak_untuk?.description}`,
-      peluang.diberi_hak_untuk?.description || ""
+    const peluangDesc = rk(
+      "wariga.lahirUntukDesc",
+      peluang.diberi_hak_untuk?.description
     );
-    const actionName = t(
-      `wariga.tindakan.${peluang.tindakan?.name?.replace(/\s+/g, "_")}`,
-      peluang.tindakan?.name || "mindfulness"
+    const actionName = rk(
+      "wariga.tindakan",
+      peluang.tindakan?.name?.replace(/\s+/g, "_"),
+      "mindfulness"
     );
     return {
       potensiSummary: t("dashboard.potensiSummary")
@@ -181,7 +186,12 @@ export function Dashboard() {
     };
   };
   const readingSummary = getReadingSummary();
-  const reading = readingData?.reading;
+  const rawReading = readingData?.reading;
+  const reading =
+    typeof rawReading?.potensi?.total_urip === "number" ||
+    typeof rawReading?.peluang?.total_urip === "number"
+      ? rawReading
+      : undefined;
 
   const dateNavigation = (
     <div className="flex w-full items-center">
@@ -322,53 +332,19 @@ export function Dashboard() {
   );
 
   const tabContents = (
-    <>
-      <TabsContent value="24h" className="mt-2 space-y-4">
-        <HourlyGrid selectedDate={selectedDate} peluang={reading?.peluang} />
-        <Separator />
-        <div className="grid grid-cols-1 items-stretch gap-3 sm:gap-4 md:grid-cols-2">
-          <div className="flex min-w-0 flex-col overflow-hidden">
-            <h3 className="mb-3 text-sm font-semibold">
-              🧠 {t("chart.soulDimensions")}
-            </h3>
-            <SoulRadarChart
-              peluang={reading?.peluang}
-              potensi={reading?.potensi}
-            />
-          </div>
-          <Separator className="md:hidden" />
-          <div className="flex min-w-0 flex-col overflow-hidden">
-            <h3 className="mb-3 text-sm font-semibold">
-              ⚖️ {t("chart.peluangVsPotensi")}
-            </h3>
-            <ComparisonBarChart
-              peluang={reading?.peluang}
-              potensi={reading?.potensi}
-            />
-          </div>
-        </div>
-      </TabsContent>
-      <TabsContent value="oracle" className="mt-2">
-        <OracleTabPanel
-          aiLoading={aiLoading}
-          interpretation={aiInterpretation?.interpretation}
-          totalUrip={reading?.potensi?.total_urip}
-          birthDate={user?.birthDate}
-        />
-      </TabsContent>
-      {interests.length > 0 && (
-        <TabsContent value="interests" className="mt-2">
-          {user?.birthDate && (
-            <InterestCarousel
-              interests={interests}
-              birthDate={user.birthDate}
-              targetDate={targetDateStr}
-              language={language}
-            />
-          )}
-        </TabsContent>
-      )}
-    </>
+    <DashboardTabContents
+      selectedDate={selectedDate}
+      peluang={reading?.peluang}
+      potensi={reading?.potensi}
+      aiLoading={aiLoading}
+      interpretation={aiInterpretation?.interpretation}
+      totalUrip={reading?.potensi?.total_urip}
+      birthDate={user?.birthDate}
+      interests={interests}
+      targetDate={targetDateStr}
+      language={language}
+      t={t}
+    />
   );
 
   if (!hasWallet && !walletAddress) {
@@ -428,28 +404,35 @@ export function Dashboard() {
             </div>
           </div>
         )}
-        {!readingLoading && readingError && (
+        {!readingLoading && (readingError || (!reading && rawReading)) && (
           <Card className="mx-auto max-w-md px-6 py-6">
             <div className="text-center">
-              <h3 className="text-lg font-semibold tracking-tight text-destructive">
-                {t("dashboard.error")}
+              <h3
+                className={cn(
+                  "text-lg font-semibold tracking-tight",
+                  readingError && "text-destructive"
+                )}
+              >
+                {readingError
+                  ? t("dashboard.error")
+                  : t("dashboard.noReadingData")}
               </h3>
               <p className="text-sm text-muted-foreground">
-                {t("dashboard.failedToLoad")}
+                {readingError
+                  ? t("dashboard.failedToLoad")
+                  : t("dashboard.noReadingDataDesc")}
               </p>
             </div>
-            <div>
-              <Button
-                className="w-full"
-                onClick={() =>
-                  queryClient.invalidateQueries({
-                    queryKey: ["reading", walletAddress, targetDateStr],
-                  })
-                }
-              >
-                {t("dashboard.retry")}
-              </Button>
-            </div>
+            <Button
+              className="w-full"
+              onClick={() =>
+                queryClient.invalidateQueries({
+                  queryKey: ["reading", walletAddress, targetDateStr],
+                })
+              }
+            >
+              {t("dashboard.retry")}
+            </Button>
           </Card>
         )}
         {!readingLoading && !readingError && reading && (
