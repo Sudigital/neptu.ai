@@ -10,6 +10,8 @@ import {
 import Animated, { FadeIn, FadeInUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import type { UserProfile } from "../types";
+
 import { LanguagePicker } from "../components/LanguagePicker";
 import {
   COLORS,
@@ -57,31 +59,35 @@ export function OnboardingScreen({
       saveLanguage(language);
       setOnboarded(true);
 
+      // Always save a local profile first so birthDate is guaranteed in MMKV
+      // before HomeScreen mounts — prevents hero card showing "--" for urip.
+      const localProfile: UserProfile = {
+        id: "",
+        walletAddress,
+        email: null,
+        displayName: null,
+        birthDate: dateString,
+        preferredLanguage: language,
+        interests: [],
+        onboarded: true,
+        role: "user",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      saveProfile(localProfile);
+
       // Sync to API — same endpoint as web: POST /api/v1/users/:wallet/onboard
       try {
         const result = await onboardUser(walletAddress, {
           birthDate: dateString,
           preferredLanguage: language,
         });
+        // Overwrite with richer API profile (has server-generated id, etc.)
         if (result?.user) {
           saveProfile(result.user);
         }
       } catch {
-        // API unavailable or guest mode — save profile locally so birthDate
-        // is available for local readings and oracle (when wallet connects later)
-        saveProfile({
-          id: "",
-          walletAddress,
-          email: null,
-          displayName: null,
-          birthDate: dateString,
-          preferredLanguage: language,
-          interests: [],
-          onboarded: true,
-          role: "user",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        });
+        // API unavailable — local profile already saved above
       }
 
       onComplete();

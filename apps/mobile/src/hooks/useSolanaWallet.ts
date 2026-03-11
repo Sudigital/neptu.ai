@@ -49,7 +49,10 @@ export function useSolanaWallet(): UseSolanaWalletReturn {
         const result = await getOrCreateUser(address);
         if (result?.user) {
           saveProfile(result.user);
-          if (result.user.onboarded) {
+          // Only mark onboarded when the profile actually has a birthDate —
+          // prevents skipping the onboarding screen with an incomplete profile
+          // that would cause hero cards to show "--" for potensi.
+          if (result.user.onboarded && result.user.birthDate) {
             setOnboarded(true);
           }
         }

@@ -15,7 +15,7 @@ import { HomeScreen } from "./screens/HomeScreen";
 import { OnboardingScreen } from "./screens/OnboardingScreen";
 import { ProfileScreen } from "./screens/ProfileScreen";
 import { WalletScreen } from "./screens/WalletScreen";
-import { isOnboarded, clearAll } from "./services/storage";
+import { isOnboarded, getProfile, clearAll } from "./services/storage";
 
 const GUEST_ADDRESS = "GUEST_MODE";
 
@@ -25,12 +25,17 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>("connect");
   const [activeTab, setActiveTab] = useState<MainTab>("home");
   const [isGuest, setIsGuest] = useState(false);
+  const [hideTabBar, setHideTabBar] = useState(false);
 
   const handleConnect = useCallback(async () => {
     const address = await wallet.connect();
     if (address) {
       setIsGuest(false);
-      setScreen(isOnboarded() ? "main" : "onboarding");
+      // Only skip onboarding when profile has birthDate — prevents hero
+      // cards showing "--" for potensi when onboarded flag is set but
+      // birthDate was never persisted to MMKV.
+      const ready = isOnboarded() && !!getProfile()?.birthDate;
+      setScreen(ready ? "main" : "onboarding");
     }
     return address;
   }, [wallet]);
@@ -83,7 +88,12 @@ export default function App() {
               {activeTab === "calendar" && (
                 <HabitScreen walletAddress={activeAddress} />
               )}
-              {activeTab === "ar" && <ARScreen walletAddress={activeAddress} />}
+              {activeTab === "ar" && (
+                <ARScreen
+                  walletAddress={activeAddress}
+                  onSubScreenChange={setHideTabBar}
+                />
+              )}
               {activeTab === "wallet" && (
                 <WalletScreen walletAddress={activeAddress} />
               )}
@@ -94,7 +104,9 @@ export default function App() {
                 />
               )}
             </View>
-            <BottomTabBar activeTab={activeTab} onTabPress={setActiveTab} />
+            {!hideTabBar && (
+              <BottomTabBar activeTab={activeTab} onTabPress={setActiveTab} />
+            )}
           </View>
         )}
       </ThemeContext.Provider>
