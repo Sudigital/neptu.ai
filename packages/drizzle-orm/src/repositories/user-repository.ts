@@ -117,13 +117,35 @@ export class UserRepository {
       return byWallet;
     }
 
-    // 3. Neither email nor wallet found — create new user
+    // 3. Neither email nor wallet found — create new user.
+    // Use ON CONFLICT to handle the race where concurrent requests both pass
+    // the SELECT above and try to INSERT with the same wallet_address.
     const id = crypto.randomUUID();
-    return this.create({
-      id,
-      walletAddress,
-      ...data,
-    });
+    const now = new Date();
+    await this.db
+      .insert(users)
+      .values({
+        id,
+        walletAddress,
+        ...data,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .onConflictDoUpdate({
+        target: users.walletAddress,
+        set: {
+          email: data?.email ?? sql`${users.email}`,
+          updatedAt: now,
+        },
+      });
+
+    // Fetch the row — it's either the one we just inserted or the one
+    // that already existed and won the race.
+    const result = await this.findByWalletAddress(walletAddress);
+    if (!result) {
+      throw new Error("Failed to create user");
+    }
+    return result;
   }
 
   async list(options: ListUsersOptions): Promise<PaginatedResult<User>> {

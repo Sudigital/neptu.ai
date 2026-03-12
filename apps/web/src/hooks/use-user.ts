@@ -45,7 +45,11 @@ export function useUser() {
       setHasToken(false);
       setAuthError(false);
     }
-  }, [walletAddress, displayEmail]);
+    // NOTE: displayEmail intentionally excluded — it resolves asynchronously
+    // after wallet connect via Dynamic SDK, which would re-trigger auth.
+    // The email is captured at call time via the closure.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [walletAddress]);
 
   // Retry authentication manually (e.g. after a transient failure)
   const retryAuth = useCallback(() => {

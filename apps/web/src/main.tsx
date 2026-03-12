@@ -24,18 +24,17 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: (failureCount, error) => {
-        // eslint-disable-next-line no-console
-        if (import.meta.env.DEV) console.log({ failureCount, error });
-
-        if (failureCount >= 0 && import.meta.env.DEV) return false;
-        if (failureCount > 3 && import.meta.env.PROD) return false;
-
-        return !(
+        // Never retry auth errors — they won't resolve by retrying
+        if (
           error instanceof AxiosError &&
           [401, 403].includes(error.response?.status ?? 0)
-        );
+        ) {
+          return false;
+        }
+        // Allow up to 2 retries for transient errors (same in dev & prod)
+        return failureCount < 2;
       },
-      refetchOnWindowFocus: import.meta.env.PROD,
+      refetchOnWindowFocus: false,
       staleTime: 10 * 1000, // 10s
     },
     mutations: {
