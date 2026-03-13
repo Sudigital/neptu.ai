@@ -36,6 +36,94 @@ import { DashboardTabContents } from "./dashboard-tab-contents";
 import { ReadingDetailCard } from "./reading-detail-card";
 import { ScrollableTabsList } from "./scrollable-tabs";
 
+function getDateVariant<T>(
+  selectedDate: Date,
+  today: T,
+  past: T,
+  future: T
+): T {
+  if (isToday(selectedDate)) return today;
+  if (isPast(selectedDate)) return past;
+  return future;
+}
+
+function resolveTranslationKey(
+  t: (key: string, fallback?: string) => string,
+  prefix: string,
+  name: string | undefined,
+  fallback = ""
+): string {
+  return name ? t(`${prefix}.${name}`, name) : fallback;
+}
+
+function getReadingSummary(
+  reading:
+    | {
+        potensi?: {
+          total_urip?: number;
+          lahir_untuk?: { name?: string; description?: string };
+          frekuensi?: { name?: string };
+          wuku?: { name?: string };
+        };
+        peluang?: {
+          diberi_hak_untuk?: { name?: string; description?: string };
+          frekuensi?: { name?: string };
+          tindakan?: { name?: string };
+        };
+      }
+    | undefined,
+  t: (key: string, fallback?: string) => string,
+  resolveKey: (
+    prefix: string,
+    name: string | undefined,
+    fallback?: string
+  ) => string
+) {
+  if (!reading) return null;
+  const { potensi, peluang } = reading;
+  if (!potensi || !peluang) return null;
+  if (typeof potensi.total_urip !== "number") return null;
+  const potensiName = resolveKey(
+    "wariga.lahirUntuk",
+    potensi.lahir_untuk?.name || potensi.frekuensi?.name
+  );
+  const peluangName = resolveKey(
+    "wariga.lahirUntuk",
+    peluang.diberi_hak_untuk?.name || peluang.frekuensi?.name
+  );
+  const potensiDesc = resolveKey(
+    "wariga.lahirUntukDesc",
+    potensi.lahir_untuk?.description
+  );
+  const peluangDesc = resolveKey(
+    "wariga.lahirUntukDesc",
+    peluang.diberi_hak_untuk?.description
+  );
+  const actionName = resolveKey(
+    "wariga.tindakan",
+    peluang.tindakan?.name?.replace(/\s+/g, "_"),
+    "mindfulness"
+  );
+  return {
+    potensiSummary: t("dashboard.potensiSummary")
+      .replace("{name}", potensiName)
+      .replace("{description}", potensiDesc)
+      .replace("{wuku}", potensi.wuku?.name || "")
+      .replace("{totalUrip}", String(potensi.total_urip ?? "")),
+    peluangSummary: t("dashboard.peluangSummary")
+      .replace("{name}", peluangName)
+      .replace("{description}", peluangDesc)
+      .replace("{action}", actionName),
+    alignment:
+      potensi.frekuensi?.name === peluang.frekuensi?.name
+        ? `✨ ${t("dashboard.perfectAlignment")}`
+        : t("dashboard.energyComplements")
+            .replace("{peluang}", peluangName)
+            .replace("{potensi}", potensiName),
+  };
+}
+
+// oxlint-disable-next-line eslint/complexity -- Dashboard is a page-level component with inherent rendering complexity
 export function Dashboard() {
   const {
     walletAddress,
@@ -128,64 +216,16 @@ export function Dashboard() {
   const goToPreviousDay = () => setSelectedDate((d) => subDays(d, 1));
   const goToNextDay = () => setSelectedDate((d) => addDays(d, 1));
 
-  const getDateVariant = <T,>(today: T, past: T, future: T): T => {
-    if (isToday(selectedDate)) return today;
-    if (isPast(selectedDate)) return past;
-    return future;
-  };
+  const dateVariant = <T,>(today: T, past: T, future: T): T =>
+    getDateVariant(selectedDate, today, past, future);
 
   const resolveKey = (
     prefix: string,
     name: string | undefined,
     fallback = ""
-  ): string => (name ? t(`${prefix}.${name}`, name) : fallback);
+  ): string => resolveTranslationKey(t, prefix, name, fallback);
 
-  const getReadingSummary = () => {
-    if (!readingData?.reading) return null;
-    const { potensi, peluang } = readingData.reading;
-    if (!potensi || !peluang) return null;
-    if (typeof potensi.total_urip !== "number") return null;
-    const rk = resolveKey;
-    const potensiName = rk(
-      "wariga.lahirUntuk",
-      potensi.lahir_untuk?.name || potensi.frekuensi?.name
-    );
-    const peluangName = rk(
-      "wariga.lahirUntuk",
-      peluang.diberi_hak_untuk?.name || peluang.frekuensi?.name
-    );
-    const potensiDesc = rk(
-      "wariga.lahirUntukDesc",
-      potensi.lahir_untuk?.description
-    );
-    const peluangDesc = rk(
-      "wariga.lahirUntukDesc",
-      peluang.diberi_hak_untuk?.description
-    );
-    const actionName = rk(
-      "wariga.tindakan",
-      peluang.tindakan?.name?.replace(/\s+/g, "_"),
-      "mindfulness"
-    );
-    return {
-      potensiSummary: t("dashboard.potensiSummary")
-        .replace("{name}", potensiName)
-        .replace("{description}", potensiDesc)
-        .replace("{wuku}", potensi.wuku?.name || "")
-        .replace("{totalUrip}", String(potensi.total_urip ?? "")),
-      peluangSummary: t("dashboard.peluangSummary")
-        .replace("{name}", peluangName)
-        .replace("{description}", peluangDesc)
-        .replace("{action}", actionName),
-      alignment:
-        potensi.frekuensi?.name === peluang.frekuensi?.name
-          ? `✨ ${t("dashboard.perfectAlignment")}`
-          : t("dashboard.energyComplements")
-              .replace("{peluang}", peluangName)
-              .replace("{potensi}", potensiName),
-    };
-  };
-  const readingSummary = getReadingSummary();
+  const readingSummary = getReadingSummary(readingData?.reading, t, resolveKey);
   const rawReading = readingData?.reading;
   const reading =
     typeof rawReading?.potensi?.total_urip === "number" ||
@@ -238,7 +278,7 @@ export function Dashboard() {
     <div
       className={cn(
         "rounded-xl p-4 text-white shadow-xl sm:rounded-2xl sm:p-6",
-        getDateVariant(
+        dateVariant(
           "bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700",
           "bg-gradient-to-br from-slate-600 via-slate-500 to-slate-700",
           "bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700"
@@ -249,7 +289,7 @@ export function Dashboard() {
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-xs font-medium text-white/80 sm:text-sm">
-              {getDateVariant(
+              {dateVariant(
                 t("dashboard.todaysAlignment"),
                 t("dashboard.pastReading"),
                 t("dashboard.futurePrediction")
@@ -273,7 +313,7 @@ export function Dashboard() {
           </p>
         </div>
         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm sm:h-20 sm:w-20">
-          {getDateVariant(
+          {dateVariant(
             <Sparkles className="h-7 w-7 text-white sm:h-10 sm:w-10" />,
             <CalendarIcon className="h-7 w-7 text-white sm:h-10 sm:w-10" />,
             <Star className="h-7 w-7 text-white sm:h-10 sm:w-10" />
@@ -384,7 +424,7 @@ export function Dashboard() {
                 {t("dashboard.title")}
               </h1>
               <p className="text-sm text-muted-foreground">
-                {getDateVariant(
+                {dateVariant(
                   t("dashboard.subtitle.today"),
                   t("dashboard.subtitle.past"),
                   t("dashboard.subtitle.future")
